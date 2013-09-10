@@ -1,4 +1,4 @@
-arcigs-android-sdk-app-framework
-================================
+java-android-app-framework
+==========================
 
-Application Framework API for the ArcGIS Runtime SDK for Android.
+Application Framework for the ArcGIS Android API.

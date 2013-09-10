@@ -1,0 +1,270 @@
+<!-- ##### usage mvn verify -P SplitSource ##### -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>esri</groupId>
+	<artifactId>arcgis-android-app-framework</artifactId>
+	<name>Android Application Framework</name>
+	<version>10.2.0</version>
+	
+	
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<defaultGoal>package</defaultGoal>
+		<sourceDirectory>src</sourceDirectory>
+		<outputDirectory>${intermediate-dir}/classes</outputDirectory>
+		<directory>${intermediate-dir}/bin</directory>
+	
+	
+		
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					
+				</configuration>
+			</plugin>
+		    <!-- ANT plugin -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+				<execution>
+					<id>buildNumber</id>
+					<phase>compile</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<target>
+							<loadfile srcFile="${project.basedir}/../../../../depfiles/buildnum.h" failonerror="true" property="properties.buildNumber">
+								<filterchain>
+									<linecontains>
+										<contains value="#define BUILD_VER"/>
+									</linecontains>
+									<tokenfilter>
+										<replacestring from="#define BUILD_VER" to=""/>
+										<replacestring from="," to="."/>
+										<trim/>
+									</tokenfilter>
+								</filterchain>
+							</loadfile>
+							<echo message="Build number: ${properties.buildNumber}"/>
+						</target>
+						<exportAntProperties>true</exportAntProperties>
+					</configuration>
+				</execution>
+                
+				<execution>
+					<id>copyToOutput</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<target>
+						    <echo message="Copying jar to output directory"/>
+							<copy todir="../../../../output/jar_release" overwrite="true">
+								<fileset dir="${project.build.directory}">
+									<include name="${project.build.finalName}.jar"/>
+								</fileset>
+							</copy>
+							<copy todir="../../../../output/jar_debug" overwrite="true">
+								<fileset dir="${project.build.directory}">
+									<include name="${project.build.finalName}-proguard*.jar"/>
+									<include name="*.txt"/>
+								</fileset>
+							</copy>
+						</target>
+						<exportAntProperties>true</exportAntProperties>
+					</configuration>
+				</execution>
+				
+				<execution>
+					<id>createJavadoc</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+					  <target>
+						<echo message="create javadoc"/>
+						 <javadoc
+							   destdir="${intermediate-dir}/app_framework_javadoc"
+							   docletpath="docres/lib/doclava-1.0.6.jar"
+							   bootclasspath="${sun.boot.class.path}"
+							   classpath="docres/lib/android.jar;
+							   docres/lib/arcgis-android-api.jar;
+							   docres/lib/jackson-core-lgpl-1.9.5.jar;
+							   docres/lib/jackson-mapper-lgpl-1.9.5.jar;
+							   docres/lib/android-support-v4.jar"
+							   >
+							
+							<packageset dir="src" defaultexcludes="yes"/>
+							
+						  <doclet name="com.google.doclava.Doclava">
+							<!--<param name="-stubs" value="build/stubs" />
+							<param name="-quiet"/> -->
+							<!-- project namespace -->
+							<param name="-hdf"/> 
+							<param name="project.name"/> 
+							<param name="Android Application Framework API"/>
+							<!-- versioning -->
+							<param name="-apiversion" value="v10.2.0"/>
+							<!-- federation -->						
+							<param name="-federate" /><param name="JDK"/>
+							<param name="http://download.oracle.com/javase/6/docs/api/index.html?"/>
+							<param name="-federationxml"/><param name="JDK"/>
+							<param name="http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"/>
+						  </doclet>
+						</javadoc>
+					  </target>	
+					  <exportAntProperties>true</exportAntProperties>					  
+					</configuration>					
+				</execution>				
+				
+				<execution>
+					<id>copyJavadoc</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<target>
+						    <echo message="Copying javadoc uml to output directory"/>
+							<!-- Add uml directory to assets dir for UML PNG -->
+							<copy todir="${intermediate-dir}/app_framework_javadoc/assets/uml" overwrite="true">
+								<fileset dir="docres/uml"/>
+							</copy>
+							<jar destfile="../../../../output/jar_release/arcgis-android-app-framework-javadoc.jar" basedir="${intermediate-dir}/app_framework_javadoc" update="true"/>
+						</target>
+						<exportAntProperties>true</exportAntProperties>
+					</configuration>
+				</execution>
+			 </executions>
+		    </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Implementation-Build>${buildNumber}</Implementation-Build>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+		
+		<extensions>
+		</extensions>
+	</build>
+	
+	<repositories>
+		<repository>
+		    <id>arcgis-android-api</id>						
+		    <url>file://../../../../output/jar_release</url> <!-- TODO: This will need to change to wherever the jar is staged  -->
+		</repository>
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<id>central</id>
+			<url>http://android:8080/artifactory/repo</url>
+		</repository>
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<id>central</id>
+			<url>http://android:8080/artifactory/repo</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>google</groupId>
+			<artifactId>android</artifactId>
+			<version>2.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+		    <groupId>esri</groupId>
+		    <artifactId>arcgis-android-api</artifactId>				<!-- THIS SHOULD ALSO CHANGE TO arcgis-android-api AT SOME POINT -->
+		    <version>10.2.0</version>
+		    <type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>codehaus</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>1.9.5</version>
+		</dependency>
+		<dependency>
+			<groupId>codehaus</groupId>
+			<artifactId>jackson-mapper</artifactId>
+			<version>1.9.5</version>
+		</dependency>
+ 		<dependency>
+			<groupId>android.support</groupId>
+  			<artifactId>compatibility-v4</artifactId>
+      			<version>10</version>
+		</dependency>
+		<dependency>
+			<groupId>google</groupId>
+  			<artifactId>doclava</artifactId>
+  			<version>1.0.6</version>
+  		    <type>jar</type>
+		</dependency>
+	    
+		<dependency>
+			<groupId>jcifs</groupId>
+  			<artifactId>jcifs</artifactId>
+  			<version>1.3.17</version>
+  		    <type>jar</type>
+		</dependency>
+	</dependencies>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>central</id>
+			<url>http://android:8080/artifactory/repo</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.jar.manifest.groups.list>MyPackage</maven.jar.manifest.groups.list>
+		<maven.jar.manifest.MyPackage.name>com.esri</maven.jar.manifest.MyPackage.name>
+		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
+		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
+		<intermediate-dir>../../../../output/intermediate/java/android</intermediate-dir>
+		<buildNumber>10.2.0</buildNumber>
+	
+	</properties>
+	
+	
+
+</project>
