@@ -5,7 +5,7 @@
 	<groupId>esri</groupId>
 	<artifactId>arcgis-android-app-framework</artifactId>
 	<name>Android Application Framework</name>
-	<version>10.2.0</version>
+	<version>10.2</version>
 	
 	
 	<build>
@@ -170,10 +170,12 @@
 	</build>
 	
 	<repositories>
+	    <!-- 
 		<repository>
 		    <id>arcgis-android-api</id>						
-		    <url>file://../../../../output/jar_release</url> <!-- TODO: This will need to change to wherever the jar is staged  -->
+		    <url>file://../../../../output/jar_release</url> 
 		</repository>
+		 -->
 		<repository>
 			<releases>
 				<enabled>true</enabled>
@@ -211,12 +213,14 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<!-- 
 		<dependency>
 		    <groupId>esri</groupId>
-		    <artifactId>arcgis-android-api</artifactId>				<!-- THIS SHOULD ALSO CHANGE TO arcgis-android-api AT SOME POINT -->
+		    <artifactId>arcgis-android-api</artifactId>				
 		    <version>10.2.0</version>
 		    <type>jar</type>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>codehaus</groupId>
 			<artifactId>jackson-core</artifactId>
