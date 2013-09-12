@@ -171,12 +171,12 @@
 	</build>
 	
 	<repositories>
-	    <!-- 
+	    
 		<repository>
 		    <id>arcgis-android-api</id>						
 		    <url>file://../../../../output/jar_release</url> 
 		</repository>
-		 -->
+		 
 		<repository>
 			<releases>
 				<enabled>true</enabled>
@@ -214,14 +214,14 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- 
+		
 		<dependency>
 		    <groupId>esri</groupId>
 		    <artifactId>arcgis-android-api</artifactId>				
 		    <version>10.2.0</version>
 		    <type>jar</type>
 		</dependency>
-		 -->
+		 
 		<dependency>
 			<groupId>codehaus</groupId>
 			<artifactId>jackson-core</artifactId>
