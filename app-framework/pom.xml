@@ -98,7 +98,6 @@
 							   docletpath="docres/lib/doclava-1.0.6.jar"
 							   bootclasspath="${sun.boot.class.path}"
 							   classpath="docres/lib/android.jar;
-							   docres/lib/arcgis-android-api.jar;
 							   docres/lib/jackson-core-lgpl-1.9.5.jar;
 							   docres/lib/jackson-mapper-lgpl-1.9.5.jar;
 							   docres/lib/android-support-v4.jar"
@@ -135,11 +134,12 @@
 					</goals>
 					<configuration>
 						<target>
+						    <!-- Add uml directory to assets dir for UML PNG
 						    <echo message="Copying javadoc uml to output directory"/>
-							<!-- Add uml directory to assets dir for UML PNG -->
 							<copy todir="${intermediate-dir}/app_framework_javadoc/assets/uml" overwrite="true">
 								<fileset dir="docres/uml"/>
 							</copy>
+							 -->
 							<jar destfile="../../../../output/jar_release/arcgis-android-app-framework-javadoc.jar" basedir="${intermediate-dir}/app_framework_javadoc" update="true"/>
 						</target>
 						<exportAntProperties>true</exportAntProperties>
@@ -170,10 +170,12 @@
 	</build>
 	
 	<repositories>
+	    <!-- 
 		<repository>
 		    <id>arcgis-android-api</id>						
-		    <url>file://../../../../output/jar_release</url> <!-- TODO: This will need to change to wherever the jar is staged  -->
+		    <url>file://../../../../output/jar_release</url> 
 		</repository>
+		  -->
 		<repository>
 			<releases>
 				<enabled>true</enabled>
@@ -211,12 +213,16 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		
 		<dependency>
-		    <groupId>esri</groupId>
-		    <artifactId>arcgis-android-api</artifactId>				<!-- THIS SHOULD ALSO CHANGE TO arcgis-android-api AT SOME POINT -->
+		    <groupId>esri.local</groupId>
+		    <artifactId>arcgis-android-api</artifactId>				
 		    <version>10.2.0</version>
 		    <type>jar</type>
+		    <scope>system</scope>
+		    <systemPath>${project.basedir}/../../../../output/jar_release/arcgis-android-api.jar</systemPath>
 		</dependency>
+		 
 		<dependency>
 			<groupId>codehaus</groupId>
 			<artifactId>jackson-core</artifactId>
