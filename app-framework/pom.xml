@@ -170,12 +170,12 @@
 	</build>
 	
 	<repositories>
-	    
+	    <!-- 
 		<repository>
 		    <id>arcgis-android-api</id>						
 		    <url>file://../../../../output/jar_release</url> 
 		</repository>
-		 
+		  -->
 		<repository>
 			<releases>
 				<enabled>true</enabled>
@@ -215,10 +215,12 @@
 		</dependency>
 		
 		<dependency>
-		    <groupId>esri</groupId>
+		    <groupId>esri.local</groupId>
 		    <artifactId>arcgis-android-api</artifactId>				
 		    <version>10.2.0</version>
 		    <type>jar</type>
+		    <scope>system</scope>
+		    <systemPath>../../../../output/jar_release/arcgis-android-api.jar</systemPath>
 		</dependency>
 		 
 		<dependency>
