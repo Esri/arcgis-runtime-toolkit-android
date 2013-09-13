@@ -220,7 +220,7 @@
 		    <version>10.2.0</version>
 		    <type>jar</type>
 		    <scope>system</scope>
-		    <systemPath>../../../../output/jar_release/arcgis-android-api.jar</systemPath>
+		    <systemPath>${project.basedir}/../../../../output/jar_release/arcgis-android-api.jar</systemPath>
 		</dependency>
 		 
 		<dependency>
