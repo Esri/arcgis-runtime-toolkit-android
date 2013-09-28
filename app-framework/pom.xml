@@ -12,8 +12,8 @@
 		<finalName>${project.artifactId}</finalName>
 		<defaultGoal>package</defaultGoal>
 		<sourceDirectory>src</sourceDirectory>
-		<outputDirectory>${intermediate-dir}/app-framework/classes</outputDirectory>
-		<directory>${intermediate-dir}/app-framework/bin</directory>
+		<outputDirectory>${intermediate-dir}/classes</outputDirectory>
+		<directory>${intermediate-dir}/bin</directory>
 	
 	
 		
@@ -266,7 +266,7 @@
 		<maven.jar.manifest.MyPackage.name>com.esri</maven.jar.manifest.MyPackage.name>
 		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
 		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
-		<intermediate-dir>../../../../output/intermediate/java/android</intermediate-dir>
+		<intermediate-dir>../../../../output/intermediate/java/android/app-framework</intermediate-dir>
 		<buildNumber>10.2.0</buildNumber>
 	
 	</properties>
