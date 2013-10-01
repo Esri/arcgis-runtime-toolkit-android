@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 
 import android.graphics.drawable.Drawable;
 
+import com.esri.android.appframework.util.TaskExecutor;
 import com.esri.android.map.MapView;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
@@ -48,8 +49,6 @@ import com.esri.core.tasks.geocode.LocatorReverseGeocodeResult;
 public class GeocodeHelper {
 
   private static final int TOLERANCE = 100;
-  private static final short POOL_SIZE = 3;
-  private static ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE);
 
   /**
   * Finds an address for a given location. 
@@ -90,7 +89,7 @@ public class GeocodeHelper {
   public static Future<List<LocatorGeocodeResult>> showLocation(final String name, final Locator locator, final MapView mapView, final Drawable icon, final int numToShow, final CallbackListener<List<LocatorGeocodeResult>> callback) {
     if (mapView == null || !mapView.isLoaded())
       return null;
-    return pool.submit(new Callable<List<LocatorGeocodeResult>>() {
+    return TaskExecutor.pool.submit(new Callable<List<LocatorGeocodeResult>>() {
       @Override
       public List<LocatorGeocodeResult> call() {
         if (numToShow < 1)
@@ -174,7 +173,7 @@ public class GeocodeHelper {
   public static Future<LocatorReverseGeocodeResult> showAddress(final double lat, final double lon, final Locator locator, final MapView mapView, final Drawable icon, final String[] fieldsToShow, final CallbackListener<LocatorReverseGeocodeResult> callback) {
     if (mapView == null || !mapView.isLoaded())
       return null;
-    return pool.submit(new Callable<LocatorReverseGeocodeResult>() {
+    return TaskExecutor.pool.submit(new Callable<LocatorReverseGeocodeResult>() {
       @Override
       public LocatorReverseGeocodeResult call() {
         try {
