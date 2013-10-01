@@ -14,7 +14,7 @@
  email: contracts@esri.com
  */
 
-package com.esri.android.appframework;
+package com.esri.android.appframework.map;
 
 import com.esri.android.map.popup.PopupContainer;
 

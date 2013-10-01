@@ -14,7 +14,7 @@
  email: contracts@esri.com
  */
 
-package com.esri.android.appframework;
+package com.esri.android.appframework.geocode;
 
 import java.util.List;
 import java.util.Map;

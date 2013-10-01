@@ -14,23 +14,23 @@
  email: contracts@esri.com
  */
 
-package com.esri.android.appframework;
+package com.esri.android.appframework.map;
 
 import com.esri.core.map.Graphic;
 
 /**
- * Defines signatures for methods that are called when tapping on the callout window of a graphic added through 
+ * Defines signatures for methods that are called when tapping on a graphic added through 
  * the MapView.addXXXGraphic() methods.
  * 
  * @since 10.2
  */
 
-public interface OnCalloutClickListener {
+public interface OnGraphicClickListener {
 	
 	/**
-	 * Called when tapping on the callout window.
+	 * Called when tapping on the graphic.
 	 * 
-	 * @param graphic the graphic which is clicked.
+	 * @param g the graphic which is associated with the clicked callout window.
 	 */
-  public void onCalloutClick(Graphic graphic);
+  public void onGraphicClick(Graphic g);
 }

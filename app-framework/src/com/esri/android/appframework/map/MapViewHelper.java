@@ -1,4 +1,4 @@
-package com.esri.android.appframework;
+package com.esri.android.appframework.map;
 
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;

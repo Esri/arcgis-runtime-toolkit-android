@@ -1,4 +1,4 @@
-package com.esri.android.appframework;
+package com.esri.android.appframework.map;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.esri.android.appframework.util.TaskExecutor;
 import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.GroupLayer;
