@@ -271,16 +271,19 @@ class SketchLayer extends GraphicsLayer {
     return true;
   }
 
-  public void onLongPress(MotionEvent point) {
+  public boolean onLongPress(MotionEvent point) {
     map.getCallout().hide();
     int[] sel = getGraphicIDs(point.getX(), point.getY(), TOLERANCE, 1);
     if (sel != null && sel.length > 0) {
       Graphic graphic = getGraphic(sel[0]);
       if (!(Boolean) graphic.getAttributeValue(DRAGGABLE))
-        return;
+        return false;
       selection = new int[] { sel[0] };
       updateGraphic(selection[0], map.toMapPoint(point.getX(), point.getY() - 100));
+      return true;
     }
+    
+    return false;
   }
 
   public boolean onDragPointerMove(MotionEvent from, MotionEvent to) {
