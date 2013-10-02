@@ -15,38 +15,41 @@ public class MapViewHelper {
    * @param mapView a MapView instance
    */
   public MapViewHelper(MapView mapView) {
+    if (mapView == null)
+      throw new IllegalArgumentException("mapview == null");
+    
     this.mapView = mapView;
     mapView.setOnTouchListener(new MapOnTouchListener(mapView.getContext(), mapView) {
       @Override
       public void onLongPress(MotionEvent point) {
-        if (hasSketchLayer())
-          getSketchLayer().onLongPress(point);
-        else
-          super.onLongPress(point);
+        if (hasSketchLayer() && getSketchLayer().onLongPress(point))
+          return;
+          
+        super.onLongPress(point);
       }
       
       @Override
       public boolean onSingleTap(MotionEvent point) {
-        if (hasSketchLayer())
-          return getSketchLayer().onSingleTap(point);
-        else
-          return super.onSingleTap(point);
+        if (hasSketchLayer() && getSketchLayer().onSingleTap(point))
+          return true;
+        
+        return super.onSingleTap(point);
       }
       
       @Override
       public boolean onDragPointerMove(MotionEvent from, MotionEvent to) {
-        if (hasSketchLayer())
-          return getSketchLayer().onDragPointerMove(from, to);
-        else
-          return super.onDragPointerMove(from, to);
+        if (hasSketchLayer() && getSketchLayer().onDragPointerMove(from, to))
+          return true;
+        
+        return super.onDragPointerMove(from, to);
       }
       
       @Override
       public boolean onDragPointerUp(MotionEvent from, MotionEvent to) {
-        if (hasSketchLayer())
-          return getSketchLayer().onDragPointerUp(from, to);
-        else
-          return super.onDragPointerUp(from, to);
+        if (hasSketchLayer() && getSketchLayer().onDragPointerUp(from, to))
+          return true;
+        
+        return super.onDragPointerUp(from, to);
       }
     });
   }
@@ -87,7 +90,7 @@ public class MapViewHelper {
     return getSketchLayer().addPolygonGraphic(latlon, title, snippet, url, fillColor, strokeColor, width, zorder);
   }
   
-  private boolean isLoaded() {
+  public boolean isLoaded() {
     return mapView.isLoaded();
   }
 
@@ -211,6 +214,10 @@ public class MapViewHelper {
     if (!isLoaded())
       return -1;
     return getSketchLayer().addMarkerGraphic(lat, lon, title, snippet, resID, icon, draggable, zorder);
+  }
+  
+  public MapView getMapView() {
+    return mapView;
   }
   
   /**
