@@ -73,6 +73,8 @@ class SketchLayer extends GraphicsLayer {
 
   public SketchLayer(MapViewHelper mapHelper) {
     super();
+    if (mapHelper == null)
+      throw new IllegalArgumentException("mapHelper == null");
     this.mapHelper = mapHelper;
     this.map = mapHelper.getMapView();
   }
@@ -136,7 +138,7 @@ class SketchLayer extends GraphicsLayer {
     HashMap<String, Object> attributes = setAttributes(title, snippet, resID, draggable);
     Drawable icn = icon != null ? icon : map.getResources().getDrawable(android.R.drawable.btn_star_big_on);
     Graphic graphic = new Graphic(GeometryEngine.project(lon, lat, getSpatialReference()),
-        new PictureMarkerSymbol(icn), attributes, zorder);
+        new PictureMarkerSymbol(map.getContext(), icn), attributes, zorder);
     return addGraphic(graphic);
   }
 
@@ -147,7 +149,7 @@ class SketchLayer extends GraphicsLayer {
     HashMap<String, Object> attributes = setAttributes(title, snippet, url, draggable);
     Drawable icn = icon != null ? icon : map.getResources().getDrawable(android.R.drawable.btn_star_big_on);
     Graphic graphic = new Graphic(GeometryEngine.project(lon, lat, getSpatialReference()),
-        new PictureMarkerSymbol(icn), attributes, zorder);
+        new PictureMarkerSymbol(map.getContext(), icn), attributes, zorder);
     return addGraphic(graphic);
   }
 
