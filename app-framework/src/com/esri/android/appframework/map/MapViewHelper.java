@@ -9,6 +9,8 @@ import com.esri.android.map.MapView;
 public class MapViewHelper {
   private MapView mapView;
   private SketchLayer sketchLayer;
+  private OnCalloutClickListener onCalloutClickListener;
+  private OnGraphicClickListener onGraphicClickListener;
 
   /**
    * Creates a MapViewHelper.
@@ -60,7 +62,7 @@ public class MapViewHelper {
   
   SketchLayer getSketchLayer() {
     if (sketchLayer == null) {
-      sketchLayer = new SketchLayer(mapView);
+      sketchLayer = new SketchLayer(this);
       mapView.addLayer(sketchLayer);
     }
     return sketchLayer;
@@ -261,8 +263,15 @@ public class MapViewHelper {
    * @since 10.2
    */
   public void setOnGraphicClickListener(OnGraphicClickListener listener) {
-    if (isLoaded())
-      getSketchLayer().setOnGraphicClickListener(listener);
+    this.onGraphicClickListener = listener;
+  }
+  
+  /**
+   * Gets the OnGraphicClickListener listener.
+   * @return instance of OnGraphicClickListener
+   */
+  public OnGraphicClickListener getOnGraphicClickListener() {
+    return this.onGraphicClickListener;
   }
   
   /**
@@ -273,8 +282,15 @@ public class MapViewHelper {
    * @since 10.2
    */
   public void setOnCalloutClickListener(OnCalloutClickListener listener) {
-    if (isLoaded())
-      getSketchLayer().setOnCalloutClickListener(listener);
+    this.onCalloutClickListener = listener;
+  }
+  
+  /**
+   * Gets the OnCalloutClickListener.
+   * @return instance of OnCalloutClickListener
+   */
+  public OnCalloutClickListener getOnCalloutClickListener() {
+    return this.onCalloutClickListener;
   }
   
   /**

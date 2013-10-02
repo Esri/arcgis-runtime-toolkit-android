@@ -69,13 +69,14 @@ class SketchLayer extends GraphicsLayer {
 
   private boolean showGraphicCallout = true;
 
-  private OnGraphicClickListener onGraphicClickListener;
+  private MapViewHelper mapHelper;
 
-  private OnCalloutClickListener onCalloutClickListener;
-
-  public SketchLayer(MapView map) {
+  public SketchLayer(MapViewHelper mapHelper) {
     super();
-    this.map = map;
+    if (mapHelper == null)
+      throw new IllegalArgumentException("mapHelper == null");
+    this.mapHelper = mapHelper;
+    this.map = mapHelper.getMapView();
   }
 
   int addPolygonGraphic(double[][] latlon, String title, String snippet, int resID, int fillColor, int strokeColor,
@@ -137,7 +138,7 @@ class SketchLayer extends GraphicsLayer {
     HashMap<String, Object> attributes = setAttributes(title, snippet, resID, draggable);
     Drawable icn = icon != null ? icon : map.getResources().getDrawable(android.R.drawable.btn_star_big_on);
     Graphic graphic = new Graphic(GeometryEngine.project(lon, lat, getSpatialReference()),
-        new PictureMarkerSymbol(icn), attributes, zorder);
+        new PictureMarkerSymbol(map.getContext(), icn), attributes, zorder);
     return addGraphic(graphic);
   }
 
@@ -148,7 +149,7 @@ class SketchLayer extends GraphicsLayer {
     HashMap<String, Object> attributes = setAttributes(title, snippet, url, draggable);
     Drawable icn = icon != null ? icon : map.getResources().getDrawable(android.R.drawable.btn_star_big_on);
     Graphic graphic = new Graphic(GeometryEngine.project(lon, lat, getSpatialReference()),
-        new PictureMarkerSymbol(icn), attributes, zorder);
+        new PictureMarkerSymbol(map.getContext(), icn), attributes, zorder);
     return addGraphic(graphic);
   }
 
@@ -162,7 +163,7 @@ class SketchLayer extends GraphicsLayer {
   }
 
   public boolean onSingleTap(MotionEvent point) {
-    if (!showGraphicCallout && onGraphicClickListener == null)
+    if (!showGraphicCallout && mapHelper.getOnGraphicClickListener() == null)
       return false;
 
     int[] sel = getGraphicIDs(point.getX(), point.getY(), TOLERANCE, 1);
@@ -175,8 +176,8 @@ class SketchLayer extends GraphicsLayer {
 
           @Override
           public void onClick(View v) {
-            if (onCalloutClickListener != null)
-              onCalloutClickListener.onCalloutClick(graphic);
+            if (mapHelper.getOnCalloutClickListener() != null)
+              mapHelper.getOnCalloutClickListener().onCalloutClick(graphic);
           }
         });
         calloutView.setPadding(3, 3, 3, 3);
@@ -247,13 +248,13 @@ class SketchLayer extends GraphicsLayer {
         callout.setOffset(0, 50);
         calloutView.addView(titleView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-        if (onCalloutClickListener != null)
+        if (mapHelper.getOnCalloutClickListener() != null)
           calloutView.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-              if (onCalloutClickListener != null)
-                onCalloutClickListener.onCalloutClick(graphic);
+              if (mapHelper.getOnCalloutClickListener() != null)
+                mapHelper.getOnCalloutClickListener().onCalloutClick(graphic);
             }
           });
 
@@ -261,8 +262,8 @@ class SketchLayer extends GraphicsLayer {
       }
 
       // call listener
-      if (onGraphicClickListener != null)
-        onGraphicClickListener.onGraphicClick(graphic);
+      if (mapHelper.getOnGraphicClickListener() != null)
+        mapHelper.getOnGraphicClickListener().onGraphicClick(graphic);
 
     } else if (map.getCallout().isShowing()) {
       map.getCallout().hide();
@@ -306,14 +307,6 @@ class SketchLayer extends GraphicsLayer {
     this.showGraphicCallout = show;
     if (!show)
       map.getCallout().hide();
-  }
-
-  public void setOnGraphicClickListener(OnGraphicClickListener listener) {
-    this.onGraphicClickListener = listener;
-  }
-
-  public void setOnCalloutClickListener(OnCalloutClickListener listener) {
-    this.onCalloutClickListener = listener;
   }
 
   public void createPopup(float screenX, float screenY, PopupCreateListener listener) {
