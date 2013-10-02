@@ -135,7 +135,7 @@ public class GeocodeHelper {
    * @param locator the geocode service of ArcGIS Server to use. If null, 
    *          a default locator using ESRI ArcGIS online worldwide geocoding service will be used.
    *          The endpoint of this service is "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer".   
-   * @param mapViewHelper the MapView used to show the results. When mapview is null, results won't be shown.
+   * @param mapViewHelper the MapViewHelper used to show the results. When mapViewHelper is null, results won't be shown.
    * @param icon the symbol used to display the given location. If icon is null an Android default icon
    *          which is device dependent will be used.
    * @param fieldsToShow the list of address fields used to display the address in a callout window. 
@@ -161,7 +161,7 @@ public class GeocodeHelper {
    * @param locator the geocode service of ArcGIS Server to use. If null, 
    *          a default locator using ESRI ArcGIS online worldwide geocoding service will be used.
    *          The endpoint of this service is "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer".   
-   * @param mapViewHelper the MapView used to show the results. When mapview is null, results won't be shown.
+   * @param mapViewHelper the MapViewHelper used to show the results. When mapViewHelper is null, results won't be shown.
    * @param icon the symbol used to display the given location. If icon is null an Android default icon
    *          which is device dependent is used.
    * @param fieldsToShow the list of address fields used to display the address in a callout window. 
