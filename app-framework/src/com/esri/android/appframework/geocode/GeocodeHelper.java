@@ -19,12 +19,11 @@ package com.esri.android.appframework.geocode;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import android.graphics.drawable.Drawable;
 
+import com.esri.android.appframework.map.MapViewHelper;
 import com.esri.android.appframework.util.TaskExecutor;
 import com.esri.android.map.MapView;
 import com.esri.core.geometry.GeometryEngine;
@@ -79,15 +78,15 @@ public class GeocodeHelper {
    * @param locator the geocode service of ArcGIS Server to use. If null, 
    *          a default locator using ESRI ArcGIS online worldwide geocoding service will be used.
    *          The endpoint of this service is "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer".   
-   * @param mapView the MapView used to show the results. When mapview is null, results won't be shown.
+   * @param mapViewHelper the MapView used to show the results. When mapview is null, results won't be shown.
    * @param icon the symbol used to display the resulted location. If icon is null an Android default icon
    *          which is device dependent is used.
    * @param numToShow the number of candidates to show. Null will be return if numToShow is less than 1.
    * @param callback the callback to invoke when the operation is complete or on error.
    * @return a Future which resolves to a LocatorGeocodeResult if the operation is complete.
    */
-  public static Future<List<LocatorGeocodeResult>> showLocation(final String name, final Locator locator, final MapView mapView, final Drawable icon, final int numToShow, final CallbackListener<List<LocatorGeocodeResult>> callback) {
-    if (mapView == null || !mapView.isLoaded())
+  public static Future<List<LocatorGeocodeResult>> showLocation(final String name, final Locator locator, final MapViewHelper mapViewHelper, final Drawable icon, final int numToShow, final CallbackListener<List<LocatorGeocodeResult>> callback) {
+    if (mapViewHelper == null || !mapViewHelper.isLoaded())
       return null;
     return TaskExecutor.pool.submit(new Callable<List<LocatorGeocodeResult>>() {
       @Override
@@ -105,13 +104,13 @@ public class GeocodeHelper {
             callback.onCallback(results);
           }
           if (results != null && results.size() > 0) {
-            mapView.post(new Runnable() {
+            mapViewHelper.getMapView().post(new Runnable() {
               
               @Override
               public void run() {
                 for (int i = 0; i < results.size(); i++) {
                   LocatorGeocodeResult result = results.get(i);
-                  mapView.addMarkerGraphic(result.getLocation().getY(), result.getLocation().getX(), result.getAddress(), null, null, icon, false, 1);
+                  mapViewHelper.addMarkerGraphic(result.getLocation().getY(), result.getLocation().getX(), result.getAddress(), null, null, icon, false, 1);
                 }
               }
             });
@@ -136,7 +135,7 @@ public class GeocodeHelper {
    * @param locator the geocode service of ArcGIS Server to use. If null, 
    *          a default locator using ESRI ArcGIS online worldwide geocoding service will be used.
    *          The endpoint of this service is "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer".   
-   * @param mapView the MapView used to show the results. When mapview is null, results won't be shown.
+   * @param mapViewHelper the MapView used to show the results. When mapview is null, results won't be shown.
    * @param icon the symbol used to display the given location. If icon is null an Android default icon
    *          which is device dependent will be used.
    * @param fieldsToShow the list of address fields used to display the address in a callout window. 
@@ -144,12 +143,12 @@ public class GeocodeHelper {
    * @param callback the callback to invoke when the operation is complete or on error.
    * @return a Future which resolves to a LocatorReverseGeocodeResult if the operation is complete.
    */
-  public static Future<LocatorReverseGeocodeResult> showAddress(final float screenX, final float screenY, final Locator locator, final MapView mapView, final Drawable icon, final String[] fieldsToShow, final CallbackListener<LocatorReverseGeocodeResult> callback) {
-    if (mapView == null || !mapView.isLoaded())
+  public static Future<LocatorReverseGeocodeResult> showAddress(final float screenX, final float screenY, final Locator locator, final MapViewHelper mapViewHelper, final Drawable icon, final String[] fieldsToShow, final CallbackListener<LocatorReverseGeocodeResult> callback) {
+    if (mapViewHelper == null || !mapViewHelper.isLoaded())
       return null;
-    Point point = mapView.toMapPoint(screenX, screenY);
-    Point point2 = (Point) GeometryEngine.project(point, mapView.getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84));
-    return showAddress(point2.getY(), point2.getX(), locator, mapView, icon, fieldsToShow, callback);
+    Point point = mapViewHelper.getMapView().toMapPoint(screenX, screenY);
+    Point point2 = (Point) GeometryEngine.project(point, mapViewHelper.getMapView().getSpatialReference(), SpatialReference.create(SpatialReference.WKID_WGS84));
+    return showAddress(point2.getY(), point2.getX(), locator, mapViewHelper, icon, fieldsToShow, callback);
   }
   
   /**
@@ -162,7 +161,7 @@ public class GeocodeHelper {
    * @param locator the geocode service of ArcGIS Server to use. If null, 
    *          a default locator using ESRI ArcGIS online worldwide geocoding service will be used.
    *          The endpoint of this service is "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer".   
-   * @param mapView the MapView used to show the results. When mapview is null, results won't be shown.
+   * @param mapViewHelper the MapView used to show the results. When mapview is null, results won't be shown.
    * @param icon the symbol used to display the given location. If icon is null an Android default icon
    *          which is device dependent is used.
    * @param fieldsToShow the list of address fields used to display the address in a callout window. 
@@ -170,8 +169,8 @@ public class GeocodeHelper {
    * @param callback the callback to invoke when the operation is complete or on error.
    * @return a Future which resolves to a LocatorReverseGeocodeResult if the operation is complete.
    */
-  public static Future<LocatorReverseGeocodeResult> showAddress(final double lat, final double lon, final Locator locator, final MapView mapView, final Drawable icon, final String[] fieldsToShow, final CallbackListener<LocatorReverseGeocodeResult> callback) {
-    if (mapView == null || !mapView.isLoaded())
+  public static Future<LocatorReverseGeocodeResult> showAddress(final double lat, final double lon, final Locator locator, final MapViewHelper mapViewHelper, final Drawable icon, final String[] fieldsToShow, final CallbackListener<LocatorReverseGeocodeResult> callback) {
+    if (mapViewHelper == null || !mapViewHelper.isLoaded())
       return null;
     return TaskExecutor.pool.submit(new Callable<LocatorReverseGeocodeResult>() {
       @Override
@@ -185,7 +184,7 @@ public class GeocodeHelper {
           if (callback != null)
             callback.onCallback(result);
           if (result != null) {
-            mapView.post(new Runnable() {
+            mapViewHelper.getMapView().post(new Runnable() {
               
               @Override
               public void run() {
@@ -197,7 +196,7 @@ public class GeocodeHelper {
                       sb.append(addressFields.get(field)+" ");
                   }
                 }
-                mapView.addMarkerGraphic(lat, lon, sb.toString(), null, null, icon, false, 1);
+                mapViewHelper.addMarkerGraphic(lat, lon, sb.toString(), null, null, icon, false, 1);
               }
             });
           }
