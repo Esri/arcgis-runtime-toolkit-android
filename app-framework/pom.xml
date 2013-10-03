@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>esri</groupId>
 	<artifactId>arcgis-android-app-framework</artifactId>
-	<name>Android Application Framework</name>
+	<name>ArcGIS Android Application Framework</name>
 	<version>10.2.0</version>
 	
 	
@@ -95,7 +95,7 @@
 						<echo message="create javadoc"/>
 						 <javadoc
 							   destdir="${intermediate-dir}/app_framework_javadoc"
-							   docletpath="docres/lib/doclava-1.0.6.jar"
+							   docletpath="docres/lib/doclava.jar"
 							   bootclasspath="${sun.boot.class.path}"
 							   classpath="docres/lib/android.jar;
 							   docres/lib/jackson-core-lgpl-1.9.5.jar;
@@ -111,14 +111,7 @@
 							<!-- project namespace -->
 							<param name="-hdf"/> 
 							<param name="project.name"/> 
-							<param name="Android Application Framework API"/>
-							<!-- versioning -->
-							<param name="-apiversion" value="v10.2.0"/>
-							<!-- federation -->						
-							<param name="-federate" /><param name="JDK"/>
-							<param name="http://download.oracle.com/javase/6/docs/api/index.html?"/>
-							<param name="-federationxml"/><param name="JDK"/>
-							<param name="http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"/>
+							<param name="ArcGIS Android Application Framework 10.2.0 API"/>
 						  </doclet>
 						</javadoc>
 					  </target>	
