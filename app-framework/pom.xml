@@ -133,6 +133,9 @@
 								<fileset dir="docres/uml"/>
 							</copy>
 							 -->
+              				<echo message="Copying javadoc root index.html file"/>
+              				<!-- Add doclava generated index.html file to root of Javadoc -->
+              				<copy file="docres/index.html" todir="${intermediate-dir}/api_javadoc"/> 							 
 							<jar destfile="../../../../output/jar_release/arcgis-android-app-framework-javadoc.jar" basedir="${intermediate-dir}/app_framework_javadoc" update="true"/>
 						</target>
 						<exportAntProperties>true</exportAntProperties>
