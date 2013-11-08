@@ -41,7 +41,7 @@
 					</goals>
 					<configuration>
 						<target>
-							<loadfile srcFile="${project.basedir}/../../../../depfiles/buildnum.h" failonerror="true" property="properties.buildNumber">
+							<loadfile srcFile="${project.basedir}/../../../../buildnum/buildnum.h" failonerror="true" property="properties.buildNumber">
 								<filterchain>
 									<linecontains>
 										<contains value="#define BUILD_VER"/>
