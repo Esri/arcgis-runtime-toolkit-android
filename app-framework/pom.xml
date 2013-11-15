@@ -103,7 +103,9 @@
 							   docres/lib/android-support-v4.jar"
 							   >
 							
-							<packageset dir="src" defaultexcludes="yes"/>
+							<packageset dir="src" defaultexcludes="yes">
+								<exclude name="com/esri/android/appframework/util/**" />
+							</packageset>
 							
 						  <doclet name="com.google.doclava.Doclava">
 							<!--<param name="-stubs" value="build/stubs" />
