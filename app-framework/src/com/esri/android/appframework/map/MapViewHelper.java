@@ -23,11 +23,11 @@ import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 
 /**
- * A helper class that can work with a MapView providing a simplified pattern 
- * for adding geometries, callouts, and popups to a MapView.
+ * <p>A helper class that can work with a MapView providing a simplified pattern 
+ * for adding geometries, callouts, and popups to a MapView.</p>
  * 
- * The following are examples of how you might work with the MapViewHelper. To 
- * instantiate a MapViewHelper you need to pass in a MapView
+ * <p>The following are examples of how you might work with the MapViewHelper. To 
+ * instantiate a MapViewHelper you need to pass in a MapView.</p>
  * 
  * <code>
  * <pre>
@@ -36,11 +36,11 @@ import com.esri.android.map.MapView;
  * </code>
  * 
  * <b>Add Geometries</b>
- * The MapViewHelper class provides methods to add geometries as points, polygons,
+ * <p>The MapViewHelper class provides methods to add geometries as points, polygons,
  * or polylines without having to create a GraphicsLayer or work with SpatialReference.
  * The following will add a point to a GraphicsLayer whereby the icon defines the symbol
  * of the Graphic.  When the draggable parameters is set to ture it allows users to drag
- * the graphic around by long press:
+ * the graphic around by long press:</p>
  * 
  * <code>
  * <pre>
@@ -61,13 +61,13 @@ import com.esri.android.map.MapView;
  * </pre>
  * </code> 
  * 
- * The returned int is a unique id representing the added Graphic. It will return -1 
- * if the graphic failed to be added to the MapView.
+ * <p>The returned int is a unique id representing the added Graphic. It will return -1 
+ * if the graphic failed to be added to the MapView.</p>
  * 
  * <b>Show Callout</b>
- * When a user taps on a graphic in an app added by code snippet above, a callout will 
+ * <p>When a user taps on a graphic in an app added by code snippet above, a callout will 
  * open and show the title, snippet, and image of the selected graphic by default. 
- * This feature can be disabled by calling:
+ * This feature can be disabled by calling:</p>
  * 
  * <code>
  * <pre>
