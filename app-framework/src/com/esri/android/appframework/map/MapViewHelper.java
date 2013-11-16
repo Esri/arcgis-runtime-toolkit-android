@@ -1,3 +1,19 @@
+/*
+ COPYRIGHT 1995-2011 ESRI
+
+ TRADE SECRETS: ESRI PROPRIETARY AND CONFIDENTIAL
+ Unpublished material - all rights reserved under the
+ Copyright Laws of the United States.
+
+ For additional information, contact:
+ Environmental Systems Research Institute, Inc.
+ Attn: Contracts Dept
+ 380 New York Street
+ Redlands, California, USA 92373
+
+ email: contracts@esri.com
+ */
+
 package com.esri.android.appframework.map;
 
 import android.graphics.drawable.Drawable;
@@ -5,6 +21,62 @@ import android.view.MotionEvent;
 
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
+
+/**
+ * A helper class that can work with a MapView providing a simplified pattern 
+ * for adding geometries, callouts, and popups to a MapView.
+ * 
+ * The following are examples of how you might work with the MapViewHelper. To 
+ * instantiate a MapViewHelper you need to pass in a MapView
+ * 
+ * <code>
+ * <pre>
+ *   MapViewHelper mvHelper = new MapViewHelper(mMapView);
+ * </pre>
+ * </code>
+ * 
+ * <b>Add Geometries</b>
+ * The MapViewHelper class provides methods to add geometries as points, polygons,
+ * or polylines without having to create a GraphicsLayer or work with SpatialReference.
+ * The following will add a point to a GraphicsLayer whereby the icon defines the symbol
+ * of the Graphic.  When the draggable parameters is set to ture it allows users to drag
+ * the graphic around by long press:
+ * 
+ * <code>
+ * <pre>
+ *  // Create drawable icon 
+ *  icon = getResources().getDrawable(R.drawable.route_destination);
+ *  // Make sure map has loaded before adding geometries 
+ *  mMapView.setOnStatusChangedListener(new OnStatusChangedListener() { 
+ *      private static final long serialVersionUID = 1L; 
+ *      public void onStatusChanged(Object source, STATUS status) { 
+ *        // Add a graphic to represent ESRI Headquarters 
+ *        int loaded = mvHelper.addMarkerGraphic(34.056695, -117.195693, 
+ *                        "ESRI", "World Headquarters", null, icon, false, 0); 
+ *        if (loaded < 0) { 
+ *          Log.d("TAG", "Marker Graphic not added to MapView"); 
+ *        } 
+ *    } 
+ *  });
+ * </pre>
+ * </code> 
+ * 
+ * The returned int is a unique id representing the added Graphic. It will return -1 
+ * if the graphic failed to be added to the MapView.
+ * 
+ * <b>Show Callout</b>
+ * When a user taps on a graphic in an app added by code snippet above, a callout will 
+ * open and show the title, snippet, and image of the selected graphic by default. 
+ * This feature can be disabled by calling:
+ * 
+ * <code>
+ * <pre>
+ *   mvHelper.setShowGraphicCallout(false);
+ * </pre>
+ * </code>
+ * 
+ * @since 10.2
+ */
 
 public class MapViewHelper {
   private MapView mapView;
