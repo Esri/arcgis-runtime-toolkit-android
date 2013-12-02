@@ -239,7 +239,7 @@ public class MapViewHelper {
   }
   
   /**
-   * Adds a point graphic to the map at the given location. The graphic will be rendered using
+   * Adds a point graphic to the map at the given location using a URL of the image. The graphic will be rendered using
    * the given symbol. By default a callout window with the given title, text, and an image
    * will be displayed when tapping on the graphic. This behavior can be turned on/off through 
    * setShowGraphicCallout(). If the graphic is draggable, long-clicking and then dragging the graphic 
@@ -250,7 +250,7 @@ public class MapViewHelper {
    * @param lon longitude of the given location.
    * @param title the title to show on the callout window.
    * @param snippet the text to show below title on the right side of the callout window.
-   * @param url the url of an image to show below title on the left side of the callout window.
+   * @param url of an image to show below title on the left side of the callout window.
    * @param icon the symbol used to render the point graphic. By default an Android default icon
    *          which is device dependent will be used.
    * @param draggable set to true if you want to allow the user to move the graphic. 
@@ -265,7 +265,7 @@ public class MapViewHelper {
   }
   
   /**
-   * Adds a point graphic to the map at the given location. The graphic will be rendered using
+   * Adds a point graphic to the map at the given location using a resource ID of the image. The graphic will be rendered using
    * the given symbol. By default a callout window with the given title, text, and an image
    * will be displayed when tapping on the graphic. This behavior can be turned on/off through 
    * setShowGraphicCallout(). If the graphic is draggable, long-clicking and then dragging the graphic 
