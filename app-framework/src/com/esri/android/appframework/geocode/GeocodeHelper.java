@@ -127,8 +127,8 @@ public class GeocodeHelper {
   
   /**
    * Finds an address for a given location and add to the MapView as a marker graphic.
-   * When tapping on the marker graphic the address will be displayed in a 
-   * callout window. The marker graphic and the associated callout window can be manipulated through MapView.
+   * When tapping on the marker graphic the address will be displayed in a callout window.
+   * The marker graphic and the associated callout window can be manipulated through MapView.
    * 
    * @param screenX the x coordinate of the touch pointer in screen pixels. 
    * @param screenY the y coordinate of the touch pointer in screen pixels.
@@ -152,9 +152,9 @@ public class GeocodeHelper {
   }
   
   /**
-   * Finds an address for a given location. The given location will be added to the map view
-   * as a marker graphic. When tapping on the marker graphic the address will be displayed in a 
-   * callout window. The marker graphic and the associated callout window can be manipulated through MapView.
+   * Finds an address for a given location and add to the MapView as a marker graphic.
+   * When tapping on the marker graphic the address will be displayed in a callout window.
+   * The marker graphic and the associated callout window can be manipulated through MapView.
    * 
    * @param lat latitude of the given location. 
    * @param lon logitude of the given location.
