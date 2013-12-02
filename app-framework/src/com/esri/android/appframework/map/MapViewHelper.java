@@ -39,7 +39,7 @@ import com.esri.android.map.MapView;
  * <p>The MapViewHelper class provides methods to add geometries as points, polygons,
  * or polylines without having to create a GraphicsLayer or work with SpatialReference.
  * The following will add a point to a GraphicsLayer whereby the icon defines the symbol
- * of the Graphic.  When the draggable parameters is set to ture it allows users to drag
+ * of the Graphic.  When the dragable parameters is set to true it allows users to drag
  * the graphic around by long press:</p>
  * 
  * <code>
