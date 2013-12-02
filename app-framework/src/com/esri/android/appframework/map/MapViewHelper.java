@@ -242,8 +242,8 @@ public class MapViewHelper {
    * Adds a point graphic to the map at the given location using a URL of the image. The graphic will be rendered using
    * the given symbol. By default a callout window with the given title, text, and an image
    * will be displayed when tapping on the graphic. This behavior can be turned on/off through 
-   * setShowGraphicCallout(). If the graphic is draggable, long-clicking and then dragging the graphic 
-   * moves it. However, user defined long-press listener or magnifer will take preceedence over
+   * setShowGraphicCallout(). If the graphic is dragable, long-clicking and then dragging the graphic 
+   * moves it. However, user defined long-press listener or magnifier will take precedence over
    * this dragging behavior.
    * 
    * @param lat latitude of the given location.
@@ -269,7 +269,7 @@ public class MapViewHelper {
    * the given symbol. By default a callout window with the given title, text, and an image
    * will be displayed when tapping on the graphic. This behavior can be turned on/off through 
    * setShowGraphicCallout(). If the graphic is draggable, long-clicking and then dragging the graphic 
-   * moves it. However, user defined long-press listener or magnifer will take preceedence over
+   * moves it. However, user defined long-press listener or magnifier will take precedence over
    * this dragging behavior.
    * 
    * @param lat latitude of the given location.
@@ -369,7 +369,7 @@ public class MapViewHelper {
    * Creates popups for the map based on the given location. In the map each layer which is visible, 
    * within current scale range and associated with popup configuration represented by PopupInfo 
    * is queried spatially based on the given location. A popup is generated for each graphic returned
-   * from the query and added to a PopupContainer object. Query is performed asynchronizedly. A callback
+   * from the query and added to a PopupContainer object. Query is performed asynchronously. A callback
    * is invoked when some popups have been added to the PopupContainer. 
    * 
    * @param screenX the x coordinate of the touch pointer in screen pixels. 
