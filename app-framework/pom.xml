@@ -215,7 +215,7 @@
 		<dependency>
 		    <groupId>esri.local</groupId>
 		    <artifactId>arcgis-android-api</artifactId>				
-		    <version>10.2.0</version>
+		    <version>10.2.1</version>
 		    <type>jar</type>
 		    <scope>system</scope>
 		    <systemPath>${project.basedir}/../../../../output/jar_release/arcgis-android-api.jar</systemPath>
