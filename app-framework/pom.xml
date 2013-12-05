@@ -5,7 +5,7 @@
 	<groupId>esri</groupId>
 	<artifactId>arcgis-android-app-framework</artifactId>
 	<name>ArcGIS Android Application Framework</name>
-	<version>10.2.0</version>
+	<version>10.2.1</version>
 	
 	
 	<build>
