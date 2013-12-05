@@ -265,7 +265,7 @@
 		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
 		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
 		<intermediate-dir>../../../../output/intermediate/java/android/app-framework</intermediate-dir>
-		<buildNumber>10.2.0</buildNumber>
+		<buildNumber>10.2.1</buildNumber>
 	
 	</properties>
 	
