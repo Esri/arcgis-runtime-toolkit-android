@@ -215,7 +215,7 @@
 		<dependency>
 		    <groupId>esri.local</groupId>
 		    <artifactId>arcgis-android-api</artifactId>				
-		    <version>10.2.0</version>
+		    <version>10.2.1</version>
 		    <type>jar</type>
 		    <scope>system</scope>
 		    <systemPath>${project.basedir}/../../../../output/jar_release/arcgis-android-api.jar</systemPath>
@@ -265,7 +265,7 @@
 		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
 		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
 		<intermediate-dir>../../../../output/intermediate/java/android/app-framework</intermediate-dir>
-		<buildNumber>10.2.0</buildNumber>
+		<buildNumber>10.2.1</buildNumber>
 	
 	</properties>
 	
