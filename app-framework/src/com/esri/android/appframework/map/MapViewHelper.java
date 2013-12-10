@@ -396,6 +396,12 @@ public class MapViewHelper {
 				resID, icon, draggable, zorder);
 	}
 
+	/**
+	 * Method to work with the MapView used to construct the MapViewHelper.
+	 * 
+	 * @return the current MapView
+	 * @since 10.2
+	 */
 	public MapView getMapView() {
 		return mapView;
 	}
