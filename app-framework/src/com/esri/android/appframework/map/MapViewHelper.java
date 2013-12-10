@@ -397,8 +397,9 @@ public class MapViewHelper {
 	}
 
 	/**
-	 * Returns the current MapView.
+	 * Method to work with the MapView used to construct the MapViewHelper.
 	 * 
+	 * @return the current MapView
 	 * @since 10.2
 	 */
 	public MapView getMapView() {
