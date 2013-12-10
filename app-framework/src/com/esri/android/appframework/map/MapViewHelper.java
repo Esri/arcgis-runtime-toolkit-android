@@ -396,6 +396,11 @@ public class MapViewHelper {
 				resID, icon, draggable, zorder);
 	}
 
+	/**
+	 * Returns the current MapView.
+	 * 
+	 * @since 10.2
+	 */
 	public MapView getMapView() {
 		return mapView;
 	}
