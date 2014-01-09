@@ -5,8 +5,7 @@
 	<groupId>esri</groupId>
 	<artifactId>arcgis-android-app-framework</artifactId>
 	<name>ArcGIS Android Application Framework</name>
-	<version>10.2.1</version>
-	
+	<version>10.2.2</version>
 	
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -14,8 +13,6 @@
 		<sourceDirectory>src</sourceDirectory>
 		<outputDirectory>${intermediate-dir}/classes</outputDirectory>
 		<directory>${intermediate-dir}/bin</directory>
-	
-	
 		
 		<plugins>
 			<plugin>
@@ -113,7 +110,7 @@
 							<!-- project namespace -->
 							<param name="-hdf"/> 
 							<param name="project.name"/> 
-							<param name="ArcGIS Android Application Framework 10.2.1 API"/>
+							<param name="ArcGIS Android Application Framework 10.2.2 API"/>
 						  </doclet>
 						</javadoc>
 					  </target>	
@@ -215,7 +212,7 @@
 		<dependency>
 		    <groupId>esri.local</groupId>
 		    <artifactId>arcgis-android-api</artifactId>				
-		    <version>10.2.1</version>
+		    <version>10.2.2</version>
 		    <type>jar</type>
 		    <scope>system</scope>
 		    <systemPath>${project.basedir}/../../../../output/jar_release/arcgis-android-api.jar</systemPath>
@@ -265,10 +262,7 @@
 		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
 		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
 		<intermediate-dir>../../../../output/intermediate/java/android/app-framework</intermediate-dir>
-		<buildNumber>10.2.1</buildNumber>
+		<buildNumber>10.2.2</buildNumber>
 	
 	</properties>
-	
-	
-
 </project>
