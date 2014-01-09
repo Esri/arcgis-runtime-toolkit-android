@@ -7,15 +7,12 @@
 	<name>ArcGIS Android Application Framework</name>
 	<version>10.2.2</version>
 	
-	
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<defaultGoal>package</defaultGoal>
 		<sourceDirectory>src</sourceDirectory>
 		<outputDirectory>${intermediate-dir}/classes</outputDirectory>
 		<directory>${intermediate-dir}/bin</directory>
-	
-	
 		
 		<plugins>
 			<plugin>
@@ -268,7 +265,4 @@
 		<buildNumber>10.2.2</buildNumber>
 	
 	</properties>
-	
-	
-
 </project>
