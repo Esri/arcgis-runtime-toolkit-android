@@ -1,7 +1,7 @@
-java-android-app-framework
+java-android-application-toolkit
 ==========================
 
-Application Framework for the ArcGIS Android API.
+Application Toolkit for the ArcGIS Android API.
 
 ## Resources
 * [ArcGIS Runtime SDK for Android Developers Site](https://developers.arcgis.com/en/android/)
