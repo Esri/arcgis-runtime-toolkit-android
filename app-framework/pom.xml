@@ -111,7 +111,6 @@
 							<param name="-hdf"/> 
 							<param name="project.name"/> 
 							<param name="ArcGIS Android Application Toolkit 10.2.2 API"/>
-							<param name="-apiversion" value="v10.2.2"/>
 						  </doclet>
 						</javadoc>
 					  </target>	
