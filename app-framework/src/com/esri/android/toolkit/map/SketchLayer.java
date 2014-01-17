@@ -1,4 +1,4 @@
-package com.esri.android.appframework.map;
+package com.esri.android.toolkit.map;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.esri.android.appframework.util.TaskExecutor;
 import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.GroupLayer;
@@ -33,6 +32,7 @@ import com.esri.android.map.ags.ArcGISLayerInfo;
 import com.esri.android.map.ags.ArcGISPopupInfo;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.popup.PopupContainer;
+import com.esri.android.toolkit.util.TaskExecutor;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Latlon;

@@ -14,7 +14,7 @@
  email: contracts@esri.com
  */
 
-package com.esri.android.appframework.map;
+package com.esri.android.toolkit.map;
 
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;

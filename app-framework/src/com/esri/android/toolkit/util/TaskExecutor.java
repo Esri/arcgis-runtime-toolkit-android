@@ -13,7 +13,7 @@
 
  email: contracts@esri.com
  */
-package com.esri.android.appframework.util;
+package com.esri.android.toolkit.util;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
