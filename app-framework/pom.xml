@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>esri</groupId>
-	<artifactId>arcgis-android-app-framework</artifactId>
-	<name>ArcGIS Android Application Framework</name>
+	<artifactId>arcgis-android-app-toolkit</artifactId>
+	<name>ArcGIS Android Application Toolkit</name>
 	<version>10.2.2</version>
 	
 	<build>
@@ -91,7 +91,7 @@
 					  <target>
 						<echo message="create javadoc"/>
 						 <javadoc
-							   destdir="${intermediate-dir}/app_framework_javadoc"
+							   destdir="${intermediate-dir}/app_toolkit_javadoc"
 							   docletpath="docres/lib/doclava.jar"
 							   bootclasspath="${sun.boot.class.path}"
 							   classpath="docres/lib/android.jar;
@@ -101,7 +101,7 @@
 							   >
 							
 							<packageset dir="src" defaultexcludes="yes">
-								<exclude name="com/esri/android/appframework/util/**" />
+								<exclude name="com/esri/android/toolkit/util/**" />
 							</packageset>
 							
 						  <doclet name="com.google.doclava.Doclava">
@@ -110,8 +110,7 @@
 							<!-- project namespace -->
 							<param name="-hdf"/> 
 							<param name="project.name"/> 
-							<param name="ArcGIS Android Application Framework 10.2.2 API"/>
-							<param name="-apiversion" value="v10.2.2"/>
+							<param name="ArcGIS Android Application Toolkit 10.2.2 API"/>
 						  </doclet>
 						</javadoc>
 					  </target>	
@@ -129,14 +128,14 @@
 						<target>
 						    <!-- Add uml directory to assets dir for UML PNG
 						    <echo message="Copying javadoc uml to output directory"/>
-							<copy todir="${intermediate-dir}/app_framework_javadoc/assets/uml" overwrite="true">
+							<copy todir="${intermediate-dir}/app_toolkit_javadoc/assets/uml" overwrite="true">
 								<fileset dir="docres/uml"/>
 							</copy>
 							 -->
               				<echo message="Copying javadoc root index.html file"/>
               				<!-- Add doclava generated index.html file to root of Javadoc -->
-              				<copy file="docres/index.html" todir="${intermediate-dir}/app_framework_javadoc"/> 							 
-							<jar destfile="../../../../output/jar_release/arcgis-android-app-framework-javadoc.jar" basedir="${intermediate-dir}/app_framework_javadoc" update="true"/>
+              				<copy file="docres/index.html" todir="${intermediate-dir}/app_toolkit_javadoc"/> 							 
+							<jar destfile="../../../../output/jar_release/arcgis-android-app-toolkit-javadoc.jar" basedir="${intermediate-dir}/app_toolkit_javadoc" update="true"/>
 						</target>
 						<exportAntProperties>true</exportAntProperties>
 					</configuration>
@@ -262,7 +261,7 @@
 		<maven.jar.manifest.MyPackage.name>com.esri</maven.jar.manifest.MyPackage.name>
 		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
 		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
-		<intermediate-dir>../../../../output/intermediate/java/android/app-framework</intermediate-dir>
+		<intermediate-dir>../../../../output/intermediate/java/android/app-toolkit</intermediate-dir>
 		<buildNumber>10.2.2</buildNumber>
 	
 	</properties>

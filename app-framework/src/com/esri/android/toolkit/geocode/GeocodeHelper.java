@@ -14,7 +14,7 @@
  email: contracts@esri.com
  */
 
-package com.esri.android.appframework.geocode;
+package com.esri.android.toolkit.geocode;
 
 import java.util.List;
 import java.util.Map;
@@ -23,9 +23,9 @@ import java.util.concurrent.Future;
 
 import android.graphics.drawable.Drawable;
 
-import com.esri.android.appframework.map.MapViewHelper;
-import com.esri.android.appframework.util.TaskExecutor;
 import com.esri.android.map.MapView;
+import com.esri.android.toolkit.map.MapViewHelper;
+import com.esri.android.toolkit.util.TaskExecutor;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
