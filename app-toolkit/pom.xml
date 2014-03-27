@@ -5,7 +5,7 @@
 	<groupId>esri</groupId>
 	<artifactId>arcgis-android-app-toolkit</artifactId>
 	<name>ArcGIS Android Toolkit</name>
-	<version>10.2.2</version>
+	<version>10.2.3</version>
 	
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -108,7 +108,7 @@
 							<!--<param name="-stubs" value="build/stubs" />
 							<param name="-quiet"/> -->
 							<!-- project namespace -->
-							<param name="-hdf"/> <param name="project.name"/> <param name="ArcGIS Android Toolkit 10.2.2 API"/>
+							<param name="-hdf"/> <param name="project.name"/> <param name="ArcGIS Android Toolkit 10.2.3 API"/>
 						  </doclet>
 						</javadoc>
 					  </target>	
@@ -210,7 +210,7 @@
 		<dependency>
 		    <groupId>esri.local</groupId>
 		    <artifactId>arcgis-android-api</artifactId>				
-		    <version>10.2.2</version>
+		    <version>10.2.3</version>
 		    <type>jar</type>
 		    <scope>system</scope>
 		    <systemPath>${project.basedir}/../../../../output/jar_release/arcgis-android-api.jar</systemPath>
@@ -260,7 +260,7 @@
 		<maven.jar.manifest.MyPackage.attributes.list >Sealed</maven.jar.manifest.MyPackage.attributes.list>
 		<maven.jar.manifest.MyPackage.attribute.Sealed>true</maven.jar.manifest.MyPackage.attribute.Sealed>
 		<intermediate-dir>../../../../output/intermediate/java/android/app-toolkit</intermediate-dir>
-		<buildNumber>10.2.2</buildNumber>
+		<buildNumber>10.2.3</buildNumber>
 	
 	</properties>
 </project>
