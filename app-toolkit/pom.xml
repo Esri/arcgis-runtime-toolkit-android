@@ -199,10 +199,19 @@
 	</pluginRepositories>
 	
 	<dependencies>
+	    <!-- 
 		<dependency>
 			<groupId>google</groupId>
 			<artifactId>android</artifactId>
 			<version>2.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		 -->
+		<dependency>
+			<groupId>google</groupId>
+			<artifactId>android</artifactId>
+			<version>4.0.1.2</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

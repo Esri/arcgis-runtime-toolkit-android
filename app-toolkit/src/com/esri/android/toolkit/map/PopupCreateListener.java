@@ -12,7 +12,7 @@
  Redlands, California, USA 92373
 
  email: contracts@esri.com
- */
+*/
 
 package com.esri.android.toolkit.map;
 
