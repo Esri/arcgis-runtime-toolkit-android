@@ -69,7 +69,7 @@ import com.esri.core.symbol.SimpleMarkerSymbol.STYLE;
  * an <a href="http://developer.android.com/design/patterns/actionbar.html">Action Bar</a>.
  * </ul>
  * 
- * To wire the measure tool to your Action Bar, first create the {@code MeasuringTools}. Next, you need to create a new action button,
+ * To wire the measure tool to your Action Bar, first create the {@code MeasuringTool}. Next, you need to create a new action button,
  * which can usually be achieved by adding a {@link MenuItem} to the menu xml that populates 
  * the Action Bar.
  *
