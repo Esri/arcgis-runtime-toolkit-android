@@ -64,13 +64,13 @@ import com.esri.core.symbol.SimpleMarkerSymbol.STYLE;
  * sketching capabilities in a self-contained tool. The tool can be readily plugged
  * into your existing app provided the following two requirements are met:
  * <ul><li>
- * An active {@link MapView} in your app and,
+ * An active {@code MapView} in your app and,
  * <li>
  * an <a href="http://developer.android.com/design/patterns/actionbar.html">Action Bar</a>.
  * </ul>
  * 
  * To wire the measure tool to your Action Bar, first create the {@code MeasuringTool}. Next, you need to create a new action button,
- * which can usually be achieved by adding a {@link MenuItem} to the menu xml that populates 
+ * which can usually be achieved by adding a {@code MenuItem} to the menu xml that populates 
  * the Action Bar.
  *
  * <pre><code>
@@ -82,11 +82,10 @@ import com.esri.core.symbol.SimpleMarkerSymbol.STYLE;
  *       android:title="@string/measure"/&gt;
  * </code></pre>
  * 
- * Then add the following code snippet to your {@link Activity} or {@link Fragment} that
- * contains the {@link MapView} to start the Measuring tool when the Action Button is clicked.
+ * Then add the following code snippet to your {@code Activity} or {@code Fragment} that
+ * contains the {@code MapView} to start the Measuring tool when the Action Button is clicked.
  * 
  * <pre><code>
- *   @Override
  * public boolean onOptionsItemSelected(MenuItem item) {
  *  switch (item.getItemId()) {
  *    case R.id.action_measure:
@@ -101,15 +100,15 @@ import com.esri.core.symbol.SimpleMarkerSymbol.STYLE;
  * 
  * The symbols used to draw lines and polygons can be customized by calling:
  * <ul>
- * <li>{@link #setMarkerSymbol(MarkerSymbol)}
- * <li>{@link #setLineSymbol(LineSymbol)}
- * <li>{@link #setFillSymbol(FillSymbol)}
+ * <li>{@code setMarkerSymbol(MarkerSymbol)}
+ * <li>{@code setLineSymbol(LineSymbol)}
+ * <li>{@code setFillSymbol(FillSymbol)}
  * </ul>
  * 
  * The linear and area units in the drop down list can also be customized by calling:
  * <ul>
- * <li>{@link #setLinearUnits(Unit[])}
- * <li>{@link #setAreaUnits(Unit[])}
+ * <li>{@code setLinearUnits(Unit[])}
+ * <li>{@code setAreaUnits(Unit[])}
  */
 public class MeasuringTool implements Callback, OnSingleTapListener {
 
