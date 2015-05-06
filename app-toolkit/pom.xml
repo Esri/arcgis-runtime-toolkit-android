@@ -92,7 +92,7 @@
 						<echo message="create javadoc"/>
 						 <javadoc
 							   destdir="${intermediate-dir}/app_toolkit_javadoc"
-							   docletpath="docres/lib/doclava.jar"
+							   docletpath="docres/lib/doclava-10.2.6.jar"
 							   bootclasspath="${sun.boot.class.path}"
 							   classpath="docres/lib/android.jar;
 							   docres/lib/jackson-core-lgpl-1.9.5.jar;
