@@ -240,13 +240,14 @@
   			<artifactId>compatibility-v4</artifactId>
       			<version>10</version>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>google</groupId>
   			<artifactId>doclava</artifactId>
   			<version>10.2.6</version>
   		    <type>jar</type>
 		</dependency>
-
+	  -->
 		<dependency>
 			<groupId>jcifs</groupId>
   			<artifactId>jcifs</artifactId>
