@@ -349,8 +349,8 @@ class SketchLayer extends GraphicsLayer {
     Layer[] subLayers = layer.getLayers();
     if (subLayers == null || subLayers.length == 0)
       return;
-    for (int i = 0; i < subLayers.length; i++) {
-      query(subLayers[i], screenX, screenY, listener, container);
+    for (Layer subLayer : subLayers) {
+      query(subLayer, screenX, screenY, listener, container);
     }
   }
 
@@ -486,8 +486,8 @@ class SketchLayer extends GraphicsLayer {
 
       if (results != null && results.getGraphics() != null && results.getGraphics().length > 0) {
         Graphic[] graphics = results.getGraphics();
-        for (int i = 0; i < graphics.length; i++) {
-          container.addPopup(layer.createPopup(map, layerID, graphics[i]));
+        for (Graphic graphic : graphics) {
+          container.addPopup(layer.createPopup(map, layerID, graphic));
         }
         listener.onResult(container);
       }
