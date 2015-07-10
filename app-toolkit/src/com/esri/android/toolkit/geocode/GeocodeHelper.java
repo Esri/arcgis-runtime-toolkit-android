@@ -280,7 +280,7 @@ public class GeocodeHelper {
 
 									@Override
 									public void run() {
-										StringBuffer sb = new StringBuffer();
+										StringBuilder sb = new StringBuilder();
 										Map<String, String> addressFields = result
 												.getAddressFields();
 										if (addressFields != null
@@ -291,7 +291,7 @@ public class GeocodeHelper {
 												if (addressFields
 														.containsKey(field))
 													sb.append(addressFields
-															.get(field) + " ");
+															.get(field)).append(" ");
 											}
 										}
 										mapViewHelper.addMarkerGraphic(lat,

@@ -30,5 +30,5 @@ public interface PopupCreateListener {
 	 * 
 	 * @param container the PopupContainer to hold the created popups.
 	 */
-  public void onResult(PopupContainer container);
+    void onResult(PopupContainer container);
 }
