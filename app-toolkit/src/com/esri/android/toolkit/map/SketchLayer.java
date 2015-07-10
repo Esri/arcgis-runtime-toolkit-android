@@ -419,7 +419,7 @@ class SketchLayer extends GraphicsLayer {
       @Override
       public void run() {
         try {
-          ArcGISTiledMapServiceLayer tiledLayer = (ArcGISTiledMapServiceLayer) layer;
+          ArcGISTiledMapServiceLayer tiledLayer = layer;
           ArcGISLayerInfo[] layerinfos = tiledLayer.getAllLayers();
           if (layerinfos == null)
             return;
