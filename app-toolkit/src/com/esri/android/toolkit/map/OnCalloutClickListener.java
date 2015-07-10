@@ -32,5 +32,5 @@ public interface OnCalloutClickListener {
 	 * 
 	 * @param graphic the graphic which is clicked.
 	 */
-  public void onCalloutClick(Graphic graphic);
+    void onCalloutClick(Graphic graphic);
 }

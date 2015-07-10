@@ -32,5 +32,5 @@ public interface OnGraphicClickListener {
 	 * 
 	 * @param g the graphic which is associated with the clicked callout window.
 	 */
-  public void onGraphicClick(Graphic g);
+    void onGraphicClick(Graphic g);
 }
