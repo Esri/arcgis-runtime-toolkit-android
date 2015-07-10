@@ -280,7 +280,7 @@ public class GeocodeHelper {
 
 									@Override
 									public void run() {
-										StringBuffer sb = new StringBuffer();
+										StringBuilder sb = new StringBuilder();
 										Map<String, String> addressFields = result
 												.getAddressFields();
 										if (addressFields != null
