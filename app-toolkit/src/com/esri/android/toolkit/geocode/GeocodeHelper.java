@@ -291,7 +291,7 @@ public class GeocodeHelper {
 												if (addressFields
 														.containsKey(field))
 													sb.append(addressFields
-															.get(field) + " ");
+															.get(field)).append(" ");
 											}
 										}
 										mapViewHelper.addMarkerGraphic(lat,
