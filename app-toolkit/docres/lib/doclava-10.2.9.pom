@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.google.doclava</groupId>
   <artifactId>doclava</artifactId>
-  <version>10.2.8</version>
+  <version>10.2.9</version>
   <name>JSilver</name>
   <description>Pure-Java implementation of Clearsilver templating engine.</description>
   <url>http://code.google.com/p/jsilver/</url>
