@@ -94,10 +94,11 @@
 							   destdir="${intermediate-dir}/app_toolkit_javadoc"
 							   docletpath="docres/lib/doclava-10.2.9.jar"
 							   bootclasspath="${sun.boot.class.path}"
-							   classpath="docres/lib/android.jar;
+							   classpath="docres/lib/android-5.0.jar;
+							   docres/lib/android-support-v4.jar;
+							   docres/lib/arcgis-android-api.jar;
 							   docres/lib/jackson-core-lgpl-1.9.5.jar;
-							   docres/lib/jackson-mapper-lgpl-1.9.5.jar;
-							   docres/lib/android-support-v4.jar"
+							   docres/lib/jackson-mapper-lgpl-1.9.5.jar"
 							   >
 
 							<packageset dir="src" defaultexcludes="yes">
