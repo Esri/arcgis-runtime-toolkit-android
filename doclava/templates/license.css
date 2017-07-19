@@ -1,0 +1,260 @@
+body {
+    font: normal 400 14px/1.2 Arial, Helvetica;
+    margin: 10;
+    text-align: left;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: #fff;
+}
+
+body p {
+  padding: 0 20px 0 20px;
+}
+
+h1,h2,h3 {
+  font-weight:300
+}
+
+h1 {
+  padding: 0px 20px 20px 20px;
+  color: #060;
+  border-bottom: 4px #eee solid;
+}
+
+h2 {
+  margin: 0;
+  color: black;
+  background-color: white;
+  padding: 10px 20px 10px 20px;
+  border-bottom: 2px #eee solid;
+}
+
+h2[id="details"] {
+  border-top: 4px #eee solid;
+  border-bottom: 4px #eee solid;
+}
+
+h3 .name {
+  background-color: #EEE;
+}
+
+a {
+  color: #5CAA15;
+  text-decoration: none;
+  transition-duration: 0.3s;
+}
+
+code {
+  font-size: 110%;
+}
+
+.small-subtitle {
+  margin: 20px;
+}
+
+
+.descr {
+}
+
+.descr h2[id="details"] {
+  padding: 10px 0 10px 20px;
+  margin: 0;
+}
+
+.descr h2[id*="public"] {
+  margin: 0;
+  padding: 10px 0 10px 20px;
+}
+
+.descr p {
+  margin: 0;
+  padding: 10px 20px 10px 20px;
+}
+
+.func {
+  padding: 0px 20px 0px 20px;
+  background-color: white;
+} 
+
+.func h2 {
+  margin: 0;
+  padding-top: 10px;
+}
+
+.func h3 {
+  color: black;
+  color: rgb(64, 66, 68);
+  text-align: left-side;
+  border-top: 2px #eee solid;
+  padding-top: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.func p {
+  background-color: white;
+  margin: 0;
+  padding: 0 0 10px 0px;
+}
+
+.fn {
+  color: black;
+  background-color: white;
+  padding-bottom: 10px;
+}
+
+ul li {
+  margin-left: 20px;
+}
+
+.title {
+  font-size:2em;
+  font-weight:300;
+  letter-spacing:-1px;
+  line-height:1.15em;
+  margin-bottom:0.5em;
+  word-wrap:break-word
+}
+
+.sidebar {
+  display:block;
+  float:right;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -ms-box-sizing:border-box;
+  box-sizing:border-box;
+  width:20%;
+  padding-left:30px;
+  padding-right: 20px;
+  background-color: white;
+}
+
+.toc h3 {
+  margin-bottom: 0;
+}
+
+.toc ul {
+  padding: 10px 20px 10px 20px;
+}
+
+.name {
+  font: normal 400 14px/1.2;
+  color: #5CAA15;
+}
+
+table .name {
+    background-color: #EEE;
+}
+
+.type {
+  font-size: 100%;
+  font-weight: 400;
+  vertical-align: baseline;
+  text-align: left;
+}
+
+.preprocessor {
+  color: #103010
+  background-color: white;
+}
+
+.qmlitem {
+  background-color: white;
+  margin: 0 20px 0 20px;
+}
+
+.qmlproto {
+  border-top: 2px #eee solid;
+}
+
+.qmlproto table{
+  margin: 0;
+  border-top: 2px #eee solid;
+  border-style:none; 
+}
+
+.qmlproto table td{
+  padding: 0;
+  border-style: none;
+}
+
+.qmlitem p {
+  padding: 0;
+}
+
+table, table td, table th{
+  border-collapse: collapse;
+  border: 1px solid #eee;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+table td, table th {
+  padding: 5px 5px;
+  margin: 0;
+}
+
+table td p:first-child {
+  margin: 0;
+}
+
+.table {
+  background-color: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.table b {
+  font-weight: 550;
+}
+
+table tr.even {
+    background-color: white;
+    color: #66666E;
+}
+
+table tr.odd {
+    background-color: #F6F6F6;
+    color: #66666E;
+}
+
+table tr:target {
+    background-color: #F6F6D6;
+}
+
+.rightAlign {
+  padding:3px 5px 3px 10px;
+  text-align:right
+}
+
+ul {
+  background-color: white;
+  margin: 0;  
+  padding: 10px;
+}
+
+:target {
+  animation: hilite 2.5s;
+}
+
+@keyframes hilite {
+  0% {background: transparent;}
+  50% {background: #D8F781;}
+  100% {background: transparent;}
+}
+
+.memItemRight {
+  padding-left: 20px;
+}
+
+.cpp, .qml {
+  font-size: 100%;
+  color: white;
+  background-color: #404244;
+  display: block;
+  overflow-x: auto;
+  margin-bottom: 25px;
+  padding: 25px;
+  margin-top: 0.75em; 
+  font-family: "Lucida Console", Monaco, monospace
+}
