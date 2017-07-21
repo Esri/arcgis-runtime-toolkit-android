@@ -22,6 +22,10 @@ android {
     }
 }
 
+gradle.projectsEvaluated{
+    assembleDebug.dependsOn generateDebugDoclava
+}
+
 // custom configurations
 // published is for artifactory
 // jaxDoclet is for building custom doclava doclet in javadocs
