@@ -69,23 +69,21 @@ android.libraryVariants.all { variant ->
             addStringOption "federate JDK", "http://download.oracle.com/javase/6/docs/api/index.html?"
             addStringOption "federationxml JDK", "http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"
             addStringOption "templatedir", "${project.docsDir}/${name}/doclava/templates"
-//            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
-            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-100.0.0.xml"
+            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
+            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-100.1.0.xml"
 //            addStringOption "since doclava/api-100.2.0.xml", "100.2.0"
-//            addStringOption "apiversion", "${project.version}"
+            addStringOption "apiversion", "${project.version}"
             addStringOption "apiversion", "100.2.0"
         }
         // exclude generated files
         exclude '**/BuildConfig.java'
-//        exclude '**/R.java'
+        exclude '**/R.java'
         // exclude internal packages
         exclude '**/internal/**'
 //        options.addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
-        options.addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-100.0.0.xml"
+        options.addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-100.1.0.xml"
     }
 }
-
-//assembleDebug.dependsOn generatedebugDoclava
 
 dependencies {
     // custom doclava doclet
