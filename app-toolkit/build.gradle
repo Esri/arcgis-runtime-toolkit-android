@@ -22,11 +22,86 @@ android {
     }
 }
 
+// custom configurations
+// published is for artifactory
+// jaxDoclet is for building custom doclava doclet in javadocs
+configurations {
+//    published
+    jaxDoclet
+}
+
+// create javadoc for build variants
+android.libraryVariants.all { variant ->
+    def name = variant.name.capitalize()
+
+    task("generate${name}Doclava", type: Javadoc) {
+        // include custom templates
+        def tpldir = new File("${project.docsDir}/${name}/doclava/templates")
+        if( !tpldir.exists() ) {
+            if(!tpldir.mkdirs()) {
+                println("mkdir failed: ${tpldir} ")
+            }
+        }
+
+        copy {
+            from("../doclava/templates") {
+                include "*"
+            }
+            into(tpldir)
+        }
+
+        description "Generates Javadoc for $variant.name."
+        source = variant.javaCompile.source
+        title = null
+        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        classpath = files(android.sourceSets.main.java.srcDirs, variant.javaCompile.classpath.files, ext.androidJar)
+        destinationDir = file("${project.docsDir}/${name}/doclava")
+        failOnError = false
+        options {
+            docletpath = configurations.jaxDoclet.files.asType(List)
+            doclet "com.google.doclava.Doclava"
+            bootClasspath new File(System.getenv('JAVA_HOME') + "/jre/lib/rt.jar")
+            addStringOption "XDignore.symbol.file", "-quiet"
+            addStringOption "hdf project.name", "${project.name}"
+            addStringOption "hdf date", "${buildDate()}"
+            addStringOption "federate android", "https://developer.android.com/reference"
+            addStringOption "federationxml android", "http://doclava.googlecode.com/svn/static/api/android-10.xml"
+            addStringOption "federate JDK", "http://download.oracle.com/javase/6/docs/api/index.html?"
+            addStringOption "federationxml JDK", "http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"
+            addStringOption "templatedir", "${project.docsDir}/${name}/doclava/templates"
+//            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
+            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-100.0.0.xml"
+//            addStringOption "since doclava/api-100.2.0.xml", "100.2.0"
+//            addStringOption "apiversion", "${project.version}"
+            addStringOption "apiversion", "100.2.0"
+        }
+        // exclude generated files
+        exclude '**/BuildConfig.java'
+//        exclude '**/R.java'
+        // exclude internal packages
+        exclude '**/internal/**'
+//        options.addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
+        options.addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-100.0.0.xml"
+    }
+}
+
+//assembleDebug.dependsOn generatedebugDoclava
+
 dependencies {
+    // custom doclava doclet
+    jaxDoclet 'com.google.doclava:doclava:1.0.6'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
     implementation 'com.android.support:appcompat-v7:26.0.0-beta2'
+    implementation 'com.esri.arcgisruntime:arcgis-android:100.1.0'
     testImplementation 'junit:junit:4.12'
+}
+
+// generate build date for use in javadoc meta-tags
+def buildDate(){
+    def date = new Date()
+    def formatDate = date.format('yyyy-MM-dd')
+    return formatDate
 }
