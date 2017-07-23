@@ -18,6 +18,7 @@ proguard/
 .project
 .classpath
 /.settings
+.vscode/
 
 # OS generated files #
 ######################
