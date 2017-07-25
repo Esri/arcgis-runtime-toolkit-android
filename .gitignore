@@ -17,6 +17,8 @@ proguard/
 .idea/
 .project
 .classpath
+bin/
+gen/
 /.settings
 .vscode/
 
