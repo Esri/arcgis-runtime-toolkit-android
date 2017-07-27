@@ -2,7 +2,6 @@ group = GROUP
 version = VERSION_NAME
 
 apply plugin: 'com.android.library'
-// apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.artifactory'
 // We need the patched maven plugin since 'install' task is overriden by 'installDebugTest', see: https://github.com/dcendents/android-maven-plugin
 apply plugin: 'android-maven'
