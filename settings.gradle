@@ -1,1 +1,1 @@
-include ':app-toolkit'
+include ':arcgis-android-toolkit'
