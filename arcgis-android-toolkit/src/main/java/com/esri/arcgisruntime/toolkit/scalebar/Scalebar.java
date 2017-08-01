@@ -18,6 +18,8 @@ import com.esri.arcgisruntime.geometry.LinearUnit;
 import com.esri.arcgisruntime.geometry.LinearUnitId;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PolylineBuilder;
+import com.esri.arcgisruntime.mapping.view.AttributionTextChangedEvent;
+import com.esri.arcgisruntime.mapping.view.AttributionTextChangedListener;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.mapping.view.NavigationChangedEvent;
 import com.esri.arcgisruntime.mapping.view.NavigationChangedListener;
@@ -36,13 +38,15 @@ public class Scalebar extends View {
 
   private static final int LABEL_X_PAD = 4;
 
+  private static final int SHADOW_OFFSET = 2;
+
   private static final int DEFAULT_FILL_COLOR = Color.LTGRAY | ALPHA_50_PC;
 
   private static final int DEFAULT_ALTERNATE_FILL_COLOR = Color.BLACK;
 
   private static final int DEFAULT_LINE_COLOR = Color.WHITE;
 
-  private static final int DEFAULT_SHADOW_COLOR = Color.BLACK;// | ALPHA_50_PC;
+  private static final int DEFAULT_SHADOW_COLOR = Color.BLACK | ALPHA_50_PC;
 
   private static final int DEFAULT_TEXT_COLOR = Color.BLACK;
 
@@ -62,7 +66,7 @@ public class Scalebar extends View {
 
   private int mLineColor = DEFAULT_LINE_COLOR;
 
-  private int mShadowColor = DEFAULT_SHADOW_COLOR; //TODO: do we need a shadow on the bar???
+  private int mShadowColor = DEFAULT_SHADOW_COLOR;
 
   private int mTextColor = DEFAULT_TEXT_COLOR;
 
@@ -84,13 +88,13 @@ public class Scalebar extends View {
 
   private float mCornerRadius = mBarHeight / 5;
 
-  private int mPadX = 25;
+  private int mPadX = 10;
 
-  private int mPadY = 25;
+  private int mPadY = 10;
 
   private MapView mMapView;
 
-  private int mAttributionTextHeight = 0;
+  private volatile int mAttributionTextHeight = 0;
 
   private float mDisplayDensity;
 
@@ -161,7 +165,7 @@ public class Scalebar extends View {
       @Override
       public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
         Log.d(TAG,"navigationChanged");
-        invalidate();
+        postInvalidate();
       }
     });
     mMapView.addAttributionViewLayoutChangeListener(new OnLayoutChangeListener() {
@@ -169,6 +173,8 @@ public class Scalebar extends View {
       public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop,
           int oldRight, int oldBottom) {
         mAttributionTextHeight = bottom - top;
+        Log.d(TAG,"attributionViewLayoutChanged mAttributionTextHeight=" + mAttributionTextHeight);
+        postInvalidate();
       }
     });
     mDisplayDensity = mapView.getContext().getResources().getDisplayMetrics().density;
@@ -176,8 +182,9 @@ public class Scalebar extends View {
 
   public void connectWithMapView(MapView mapView) {
     attachToMapView(mapView);
-    mBarHeight = pixelsToDp(getHeight()) * 10 / 30;
-    mTextSize = pixelsToDp(getHeight()) * 15 / 30;
+    mDrawInMapView = false;
+//    mBarHeight = pixelsToDp(getHeight()) * 10 / 30; // beware can evaluate as 0 when changing layout
+//    mTextSize = pixelsToDp(getHeight()) * 15 / 30;
   }
 
   public void setFillColor(int color) {
@@ -211,6 +218,7 @@ public class Scalebar extends View {
 
   public void setAlignment(ScalebarAlignment alignment) {
     mAlignment = alignment;
+    postInvalidate();
   }
 
   public void setStyle(ScalebarStyle style) {
@@ -222,6 +230,7 @@ public class Scalebar extends View {
         mRenderer = new AlternatingBarRenderer(this);
         break;
     }
+    postInvalidate();
   }
 
   public void setTextSize(int textSizeDp) {
@@ -282,11 +291,11 @@ public class Scalebar extends View {
     float top;
     if (mDrawInMapView) {
       left = calculateLeftPos(mAlignment, scalebarWidthPixels);
-      bottom =
-          mMapView.getBottom() - mAttributionTextHeight - (float) mMapView.getViewInsetBottom() - dpToPixels(mPadY);
+      bottom = mMapView.getHeight() - mAttributionTextHeight - (float) mMapView.getViewInsetBottom() -
+          dpToPixels(mPadY) - dpToPixels(mTextSize);
     } else {
       left = 0;
-      bottom = getHeight() - dpToPixels(mPadY);
+      bottom = getHeight() - dpToPixels(mTextSize);
     }
     right = left + scalebarWidthPixels;
     top = bottom - dpToPixels(mBarHeight);
@@ -517,7 +526,7 @@ public class Scalebar extends View {
 
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
         LinearUnit displayUnits) {
-      //TODO: advisable to access Scalebar member fields from here?
+      //TODO: is it advisable to access Scalebar member fields from here?
 
       // Draw a solid bar
       RectF rect = new RectF(left, top, right, bottom);
@@ -537,7 +546,7 @@ public class Scalebar extends View {
       // Draw text
       paint = new Paint();
       paint.setColor(mTextColor);
-      paint.setShadowLayer(2, 2, 2, mTextShadowColor);
+      paint.setShadowLayer(2, SHADOW_OFFSET, SHADOW_OFFSET, mTextShadowColor);
       paint.setTypeface(mTypeface);
       paint.setTextSize(dpToPixels(mTextSize));
       paint.setTextAlign(Paint.Align.CENTER);
@@ -553,12 +562,12 @@ public class Scalebar extends View {
 
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
         LinearUnit displayUnits) {
-      //TODO: advisable to access Scalebar member fields from here?
+      //TODO: is it advisable to access Scalebar member fields from here?
 
       // Create Paint for drawing text right at the start, because it's used when calculating the number of segments
       Paint textPaint = new Paint();
       textPaint.setColor(mTextColor);
-      textPaint.setShadowLayer(2, 2, 2, mTextShadowColor);
+      textPaint.setShadowLayer(2, SHADOW_OFFSET, SHADOW_OFFSET, mTextShadowColor);
       textPaint.setTypeface(mTypeface);
       textPaint.setTextSize(dpToPixels(mTextSize));
 
@@ -566,11 +575,18 @@ public class Scalebar extends View {
       int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
       float segmentDisplayLength = barDisplayLength / numSegments;
 
+      // Draw the shadow of the bar using mShadowColor, offset slightly from where the actual bar is drawn below
+      RectF shadowRect = new RectF(left, top, right, bottom);
+      int offset = SHADOW_OFFSET + (dpToPixels(mLineWidth) / 2);
+      shadowRect.offset(offset, offset);
+      Paint paint = new Paint();
+      paint.setColor(mShadowColor);
+      paint.setStyle(Paint.Style.FILL);
+      canvas.drawRoundRect(shadowRect, dpToPixels(mCornerRadius), dpToPixels(mCornerRadius), paint);
+
       // Draw a complete solid bar using mAlternateFillColor
       RectF barRect = new RectF(left, top, right, bottom);
-      Paint paint = new Paint();
       paint.setColor(mAlternateFillColor);
-      paint.setStyle(Paint.Style.FILL);
       canvas.drawRoundRect(barRect, dpToPixels(mCornerRadius), dpToPixels(mCornerRadius), paint);
 
       // Now draw every second segment on top of it using mFillColor
