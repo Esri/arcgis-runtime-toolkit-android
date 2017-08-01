@@ -189,31 +189,38 @@ public class Scalebar extends View {
 
   public void setFillColor(int color) {
     mFillColor = color;
+    postInvalidate();
   }
 
   public void setAlternateFillColor(int color) {
     mAlternateFillColor = color;
+    postInvalidate();
   }
 
   public void setLineColor(int color) {
     mLineColor = color;
+    postInvalidate();
   }
 
   public void setTextColor(int color) {
     mTextColor = color;
+    postInvalidate();
   }
 
   public void setTextShadowColor(int color) {
     mTextShadowColor = color;
+    postInvalidate();
   }
 
   //TODO: consider alternative of letting the Paint used for text be set???
   public void setTypeface(Typeface typeface) {
     mTypeface = typeface;
+    postInvalidate();
   }
 
   public void setUnits(ScalebarUnits units) {
     mUnits = units;
+    postInvalidate();
   }
 
   public void setAlignment(ScalebarAlignment alignment) {
@@ -235,10 +242,12 @@ public class Scalebar extends View {
 
   public void setTextSize(int textSizeDp) {
     mTextSize = textSizeDp;
+    postInvalidate();
   }
 
   public void setBarHeight(int barHeightDp) {
     mBarHeight = barHeightDp;
+    postInvalidate();
   }
 
   @Override
