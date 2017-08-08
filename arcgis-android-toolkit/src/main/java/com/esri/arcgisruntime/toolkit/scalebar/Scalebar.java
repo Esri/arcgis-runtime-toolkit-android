@@ -159,7 +159,6 @@ public class Scalebar extends View {
     return color;
   }
 
-
   public void addToMapView(MapView mapView) {
     attachToMapView(mapView);
     mMapView.addView(this, new ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
@@ -214,6 +213,11 @@ public class Scalebar extends View {
 
   public void setLineColor(int color) {
     mLineColor = color;
+    postInvalidate();
+  }
+
+  public void setShadowColor(int color) {
+    mShadowColor = color;
     postInvalidate();
   }
 
@@ -273,6 +277,13 @@ public class Scalebar extends View {
       return;
     }
 
+    // Create Paint for drawing text right at the start, because it's used when sizing/positioning some things
+    Paint textPaint = new Paint();
+    textPaint.setColor(mTextColor);
+    textPaint.setShadowLayer(2, SHADOW_OFFSET, SHADOW_OFFSET, mTextShadowColor);
+    textPaint.setTypeface(mTypeface);
+    textPaint.setTextSize(dpToPixels(mTextSize));
+
     float maxScaleBarWidthPixels;
     if (mDrawInMapView) {
       int mapViewWidth = mMapView.getWidth();
@@ -314,7 +325,7 @@ public class Scalebar extends View {
     float bottom;
     float top;
     if (mDrawInMapView) {
-      left = calculateLeftPos(mAlignment, scalebarWidthPixels);
+      left = calculateLeftPos(mAlignment, scalebarWidthPixels, displayUnits, textPaint);
       bottom = mMapView.getHeight() - mAttributionTextHeight - (float) mMapView.getViewInsetBottom() -
           dpToPixels(mPadY) - dpToPixels(mTextSize);
     } else {
@@ -325,17 +336,32 @@ public class Scalebar extends View {
     top = bottom - dpToPixels(mBarHeight);
 
     // Draw the scalebar
-    mRenderer.drawScalebar(canvas, left, right, top, bottom, scalebarWidthGeodetic, displayUnits);
+    mRenderer.drawScalebar(canvas, left, right, top, bottom, scalebarWidthGeodetic, displayUnits, textPaint);
   }
 
-  private float calculateLeftPos(ScalebarAlignment alignment, float width) {
+  /**
+   * Calculates the x-coordinate of the left hand end of the scalebar when it's embedded within the MapView.
+   *
+   * @param alignment the alignment within the MapView
+   * @param width the width of the scalebar in pixels
+   * @param displayUnits the units to be displayed
+   * @param textPaint the Paint used to draw the text
+   * @return the x-coordinate of the left hand end of the scalebar
+   */
+  private float calculateLeftPos(ScalebarAlignment alignment, float width, LinearUnit displayUnits, Paint textPaint) {
     switch (alignment) {
       case LEFT:
       default:
+        // position start of scalebar at left hand edge of MapView plus padding
         return mMapView.getLeft() + dpToPixels(mPadX);
       case RIGHT:
-        return mMapView.getRight() - dpToPixels(mPadX) - width;
+        // position end of scalebar at right hand edge of MapView less padding and the width of the units text
+        Rect unitsBounds = new Rect();
+        String unitsText = displayUnits.getAbbreviation();
+        textPaint.getTextBounds(unitsText, 0, unitsText.length(), unitsBounds);
+        return mMapView.getRight() - dpToPixels(mPadX) - width - unitsBounds.right;
       case CENTER:
+        // position center of scalebar at center of MapView
         return (mMapView.getRight() + mMapView.getLeft() - width) / 2;
     }
   }
@@ -521,7 +547,7 @@ public class Scalebar extends View {
     }
 
     public abstract void drawScalebar(Canvas canvas, float left, float right, float top, float bottom,
-        double geodeticLength, LinearUnit displayUnits);
+        double geodeticLength, LinearUnit displayUnits, Paint textPaint);
 
     public int calculateNumberOfSegments(double geodeticLength, double lineDisplayLength, Paint textPaint) {
       // use a string with at least a few characters in case the number string only has 1
@@ -549,7 +575,7 @@ public class Scalebar extends View {
     }
 
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
-        LinearUnit displayUnits) {
+        LinearUnit displayUnits, Paint textPaint) {
       //TODO: is it advisable to access Scalebar member fields from here?
 
       // Draw a solid bar
@@ -585,15 +611,8 @@ public class Scalebar extends View {
     }
 
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
-        LinearUnit displayUnits) {
+        LinearUnit displayUnits, Paint textPaint) {
       //TODO: is it advisable to access Scalebar member fields from here?
-
-      // Create Paint for drawing text right at the start, because it's used when calculating the number of segments
-      Paint textPaint = new Paint();
-      textPaint.setColor(mTextColor);
-      textPaint.setShadowLayer(2, SHADOW_OFFSET, SHADOW_OFFSET, mTextShadowColor);
-      textPaint.setTypeface(mTypeface);
-      textPaint.setTextSize(dpToPixels(mTextSize));
 
       float barDisplayLength = right - left;
       int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
