@@ -68,7 +68,6 @@ public class Scalebar extends View {
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT_BOLD;
 
-//  private static final ScalebarUnits DEFAULT_UNITS = ScalebarUnits.METRIC;
   private static final UnitSystem DEFAULT_UNITS = UnitSystem.METRIC;
 
   private static final ScalebarAlignment DEFAULT_ALIGNMENT = ScalebarAlignment.LEFT;
@@ -89,7 +88,6 @@ public class Scalebar extends View {
 
   private Typeface mTypeface = DEFAULT_TYPEFACE;
 
-//  private ScalebarUnits mUnits = DEFAULT_UNITS;
   private UnitSystem mUnits = DEFAULT_UNITS;
 
   private ScalebarAlignment mAlignment = DEFAULT_ALIGNMENT;
@@ -380,152 +378,6 @@ public class Scalebar extends View {
   private int pixelsToDp(double pixels) {
     double dp = pixels / mDisplayDensity;
     return (int) (dp + Integer.signum((int) dp) * 0.5);
-  }
-
-  public enum ScalebarUnits {
-    IMPERIAL,
-    METRIC;
-
-    //iOS uses: private static double[] roundNumberMultipliers = {1, 1.2, 1.25, 1.5, 1.75, 2, 2.4, 2.5, 3, 3.75, 4, 5, 6, 7.5, 8, 9, 10};
-    private static double[] roundNumberMultipliers = {1, 1.2, 1.5, 1.6, 2, 2.4, 3, 3.6, 4, 5, 6, 8, 9, 10};
-
-    public LinearUnit baseUnits() {
-      if (this == IMPERIAL) {
-        return new LinearUnit(LinearUnitId.FEET);
-      }
-      return new LinearUnit(LinearUnitId.METERS);
-    }
-
-    private double calculateMagnitude(double distance) {
-      return Math.pow(10, Math.floor(Math.log10(distance)));
-    }
-
-    private double calculateMultiplier(double distance, double magnitude) {
-      double residual = distance / magnitude;
-      double multiplier = roundNumberMultipliers[roundNumberMultipliers.length - 1];
-      // This gives us the LAST one that's <= residual
-      for (int i=0; i < roundNumberMultipliers.length; i++) {
-        if (roundNumberMultipliers[i] > residual) {
-          multiplier = roundNumberMultipliers[i - 1];//TODO: need to check for i = 0 here?
-          break;
-        }
-      }
-      return multiplier;
-    }
-
-    public double closestDistanceWithoutGoingOver(double distance, LinearUnit units) {
-      double magnitude = calculateMagnitude(distance);
-      double multiplier = calculateMultiplier(distance, magnitude);
-      double roundNumber = multiplier * magnitude;
-
-      // because feet and miles are not relationally multiples of 10 with each other,
-      // we have to convert to miles if we are dealing in miles
-      if (units.getLinearUnitId() == LinearUnitId.FEET) {
-        LinearUnit displayUnits = linearUnitsForDistance(roundNumber);
-        if (units.getLinearUnitId() != displayUnits.getLinearUnitId()) {
-          double displayDistance = closestDistanceWithoutGoingOver(units.convertTo(displayUnits, distance), displayUnits);
-          return displayUnits.convertTo(units, displayDistance);
-        }
-      }
-      return roundNumber;
-    }
-
-    private int[] segmentOptionsForMultiplier(double multiplier) {
-      //TODO: must be a better way!
-      if (multiplier <= 1) {
-        return new int[] {1, 2, 4, 5};
-      }
-      if (multiplier <= 1.2) {
-        return new int[] {1, 2, 3, 4};
-      }
-//      if (multiplier <= 1.25) {
-//        return new int[] {1, 2};
-//      }
-      if (multiplier <= 1.5) {
-        return new int[] {1, 2, 3, 5};
-      }
-      if (multiplier <= 1.6) {//AL
-        return new int[] {1, 2, 4};
-      }
-//      if (multiplier <= 1.75) {
-//        return new int[] {1, 2};
-//      }
-      if (multiplier <= 2) {
-        return new int[] {1, 2, 4, 5};
-      }
-      if (multiplier <= 2.4) {
-        return new int[] {1, 2, 3, 4};//AL added 4
-      }
-//      if (multiplier <= 2.5) {
-//        return new int[] {1, 2, 5};
-//      }
-      if (multiplier <= 3) {
-        return new int[] {1, 2, 3};
-      }
-      if (multiplier <= 3.6) {//AL
-        return new int[] {1, 2, 3};
-      }
-//      if (multiplier <= 3.75) {
-//        return new int[] {1, 3};
-//      }
-      if (multiplier <= 4) {
-        return new int[] {1, 2, 4};
-      }
-      if (multiplier <= 5) {
-        return new int[] {1, 2, 5};
-      }
-      if (multiplier <= 6) {
-        return new int[] {1, 2, 3};
-      }
-//      if (multiplier <= 7.5) {
-//        return new int[] {1, 2};
-//      }
-      if (multiplier <= 8) {
-        return new int[] {1, 2, 4};
-      }
-      if (multiplier <= 9) {
-        return new int[] {1, 2, 3};
-      }
-      if (multiplier <= 10) {
-        return new int[] {1, 2, 5};
-      }
-      return new int[] {1};
-    }
-
-    public int numSegmentsForDistance(double distance, int maxNumSegments) {
-      double magnitude = calculateMagnitude(distance);
-      double multiplier = calculateMultiplier(distance, magnitude);
-      int[] options = segmentOptionsForMultiplier(multiplier);
-
-      // This gives us the LAST one that's <= maxNumSegments
-      int num = 1;
-      for (int i=0; i < options.length; i++) {
-        //TODO: make the for loops here and in calculateMultiplier() consistent
-        if (options[i] <= maxNumSegments) {
-          num = options[i];
-        }
-      }
-      return num;
-    }
-
-    private LinearUnit linearUnitsForDistance(double distance) {
-
-      switch (this) {
-        case IMPERIAL:
-          if (distance >= 2640) {
-            return new LinearUnit(LinearUnitId.MILES);
-          }
-          return new LinearUnit(LinearUnitId.FEET);
-
-        case METRIC:
-        default:
-          if (distance >= 1000) {
-            return new LinearUnit(LinearUnitId.KILOMETERS);
-          }
-          return new LinearUnit(LinearUnitId.METERS);
-      }
-    }
-
   }
 
   public enum ScalebarStyle {
