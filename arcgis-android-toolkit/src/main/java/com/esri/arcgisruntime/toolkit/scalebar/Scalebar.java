@@ -68,7 +68,7 @@ public class Scalebar extends View {
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT_BOLD;
 
-  private static final UnitSystem DEFAULT_UNITS = UnitSystem.METRIC;
+  private static final UnitSystem DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC;//TODO: base the default on device locale
 
   private static final ScalebarAlignment DEFAULT_ALIGNMENT = ScalebarAlignment.LEFT;
 
@@ -88,17 +88,17 @@ public class Scalebar extends View {
 
   private Typeface mTypeface = DEFAULT_TYPEFACE;
 
-  private UnitSystem mUnits = DEFAULT_UNITS;
+  private UnitSystem mUnitSystem = DEFAULT_UNIT_SYSTEM;
 
   private ScalebarAlignment mAlignment = DEFAULT_ALIGNMENT;
 
   private ScalebarRenderer mRenderer;
 
-  private int mBarHeightDp = 10;
+  private float mBarHeightDp = 10;
 
   private float mLineWidthDp = mBarHeightDp / 4;
 
-  private int mTextSizeDp = 15;
+  private float mTextSizeDp = 15;
 
   private float mCornerRadiusDp = mBarHeightDp / 5;
 
@@ -122,9 +122,51 @@ public class Scalebar extends View {
   public Scalebar(Context context, AttributeSet attrs) {
     super(context, attrs);
     setStyle(DEFAULT_STYLE);
-    mFillColor = getColor(context, attrs, "scalebar.fillColor", DEFAULT_FILL_COLOR);
-    mAlternateFillColor = getColor(context, attrs, "scalebar.alternateFillColor", DEFAULT_ALTERNATE_FILL_COLOR);
-    mLineColor = getColor(context, attrs, "scalebar.lineColor", DEFAULT_LINE_COLOR);
+    mAlignment = getAlignmentFromAttributes(attrs);
+    mUnitSystem = getUnitSystemFromAttributes(attrs);
+    mFillColor = getColorFromAttributes(context, attrs, "scalebar.fillColor", DEFAULT_FILL_COLOR);
+    mAlternateFillColor = getColorFromAttributes(context, attrs, "scalebar.alternateFillColor", DEFAULT_ALTERNATE_FILL_COLOR);
+    mLineColor = getColorFromAttributes(context, attrs, "scalebar.lineColor", DEFAULT_LINE_COLOR);
+  }
+
+  /**
+   * Gets the scalebar alignment from an AttributeSet object, or a default value if it's not specified there.
+   *
+   * @param attrs the AttributeSet object containing parameters and values to use
+   * @return the scalebar alignment
+   * @since 100.1.0
+   */
+  private ScalebarAlignment getAlignmentFromAttributes(AttributeSet attrs) {
+    ScalebarAlignment alignment = DEFAULT_ALIGNMENT;
+    String str = attrs.getAttributeValue(null, "scalebar.alignment");
+    if (str != null) {
+      try {
+        alignment = ScalebarAlignment.valueOf(str);
+      } catch (IllegalArgumentException e) {
+        // allow it to use the default value set above
+      }
+    }
+    return alignment;
+  }
+
+  /**
+   * Gets the scalebar unit system from an AttributeSet object, or a default value if it's not specified there.
+   *
+   * @param attrs the AttributeSet object containing parameters and values to use
+   * @return the scalebar unit system
+   * @since 100.1.0
+   */
+  private UnitSystem getUnitSystemFromAttributes(AttributeSet attrs) {
+    UnitSystem unitSystem = DEFAULT_UNIT_SYSTEM;
+    String str = attrs.getAttributeValue(null, "scalebar.unitSystem");
+    if (str != null) {
+      try {
+        unitSystem = UnitSystem.valueOf(str);
+      } catch (IllegalArgumentException e) {
+        // allow it to use the default value set above
+      }
+    }
+    return unitSystem;
   }
 
   /**
@@ -137,7 +179,7 @@ public class Scalebar extends View {
    * @return the color
    * @since 100.0.0
    */
-  private int getColor(Context context, AttributeSet attrs, String attributeName, int defaultValue) {
+  private int getColorFromAttributes(Context context, AttributeSet attrs, String attributeName, int defaultValue) {
     int color = 0;
 
     // If the attribute value is a resource ID, get the color corresponding to that resource
@@ -154,18 +196,25 @@ public class Scalebar extends View {
     if (color == 0) {
       color = attrs.getAttributeIntValue(null, attributeName, defaultValue);
     }
-
     return color;
   }
 
   public void addToMapView(MapView mapView) {
-    attachToMapView(mapView);
+    setupMapView(mapView);
     mMapView.addView(this, new ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
         android.view.ViewGroup.LayoutParams.MATCH_PARENT));
     mDrawInMapView = true;
   }
 
-  private void attachToMapView(MapView mapView) {
+  public void bindToMapView(MapView mapView) {
+    setupMapView(mapView);
+    mDrawInMapView = false;
+//    mBarHeightDp = pixelsToDp(getHeight()) * 10 / 30; // beware can evaluate as 0 when changing layout
+//    mTextSizeDp = pixelsToDp(getHeight()) * 15 / 30;
+  }
+
+  private void setupMapView(MapView mapView) {
+    //TODO: remove listeners from old MapView?
     mMapView = mapView;
     mMapView.addViewpointChangedListener(new ViewpointChangedListener() {
       @Override
@@ -190,14 +239,7 @@ public class Scalebar extends View {
         postInvalidate();
       }
     });
-    mDisplayDensity = mapView.getContext().getResources().getDisplayMetrics().density;
-  }
-
-  public void connectWithMapView(MapView mapView) {
-    attachToMapView(mapView);
-    mDrawInMapView = false;
-//    mBarHeightDp = pixelsToDp(getHeight()) * 10 / 30; // beware can evaluate as 0 when changing layout
-//    mTextSizeDp = pixelsToDp(getHeight()) * 15 / 30;
+    mDisplayDensity = mMapView.getContext().getResources().getDisplayMetrics().density;
   }
 
   public void setFillColor(int color) {
@@ -235,8 +277,8 @@ public class Scalebar extends View {
     postInvalidate();
   }
 
-  public void setUnits(UnitSystem units) {
-    mUnits = units;
+  public void setUnitSystem(UnitSystem unitSystem) {
+    mUnitSystem = unitSystem;
     postInvalidate();
   }
 
@@ -257,14 +299,22 @@ public class Scalebar extends View {
     postInvalidate();
   }
 
-  public void setTextSize(int textSizeDp) {
+  public void setTextSize(float textSizeDp) {
     mTextSizeDp = textSizeDp;
     postInvalidate();
   }
 
-  public void setBarHeight(int barHeightDp) {
+  public void setBarHeight(float barHeightDp) {
     mBarHeightDp = barHeightDp;
     postInvalidate();
+  }
+
+  public float getTextSize() {
+    return mTextSizeDp;
+  }
+
+  public float getBarHeight() {
+    return mBarHeightDp;
   }
 
   @Override
@@ -282,12 +332,14 @@ public class Scalebar extends View {
     textPaint.setTypeface(mTypeface);
     textPaint.setTextSize(dpToPixels(mTextSizeDp));
 
+    LinearUnit baseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
+        new LinearUnit(LinearUnitId.FEET) : new LinearUnit(LinearUnitId.METERS);
     float maxScaleBarWidthPixels;
     if (mDrawInMapView) {
       int mapViewWidth = mMapView.getWidth();
       maxScaleBarWidthPixels = mapViewWidth > mMapView.getHeight() ? mapViewWidth / 4 : mapViewWidth / 3;
     } else {
-      maxScaleBarWidthPixels = getWidth();
+      maxScaleBarWidthPixels = getWidth() - widthOfUnitsString(null, textPaint);
     }
 
     // Calculate geodetic length of scalebar based on its maximum length on screen
@@ -301,7 +353,6 @@ public class Scalebar extends View {
     }
     builder.addPoint(p1);
     builder.addPoint(p2);
-    LinearUnit baseUnits = mUnits == UnitSystem.IMPERIAL ? new LinearUnit(LinearUnitId.FEET) : new LinearUnit(LinearUnitId.METERS);
     double maxLengthGeodetic = GeometryEngine.lengthGeodetic(builder.toGeometry(), baseUnits, GeodeticCurveType.GEODESIC);
     Log.d(TAG, "maxLengthGeodetic=" + maxLengthGeodetic);
 
@@ -313,56 +364,64 @@ public class Scalebar extends View {
     Log.d(TAG, "scalebarLengthPixels=" + scalebarLengthPixels);
 
     // Change units if the geodetic length is too big a number in the base units
-    LinearUnit displayUnits = ScalebarUtil.selectLinearUnit(scalebarLengthGeodetic, mUnits);
+    LinearUnit displayUnits = ScalebarUtil.selectLinearUnit(scalebarLengthGeodetic, mUnitSystem);
     if (displayUnits != baseUnits) {
       scalebarLengthGeodetic = baseUnits.convertTo(displayUnits, scalebarLengthGeodetic);
     }
 
     // Calculate screen coordinates of left, right top and bottom of the scalebar
-    float left;
-    float right;
+    float left = calculateLeftPos(mAlignment, scalebarLengthPixels, displayUnits, textPaint);
+    float right = left + scalebarLengthPixels;
     float bottom;
-    float top;
     if (mDrawInMapView) {
-      left = calculateLeftPos(mAlignment, scalebarLengthPixels, displayUnits, textPaint);
       bottom = mMapView.getHeight() - mAttributionTextHeight - (float) mMapView.getViewInsetBottom() -
           dpToPixels(mPadYDp) - dpToPixels(mTextSizeDp);
     } else {
-      left = 0;
       bottom = getHeight() - dpToPixels(mTextSizeDp);
     }
-    right = left + scalebarLengthPixels;
-    top = bottom - dpToPixels(mBarHeightDp);
+    float top = bottom - dpToPixels(mBarHeightDp);
 
     // Draw the scalebar
     mRenderer.drawScalebar(canvas, left, right, top, bottom, scalebarLengthGeodetic, displayUnits, textPaint);
   }
 
   /**
-   * Calculates the x-coordinate of the left hand end of the scalebar when it's embedded within the MapView.
+   * Calculates the x-coordinate of the left hand end of the scalebar.
    *
-   * @param alignment the alignment within the MapView
+   * @param alignment the alignment of the scalebar
    * @param width the width of the scalebar in pixels
    * @param displayUnits the units to be displayed
    * @param textPaint the Paint used to draw the text
    * @return the x-coordinate of the left hand end of the scalebar
    */
   private float calculateLeftPos(ScalebarAlignment alignment, float width, LinearUnit displayUnits, Paint textPaint) {
+    int left = 0;
+    int right = getWidth();
+    int padding = 0;
+    if (mDrawInMapView) {
+      left = mMapView.getLeft();
+      right = mMapView.getRight();
+      padding = dpToPixels(mPadXDp);
+    }
     switch (alignment) {
       case LEFT:
       default:
-        // position start of scalebar at left hand edge of MapView plus padding
-        return mMapView.getLeft() + dpToPixels(mPadXDp);
+        // Position start of scalebar at left hand edge of the view, plus padding (if any)
+        return left + padding;
       case RIGHT:
-        // position end of scalebar at right hand edge of MapView less padding and the width of the units text
-        Rect unitsBounds = new Rect();
-        String unitsText = displayUnits.getAbbreviation();
-        textPaint.getTextBounds(unitsText, 0, unitsText.length(), unitsBounds);
-        return mMapView.getRight() - dpToPixels(mPadXDp) - width - unitsBounds.right;
+        // Position end of scalebar at right hand edge of the view, less padding and the width of the units string
+        return right - padding - width - widthOfUnitsString(displayUnits, textPaint);
       case CENTER:
-        // position center of scalebar at center of MapView
-        return (mMapView.getRight() + mMapView.getLeft() - width) / 2;
+        // position center of scalebar at center of the view
+        return (right + left - width) / 2;
     }
+  }
+
+  private float widthOfUnitsString(LinearUnit displayUnits, Paint textPaint) {
+    Rect unitsBounds = new Rect();
+    String unitsText = ' ' + (displayUnits == null ? "mm" : displayUnits.getAbbreviation());
+    textPaint.getTextBounds(unitsText, 0, unitsText.length(), unitsBounds);
+    return unitsBounds.right;
   }
 
   /**
