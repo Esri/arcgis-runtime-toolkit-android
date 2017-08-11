@@ -61,10 +61,10 @@ android.libraryVariants.all { variant ->
         }
 
         description "Generates Javadoc for $variant.name."
-        source = variant.javaCompile.source
+        source = variant.javaCompiler.source
         title = null
         ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-        classpath = files(android.sourceSets.main.java.srcDirs, variant.javaCompile.classpath.files, ext.androidJar)
+        classpath = files(android.sourceSets.main.java.srcDirs, variant.javaCompiler.classpath.files, ext.androidJar)
         destinationDir = file("${project.docsDir}/${name}/doclava")
         failOnError = false
         options {
