@@ -54,6 +54,12 @@ public class Scalebar extends View {
 
   private static final int SHADOW_OFFSET_PIXELS = 2;
 
+  private static final ScalebarStyle DEFAULT_STYLE = ScalebarStyle.ALTERNATING_BAR;
+
+  private static final ScalebarAlignment DEFAULT_ALIGNMENT = ScalebarAlignment.LEFT;
+
+  private static final UnitSystem DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC;//TODO: base the default on device locale
+
   private static final int DEFAULT_FILL_COLOR = Color.LTGRAY | ALPHA_50_PC;
 
   private static final int DEFAULT_ALTERNATE_FILL_COLOR = Color.BLACK;
@@ -68,11 +74,13 @@ public class Scalebar extends View {
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT_BOLD;
 
-  private static final UnitSystem DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC;//TODO: base the default on device locale
+  private static final int DEFAULT_TEXT_SIZE_DP = 15;
 
-  private static final ScalebarAlignment DEFAULT_ALIGNMENT = ScalebarAlignment.LEFT;
+  private static final int DEFAULT_BAR_HEIGHT_DP = 10;
 
-  private static final ScalebarStyle DEFAULT_STYLE = ScalebarStyle.BAR;
+  private ScalebarAlignment mAlignment = DEFAULT_ALIGNMENT;
+
+  private UnitSystem mUnitSystem = DEFAULT_UNIT_SYSTEM;
 
   private int mFillColor = DEFAULT_FILL_COLOR;
 
@@ -88,17 +96,13 @@ public class Scalebar extends View {
 
   private Typeface mTypeface = DEFAULT_TYPEFACE;
 
-  private UnitSystem mUnitSystem = DEFAULT_UNIT_SYSTEM;
-
-  private ScalebarAlignment mAlignment = DEFAULT_ALIGNMENT;
-
   private ScalebarRenderer mRenderer;
 
-  private float mBarHeightDp = 10;
+  private float mTextSizeDp = DEFAULT_TEXT_SIZE_DP;
+
+  private float mBarHeightDp = DEFAULT_BAR_HEIGHT_DP;
 
   private float mLineWidthDp = mBarHeightDp / 4;
-
-  private float mTextSizeDp = 15;
 
   private float mCornerRadiusDp = mBarHeightDp / 5;
 
@@ -121,82 +125,17 @@ public class Scalebar extends View {
 
   public Scalebar(Context context, AttributeSet attrs) {
     super(context, attrs);
-    setStyle(DEFAULT_STYLE);
+    setStyle(getStyleFromAttributes(attrs));
     mAlignment = getAlignmentFromAttributes(attrs);
     mUnitSystem = getUnitSystemFromAttributes(attrs);
     mFillColor = getColorFromAttributes(context, attrs, "scalebar.fillColor", DEFAULT_FILL_COLOR);
     mAlternateFillColor = getColorFromAttributes(context, attrs, "scalebar.alternateFillColor", DEFAULT_ALTERNATE_FILL_COLOR);
     mLineColor = getColorFromAttributes(context, attrs, "scalebar.lineColor", DEFAULT_LINE_COLOR);
-  }
-
-  /**
-   * Gets the scalebar alignment from an AttributeSet object, or a default value if it's not specified there.
-   *
-   * @param attrs the AttributeSet object containing parameters and values to use
-   * @return the scalebar alignment
-   * @since 100.1.0
-   */
-  private ScalebarAlignment getAlignmentFromAttributes(AttributeSet attrs) {
-    ScalebarAlignment alignment = DEFAULT_ALIGNMENT;
-    String str = attrs.getAttributeValue(null, "scalebar.alignment");
-    if (str != null) {
-      try {
-        alignment = ScalebarAlignment.valueOf(str);
-      } catch (IllegalArgumentException e) {
-        // allow it to use the default value set above
-      }
-    }
-    return alignment;
-  }
-
-  /**
-   * Gets the scalebar unit system from an AttributeSet object, or a default value if it's not specified there.
-   *
-   * @param attrs the AttributeSet object containing parameters and values to use
-   * @return the scalebar unit system
-   * @since 100.1.0
-   */
-  private UnitSystem getUnitSystemFromAttributes(AttributeSet attrs) {
-    UnitSystem unitSystem = DEFAULT_UNIT_SYSTEM;
-    String str = attrs.getAttributeValue(null, "scalebar.unitSystem");
-    if (str != null) {
-      try {
-        unitSystem = UnitSystem.valueOf(str);
-      } catch (IllegalArgumentException e) {
-        // allow it to use the default value set above
-      }
-    }
-    return unitSystem;
-  }
-
-  /**
-   * Gets a color attribute from an AttributeSet object, or a default value if it's not specified there.
-   *
-   * @param context       the current execution Context
-   * @param attrs         the AttributeSet object containing parameters and values to use
-   * @param attributeName the name of the color attribute to get
-   * @param defaultValue  the default value to use if attributeName not found in attrs
-   * @return the color
-   * @since 100.0.0
-   */
-  private int getColorFromAttributes(Context context, AttributeSet attrs, String attributeName, int defaultValue) {
-    int color = 0;
-
-    // If the attribute value is a resource ID, get the color corresponding to that resource
-    int resId = attrs.getAttributeResourceValue(null, attributeName, -1);
-    if (resId >= 0) {
-      try {
-        color = context.getResources().getColor(resId);
-      } catch (Resources.NotFoundException e) {
-        // allow color to retain its initial value
-      }
-    }
-
-    // If that doesn't yield a color, treat the integer value of the attribute as a color
-    if (color == 0) {
-      color = attrs.getAttributeIntValue(null, attributeName, defaultValue);
-    }
-    return color;
+    mShadowColor = getColorFromAttributes(context, attrs, "scalebar.shadowColor", DEFAULT_SHADOW_COLOR);
+    mTextColor = getColorFromAttributes(context, attrs, "scalebar.textColor", DEFAULT_TEXT_COLOR);
+    mTextShadowColor = getColorFromAttributes(context, attrs, "scalebar.textShadowColor", DEFAULT_TEXT_SHADOW_COLOR);
+    mTextSizeDp = attrs.getAttributeIntValue(null,"scalebar.textSize", DEFAULT_TEXT_SIZE_DP);
+    mBarHeightDp = attrs.getAttributeIntValue(null,"scalebar.barHeight", DEFAULT_BAR_HEIGHT_DP);
   }
 
   public void addToMapView(MapView mapView) {
@@ -306,6 +245,8 @@ public class Scalebar extends View {
 
   public void setBarHeight(float barHeightDp) {
     mBarHeightDp = barHeightDp;
+    mLineWidthDp = Math.max(mBarHeightDp / 4, 1);
+    mCornerRadiusDp = Math.max(mBarHeightDp / 5, 1);
     postInvalidate();
   }
 
@@ -386,6 +327,96 @@ public class Scalebar extends View {
   }
 
   /**
+   * Gets the scalebar style from an AttributeSet object, or a default value if it's not specified there.
+   *
+   * @param attrs the AttributeSet object containing parameters and values to use
+   * @return the scalebar style
+   * @since 100.1.0
+   */
+  private ScalebarStyle getStyleFromAttributes(AttributeSet attrs) {
+    ScalebarStyle style = DEFAULT_STYLE;
+    String str = attrs.getAttributeValue(null, "scalebar.style");
+    if (str != null) {
+      try {
+        style = ScalebarStyle.valueOf(str);
+      } catch (IllegalArgumentException e) {
+        // allow it to use the default value set above
+      }
+    }
+    return style;
+  }
+
+  /**
+   * Gets the scalebar alignment from an AttributeSet object, or a default value if it's not specified there.
+   *
+   * @param attrs the AttributeSet object containing parameters and values to use
+   * @return the scalebar alignment
+   * @since 100.1.0
+   */
+  private ScalebarAlignment getAlignmentFromAttributes(AttributeSet attrs) {
+    ScalebarAlignment alignment = DEFAULT_ALIGNMENT;
+    String str = attrs.getAttributeValue(null, "scalebar.alignment");
+    if (str != null) {
+      try {
+        alignment = ScalebarAlignment.valueOf(str);
+      } catch (IllegalArgumentException e) {
+        // allow it to use the default value set above
+      }
+    }
+    return alignment;
+  }
+
+  /**
+   * Gets the scalebar unit system from an AttributeSet object, or a default value if it's not specified there.
+   *
+   * @param attrs the AttributeSet object containing parameters and values to use
+   * @return the scalebar unit system
+   * @since 100.1.0
+   */
+  private UnitSystem getUnitSystemFromAttributes(AttributeSet attrs) {
+    UnitSystem unitSystem = DEFAULT_UNIT_SYSTEM;
+    String str = attrs.getAttributeValue(null, "scalebar.unitSystem");
+    if (str != null) {
+      try {
+        unitSystem = UnitSystem.valueOf(str);
+      } catch (IllegalArgumentException e) {
+        // allow it to use the default value set above
+      }
+    }
+    return unitSystem;
+  }
+
+  /**
+   * Gets a color attribute from an AttributeSet object, or a default value if it's not specified there.
+   *
+   * @param context       the current execution Context
+   * @param attrs         the AttributeSet object containing parameters and values to use
+   * @param attributeName the name of the color attribute to get
+   * @param defaultValue  the default value to use if attributeName not found in attrs
+   * @return the color
+   * @since 100.0.0
+   */
+  private int getColorFromAttributes(Context context, AttributeSet attrs, String attributeName, int defaultValue) {
+    int color = 0;
+
+    // If the attribute value is a resource ID, get the color corresponding to that resource
+    int resId = attrs.getAttributeResourceValue(null, attributeName, -1);
+    if (resId >= 0) {
+      try {
+        color = context.getResources().getColor(resId);
+      } catch (Resources.NotFoundException e) {
+        // allow color to retain its initial value
+      }
+    }
+
+    // If that doesn't yield a color, treat the integer value of the attribute as a color
+    if (color == 0) {
+      color = attrs.getAttributeIntValue(null, attributeName, defaultValue);
+    }
+    return color;
+  }
+
+  /**
    * Calculates the x-coordinate of the left hand end of the scalebar.
    *
    * @param alignment the alignment of the scalebar
@@ -458,6 +489,32 @@ public class Scalebar extends View {
     public abstract void drawScalebar(Canvas canvas, float left, float right, float top, float bottom,
         double geodeticLength, LinearUnit displayUnits, Paint textPaint);
 
+    /**
+     * Draw a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
+     *
+     * @param canvas
+     * @param left
+     * @param right
+     * @param top
+     * @param bottom
+     * @param barColor
+     */
+    protected void drawBarAndShadow(Canvas canvas, float left, float right, float top, float bottom, int barColor) {
+      // Draw the shadow of the bar, offset slightly from where the actual bar is drawn below
+      RectF shadowRect = new RectF(left, top, right, bottom);
+      int offset = SHADOW_OFFSET_PIXELS + (dpToPixels(mLineWidthDp) / 2);
+      shadowRect.offset(offset, offset);
+      Paint paint = new Paint();
+      paint.setColor(mShadowColor);
+      paint.setStyle(Paint.Style.FILL);
+      canvas.drawRoundRect(shadowRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
+
+      // Now draw the bar
+      RectF barRect = new RectF(left, top, right, bottom);
+      paint.setColor(barColor);
+      canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
+    }
+
     // Used by GRADUATED_LINE and ALTERNATING_BAR
     //TODO: this algorithm is copied from the iOS implementation; it's a bit crude but let's stick with it unless I find
     // a test case it doesn't work for
@@ -485,29 +542,22 @@ public class Scalebar extends View {
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
         LinearUnit displayUnits, Paint textPaint) {
 
-      // Draw a solid bar
-      RectF rect = new RectF(left, top, right, bottom);
-      Paint paint = new Paint();
-      paint.setColor(mFillColor);
-      paint.setStyle(Paint.Style.FILL);
-      canvas.drawRoundRect(rect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
+      // Draw a solid bar and its shadow
+      drawBarAndShadow(canvas, left, right, top, bottom, mFillColor);
 
       // Draw line round the outside
-      paint = new Paint();
+      RectF barRect = new RectF(left, top, right, bottom);
+      Paint paint = new Paint();
+      paint.setStyle(Paint.Style.FILL);
       paint.setColor(mLineColor);
-      //paint.setShadowLayer(5, 5, 5, mShadowColor); //seems to only work on text
       paint.setStyle(Paint.Style.STROKE);
       paint.setStrokeWidth(dpToPixels(mLineWidthDp));
-      canvas.drawRoundRect(rect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
+      canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
 
-      // Draw text
-      paint = new Paint();
-      paint.setColor(mTextColor);
-      paint.setShadowLayer(2, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, mTextShadowColor);
-      paint.setTypeface(mTypeface);
-      paint.setTextSize(dpToPixels(mTextSizeDp));
-      paint.setTextAlign(Paint.Align.CENTER);
-      canvas.drawText(geodeticLength + " m", left + ((right - left) / 2), bottom + dpToPixels(mTextSizeDp), paint);
+      // Draw label, centered on the center of the bar
+      String label = ScalebarUtil.labelString(geodeticLength) + " " + displayUnits.getAbbreviation();
+      textPaint.setTextAlign(Paint.Align.CENTER);
+      canvas.drawText(label, left + ((right - left) / 2), bottom + dpToPixels(mTextSizeDp), textPaint);
     }
   }
 
@@ -520,21 +570,12 @@ public class Scalebar extends View {
       int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
       float segmentDisplayLength = barDisplayLength / numSegments;
 
-      // Draw the shadow of the bar using mShadowColor, offset slightly from where the actual bar is drawn below
-      RectF shadowRect = new RectF(left, top, right, bottom);
-      int offset = SHADOW_OFFSET_PIXELS + (dpToPixels(mLineWidthDp) / 2);
-      shadowRect.offset(offset, offset);
-      Paint paint = new Paint();
-      paint.setColor(mShadowColor);
-      paint.setStyle(Paint.Style.FILL);
-      canvas.drawRoundRect(shadowRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
-
-      // Draw a complete solid bar using mAlternateFillColor
-      RectF barRect = new RectF(left, top, right, bottom);
-      paint.setColor(mAlternateFillColor);
-      canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
+      // Draw a solid bar, using mAlternateFillColor, and its shadow
+      drawBarAndShadow(canvas, left, right, top, bottom, mAlternateFillColor);
 
       // Now draw every second segment on top of it using mFillColor
+      Paint paint = new Paint();
+      paint.setStyle(Paint.Style.FILL);
       paint.setColor(mFillColor);
       float xPos = left + segmentDisplayLength;
       for (int i = 1; i < numSegments; i += 2) { //TODO: i is redundant
@@ -544,6 +585,7 @@ public class Scalebar extends View {
       }
 
       // Draw line round the outside of the complete bar
+      RectF barRect = new RectF(left, top, right, bottom);
       paint = new Paint();
       paint.setColor(mLineColor);
       paint.setStyle(Paint.Style.STROKE);
@@ -561,7 +603,7 @@ public class Scalebar extends View {
       textPaint.setTextAlign(Paint.Align.LEFT);
       canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
 
-      // Draw a vertical line and a label at each segment boundary...
+      // Draw a vertical line and a label at each segment boundary
       xPos = left + segmentDisplayLength;
       double segmentGeodeticLength = geodeticLength / numSegments;
       textPaint.setTextAlign(Paint.Align.CENTER);
