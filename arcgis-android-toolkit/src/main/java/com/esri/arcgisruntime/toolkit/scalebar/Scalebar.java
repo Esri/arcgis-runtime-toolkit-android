@@ -310,7 +310,7 @@ public class Scalebar extends View {
       scalebarLengthGeodetic = baseUnits.convertTo(displayUnits, scalebarLengthGeodetic);
     }
 
-    // Calculate screen coordinates of left, right top and bottom of the scalebar
+    // Calculate screen coordinates of left, right, top and bottom of the scalebar
     float left = calculateLeftPos(mAlignment, scalebarLengthPixels, displayUnits, textPaint);
     float right = left + scalebarLengthPixels;
     float bottom;
@@ -420,12 +420,13 @@ public class Scalebar extends View {
    * Calculates the x-coordinate of the left hand end of the scalebar.
    *
    * @param alignment the alignment of the scalebar
-   * @param width the width of the scalebar in pixels
+   * @param scalebarLength the length of the scalebar in pixels
    * @param displayUnits the units to be displayed
    * @param textPaint the Paint used to draw the text
    * @return the x-coordinate of the left hand end of the scalebar
    */
-  private float calculateLeftPos(ScalebarAlignment alignment, float width, LinearUnit displayUnits, Paint textPaint) {
+  private float calculateLeftPos(
+      ScalebarAlignment alignment, float scalebarLength, LinearUnit displayUnits, Paint textPaint) {
     int left = 0;
     int right = getWidth();
     int padding = 0;
@@ -440,11 +441,13 @@ public class Scalebar extends View {
         // Position start of scalebar at left hand edge of the view, plus padding (if any)
         return left + padding;
       case RIGHT:
-        // Position end of scalebar at right hand edge of the view, less padding and the width of the units string
-        return right - padding - width - widthOfUnitsString(displayUnits, textPaint);
+        // Position end of scalebar at right hand edge of the view, less padding and the width of the units string (if
+        // required)
+        return right - padding - dpToPixels(mLineWidthDp) - scalebarLength -
+            mRenderer.calculateExtraSpaceForUnitsWhenRightAligned(displayUnits, textPaint);
       case CENTER:
         // position center of scalebar at center of the view
-        return (right + left - width) / 2;
+        return (right + left - scalebarLength) / 2;
     }
   }
 
@@ -488,6 +491,11 @@ public class Scalebar extends View {
 
     public abstract void drawScalebar(Canvas canvas, float left, float right, float top, float bottom,
         double geodeticLength, LinearUnit displayUnits, Paint textPaint);
+
+    // Subclasses need to override this they write the units to the right of the end of the scalebar
+    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+      return 0;
+    }
 
     /**
      * Draw a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
@@ -562,6 +570,11 @@ public class Scalebar extends View {
   }
 
   private final class AlternatingBarRenderer extends ScalebarRenderer {
+
+    @Override
+    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+      return widthOfUnitsString(displayUnits, textPaint);
+    }
 
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
         LinearUnit displayUnits, Paint textPaint) {
