@@ -1,5 +1,31 @@
 # ArcGIS Runtime Toolkit Android
 
+## Usage
+
+```groovy
+repositories {
+    jcenter()
+    // Our internal artifactory repository
+    maven { url 'http://android:8080/artifactory/arcgis' }
+}
+
+dependencies {
+    // use compile for pre Android 3.0
+    implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.1.0-SNAPSHOT"
+}
+```
+
+## Build the Toolkit AAR
+
+```groovy
+$ ./gradlew clean assembleDebug --info
+```
+
+## Publish the Toollkit AAR
+
+```groovy
+$ ./gradlew clean artifactoryPublish --info
+```
 
 ## Issues
 Find a bug or want to request a new feature enhancement?  Please let us know by submitting an issue.
