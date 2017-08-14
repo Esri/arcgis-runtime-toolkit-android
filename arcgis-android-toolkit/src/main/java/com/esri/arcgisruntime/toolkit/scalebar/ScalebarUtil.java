@@ -50,12 +50,18 @@ public class ScalebarUtil {
    *
    * @param maxLength the maximum length
    * @param unit indicates the unit of length being used: meters or feet
+   * @param isSegmented true if the scalebar is segmented
    * @return the "best length", the highest "nice" number less than or equal to maxLength
    * @since 100.1.0
    */
-  public static double calculateBestScalebarLength(double maxLength, LinearUnit unit) {
+  public static double calculateBestScalebarLength(double maxLength, LinearUnit unit, boolean isSegmented) {
     double magnitude = calculateMagnitude(maxLength);
     double multiplier = selectMultiplierData(maxLength, magnitude).getMultiplier();
+
+    // If the scalebar isn't segmented, force the multiplier to be an integer if it's > 2.0
+    if (!isSegmented && multiplier > 2.0) {
+      multiplier = Math.floor(multiplier);
+    }
     double bestLength = multiplier * magnitude;
 
     // If using imperial units, check if the number of feet is greater than the threshold for using feet
@@ -63,11 +69,12 @@ public class ScalebarUtil {
       LinearUnit displayUnits = selectLinearUnit(bestLength, UnitSystem.IMPERIAL);
       if (unit.getLinearUnitId() != displayUnits.getLinearUnitId()) {
         // Recalculate the best length in miles
-        bestLength = calculateBestScalebarLength(unit.convertTo(displayUnits, maxLength), displayUnits);
+        bestLength = calculateBestScalebarLength(unit.convertTo(displayUnits, maxLength), displayUnits, isSegmented);
         // But convert that back to feet because the caller is using feet
         return displayUnits.convertTo(unit, bestLength);
       }
     }
+
     return bestLength;
   }
 

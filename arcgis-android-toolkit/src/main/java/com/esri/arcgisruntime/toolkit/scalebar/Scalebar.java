@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -234,6 +235,12 @@ public class Scalebar extends View {
       case ALTERNATING_BAR:
         mRenderer = new AlternatingBarRenderer();
         break;
+      case LINE:
+        mRenderer = new LineRenderer();
+        break;
+      case GRADUATED_LINE:
+        mRenderer = new GraduatedLineRenderer();
+        break;
     }
     postInvalidate();
   }
@@ -298,7 +305,8 @@ public class Scalebar extends View {
     Log.d(TAG, "maxLengthGeodetic=" + maxLengthGeodetic);
 
     // Reduce length to make its geodetic length a nice number
-    double scalebarLengthGeodetic = ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits);
+    double scalebarLengthGeodetic =
+        ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits, mRenderer.isSegmented());
     Log.d(TAG, "scalebarLengthGeodetic=" + scalebarLengthGeodetic);
     float scalebarLengthPixels = (float) (maxScaleBarWidthPixels * scalebarLengthGeodetic / maxLengthGeodetic);
     Log.d(TAG, "maxScaleBarWidthPixels=" + maxScaleBarWidthPixels);
@@ -468,6 +476,8 @@ public class Scalebar extends View {
     double pixels = dp * mDisplayDensity;
     return (int) (pixels + Integer.signum((int) pixels) * 0.5);
   }
+
+  //TODO: do we need this?
   private int pixelsToDp(double pixels) {
     double dp = pixels / mDisplayDensity;
     return (int) (dp + Integer.signum((int) dp) * 0.5);
@@ -492,7 +502,12 @@ public class Scalebar extends View {
     public abstract void drawScalebar(Canvas canvas, float left, float right, float top, float bottom,
         double geodeticLength, LinearUnit displayUnits, Paint textPaint);
 
-    // Subclasses need to override this they write the units to the right of the end of the scalebar
+    // Subclasses need to override this if their scalebar is segmented
+    public boolean isSegmented() {
+      return false;
+    }
+
+    // Subclasses need to override this if they write the units to the right of the end of the scalebar
     public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
       return 0;
     }
@@ -521,6 +536,42 @@ public class Scalebar extends View {
       RectF barRect = new RectF(left, top, right, bottom);
       paint.setColor(barColor);
       canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
+    }
+
+    /**
+     * Draw a line and its shadow, including the ticks at each end. Used by LineRenderer and GraduatedLineRenderer.
+     *
+     * @param canvas
+     * @param left
+     * @param right
+     * @param top
+     * @param bottom
+     */
+    protected void drawLineAndShadow(Canvas canvas, float left, float right, float top, float bottom) {
+      // Create a path to draw the left-hand tick, the line itself and the right-hand tick
+      Path linePath = new Path();
+      linePath.moveTo(left, top);
+      linePath.lineTo(left, bottom);
+      linePath.lineTo(right, bottom);
+      linePath.lineTo(right, top);
+      linePath.setLastPoint(right, top);
+
+      // Create a copy to be the path of the shadow, offset slightly from the path of the line
+      Path shadowPath = new Path(linePath);
+      shadowPath.offset(SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS);
+
+      // Draw the shadow
+      Paint paint = new Paint();
+      paint.setColor(mShadowColor);
+      paint.setStyle(Paint.Style.STROKE);
+      paint.setStrokeWidth(dpToPixels(mLineWidthDp));
+      paint.setStrokeCap(Paint.Cap.ROUND);
+      paint.setStrokeJoin(Paint.Join.ROUND);
+      canvas.drawPath(shadowPath, paint);
+
+      // Now draw the line on top of the shadow
+      paint.setColor(mLineColor);
+      canvas.drawPath(linePath, paint);
     }
 
     // Used by GRADUATED_LINE and ALTERNATING_BAR
@@ -553,16 +604,15 @@ public class Scalebar extends View {
       // Draw a solid bar and its shadow
       drawBarAndShadow(canvas, left, right, top, bottom, mFillColor);
 
-      // Draw line round the outside
+      // Draw a line round the outside
       RectF barRect = new RectF(left, top, right, bottom);
       Paint paint = new Paint();
-      paint.setStyle(Paint.Style.FILL);
       paint.setColor(mLineColor);
       paint.setStyle(Paint.Style.STROKE);
       paint.setStrokeWidth(dpToPixels(mLineWidthDp));
       canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
 
-      // Draw label, centered on the center of the bar
+      // Draw the label, centered on the center of the bar
       String label = ScalebarUtil.labelString(geodeticLength) + " " + displayUnits.getAbbreviation();
       textPaint.setTextAlign(Paint.Align.CENTER);
       canvas.drawText(label, left + ((right - left) / 2), bottom + dpToPixels(mTextSizeDp), textPaint);
@@ -572,6 +622,11 @@ public class Scalebar extends View {
   private final class AlternatingBarRenderer extends ScalebarRenderer {
 
     @Override
+    public boolean isSegmented() {
+      return true;
+    }
+
+    @Override
     public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
       return widthOfUnitsString(displayUnits, textPaint);
     }
@@ -579,6 +634,7 @@ public class Scalebar extends View {
     public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
         LinearUnit displayUnits, Paint textPaint) {
 
+      // Calculate the number of segments in the bar
       float barDisplayLength = right - left;
       int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
       float segmentDisplayLength = barDisplayLength / numSegments;
@@ -597,7 +653,7 @@ public class Scalebar extends View {
         xPos += (2 * segmentDisplayLength);
       }
 
-      // Draw line round the outside of the complete bar
+      // Draw a line round the outside of the complete bar
       RectF barRect = new RectF(left, top, right, bottom);
       paint = new Paint();
       paint.setColor(mLineColor);
@@ -605,12 +661,12 @@ public class Scalebar extends View {
       paint.setStrokeWidth(dpToPixels(mLineWidthDp));
       canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
 
-      // Draw label at the start of the bar
+      // Draw a label at the start of the bar
       float yPosText = bottom + dpToPixels(mTextSizeDp);
       textPaint.setTextAlign(Paint.Align.LEFT);
       canvas.drawText("0", left, yPosText, textPaint);
 
-      // Draw label at the end of the bar
+      // Draw a label at the end of the bar
       textPaint.setTextAlign(Paint.Align.RIGHT);
       canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
       textPaint.setTextAlign(Paint.Align.LEFT);
@@ -627,6 +683,83 @@ public class Scalebar extends View {
       }
     }
 
+  }
+
+  private final class LineRenderer extends ScalebarRenderer {
+
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+        LinearUnit displayUnits, Paint textPaint) {
+
+      // Draw the line and its shadow, including the ticks at each end
+      drawLineAndShadow(canvas, left, right, top, bottom);
+
+      // Draw the label, centered on the center of the line
+      String label = ScalebarUtil.labelString(geodeticLength) + " " + displayUnits.getAbbreviation();
+      textPaint.setTextAlign(Paint.Align.CENTER);
+      canvas.drawText(label, left + ((right - left) / 2), bottom + dpToPixels(mTextSizeDp), textPaint);
+    }
+  }
+
+  private final class GraduatedLineRenderer extends ScalebarRenderer {
+
+    @Override
+    public boolean isSegmented() {
+      return true;
+    }
+
+    @Override
+    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+      return widthOfUnitsString(displayUnits, textPaint);
+    }
+
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+        LinearUnit displayUnits, Paint textPaint) {
+
+      // Calculate the number of segments in the line
+      float barDisplayLength = right - left;
+      int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
+      float segmentDisplayLength = barDisplayLength / numSegments;
+
+      // Create Paint for drawing the ticks
+      Paint tickPaint = new Paint();
+      tickPaint.setStyle(Paint.Style.STROKE);
+      tickPaint.setStrokeWidth(dpToPixels(mLineWidthDp));
+      tickPaint.setStrokeCap(Paint.Cap.ROUND);
+
+      // Draw a tick, its shadow and a label at each segment boundary
+      float xPos = left + segmentDisplayLength;
+      float yPos = top + ((bottom - top) / 4); // segment ticks are 3/4 the height of the ticks at the start and end
+      double segmentGeodeticLength = geodeticLength / numSegments;
+      float yPosText = bottom + dpToPixels(mTextSizeDp);
+      textPaint.setTextAlign(Paint.Align.CENTER);
+      for (int segNo = 1; segNo < numSegments; segNo++) {
+        // Draw the shadow, offset slightly from where the tick is drawn below
+        tickPaint.setColor(mShadowColor);
+        canvas.drawLine(xPos + SHADOW_OFFSET_PIXELS, yPos + SHADOW_OFFSET_PIXELS,
+            xPos + SHADOW_OFFSET_PIXELS, bottom + SHADOW_OFFSET_PIXELS, tickPaint);
+
+        // Draw the line on top of the shadow
+        tickPaint.setColor(mLineColor);
+        canvas.drawLine(xPos, yPos, xPos, bottom, tickPaint);
+
+        // Draw the label
+        canvas.drawText(ScalebarUtil.labelString(segmentGeodeticLength * segNo), xPos, yPosText, textPaint);
+        xPos += segmentDisplayLength;
+      }
+
+      // Draw the line and its shadow, including the ticks at each end
+      drawLineAndShadow(canvas, left, right, top, bottom);
+
+      // Draw a label at the start of the line
+      textPaint.setTextAlign(Paint.Align.LEFT);
+      canvas.drawText("0", left, yPosText, textPaint);
+
+      // Draw a label at the end of the line
+      textPaint.setTextAlign(Paint.Align.RIGHT);
+      canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
+      textPaint.setTextAlign(Paint.Align.LEFT);
+      canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
+    }
   }
 
 }
