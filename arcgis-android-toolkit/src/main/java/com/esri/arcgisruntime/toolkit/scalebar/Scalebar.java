@@ -241,6 +241,9 @@ public class Scalebar extends View {
       case GRADUATED_LINE:
         mRenderer = new GraduatedLineRenderer();
         break;
+      case DUAL_UNIT_LINE:
+        mRenderer = new DualUnitLineRenderer();
+        break;
     }
     postInvalidate();
   }
@@ -484,11 +487,11 @@ public class Scalebar extends View {
   }
 
   public enum ScalebarStyle {
+    BAR,
+    ALTERNATING_BAR,
     LINE,
     GRADUATED_LINE,
-    DUAL_UNIT_LINE,
-    BAR,
-    ALTERNATING_BAR;
+    DUAL_UNIT_LINE;
   }
 
   public enum ScalebarAlignment {
@@ -759,6 +762,86 @@ public class Scalebar extends View {
       canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
       textPaint.setTextAlign(Paint.Align.LEFT);
       canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
+    }
+  }
+
+  private final class DualUnitLineRenderer extends ScalebarRenderer {
+
+    @Override
+    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+      return widthOfUnitsString(displayUnits, textPaint);
+    }
+
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+        LinearUnit displayUnits, Paint textPaint) {
+      Log.d(TAG, "DualUnitLineRenderer.drawScalebar() left=" + left);
+      Log.d(TAG, "geodeticLength=" + geodeticLength);
+
+      // Calculate scalebar length in the secondary units
+      LinearUnit secondaryBaseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
+          new LinearUnit(LinearUnitId.METERS) : new LinearUnit(LinearUnitId.FEET);
+      double fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, geodeticLength);
+      Log.d(TAG, "fullLengthInSecondaryUnits=" + fullLengthInSecondaryUnits);
+
+      // Reduce the secondary units length to make it a nice number
+      double secondaryUnitsLength =
+          ScalebarUtil.calculateBestScalebarLength(fullLengthInSecondaryUnits, secondaryBaseUnits, false);
+      Log.d(TAG, "secondaryUnitsLength=" + secondaryUnitsLength);
+      float barDisplayLength = right - left;
+      float xPosSecondaryTick = left + (float) (barDisplayLength * secondaryUnitsLength / fullLengthInSecondaryUnits);
+
+      // Change units if secondaryUnitsLength is too big a number in the base units
+      UnitSystem secondaryUnitSystem = mUnitSystem == UnitSystem.IMPERIAL ? UnitSystem.METRIC : UnitSystem.IMPERIAL;
+      LinearUnit secondaryDisplayUnits = ScalebarUtil.selectLinearUnit(secondaryUnitsLength, secondaryUnitSystem);
+      if (secondaryDisplayUnits != secondaryBaseUnits) {
+        secondaryUnitsLength = secondaryBaseUnits.convertTo(secondaryDisplayUnits, secondaryUnitsLength);
+        Log.d(TAG, "secondaryUnitsLength=" + secondaryUnitsLength);
+      }
+
+      // Create Paint for drawing the lines
+      Paint paint = new Paint();
+      paint.setStyle(Paint.Style.STROKE);
+      paint.setStrokeWidth(dpToPixels(mLineWidthDp));
+      paint.setStrokeCap(Paint.Cap.ROUND);
+      paint.setStrokeJoin(Paint.Join.ROUND);
+
+      // Create a path to draw the line and the ticks
+      float yPosLine = (top + bottom) / 2;
+      Path linePath = new Path();
+      linePath.moveTo(left, top);
+      linePath.lineTo(left, bottom); // draw big tick at left
+      linePath.moveTo(xPosSecondaryTick, yPosLine); // move to top of secondary tick
+      linePath.lineTo(xPosSecondaryTick, bottom); // draw secondary tick
+      linePath.moveTo(left, yPosLine); // move to start of horizontal line
+      linePath.lineTo(right, yPosLine); // draw the line
+      linePath.lineTo(right, top); // draw tick at right
+      linePath.setLastPoint(right, top);
+
+      // Create a copy of the line path to be the path of its shadow, offset slightly from the line path
+      Path shadowPath = new Path(linePath);
+      shadowPath.offset(SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS);
+
+      // Draw the shadow
+      paint.setColor(mShadowColor);
+      canvas.drawPath(shadowPath, paint);
+
+      // Draw the line and the ticks
+      paint.setColor(mLineColor);
+      canvas.drawPath(linePath, paint);
+
+      // Draw the primary units label above the tick at the right hand end
+      float yPosText = top;
+      textPaint.setTextAlign(Paint.Align.RIGHT);
+      canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
+      textPaint.setTextAlign(Paint.Align.LEFT);
+      canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
+
+      // Draw the secondary units label below its tick
+      yPosText = bottom + dpToPixels(mTextSizeDp);
+      textPaint.setTextAlign(Paint.Align.RIGHT);
+      canvas.drawText(ScalebarUtil.labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint);
+      textPaint.setTextAlign(Paint.Align.LEFT);
+      canvas.drawText(' ' + secondaryDisplayUnits.getAbbreviation(), xPosSecondaryTick, yPosText, textPaint);
     }
   }
 
