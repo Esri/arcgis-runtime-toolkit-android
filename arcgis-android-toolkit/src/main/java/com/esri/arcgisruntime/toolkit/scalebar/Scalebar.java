@@ -36,15 +36,15 @@ import com.esri.arcgisruntime.geometry.LinearUnitId;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.PolylineBuilder;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.mapping.view.NavigationChangedEvent;
-import com.esri.arcgisruntime.mapping.view.NavigationChangedListener;
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedEvent;
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener;
+import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 
 /**
- * Created by alan0001 on 05/07/2017.
+ * Displays a bar or line indicating the current scale of a MapView.
+ *
+ * @since 100.1.0
  */
-
 public class Scalebar extends View {
 
   private static final String TAG = "Scalebar";
@@ -55,11 +55,11 @@ public class Scalebar extends View {
 
   private static final int SHADOW_OFFSET_PIXELS = 2;
 
-  private static final ScalebarStyle DEFAULT_STYLE = ScalebarStyle.ALTERNATING_BAR;
+  private static final Style DEFAULT_STYLE = Style.ALTERNATING_BAR;
 
-  private static final ScalebarAlignment DEFAULT_ALIGNMENT = ScalebarAlignment.LEFT;
+  private static final Alignment DEFAULT_ALIGNMENT = Alignment.LEFT;
 
-  private static final UnitSystem DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC;//TODO: base the default on device locale
+  private static final UnitSystem DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC;
 
   private static final int DEFAULT_FILL_COLOR = Color.LTGRAY | ALPHA_50_PC;
 
@@ -79,7 +79,9 @@ public class Scalebar extends View {
 
   private static final int DEFAULT_BAR_HEIGHT_DP = 10;
 
-  private ScalebarAlignment mAlignment = DEFAULT_ALIGNMENT;
+  private Style mStyle;
+
+  private Alignment mAlignment = DEFAULT_ALIGNMENT;
 
   private UnitSystem mUnitSystem = DEFAULT_UNIT_SYSTEM;
 
@@ -97,8 +99,6 @@ public class Scalebar extends View {
 
   private Typeface mTypeface = DEFAULT_TYPEFACE;
 
-  private ScalebarRenderer mRenderer;
-
   private float mTextSizeDp = DEFAULT_TEXT_SIZE_DP;
 
   private float mBarHeightDp = DEFAULT_BAR_HEIGHT_DP;
@@ -113,24 +113,60 @@ public class Scalebar extends View {
 
   private MapView mMapView;
 
+  private ScalebarRenderer mRenderer;
+
   private volatile int mAttributionTextHeight = 0;
 
   private float mDisplayDensity;
 
   private boolean mDrawInMapView = false;
 
+  private ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
+    @Override
+    public void viewpointChanged(ViewpointChangedEvent viewpointChangedEvent) {
+      // Invalidate the Scalebar view when the MapView viewpoint changes
+      Log.d(TAG,"viewpointChanged");
+      postInvalidate();
+    }
+  };
+
+  private OnLayoutChangeListener mAttributionViewLayoutChangeListener = new OnLayoutChangeListener() {
+    @Override
+    public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+        int oldRight, int oldBottom) {
+      // Recalculate the attribution text height and invalidate the Scalebar view when the bounds of the attribution
+      // view change
+      mAttributionTextHeight = bottom - top;
+      postInvalidate();
+    }
+  };
+
+  /**
+   * Constructs a Scalebar programmatically.
+   * TODO: mention the workflow(s)
+   *
+   * @param context the current execution Context
+   * TODO: add @since tags throughout????
+   */
   public Scalebar(Context context) {
     super(context);
     setStyle(DEFAULT_STYLE);
   }
 
+  /**
+   * Constructor that's called when inflating a Scalebar from XML.
+   *
+   * @param context the current execution Context
+   * @param attrs the attributes of the XML tag that is inflating the view
+   */
   public Scalebar(Context context, AttributeSet attrs) {
     super(context, attrs);
     setStyle(getStyleFromAttributes(attrs));
     mAlignment = getAlignmentFromAttributes(attrs);
     mUnitSystem = getUnitSystemFromAttributes(attrs);
     mFillColor = getColorFromAttributes(context, attrs, "scalebar.fillColor", DEFAULT_FILL_COLOR);
-    mAlternateFillColor = getColorFromAttributes(context, attrs, "scalebar.alternateFillColor", DEFAULT_ALTERNATE_FILL_COLOR);
+    mAlternateFillColor =
+        getColorFromAttributes(context, attrs, "scalebar.alternateFillColor", DEFAULT_ALTERNATE_FILL_COLOR);
     mLineColor = getColorFromAttributes(context, attrs, "scalebar.lineColor", DEFAULT_LINE_COLOR);
     mShadowColor = getColorFromAttributes(context, attrs, "scalebar.shadowColor", DEFAULT_SHADOW_COLOR);
     mTextColor = getColorFromAttributes(context, attrs, "scalebar.textColor", DEFAULT_TEXT_COLOR);
@@ -139,96 +175,42 @@ public class Scalebar extends View {
     mBarHeightDp = attrs.getAttributeIntValue(null,"scalebar.barHeight", DEFAULT_BAR_HEIGHT_DP);
   }
 
+  /**
+   * Adds this Scalebar to the given MapView.
+   *
+   * @param mapView the MapView
+   * @throws IllegalArgumentException if mapView is null
+   */
   public void addToMapView(MapView mapView) {
+    ToolkitUtil.throwIfNull(mapView, "mapView");
     setupMapView(mapView);
     mMapView.addView(this, new ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
         android.view.ViewGroup.LayoutParams.MATCH_PARENT));
     mDrawInMapView = true;
   }
 
+  /**
+   * Binds this Scalebar to the given MapView.
+   *
+   * @param mapView the MapView
+   * @throws IllegalArgumentException if mapView is null
+   */
   public void bindToMapView(MapView mapView) {
+    ToolkitUtil.throwIfNull(mapView, "mapView");
     setupMapView(mapView);
     mDrawInMapView = false;
-//    mBarHeightDp = pixelsToDp(getHeight()) * 10 / 30; // beware can evaluate as 0 when changing layout
-//    mTextSizeDp = pixelsToDp(getHeight()) * 15 / 30;
   }
 
-  private void setupMapView(MapView mapView) {
-    //TODO: remove listeners from old MapView?
-    mMapView = mapView;
-    mMapView.addViewpointChangedListener(new ViewpointChangedListener() {
-      @Override
-      public void viewpointChanged(ViewpointChangedEvent viewpointChangedEvent) {
-        Log.d(TAG,"viewpointChanged");
-        postInvalidate();
-      }
-    });
-    mMapView.addNavigationChangedListener(new NavigationChangedListener() {
-      @Override
-      public void navigationChanged(NavigationChangedEvent navigationChangedEvent) {
-        Log.d(TAG,"navigationChanged");
-        postInvalidate();
-      }
-    });
-    mMapView.addAttributionViewLayoutChangeListener(new OnLayoutChangeListener() {
-      @Override
-      public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-          int oldRight, int oldBottom) {
-        mAttributionTextHeight = bottom - top;
-        Log.d(TAG,"attributionViewLayoutChanged mAttributionTextHeight=" + mAttributionTextHeight);
-        postInvalidate();
-      }
-    });
-    mDisplayDensity = mMapView.getContext().getResources().getDisplayMetrics().density;
-  }
-
-  public void setFillColor(int color) {
-    mFillColor = color;
-    postInvalidate();
-  }
-
-  public void setAlternateFillColor(int color) {
-    mAlternateFillColor = color;
-    postInvalidate();
-  }
-
-  public void setLineColor(int color) {
-    mLineColor = color;
-    postInvalidate();
-  }
-
-  public void setShadowColor(int color) {
-    mShadowColor = color;
-    postInvalidate();
-  }
-
-  public void setTextColor(int color) {
-    mTextColor = color;
-    postInvalidate();
-  }
-
-  public void setTextShadowColor(int color) {
-    mTextShadowColor = color;
-    postInvalidate();
-  }
-
-  public void setTypeface(Typeface typeface) {
-    mTypeface = typeface;
-    postInvalidate();
-  }
-
-  public void setUnitSystem(UnitSystem unitSystem) {
-    mUnitSystem = unitSystem;
-    postInvalidate();
-  }
-
-  public void setAlignment(ScalebarAlignment alignment) {
-    mAlignment = alignment;
-    postInvalidate();
-  }
-
-  public void setStyle(ScalebarStyle style) {
-    switch (style) {
+  /**
+   * Sets the style of this Scalebar.
+   *
+   * @param style the style to set
+   * @throws IllegalArgumentException if style is null
+   */
+  public void setStyle(Style style) {
+    ToolkitUtil.throwIfNull(style, "style");
+    mStyle = style;
+    switch (mStyle) {
       case BAR:
         mRenderer = new BarRenderer();
         break;
@@ -248,11 +230,217 @@ public class Scalebar extends View {
     postInvalidate();
   }
 
+  /**
+   * Gets the style of this Scalebar. The default value is {@link Style#ALTERNATING_BAR}.
+   *
+   * @return the style
+   */
+  public Style getStyle() {
+    return mStyle;
+  }
+
+  /**
+   * Sets the alignment of this Scalebar.
+   *
+   * @param alignment the alignment to set
+   * @throws IllegalArgumentException if alignment is null
+   */
+  public void setAlignment(Alignment alignment) {
+    ToolkitUtil.throwIfNull(alignment, "alignment");
+    mAlignment = alignment;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the alignment of this Scalebar. The default value is {@link Alignment#LEFT}.
+   *
+   * @return the alignment
+   */
+  public Alignment getAlignment() {
+    return mAlignment;
+  }
+
+  /**
+   * Sets the unit system of this Scalebar.
+   *
+   * @param unitSystem the unit system to set
+   * @throws IllegalArgumentException if unitSystem is null
+   */
+  public void setUnitSystem(UnitSystem unitSystem) {
+    ToolkitUtil.throwIfNull(unitSystem, "unitSystem");
+    mUnitSystem = unitSystem;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the unit system of this Scalebar. The default value is {@link UnitSystem#METRIC}.
+   *
+   * @return the unit system
+   */
+  public UnitSystem getUnitSystem() {
+    return mUnitSystem;
+  }
+
+  /**
+   * Sets the fill color of this Scalebar. This is used to fill the bar when the style is BAR or ALTERNATING_BAR.
+   *
+   * @param color the color to set
+   */
+  public void setFillColor(int color) {
+    mFillColor = color;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the fill color of this Scalebar. The default is semi-transparent light gray.
+   *
+   * @return the fill color
+   */
+  public int getFillColor() {
+    return mFillColor;
+  }
+
+  /**
+   * Sets the alternate fill color of this Scalebar. This is used to fill alternate segments of the bar when the style
+   * is ALTERNATING_BAR.
+   *
+   * @param color the color to set
+   */
+  public void setAlternateFillColor(int color) {
+    mAlternateFillColor = color;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the alternate fill color of this Scalebar. The default is black.
+   *
+   * @return the alternate fill color
+   */
+  public int getAlternateFillColor() {
+    return mAlternateFillColor;
+  }
+
+  /**
+   * Sets the line color of this Scalebar.
+   *
+   * @param color the color to set
+   */
+  public void setLineColor(int color) {
+    mLineColor = color;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the line color of this Scalebar. The default is white.
+   *
+   * @return the line color
+   */
+  public int getLineColor() {
+    return mLineColor;
+  }
+
+  /**
+   * Sets the shadow color of this Scalebar. This is used for the shadow of the bar.
+   *
+   * @param color the color to set
+   */
+  public void setShadowColor(int color) {
+    mShadowColor = color;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the shadow color of this Scalebar. The default is semi-transparent black.
+   *
+   * @return the shadow color
+   */
+  public int getShadowColor() {
+    return mShadowColor;
+  }
+
+  /**
+   * Sets the text color of this Scalebar.
+   *
+   * @param color the color to set
+   */
+  public void setTextColor(int color) {
+    mTextColor = color;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the text color of this Scalebar. The default is black.
+   *
+   * @return the text color
+   */
+  public int getTextColor() {
+    return mTextColor;
+  }
+
+  /**
+   * Sets the text shadow color of this Scalebar. This is used for the shadow of the text.
+   *
+   * @param color the color to set
+   */
+  public void setTextShadowColor(int color) {
+    mTextShadowColor = color;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the text shadow color of this Scalebar. The default is white.
+   *
+   * @return the text shadow color
+   */
+  public int getTextShadowColor() {
+    return mTextShadowColor;
+  }
+
+  /**
+   * Sets the typeface of this Scalebar.
+   *
+   * @param typeface the typeface to set
+   * @throws IllegalArgumentException if typeface is null
+   */
+  public void setTypeface(Typeface typeface) {
+    ToolkitUtil.throwIfNull(typeface, "typeface");
+    mTypeface = typeface;
+    postInvalidate();
+  }
+
+  /**
+   * Gets the typeface of this Scalebar. The default is Typeface.DEFAULT_BOLD.
+   *
+   * @return the typeface
+   */
+  public Typeface getTypeface() {
+    return mTypeface;
+  }
+
+  /**
+   * Sets the text size of this Scalebar.
+   *
+   * @param textSizeDp the text size to set, in density-independent pixels
+   */
   public void setTextSize(float textSizeDp) {
     mTextSizeDp = textSizeDp;
     postInvalidate();
   }
 
+  /**
+   * Gets the text size of this Scalebar. The default is 15dp.
+   *
+   * @return the text size, in density-independent pixels
+   */
+  public float getTextSize() {
+    return mTextSizeDp;
+  }
+
+  /**
+   * Sets the bar height of this Scalebar. This is the height of the bar itself, not including the text.
+   *
+   * @param barHeightDp the bar height to set, in density-independent pixels
+   */
   public void setBarHeight(float barHeightDp) {
     mBarHeightDp = barHeightDp;
     mLineWidthDp = Math.max(mBarHeightDp / 4, 1);
@@ -260,17 +448,19 @@ public class Scalebar extends View {
     postInvalidate();
   }
 
-  public float getTextSize() {
-    return mTextSizeDp;
-  }
-
+  /**
+   * Gets the bar height of this Scalebar. The default is 10dp.
+   *
+   * @return the bar height, in density-independent pixels
+   */
   public float getBarHeight() {
     return mBarHeightDp;
   }
 
+  //TODO: allow user to specify useGeodeticCalculations = false ???????????????????????
+
   @Override
   protected void onDraw(Canvas canvas) {
-    Log.d(TAG, "onDraw");
     if (mMapView == null) {
       Log.d(TAG, "onDraw() bailing because MapView not set yet");
       return;
@@ -283,22 +473,23 @@ public class Scalebar extends View {
     textPaint.setTypeface(mTypeface);
     textPaint.setTextSize(dpToPixels(mTextSizeDp));
 
+    // Calculate maximum length of scalebar in pixels
     LinearUnit baseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
         new LinearUnit(LinearUnitId.FEET) : new LinearUnit(LinearUnitId.METERS);
-    float maxScaleBarWidthPixels;
+    float maxScaleBarLengthPixels;
     if (mDrawInMapView) {
       int mapViewWidth = mMapView.getWidth();
-      maxScaleBarWidthPixels = mapViewWidth > mMapView.getHeight() ? mapViewWidth / 4 : mapViewWidth / 3;
+      maxScaleBarLengthPixels = mapViewWidth > mMapView.getHeight() ? mapViewWidth / 4 : mapViewWidth / 3;
     } else {
-      maxScaleBarWidthPixels = getWidth() - widthOfUnitsString(null, textPaint);
+      maxScaleBarLengthPixels = getWidth() - widthOfUnitsString(null, textPaint);
     }
 
-    // Calculate geodetic length of scalebar based on its maximum length on screen
+    // Calculate geodetic length of scalebar based on its maximum length in pixels
     int centerX = (int) ((mMapView.getLeft() + mMapView.getRight()) / 2);
     int centerY = (int) ((mMapView.getTop() + mMapView.getBottom()) / 2);
     PolylineBuilder builder = new PolylineBuilder(mMapView.getSpatialReference());
-    Point p1 = mMapView.screenToLocation(new android.graphics.Point((int)(centerX - maxScaleBarWidthPixels / 2), centerY));
-    Point p2 = mMapView.screenToLocation(new android.graphics.Point((int)(centerX + maxScaleBarWidthPixels / 2), centerY));
+    Point p1 = mMapView.screenToLocation(new android.graphics.Point((int)(centerX - maxScaleBarLengthPixels / 2), centerY));
+    Point p2 = mMapView.screenToLocation(new android.graphics.Point((int)(centerX + maxScaleBarLengthPixels / 2), centerY));
     if (p1 == null || p2 == null) {
       return;
     }
@@ -311,8 +502,8 @@ public class Scalebar extends View {
     double scalebarLengthGeodetic =
         ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits, mRenderer.isSegmented());
     Log.d(TAG, "scalebarLengthGeodetic=" + scalebarLengthGeodetic);
-    float scalebarLengthPixels = (float) (maxScaleBarWidthPixels * scalebarLengthGeodetic / maxLengthGeodetic);
-    Log.d(TAG, "maxScaleBarWidthPixels=" + maxScaleBarWidthPixels);
+    float scalebarLengthPixels = (float) (maxScaleBarLengthPixels * scalebarLengthGeodetic / maxLengthGeodetic);
+    Log.d(TAG, "maxScaleBarLengthPixels=" + maxScaleBarLengthPixels);
     Log.d(TAG, "scalebarLengthPixels=" + scalebarLengthPixels);
 
     // Change units if the geodetic length is too big a number in the base units
@@ -338,18 +529,37 @@ public class Scalebar extends View {
   }
 
   /**
+   * Sets up the Scalebar to work with the given MapView.
+   *
+   * @param mapView the MapView
+   */
+  private void setupMapView(MapView mapView) {
+    // Remove listeners from old MapView
+    if (mMapView != null) {
+      mMapView.removeViewpointChangedListener(mViewpointChangedListener);
+      mMapView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+    }
+
+    // Add listeners to new MapView
+    mMapView = mapView;
+    mMapView.addViewpointChangedListener(mViewpointChangedListener);
+    mMapView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+    mDisplayDensity = mMapView.getContext().getResources().getDisplayMetrics().density;
+  }
+
+  /**
    * Gets the scalebar style from an AttributeSet object, or a default value if it's not specified there.
    *
-   * @param attrs the AttributeSet object containing parameters and values to use
+   * @param attrs the AttributeSet object containing attributes and values to use
    * @return the scalebar style
    * @since 100.1.0
    */
-  private ScalebarStyle getStyleFromAttributes(AttributeSet attrs) {
-    ScalebarStyle style = DEFAULT_STYLE;
+  private Style getStyleFromAttributes(AttributeSet attrs) {
+    Style style = DEFAULT_STYLE;
     String str = attrs.getAttributeValue(null, "scalebar.style");
     if (str != null) {
       try {
-        style = ScalebarStyle.valueOf(str);
+        style = Style.valueOf(str);
       } catch (IllegalArgumentException e) {
         // allow it to use the default value set above
       }
@@ -360,16 +570,16 @@ public class Scalebar extends View {
   /**
    * Gets the scalebar alignment from an AttributeSet object, or a default value if it's not specified there.
    *
-   * @param attrs the AttributeSet object containing parameters and values to use
+   * @param attrs the AttributeSet object containing attributes and values to use
    * @return the scalebar alignment
    * @since 100.1.0
    */
-  private ScalebarAlignment getAlignmentFromAttributes(AttributeSet attrs) {
-    ScalebarAlignment alignment = DEFAULT_ALIGNMENT;
+  private Alignment getAlignmentFromAttributes(AttributeSet attrs) {
+    Alignment alignment = DEFAULT_ALIGNMENT;
     String str = attrs.getAttributeValue(null, "scalebar.alignment");
     if (str != null) {
       try {
-        alignment = ScalebarAlignment.valueOf(str);
+        alignment = Alignment.valueOf(str);
       } catch (IllegalArgumentException e) {
         // allow it to use the default value set above
       }
@@ -380,7 +590,7 @@ public class Scalebar extends View {
   /**
    * Gets the scalebar unit system from an AttributeSet object, or a default value if it's not specified there.
    *
-   * @param attrs the AttributeSet object containing parameters and values to use
+   * @param attrs the AttributeSet object containing attributes and values to use
    * @return the scalebar unit system
    * @since 100.1.0
    */
@@ -401,7 +611,7 @@ public class Scalebar extends View {
    * Gets a color attribute from an AttributeSet object, or a default value if it's not specified there.
    *
    * @param context       the current execution Context
-   * @param attrs         the AttributeSet object containing parameters and values to use
+   * @param attrs         the AttributeSet object containing attributes and values to use
    * @param attributeName the name of the color attribute to get
    * @param defaultValue  the default value to use if attributeName not found in attrs
    * @return the color
@@ -436,8 +646,7 @@ public class Scalebar extends View {
    * @param textPaint the Paint used to draw the text
    * @return the x-coordinate of the left hand end of the scalebar
    */
-  private float calculateLeftPos(
-      ScalebarAlignment alignment, float scalebarLength, LinearUnit displayUnits, Paint textPaint) {
+  private float calculateLeftPos(Alignment alignment, float scalebarLength, LinearUnit displayUnits, Paint textPaint) {
     int left = 0;
     int right = getWidth();
     int padding = 0;
@@ -457,11 +666,18 @@ public class Scalebar extends View {
         return right - padding - dpToPixels(mLineWidthDp) - scalebarLength -
             mRenderer.calculateExtraSpaceForUnitsWhenRightAligned(displayUnits, textPaint);
       case CENTER:
-        // position center of scalebar at center of the view
+        // Position center of scalebar at center of the view
         return (right + left - scalebarLength) / 2;
     }
   }
 
+  /**
+   * Calculates the width of the units string.
+   *
+   * @param displayUnits the units to be displayed, or null if not known yet
+   * @param textPaint the Paint used to draw the text
+   * @return the width of the units string, in pixels
+   */
   private float widthOfUnitsString(LinearUnit displayUnits, Paint textPaint) {
     Rect unitsBounds = new Rect();
     String unitsText = ' ' + (displayUnits == null ? "mm" : displayUnits.getAbbreviation());
@@ -480,23 +696,67 @@ public class Scalebar extends View {
     return (int) (pixels + Integer.signum((int) pixels) * 0.5);
   }
 
-  //TODO: do we need this?
-  private int pixelsToDp(double pixels) {
-    double dp = pixels / mDisplayDensity;
-    return (int) (dp + Integer.signum((int) dp) * 0.5);
-  }
-
-  public enum ScalebarStyle {
+  /**
+   * Represents the style of scalebar to be displayed.
+   */
+  public enum Style {
+    /**
+     * A simple, non-segmented bar. A single label is displayed showing the distance represented by the length of the
+     * whole bar.
+     */
     BAR,
+
+    /**
+     * A bar split up into equal-length segments, with the colors of the segments alternating between the fill color and
+     * the alternate fill color. A label is displayed at the end of each segment, showing the distance represented by
+     * the length of the bar up to that point.
+     */
     ALTERNATING_BAR,
+
+    /**
+     * A simple, non-segmented line. A single label is displayed showing the distance represented by the length of the
+     * whole line.
+     */
     LINE,
+
+    /**
+     * A line split up into equal-length segments. A tick and a label are displayed at the end of each segment, showing
+     * the distance represented by the length of the line up to that point.
+     */
     GRADUATED_LINE,
+
+    /**
+     * A line showing distance in dual unit systems - metric and imperial. The primary unit system, as set by
+     * {@link #setUnitSystem(UnitSystem)}, is used to determine the length of the line. A label above the line shows the
+     * distance represented by the length of the whole line, in the primary unit system. A tick and another label are
+     * displayed below the line, showing distance in the other unit system.
+     */
     DUAL_UNIT_LINE;
   }
 
-  public enum ScalebarAlignment {
+  /**
+   * Represents the alignment of scalebar to be displayed.
+   */
+  public enum Alignment {
+    /**
+     * The scalebar is left-aligned, meaning that the left hand end of the scalebar is fixed and it shrinks and grows at
+     * the right hand end. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
+     * positioned near the bottom-left corner of the MapView.
+     */
     LEFT,
+
+    /**
+     * The scalebar is right-aligned, meaning that the right hand end of the scalebar is fixed and it shrinks and grows
+     * at the left hand end. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
+     * positioned near the bottom-right corner of the MapView.
+     */
     RIGHT,
+
+    /**
+     * The scalebar is center-aligned, meaning that the center point of the scalebar is fixed and it shrinks and grows
+     * at both ends. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
+     * positioned near the bottom the MapView, centered between the left and right edges.
+     */
     CENTER
   }
 
