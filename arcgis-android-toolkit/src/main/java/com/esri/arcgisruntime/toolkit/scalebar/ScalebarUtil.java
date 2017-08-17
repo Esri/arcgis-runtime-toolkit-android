@@ -74,7 +74,6 @@ public class ScalebarUtil {
         return displayUnits.convertTo(unit, bestLength);
       }
     }
-
     return bestLength;
   }
 

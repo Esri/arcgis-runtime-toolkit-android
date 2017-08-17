@@ -125,7 +125,6 @@ public class Scalebar extends View {
     @Override
     public void viewpointChanged(ViewpointChangedEvent viewpointChangedEvent) {
       // Invalidate the Scalebar view when the MapView viewpoint changes
-      Log.d(TAG,"viewpointChanged");
       postInvalidate();
     }
   };
@@ -146,7 +145,7 @@ public class Scalebar extends View {
    * TODO: mention the workflow(s)
    *
    * @param context the current execution Context
-   * TODO: add @since tags throughout????
+   * @since 100.1.0
    */
   public Scalebar(Context context) {
     super(context);
@@ -158,6 +157,7 @@ public class Scalebar extends View {
    *
    * @param context the current execution Context
    * @param attrs the attributes of the XML tag that is inflating the view
+   * @since 100.1.0
    */
   public Scalebar(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -180,6 +180,7 @@ public class Scalebar extends View {
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
+   * @since 100.1.0
    */
   public void addToMapView(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
@@ -194,6 +195,7 @@ public class Scalebar extends View {
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
+   * @since 100.1.0
    */
   public void bindToMapView(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
@@ -206,6 +208,7 @@ public class Scalebar extends View {
    *
    * @param style the style to set
    * @throws IllegalArgumentException if style is null
+   * @since 100.1.0
    */
   public void setStyle(Style style) {
     ToolkitUtil.throwIfNull(style, "style");
@@ -234,6 +237,7 @@ public class Scalebar extends View {
    * Gets the style of this Scalebar. The default value is {@link Style#ALTERNATING_BAR}.
    *
    * @return the style
+   * @since 100.1.0
    */
   public Style getStyle() {
     return mStyle;
@@ -244,6 +248,7 @@ public class Scalebar extends View {
    *
    * @param alignment the alignment to set
    * @throws IllegalArgumentException if alignment is null
+   * @since 100.1.0
    */
   public void setAlignment(Alignment alignment) {
     ToolkitUtil.throwIfNull(alignment, "alignment");
@@ -255,6 +260,7 @@ public class Scalebar extends View {
    * Gets the alignment of this Scalebar. The default value is {@link Alignment#LEFT}.
    *
    * @return the alignment
+   * @since 100.1.0
    */
   public Alignment getAlignment() {
     return mAlignment;
@@ -265,6 +271,7 @@ public class Scalebar extends View {
    *
    * @param unitSystem the unit system to set
    * @throws IllegalArgumentException if unitSystem is null
+   * @since 100.1.0
    */
   public void setUnitSystem(UnitSystem unitSystem) {
     ToolkitUtil.throwIfNull(unitSystem, "unitSystem");
@@ -276,6 +283,7 @@ public class Scalebar extends View {
    * Gets the unit system of this Scalebar. The default value is {@link UnitSystem#METRIC}.
    *
    * @return the unit system
+   * @since 100.1.0
    */
   public UnitSystem getUnitSystem() {
     return mUnitSystem;
@@ -285,6 +293,7 @@ public class Scalebar extends View {
    * Sets the fill color of this Scalebar. This is used to fill the bar when the style is BAR or ALTERNATING_BAR.
    *
    * @param color the color to set
+   * @since 100.1.0
    */
   public void setFillColor(int color) {
     mFillColor = color;
@@ -295,6 +304,7 @@ public class Scalebar extends View {
    * Gets the fill color of this Scalebar. The default is semi-transparent light gray.
    *
    * @return the fill color
+   * @since 100.1.0
    */
   public int getFillColor() {
     return mFillColor;
@@ -305,6 +315,7 @@ public class Scalebar extends View {
    * is ALTERNATING_BAR.
    *
    * @param color the color to set
+   * @since 100.1.0
    */
   public void setAlternateFillColor(int color) {
     mAlternateFillColor = color;
@@ -315,6 +326,7 @@ public class Scalebar extends View {
    * Gets the alternate fill color of this Scalebar. The default is black.
    *
    * @return the alternate fill color
+   * @since 100.1.0
    */
   public int getAlternateFillColor() {
     return mAlternateFillColor;
@@ -324,6 +336,7 @@ public class Scalebar extends View {
    * Sets the line color of this Scalebar.
    *
    * @param color the color to set
+   * @since 100.1.0
    */
   public void setLineColor(int color) {
     mLineColor = color;
@@ -334,6 +347,7 @@ public class Scalebar extends View {
    * Gets the line color of this Scalebar. The default is white.
    *
    * @return the line color
+   * @since 100.1.0
    */
   public int getLineColor() {
     return mLineColor;
@@ -343,6 +357,7 @@ public class Scalebar extends View {
    * Sets the shadow color of this Scalebar. This is used for the shadow of the bar.
    *
    * @param color the color to set
+   * @since 100.1.0
    */
   public void setShadowColor(int color) {
     mShadowColor = color;
@@ -353,6 +368,7 @@ public class Scalebar extends View {
    * Gets the shadow color of this Scalebar. The default is semi-transparent black.
    *
    * @return the shadow color
+   * @since 100.1.0
    */
   public int getShadowColor() {
     return mShadowColor;
@@ -362,6 +378,7 @@ public class Scalebar extends View {
    * Sets the text color of this Scalebar.
    *
    * @param color the color to set
+   * @since 100.1.0
    */
   public void setTextColor(int color) {
     mTextColor = color;
@@ -372,6 +389,7 @@ public class Scalebar extends View {
    * Gets the text color of this Scalebar. The default is black.
    *
    * @return the text color
+   * @since 100.1.0
    */
   public int getTextColor() {
     return mTextColor;
@@ -381,6 +399,7 @@ public class Scalebar extends View {
    * Sets the text shadow color of this Scalebar. This is used for the shadow of the text.
    *
    * @param color the color to set
+   * @since 100.1.0
    */
   public void setTextShadowColor(int color) {
     mTextShadowColor = color;
@@ -391,6 +410,7 @@ public class Scalebar extends View {
    * Gets the text shadow color of this Scalebar. The default is white.
    *
    * @return the text shadow color
+   * @since 100.1.0
    */
   public int getTextShadowColor() {
     return mTextShadowColor;
@@ -401,6 +421,7 @@ public class Scalebar extends View {
    *
    * @param typeface the typeface to set
    * @throws IllegalArgumentException if typeface is null
+   * @since 100.1.0
    */
   public void setTypeface(Typeface typeface) {
     ToolkitUtil.throwIfNull(typeface, "typeface");
@@ -412,6 +433,7 @@ public class Scalebar extends View {
    * Gets the typeface of this Scalebar. The default is Typeface.DEFAULT_BOLD.
    *
    * @return the typeface
+   * @since 100.1.0
    */
   public Typeface getTypeface() {
     return mTypeface;
@@ -421,6 +443,7 @@ public class Scalebar extends View {
    * Sets the text size of this Scalebar.
    *
    * @param textSizeDp the text size to set, in density-independent pixels
+   * @since 100.1.0
    */
   public void setTextSize(float textSizeDp) {
     mTextSizeDp = textSizeDp;
@@ -431,6 +454,7 @@ public class Scalebar extends View {
    * Gets the text size of this Scalebar. The default is 15dp.
    *
    * @return the text size, in density-independent pixels
+   * @since 100.1.0
    */
   public float getTextSize() {
     return mTextSizeDp;
@@ -440,6 +464,7 @@ public class Scalebar extends View {
    * Sets the bar height of this Scalebar. This is the height of the bar itself, not including the text.
    *
    * @param barHeightDp the bar height to set, in density-independent pixels
+   * @since 100.1.0
    */
   public void setBarHeight(float barHeightDp) {
     mBarHeightDp = barHeightDp;
@@ -452,6 +477,7 @@ public class Scalebar extends View {
    * Gets the bar height of this Scalebar. The default is 10dp.
    *
    * @return the bar height, in density-independent pixels
+   * @since 100.1.0
    */
   public float getBarHeight() {
     return mBarHeightDp;
@@ -462,7 +488,7 @@ public class Scalebar extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     if (mMapView == null) {
-      Log.d(TAG, "onDraw() bailing because MapView not set yet");
+      Log.i(TAG, "onDraw() bailing because MapView not set yet");
       return;
     }
 
@@ -496,15 +522,11 @@ public class Scalebar extends View {
     builder.addPoint(p1);
     builder.addPoint(p2);
     double maxLengthGeodetic = GeometryEngine.lengthGeodetic(builder.toGeometry(), baseUnits, GeodeticCurveType.GEODESIC);
-    Log.d(TAG, "maxLengthGeodetic=" + maxLengthGeodetic);
 
     // Reduce length to make its geodetic length a nice number
     double scalebarLengthGeodetic =
         ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits, mRenderer.isSegmented());
-    Log.d(TAG, "scalebarLengthGeodetic=" + scalebarLengthGeodetic);
     float scalebarLengthPixels = (float) (maxScaleBarLengthPixels * scalebarLengthGeodetic / maxLengthGeodetic);
-    Log.d(TAG, "maxScaleBarLengthPixels=" + maxScaleBarLengthPixels);
-    Log.d(TAG, "scalebarLengthPixels=" + scalebarLengthPixels);
 
     // Change units if the geodetic length is too big a number in the base units
     LinearUnit displayUnits = ScalebarUtil.selectLinearUnit(scalebarLengthGeodetic, mUnitSystem);
@@ -532,6 +554,7 @@ public class Scalebar extends View {
    * Sets up the Scalebar to work with the given MapView.
    *
    * @param mapView the MapView
+   * @since 100.1.0
    */
   private void setupMapView(MapView mapView) {
     // Remove listeners from old MapView
@@ -615,7 +638,7 @@ public class Scalebar extends View {
    * @param attributeName the name of the color attribute to get
    * @param defaultValue  the default value to use if attributeName not found in attrs
    * @return the color
-   * @since 100.0.0
+   * @since 100.1.0
    */
   private int getColorFromAttributes(Context context, AttributeSet attrs, String attributeName, int defaultValue) {
     int color = 0;
@@ -645,6 +668,7 @@ public class Scalebar extends View {
    * @param displayUnits the units to be displayed
    * @param textPaint the Paint used to draw the text
    * @return the x-coordinate of the left hand end of the scalebar
+   * @since 100.1.0
    */
   private float calculateLeftPos(Alignment alignment, float scalebarLength, LinearUnit displayUnits, Paint textPaint) {
     int left = 0;
@@ -664,7 +688,7 @@ public class Scalebar extends View {
         // Position end of scalebar at right hand edge of the view, less padding and the width of the units string (if
         // required)
         return right - padding - dpToPixels(mLineWidthDp) - scalebarLength -
-            mRenderer.calculateExtraSpaceForUnitsWhenRightAligned(displayUnits, textPaint);
+            mRenderer.calculateExtraSpaceForUnits(displayUnits, textPaint);
       case CENTER:
         // Position center of scalebar at center of the view
         return (right + left - scalebarLength) / 2;
@@ -677,6 +701,7 @@ public class Scalebar extends View {
    * @param displayUnits the units to be displayed, or null if not known yet
    * @param textPaint the Paint used to draw the text
    * @return the width of the units string, in pixels
+   * @since 100.1.0
    */
   private float widthOfUnitsString(LinearUnit displayUnits, Paint textPaint) {
     Rect unitsBounds = new Rect();
@@ -690,6 +715,7 @@ public class Scalebar extends View {
    *
    * @param dp a number of density-independent pixels
    * @return the equivalent number of actual pixels
+   * @since 100.1.0
    */
   private int dpToPixels(double dp) {
     double pixels = dp * mDisplayDensity;
@@ -698,11 +724,15 @@ public class Scalebar extends View {
 
   /**
    * Represents the style of scalebar to be displayed.
+   *
+   * @since 100.1.0
    */
   public enum Style {
     /**
      * A simple, non-segmented bar. A single label is displayed showing the distance represented by the length of the
      * whole bar.
+     *
+     * @since 100.1.0
      */
     BAR,
 
@@ -710,18 +740,24 @@ public class Scalebar extends View {
      * A bar split up into equal-length segments, with the colors of the segments alternating between the fill color and
      * the alternate fill color. A label is displayed at the end of each segment, showing the distance represented by
      * the length of the bar up to that point.
+     *
+     * @since 100.1.0
      */
     ALTERNATING_BAR,
 
     /**
      * A simple, non-segmented line. A single label is displayed showing the distance represented by the length of the
      * whole line.
+     *
+     * @since 100.1.0
      */
     LINE,
 
     /**
      * A line split up into equal-length segments. A tick and a label are displayed at the end of each segment, showing
      * the distance represented by the length of the line up to that point.
+     *
+     * @since 100.1.0
      */
     GRADUATED_LINE,
 
@@ -730,18 +766,24 @@ public class Scalebar extends View {
      * {@link #setUnitSystem(UnitSystem)}, is used to determine the length of the line. A label above the line shows the
      * distance represented by the length of the whole line, in the primary unit system. A tick and another label are
      * displayed below the line, showing distance in the other unit system.
+     *
+     * @since 100.1.0
      */
     DUAL_UNIT_LINE;
   }
 
   /**
    * Represents the alignment of scalebar to be displayed.
+   *
+   * @since 100.1.0
    */
   public enum Alignment {
     /**
      * The scalebar is left-aligned, meaning that the left hand end of the scalebar is fixed and it shrinks and grows at
      * the right hand end. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
      * positioned near the bottom-left corner of the MapView.
+     *
+     * @since 100.1.0
      */
     LEFT,
 
@@ -749,6 +791,8 @@ public class Scalebar extends View {
      * The scalebar is right-aligned, meaning that the right hand end of the scalebar is fixed and it shrinks and grows
      * at the left hand end. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
      * positioned near the bottom-right corner of the MapView.
+     *
+     * @since 100.1.0
      */
     RIGHT,
 
@@ -756,34 +800,70 @@ public class Scalebar extends View {
      * The scalebar is center-aligned, meaning that the center point of the scalebar is fixed and it shrinks and grows
      * at both ends. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
      * positioned near the bottom the MapView, centered between the left and right edges.
+     *
+     * @since 100.1.0
      */
     CENTER
   }
 
+  /**
+   * Renders a scalebar. There are concrete subclasses corresponding to each {@link Scalebar.Style}.
+   *
+   * @since 100.1.0
+   */
   private abstract class ScalebarRenderer {
 
+    /**
+     * Draws a scalebar.
+     *
+     * @param canvas the Canvas to draw on
+     * @param left the x-coordinate of the left hand edge of the scalebar
+     * @param right the x-coordinate of the right hand edge of the scalebar
+     * @param top the y-coordinate of the top of the scalebar
+     * @param bottom the y-coordinate of the bottom of the scalebar
+     * @param distance the distance represented by the length of the whole scalebar
+     * @param displayUnits the units of distance
+     * @param textPaint the Paint to use for drawing the label text
+     * @since 100.1.0
+     */
     public abstract void drawScalebar(Canvas canvas, float left, float right, float top, float bottom,
-        double geodeticLength, LinearUnit displayUnits, Paint textPaint);
+        double distance, LinearUnit displayUnits, Paint textPaint);
 
-    // Subclasses need to override this if their scalebar is segmented
+    /**
+     * Indicates if this style of scalebar is segmented. The default implementation returns false, so subclasses need to
+     * override this method if their scalebar is segmented.
+     *
+     * @return true if this style of scalebar is segmented, false otherwise
+     * @since 100.1.0
+     */
     public boolean isSegmented() {
       return false;
     }
 
-    // Subclasses need to override this if they write the units to the right of the end of the scalebar
-    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+    /**
+     * Calculates the extra space required at the right hand end of the scalebar to draw the units. This affects the
+     * positioning of the scalebar when it is right-aligned. The default implementation returns 0, so subclasses need to
+     * override this method if they write the units to the right of the end of the scalebar.
+     *
+     * @param displayUnits the units
+     * @param textPaint the Paint to use for drawing the units
+     * @return the extra space required, in pixels
+     * @since 100.1.0
+     */
+    public float calculateExtraSpaceForUnits(LinearUnit displayUnits, Paint textPaint) {
       return 0;
     }
 
     /**
-     * Draw a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
+     * Draws a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
      *
-     * @param canvas
-     * @param left
-     * @param right
-     * @param top
-     * @param bottom
-     * @param barColor
+     * @param canvas the Canvas to draw on
+     * @param left the x-coordinate of the left hand edge of the scalebar
+     * @param right the x-coordinate of the right hand edge of the scalebar
+     * @param top the y-coordinate of the top of the scalebar
+     * @param bottom the y-coordinate of the bottom of the scalebar
+     * @param barColor the fill color for the bar
+     * @since 100.1.0
      */
     protected void drawBarAndShadow(Canvas canvas, float left, float right, float top, float bottom, int barColor) {
       // Draw the shadow of the bar, offset slightly from where the actual bar is drawn below
@@ -802,13 +882,14 @@ public class Scalebar extends View {
     }
 
     /**
-     * Draw a line and its shadow, including the ticks at each end. Used by LineRenderer and GraduatedLineRenderer.
+     * Draws a line and its shadow, including the ticks at each end. Used by LineRenderer and GraduatedLineRenderer.
      *
-     * @param canvas
-     * @param left
-     * @param right
-     * @param top
-     * @param bottom
+     * @param canvas the Canvas to draw on
+     * @param left the x-coordinate of the left hand edge of the scalebar
+     * @param right the x-coordinate of the right hand edge of the scalebar
+     * @param top the y-coordinate of the top of the scalebar
+     * @param bottom the y-coordinate of the bottom of the scalebar
+     * @since 100.1.0
      */
     protected void drawLineAndShadow(Canvas canvas, float left, float right, float top, float bottom) {
       // Create a path to draw the left-hand tick, the line itself and the right-hand tick
@@ -837,31 +918,52 @@ public class Scalebar extends View {
       canvas.drawPath(linePath, paint);
     }
 
-    // Used by GRADUATED_LINE and ALTERNATING_BAR
-    //TODO: this algorithm is copied from the iOS implementation; it's a bit crude but let's stick with it unless I find
-    // a test case it doesn't work for
-    public int calculateNumberOfSegments(double geodeticLength, double lineDisplayLength, Paint textPaint) {
-      // use a string with at least a few characters in case the number string only has 1
-      // the dividers will be decimal values and we want to make sure they all fit
-      // very basic heuristics...
-      String testString = ScalebarUtil.labelString(geodeticLength);
+    /**
+     * Calculates the optimal number of segments in a segmented scalebar of a particular length. Used by
+     * AlternatingBarRenderer and GraduatedLineRenderer.
+     *
+     * @param distance the distance represented by the length of the whole scalebar
+     * @param displayLength the length of the scalebar in pixels
+     * @param textPaint the Paint to use for drawing the label text
+     * @return the number of segments
+     * @since 100.1.0
+     */
+    protected int calculateNumberOfSegments(double distance, double displayLength, Paint textPaint) {
+      // The constraining factor is the space required to draw the labels. Create a testString containing the longest
+      // label, which is usually the one for 'distance' because the other labels will be smaller numbers.
+      String testString = ScalebarUtil.labelString(distance);
+
+      // But if 'distance' is small some of the other labels may use decimals, so allow for each label needing at least
+      // 3 characters
       if (testString.length() < 3) {
         testString = "9.9";
       }
+
+      // Calculate the bounds of the testString to determine its length
       Rect bounds = new Rect();
       textPaint.getTextBounds(testString, 0, testString.length(), bounds);
-      // use 1.5 because the last segment, the text is right justified insted of center, which makes it harder to squeeze text in
-      double minSegmentWidth = bounds.right * 1.5 + dpToPixels(LABEL_X_PAD_DP);
-      int maxNumSegments = (int) (lineDisplayLength / minSegmentWidth);
-      maxNumSegments = Math.min(maxNumSegments, 4); // cap it at 4 TODO: no point using 5 in segmentOptionsForMultiplier() then
-      return ScalebarUtil.calculateOptimalNumberOfSegments(geodeticLength, maxNumSegments);
+
+      // Calculate the minimum segment length to ensure the labels don't overlap; multiply the testString length by 1.5
+      // to allow for the right-most label being right-justified whereas the other labels are center-justified
+      double minSegmentLength = bounds.right * 1.5 + dpToPixels(LABEL_X_PAD_DP);
+
+      // Calculate the number of segments
+      int maxNumSegments = (int) (displayLength / minSegmentLength);
+      return ScalebarUtil.calculateOptimalNumberOfSegments(distance, maxNumSegments);
     }
 
   }
 
+  /**
+   * Renders a BAR style scalebar.
+   *
+   * @see Style#BAR
+   * @since 100.1.0
+   */
   private final class BarRenderer extends ScalebarRenderer {
 
-    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+    @Override
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
 
       // Draw a solid bar and its shadow
@@ -876,12 +978,18 @@ public class Scalebar extends View {
       canvas.drawRoundRect(barRect, dpToPixels(mCornerRadiusDp), dpToPixels(mCornerRadiusDp), paint);
 
       // Draw the label, centered on the center of the bar
-      String label = ScalebarUtil.labelString(geodeticLength) + " " + displayUnits.getAbbreviation();
+      String label = ScalebarUtil.labelString(distance) + " " + displayUnits.getAbbreviation();
       textPaint.setTextAlign(Paint.Align.CENTER);
       canvas.drawText(label, left + ((right - left) / 2), bottom + dpToPixels(mTextSizeDp), textPaint);
     }
   }
 
+  /**
+   * Renders an ALTERNATING_BAR style scalebar.
+   *
+   * @see Style#ALTERNATING_BAR
+   * @since 100.1.0
+   */
   private final class AlternatingBarRenderer extends ScalebarRenderer {
 
     @Override
@@ -890,16 +998,17 @@ public class Scalebar extends View {
     }
 
     @Override
-    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+    public float calculateExtraSpaceForUnits(LinearUnit displayUnits, Paint textPaint) {
       return widthOfUnitsString(displayUnits, textPaint);
     }
 
-    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+    @Override
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
 
       // Calculate the number of segments in the bar
       float barDisplayLength = right - left;
-      int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
+      int numSegments = calculateNumberOfSegments(distance, barDisplayLength, textPaint);
       float segmentDisplayLength = barDisplayLength / numSegments;
 
       // Draw a solid bar, using mAlternateFillColor, and its shadow
@@ -910,7 +1019,7 @@ public class Scalebar extends View {
       paint.setStyle(Paint.Style.FILL);
       paint.setColor(mFillColor);
       float xPos = left + segmentDisplayLength;
-      for (int i = 1; i < numSegments; i += 2) { //TODO: i is redundant
+      for (int i = 1; i < numSegments; i += 2) {
         RectF segRect = new RectF(xPos, top, xPos + segmentDisplayLength, bottom);
         canvas.drawRect(segRect, paint);
         xPos += (2 * segmentDisplayLength);
@@ -931,38 +1040,51 @@ public class Scalebar extends View {
 
       // Draw a label at the end of the bar
       textPaint.setTextAlign(Paint.Align.RIGHT);
-      canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
+      canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint);
       textPaint.setTextAlign(Paint.Align.LEFT);
-      canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
+      canvas.drawText(' ' + displayUnits.getAbbreviation(), right, yPosText, textPaint);
 
       // Draw a vertical line and a label at each segment boundary
       xPos = left + segmentDisplayLength;
-      double segmentGeodeticLength = geodeticLength / numSegments;
+      double segmentDistance = distance / numSegments;
       textPaint.setTextAlign(Paint.Align.CENTER);
       for (int segNo = 1; segNo < numSegments; segNo++) {
         canvas.drawLine(xPos, top, xPos, bottom, paint);
-        canvas.drawText(ScalebarUtil.labelString(segmentGeodeticLength * segNo), xPos, yPosText, textPaint);
+        canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, textPaint);
         xPos += segmentDisplayLength;
       }
     }
 
   }
 
+  /**
+   * Renders a LINE style scalebar.
+   *
+   * @see Style#LINE
+   * @since 100.1.0
+   */
   private final class LineRenderer extends ScalebarRenderer {
 
-    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+    @Override
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
 
       // Draw the line and its shadow, including the ticks at each end
       drawLineAndShadow(canvas, left, right, top, bottom);
 
       // Draw the label, centered on the center of the line
-      String label = ScalebarUtil.labelString(geodeticLength) + " " + displayUnits.getAbbreviation();
+      String label = ScalebarUtil.labelString(distance) + " " + displayUnits.getAbbreviation();
       textPaint.setTextAlign(Paint.Align.CENTER);
       canvas.drawText(label, left + ((right - left) / 2), bottom + dpToPixels(mTextSizeDp), textPaint);
     }
   }
 
+  /**
+   * Renders a GRADUATED_LINE style scalebar.
+   *
+   * @see Style#GRADUATED_LINE
+   * @since 100.1.0
+   */
   private final class GraduatedLineRenderer extends ScalebarRenderer {
 
     @Override
@@ -971,17 +1093,18 @@ public class Scalebar extends View {
     }
 
     @Override
-    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+    public float calculateExtraSpaceForUnits(LinearUnit displayUnits, Paint textPaint) {
       return widthOfUnitsString(displayUnits, textPaint);
     }
 
-    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+    @Override
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
 
       // Calculate the number of segments in the line
-      float barDisplayLength = right - left;
-      int numSegments = calculateNumberOfSegments(geodeticLength, barDisplayLength, textPaint);
-      float segmentDisplayLength = barDisplayLength / numSegments;
+      float lineDisplayLength = right - left;
+      int numSegments = calculateNumberOfSegments(distance, lineDisplayLength, textPaint);
+      float segmentDisplayLength = lineDisplayLength / numSegments;
 
       // Create Paint for drawing the ticks
       Paint tickPaint = new Paint();
@@ -992,7 +1115,7 @@ public class Scalebar extends View {
       // Draw a tick, its shadow and a label at each segment boundary
       float xPos = left + segmentDisplayLength;
       float yPos = top + ((bottom - top) / 4); // segment ticks are 3/4 the height of the ticks at the start and end
-      double segmentGeodeticLength = geodeticLength / numSegments;
+      double segmentDistance = distance / numSegments;
       float yPosText = bottom + dpToPixels(mTextSizeDp);
       textPaint.setTextAlign(Paint.Align.CENTER);
       for (int segNo = 1; segNo < numSegments; segNo++) {
@@ -1006,7 +1129,7 @@ public class Scalebar extends View {
         canvas.drawLine(xPos, yPos, xPos, bottom, tickPaint);
 
         // Draw the label
-        canvas.drawText(ScalebarUtil.labelString(segmentGeodeticLength * segNo), xPos, yPosText, textPaint);
+        canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, textPaint);
         xPos += segmentDisplayLength;
       }
 
@@ -1019,43 +1142,45 @@ public class Scalebar extends View {
 
       // Draw a label at the end of the line
       textPaint.setTextAlign(Paint.Align.RIGHT);
-      canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
+      canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint);
       textPaint.setTextAlign(Paint.Align.LEFT);
-      canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
+      canvas.drawText(' ' + displayUnits.getAbbreviation(), right, yPosText, textPaint);
     }
   }
 
+  /**
+   * Renders a DUAL_UNIT_LINE style scalebar.
+   *
+   * @see Style#DUAL_UNIT_LINE
+   * @since 100.1.0
+   */
   private final class DualUnitLineRenderer extends ScalebarRenderer {
 
     @Override
-    public float calculateExtraSpaceForUnitsWhenRightAligned(LinearUnit displayUnits, Paint textPaint) {
+    public float calculateExtraSpaceForUnits(LinearUnit displayUnits, Paint textPaint) {
       return widthOfUnitsString(displayUnits, textPaint);
     }
 
-    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double geodeticLength,
+    @Override
+    public void drawScalebar(Canvas canvas, float left, float right, float top, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
-      Log.d(TAG, "DualUnitLineRenderer.drawScalebar() left=" + left);
-      Log.d(TAG, "geodeticLength=" + geodeticLength);
 
       // Calculate scalebar length in the secondary units
       LinearUnit secondaryBaseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
           new LinearUnit(LinearUnitId.METERS) : new LinearUnit(LinearUnitId.FEET);
-      double fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, geodeticLength);
-      Log.d(TAG, "fullLengthInSecondaryUnits=" + fullLengthInSecondaryUnits);
+      double fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, distance);
 
       // Reduce the secondary units length to make it a nice number
       double secondaryUnitsLength =
           ScalebarUtil.calculateBestScalebarLength(fullLengthInSecondaryUnits, secondaryBaseUnits, false);
-      Log.d(TAG, "secondaryUnitsLength=" + secondaryUnitsLength);
-      float barDisplayLength = right - left;
-      float xPosSecondaryTick = left + (float) (barDisplayLength * secondaryUnitsLength / fullLengthInSecondaryUnits);
+      float lineDisplayLength = right - left;
+      float xPosSecondaryTick = left + (float) (lineDisplayLength * secondaryUnitsLength / fullLengthInSecondaryUnits);
 
       // Change units if secondaryUnitsLength is too big a number in the base units
       UnitSystem secondaryUnitSystem = mUnitSystem == UnitSystem.IMPERIAL ? UnitSystem.METRIC : UnitSystem.IMPERIAL;
       LinearUnit secondaryDisplayUnits = ScalebarUtil.selectLinearUnit(secondaryUnitsLength, secondaryUnitSystem);
       if (secondaryDisplayUnits != secondaryBaseUnits) {
         secondaryUnitsLength = secondaryBaseUnits.convertTo(secondaryDisplayUnits, secondaryUnitsLength);
-        Log.d(TAG, "secondaryUnitsLength=" + secondaryUnitsLength);
       }
 
       // Create Paint for drawing the lines
@@ -1092,9 +1217,9 @@ public class Scalebar extends View {
       // Draw the primary units label above the tick at the right hand end
       float yPosText = top;
       textPaint.setTextAlign(Paint.Align.RIGHT);
-      canvas.drawText(ScalebarUtil.labelString(geodeticLength), left + barDisplayLength, yPosText, textPaint);
+      canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint);
       textPaint.setTextAlign(Paint.Align.LEFT);
-      canvas.drawText(' ' + displayUnits.getAbbreviation(), left + barDisplayLength, yPosText, textPaint);
+      canvas.drawText(' ' + displayUnits.getAbbreviation(), right, yPosText, textPaint);
 
       // Draw the secondary units label below its tick
       yPosText = bottom + dpToPixels(mTextSizeDp);
