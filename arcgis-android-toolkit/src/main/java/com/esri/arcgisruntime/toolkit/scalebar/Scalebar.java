@@ -197,7 +197,7 @@ public class Scalebar extends View {
    * @throws IllegalArgumentException if mapView is null
    * @since 100.1.0
    */
-  public void bindToMapView(MapView mapView) {
+  public void bindTo(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
     setupMapView(mapView);
     mDrawInMapView = false;
