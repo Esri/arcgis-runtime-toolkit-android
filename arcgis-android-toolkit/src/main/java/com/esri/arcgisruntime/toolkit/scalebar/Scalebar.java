@@ -41,7 +41,112 @@ import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener;
 import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 
 /**
- * Displays a bar or line indicating the current scale of a MapView.
+ * Displays a bar or line indicating the current scale of a MapView. Two workflows are supported:
+ * <p>
+ * <u>Workflow 1:</u>
+ * <p>
+ * The simplest workflow is for the app to instantiate a Scalebar using {@link #Scalebar(Context)} and call
+ * {@link #addToMapView(MapView)} to display it within the MapView. Optionally, setter methods may be called to override
+ * some of the default settings. The app has limited control over the position of the scalebar (bottom-left,
+ * bottom-right or bottom-centered) and no control over the size (it is sized automatically to fit comfortably within
+ * the MapView).
+ * <p>
+ * <u>Workflow 2:</u>
+ * <p>
+ * Alternatively, the app could define a Scalebar anywhere it likes in its view hierarchy, because Scalebar extends the
+ * Android View class. The system will instantiate the Scalebar using {@link #Scalebar(Context, AttributeSet)}. The app
+ * then calls {@link #bindTo(MapView)} to make it come to life as a scalebar for the given MapView. This workflow gives
+ * the app complete control over where the scalebar is displayed - it could be positioned on top of any part of the
+ * MapView, or placed somewhere outside the bounds of the MapView. It also gives the app complete control over the size
+ * of the scalebar.
+ * <p>
+ * Here's example XML code to define a Scalebar:
+ * <pre>
+ * &lt;com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+ *   android:id="@+id/scalebar"
+ *   android:layout_width="200dp"
+ *   android:layout_height="30dp"
+ *   android:layout_margin="5dp"
+ *   scalebar.style="DUAL_UNIT_LINE"
+ *   scalebar.fillColor="@android:color/holo_orange_dark"
+ *   scalebar.alternateFillColor="@android:color/holo_orange_light"
+ *   scalebar.lineColor="#FFC0C0C0"
+ * /&gt;
+ * </pre>
+ *
+ * Notice that some of the scalebar attributes are overridden. Here's a list of all the scalebar attributes that can be
+ * set in this way:
+ * <table>
+ * <tr>
+ * <th>XML Attribute</th>
+ * <th>Description</th>
+ * <th>Default Value</th>
+ * </tr>
+ * <tr>
+ * <td>scalebar.style</td>
+ * <td>The style of the Scalebar - BAR, ALTERNATING_BAR, LINE, GRADUATED_LINE or DUAL_UNIT_LINE.</td>
+ * <td>ALTERNATING_BAR</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.alignment</td>
+ * <td>The alignment of the Scalebar - LEFT, RIGHT or CENTER.</td>
+ * <td>LEFT</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.unitSystem</td>
+ * <td>The unit system of the Scalebar - METRIC or IMPERIAL.</td>
+ * <td>METRIC</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.fillColor</td>
+ * <td>The fill color of the Scalebar. This is used to fill the bar when the style is BAR or ALTERNATING_BAR. In XML
+ * this may be a color value or a reference to a color resource, for example "#FF0000" (RRGGBB) or "#FF808080"
+ * (AARRGGBB) or "@android:color/white".</td>
+ * <td>Semi-transparent light gray</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.alternateFillColor</td>
+ * <td>The alternate fill color of the Scalebar. This is used to fill alternate segments of the bar when the style
+ * is ALTERNATING_BAR. In XML this may be a color value or a reference to a color resource.</td>
+ * <td>Black</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.lineColor</td>
+ * <td>The line color of the Scalebar. In XML this may be a color value or a reference to a color resource.</td>
+ * <td>White</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.shadowColor</td>
+ * <td>The shadow color of the Scalebar. This is used for the shadow of the bar. In XML this may be a color value or a
+ * reference to a color resource.</td>
+ * <td>Semi-transparent black</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.textColor</td>
+ * <td>The text color of the Scalebar. In XML this may be a color value or a reference to a color resource.</td>
+ * <td>Black</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.textShadowColor</td>
+ * <td>The text shadow color of the Scalebar. This is used for the shadow of the text. In XML this may be a color value
+ * or a reference to a color resource.</td>
+ * <td>White</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.textSize</td>
+ * <td>The text size of the Scalebar, in density-independent pixels.</td>
+ * <td>15</td>
+ * </tr>
+ * <tr>
+ * <td>scalebar.barHeight</td>
+ * <td>The bar height of the Scalebar, in density-independent pixels. This is the height of the bar itself, not
+ * including the text.</td>
+ * <td>10</td>
+ * </tr>
+ * </table>
+ * <p>
+ * Setting the typeface attribute from XML is not supported. Use {@link #setTypeface(Typeface)} if you need to override
+ * the default typeface.
  *
  * @since 100.1.0
  */
@@ -141,8 +246,7 @@ public class Scalebar extends View {
   };
 
   /**
-   * Constructs a Scalebar programmatically.
-   * TODO: mention the workflow(s)
+   * Constructs a Scalebar programmatically. Called by the app when Workflow 1 is used (see {@link Scalebar} above).
    *
    * @param context the current execution Context
    * @since 100.1.0
@@ -153,7 +257,8 @@ public class Scalebar extends View {
   }
 
   /**
-   * Constructor that's called when inflating a Scalebar from XML.
+   * Constructor that's called when inflating a Scalebar from XML. Called by the system when Workflow 2 is used (see
+   * {@link Scalebar} above).
    *
    * @param context the current execution Context
    * @param attrs the attributes of the XML tag that is inflating the view
@@ -176,7 +281,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Adds this Scalebar to the given MapView.
+   * Adds this Scalebar to the given MapView. Used in Workflow 1 (see {@link Scalebar} above).
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
@@ -191,7 +296,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Binds this Scalebar to the given MapView.
+   * Binds this Scalebar to the given MapView. Used in Workflow 2 (see {@link Scalebar} above).
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
@@ -204,7 +309,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the style of this Scalebar.
+   * Sets the style of this Scalebar. The default value is {@link Style#ALTERNATING_BAR}.
    *
    * @param style the style to set
    * @throws IllegalArgumentException if style is null
@@ -234,7 +339,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the style of this Scalebar. The default value is {@link Style#ALTERNATING_BAR}.
+   * Gets the style of this Scalebar.
    *
    * @return the style
    * @since 100.1.0
@@ -244,7 +349,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the alignment of this Scalebar.
+   * Sets the alignment of this Scalebar. The default value is {@link Alignment#LEFT}.
    *
    * @param alignment the alignment to set
    * @throws IllegalArgumentException if alignment is null
@@ -257,7 +362,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the alignment of this Scalebar. The default value is {@link Alignment#LEFT}.
+   * Gets the alignment of this Scalebar.
    *
    * @return the alignment
    * @since 100.1.0
@@ -267,7 +372,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the unit system of this Scalebar.
+   * Sets the unit system of this Scalebar. The default value is UnitSystem.METRIC.
    *
    * @param unitSystem the unit system to set
    * @throws IllegalArgumentException if unitSystem is null
@@ -280,7 +385,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the unit system of this Scalebar. The default value is {@link UnitSystem#METRIC}.
+   * Gets the unit system of this Scalebar.
    *
    * @return the unit system
    * @since 100.1.0
@@ -290,7 +395,8 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the fill color of this Scalebar. This is used to fill the bar when the style is BAR or ALTERNATING_BAR.
+   * Sets the fill color of this Scalebar. This is used to fill the bar when the style is BAR or ALTERNATING_BAR. The
+   * default is semi-transparent light gray.
    *
    * @param color the color to set
    * @since 100.1.0
@@ -301,7 +407,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the fill color of this Scalebar. The default is semi-transparent light gray.
+   * Gets the fill color of this Scalebar.
    *
    * @return the fill color
    * @since 100.1.0
@@ -312,7 +418,7 @@ public class Scalebar extends View {
 
   /**
    * Sets the alternate fill color of this Scalebar. This is used to fill alternate segments of the bar when the style
-   * is ALTERNATING_BAR.
+   * is ALTERNATING_BAR. The default is black.
    *
    * @param color the color to set
    * @since 100.1.0
@@ -323,7 +429,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the alternate fill color of this Scalebar. The default is black.
+   * Gets the alternate fill color of this Scalebar.
    *
    * @return the alternate fill color
    * @since 100.1.0
@@ -333,7 +439,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the line color of this Scalebar.
+   * Sets the line color of this Scalebar. The default is white.
    *
    * @param color the color to set
    * @since 100.1.0
@@ -344,7 +450,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the line color of this Scalebar. The default is white.
+   * Gets the line color of this Scalebar.
    *
    * @return the line color
    * @since 100.1.0
@@ -354,7 +460,8 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the shadow color of this Scalebar. This is used for the shadow of the bar.
+   * Sets the shadow color of this Scalebar. This is used for the shadow of the bar. The default is semi-transparent
+   * black.
    *
    * @param color the color to set
    * @since 100.1.0
@@ -365,7 +472,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the shadow color of this Scalebar. The default is semi-transparent black.
+   * Gets the shadow color of this Scalebar.
    *
    * @return the shadow color
    * @since 100.1.0
@@ -375,7 +482,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the text color of this Scalebar.
+   * Sets the text color of this Scalebar. The default is black.
    *
    * @param color the color to set
    * @since 100.1.0
@@ -386,7 +493,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the text color of this Scalebar. The default is black.
+   * Gets the text color of this Scalebar.
    *
    * @return the text color
    * @since 100.1.0
@@ -396,7 +503,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the text shadow color of this Scalebar. This is used for the shadow of the text.
+   * Sets the text shadow color of this Scalebar. This is used for the shadow of the text. The default is white.
    *
    * @param color the color to set
    * @since 100.1.0
@@ -407,7 +514,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the text shadow color of this Scalebar. The default is white.
+   * Gets the text shadow color of this Scalebar.
    *
    * @return the text shadow color
    * @since 100.1.0
@@ -417,7 +524,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the typeface of this Scalebar.
+   * Sets the typeface of this Scalebar. The default is Typeface.DEFAULT_BOLD.
    *
    * @param typeface the typeface to set
    * @throws IllegalArgumentException if typeface is null
@@ -430,7 +537,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the typeface of this Scalebar. The default is Typeface.DEFAULT_BOLD.
+   * Gets the typeface of this Scalebar.
    *
    * @return the typeface
    * @since 100.1.0
@@ -440,7 +547,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the text size of this Scalebar.
+   * Sets the text size of this Scalebar. The default is 15dp.
    *
    * @param textSizeDp the text size to set, in density-independent pixels
    * @since 100.1.0
@@ -451,7 +558,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the text size of this Scalebar. The default is 15dp.
+   * Gets the text size of this Scalebar.
    *
    * @return the text size, in density-independent pixels
    * @since 100.1.0
@@ -461,7 +568,8 @@ public class Scalebar extends View {
   }
 
   /**
-   * Sets the bar height of this Scalebar. This is the height of the bar itself, not including the text.
+   * Sets the bar height of this Scalebar. This is the height of the bar itself, not including the text. The default is
+   * 10dp.
    *
    * @param barHeightDp the bar height to set, in density-independent pixels
    * @since 100.1.0
@@ -474,7 +582,7 @@ public class Scalebar extends View {
   }
 
   /**
-   * Gets the bar height of this Scalebar. The default is 10dp.
+   * Gets the bar height of this Scalebar.
    *
    * @return the bar height, in density-independent pixels
    * @since 100.1.0
@@ -483,17 +591,11 @@ public class Scalebar extends View {
     return mBarHeightDp;
   }
 
-  //TODO: allow user to specify useGeodeticCalculations = false ???????????????????????
-
   @Override
   protected void onDraw(Canvas canvas) {
     if (mMapView == null) {
       return;
     }
-    Log.d(TAG, "mMapView.getLeft()=" + mMapView.getLeft());
-    Log.d(TAG, "mMapView.getRight()=" + mMapView.getRight());
-    Log.d(TAG, "mMapView.getWidth()=" + mMapView.getWidth());
-    Log.d(TAG, "getDisplayMetrics().widthPixels=" + mMapView.getContext().getResources().getDisplayMetrics().widthPixels);
 
     // Create Paint for drawing text right at the start, because it's used when sizing/positioning some things
     Paint textPaint = new Paint();
@@ -504,7 +606,8 @@ public class Scalebar extends View {
 
     // Calculate width and height of visible part of MapView
     int mapViewVisWidth = mMapView.getWidth() - dpToPixels(mMapView.getViewInsetLeft() + mMapView.getViewInsetRight());
-    int mapViewVisHeight = mMapView.getHeight() - dpToPixels(mMapView.getViewInsetTop() + mMapView.getViewInsetBottom());
+    int mapViewVisHeight =
+        mMapView.getHeight() - dpToPixels(mMapView.getViewInsetTop() + mMapView.getViewInsetBottom());
 
     // Calculate maximum length of scalebar in pixels
     LinearUnit baseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
@@ -522,14 +625,17 @@ public class Scalebar extends View {
     int centerX = (int) (mMapView.getLeft() + dpToPixels(mMapView.getViewInsetLeft()) + (mapViewVisWidth / 2));
     int centerY = (int) (mMapView.getTop() + dpToPixels(mMapView.getViewInsetTop()) + (mapViewVisHeight / 2));
     PolylineBuilder builder = new PolylineBuilder(mMapView.getSpatialReference());
-    Point p1 = mMapView.screenToLocation(new android.graphics.Point((int)(centerX - maxScaleBarLengthPixels / 2), centerY));
-    Point p2 = mMapView.screenToLocation(new android.graphics.Point((int)(centerX + maxScaleBarLengthPixels / 2), centerY));
+    Point p1 =
+        mMapView.screenToLocation(new android.graphics.Point((int)(centerX - maxScaleBarLengthPixels / 2), centerY));
+    Point p2 =
+        mMapView.screenToLocation(new android.graphics.Point((int)(centerX + maxScaleBarLengthPixels / 2), centerY));
     if (p1 == null || p2 == null) {
       return;
     }
     builder.addPoint(p1);
     builder.addPoint(p2);
-    double maxLengthGeodetic = GeometryEngine.lengthGeodetic(builder.toGeometry(), baseUnits, GeodeticCurveType.GEODESIC);
+    double maxLengthGeodetic =
+        GeometryEngine.lengthGeodetic(builder.toGeometry(), baseUnits, GeodeticCurveType.GEODESIC);
 
     // Reduce length to make its geodetic length a nice number
     double scalebarLengthGeodetic =
@@ -544,8 +650,6 @@ public class Scalebar extends View {
 
     // Calculate screen coordinates of left, right, top and bottom of the scalebar
     float left = calculateLeftPos(mAlignment, scalebarLengthPixels, displayUnits, textPaint);
-    Log.d(TAG, "centerX=" + centerX);
-    Log.d(TAG, "left=" + left);
     float right = left + scalebarLengthPixels;
     float bottom;
     if (mDrawInMapView) {
