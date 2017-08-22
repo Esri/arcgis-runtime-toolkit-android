@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.com.esri.arcgisruntime.toolkit.scalebar;
+package com.esri.arcgisruntime.toolkit.scalebar;
 
 import android.content.Context;
 import android.graphics.Color;
