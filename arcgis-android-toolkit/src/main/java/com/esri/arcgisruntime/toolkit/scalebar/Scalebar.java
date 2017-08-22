@@ -25,7 +25,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.esri.arcgisruntime.UnitSystem;
@@ -150,7 +149,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  *
  * @since 100.1.0
  */
-public class Scalebar extends View {
+public final class Scalebar extends View {
 
   private static final String TAG = "Scalebar";
 
