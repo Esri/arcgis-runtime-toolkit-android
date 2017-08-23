@@ -24,4 +24,6 @@ public final class TestUtil {
 
   public static final String MISSING_ILLEGAL_ARGUMENT_EXCEPTION = "IllegalArgumentException should have been thrown";
 
+  public static final String MISSING_ILLEGAL_STATE_EXCEPTION = "IllegalStateException should have been thrown";
+
 }

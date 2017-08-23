@@ -64,13 +64,14 @@ public class ScalebarUtil {
     }
     double bestLength = multiplier * magnitude;
 
-    // If using imperial units, check if the number of feet is greater than the threshold for using feet
+    // If using imperial units, check if the number of feet is greater than the threshold for using feet; note this
+    // isn't necessary for metric units because bestLength calculated using meters will also be a nice number of km
     if (unit.getLinearUnitId() == LinearUnitId.FEET) {
       LinearUnit displayUnits = selectLinearUnit(bestLength, UnitSystem.IMPERIAL);
       if (unit.getLinearUnitId() != displayUnits.getLinearUnitId()) {
-        // Recalculate the best length in miles
+        // 'unit' is feet but we're going to display in miles, so recalculate bestLength to give a nice number of miles
         bestLength = calculateBestScalebarLength(unit.convertTo(displayUnits, maxLength), displayUnits, isSegmented);
-        // But convert that back to feet because the caller is using feet
+        // but convert that back to feet because the caller is using feet
         return displayUnits.convertTo(unit, bestLength);
       }
     }
@@ -145,7 +146,7 @@ public class ScalebarUtil {
     String label = String.format("%.2f", distance);
 
     // Strip off both decimal places if they're 0s
-    if (label.endsWith(".00")) {
+    if (label.endsWith(".00") || label.endsWith(",00")) {
       return label.substring(0, label.length() - 3);
     }
 

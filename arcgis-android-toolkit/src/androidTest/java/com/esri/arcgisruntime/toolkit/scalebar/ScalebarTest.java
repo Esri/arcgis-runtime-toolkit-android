@@ -18,11 +18,13 @@ package com.esri.arcgisruntime.toolkit.scalebar;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.esri.arcgisruntime.UnitSystem;
+import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.TestUtil;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
@@ -76,6 +78,17 @@ public final class ScalebarTest {
   @Test
   public void testSimpleConstructorDefaultValues() {
     Scalebar scalebar = new Scalebar(InstrumentationRegistry.getTargetContext());
+    checkDefaultValues(scalebar);
+  }
+
+  /**
+   * Tests the constructor that takes an AttributeSet when the AttributeSet is null.
+   *
+   * @since 100.1.0
+   */
+  @Test
+  public void testNullAttributeSet() {
+    Scalebar scalebar = new Scalebar(InstrumentationRegistry.getTargetContext(), null);
     checkDefaultValues(scalebar);
   }
 
@@ -195,6 +208,62 @@ public final class ScalebarTest {
     } catch (IllegalArgumentException e) {
       //success
     }
+  }
+
+  /**
+   * Tests addToMapView(), removeFromMapView() and bindTo().
+   *
+   * @since 100.1.0
+   */
+  @Test
+  public void testAddRemoveAndBind() {
+    // Must initialize this thread as a Looper so it can instantiate a MapView
+    Looper.prepare();
+
+    Context context = InstrumentationRegistry.getTargetContext();
+    MapView mapView = new MapView(context);
+
+    // Instantiate a Scalebar and add it to a MapView
+    Scalebar scalebar = new Scalebar(context);
+    scalebar.addToMapView(mapView);
+
+    // Check addToMapView() fails when it's already added to a MapView
+    try {
+      scalebar.addToMapView(mapView);
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Remove it from the MapView and check addToMapView() can then be called again
+    scalebar.removeFromMapView();
+    scalebar.addToMapView(mapView);
+
+    // Check bindTo() fails when it's already added to a MapView
+    try {
+      scalebar.bindTo(mapView);
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Remove it from the MapView and check bindTo() can then be called
+    scalebar.removeFromMapView();
+    scalebar.bindTo(mapView);
+
+    // Check bindTo() is allowed when already bound
+    scalebar.bindTo(mapView);
+
+    // Check addToMapView() fails when it's already bound to a MapView
+    try {
+      scalebar.addToMapView(mapView);
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Check removeFromMapView() can be called when it's not added to a MapView
+    scalebar.removeFromMapView();
   }
 
   /**

@@ -50,6 +50,13 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * bottom-right or bottom-centered) and no control over the size (it is sized automatically to fit comfortably within
  * the MapView).
  * <p>
+ * For example:
+ * <pre>
+ * mScalebar = new Scalebar(mMapView.getContext());
+ * mScalebar.setAlignment(ScalebarAlignment.CENTER); // optionally override default settings
+ * mScalebar.addToMapView(mMapView);
+ * </pre>
+ * <p>
  * <u>Workflow 2:</u>
  * <p>
  * Alternatively, the app could define a Scalebar anywhere it likes in its view hierarchy, because Scalebar extends the
@@ -146,6 +153,12 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * <p>
  * Setting the typeface attribute from XML is not supported. Use {@link #setTypeface(Typeface)} if you need to override
  * the default typeface.
+ * <p>
+ * And here's example Java code to bind the Scalebar to the MapView:
+ * <pre>
+ * mScalebar = (Scalebar) findViewById(R.id.scalebar);
+ * mScalebar.bindTo(mMapView);
+ * </pre>
  *
  * @since 100.1.0
  */
@@ -223,7 +236,7 @@ public final class Scalebar extends View {
 
   private float mDisplayDensity;
 
-  private boolean mDrawInMapView = false;
+  private boolean mScalebarIsChildOfMapView = false;
 
   private ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
     @Override
@@ -265,6 +278,10 @@ public final class Scalebar extends View {
    */
   public Scalebar(Context context, AttributeSet attrs) {
     super(context, attrs);
+    if (attrs == null) {
+      setStyle(DEFAULT_STYLE);
+      return;
+    }
     setStyle(getStyleFromAttributes(attrs));
     mAlignment = getAlignmentFromAttributes(attrs);
     mUnitSystem = getUnitSystemFromAttributes(attrs);
@@ -275,7 +292,7 @@ public final class Scalebar extends View {
     mShadowColor = getColorFromAttributes(context, attrs, "scalebar.shadowColor", DEFAULT_SHADOW_COLOR);
     mTextColor = getColorFromAttributes(context, attrs, "scalebar.textColor", DEFAULT_TEXT_COLOR);
     mTextShadowColor = getColorFromAttributes(context, attrs, "scalebar.textShadowColor", DEFAULT_TEXT_SHADOW_COLOR);
-    mTextSizeDp = attrs.getAttributeIntValue(null,"scalebar.textSize", DEFAULT_TEXT_SIZE_DP);
+    mTextSizeDp = attrs.getAttributeIntValue(null, "scalebar.textSize", DEFAULT_TEXT_SIZE_DP);
     mBarHeightDp = attrs.getAttributeIntValue(null,"scalebar.barHeight", DEFAULT_BAR_HEIGHT_DP);
   }
 
@@ -284,14 +301,32 @@ public final class Scalebar extends View {
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
+   * @throws IllegalStateException if this Scalebar is already added to or bound to a MapView
    * @since 100.1.0
    */
   public void addToMapView(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
+    if (mMapView != null) {
+      throw new IllegalStateException("Scalebar already has a MapView");
+    }
     setupMapView(mapView);
     mMapView.addView(this, new ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
         android.view.ViewGroup.LayoutParams.MATCH_PARENT));
-    mDrawInMapView = true;
+    mScalebarIsChildOfMapView = true;
+  }
+
+  /**
+   * Removes this Scalebar from the MapView it was added to (if any).
+   *
+   * @since 100.1.0
+   */
+  public void removeFromMapView() {
+    if (mScalebarIsChildOfMapView) {
+      mMapView.removeView(this);
+      removeListenersFromMapView();
+      mMapView = null;
+      mScalebarIsChildOfMapView = false;
+    }
   }
 
   /**
@@ -299,12 +334,16 @@ public final class Scalebar extends View {
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
+   * @throws IllegalStateException if this Scalebar is currently added to a MapView
    * @since 100.1.0
    */
   public void bindTo(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
+    if (mScalebarIsChildOfMapView) {
+      throw new IllegalStateException("Scalebar already added to a MapView");
+    }
     setupMapView(mapView);
-    mDrawInMapView = false;
+    mScalebarIsChildOfMapView = false;
   }
 
   /**
@@ -348,7 +387,10 @@ public final class Scalebar extends View {
   }
 
   /**
-   * Sets the alignment of this Scalebar. The default value is {@link Alignment#LEFT}.
+   * Sets the alignment of this Scalebar. The default value is {@link Alignment#LEFT}. In Workflow 1 (see
+   * {@link Scalebar} above) the alignment controls the position of the Scalebar within the MapView, whereas in
+   * Workflow 2 it only controls which end of the scalebar is fixed and which end shrinks and grows. See
+   * {@link Alignment} for more details.
    *
    * @param alignment the alignment to set
    * @throws IllegalArgumentException if alignment is null
@@ -604,25 +646,29 @@ public final class Scalebar extends View {
     textPaint.setTextSize(dpToPixels(mTextSizeDp));
 
     // Calculate width and height of visible part of MapView
-    int mapViewVisWidth = mMapView.getWidth() - dpToPixels(mMapView.getViewInsetLeft() + mMapView.getViewInsetRight());
-    int mapViewVisHeight =
+    int mapViewVisibleWidth =
+        mMapView.getWidth() - dpToPixels(mMapView.getViewInsetLeft() + mMapView.getViewInsetRight());
+    int mapViewVisibleHeight =
         mMapView.getHeight() - dpToPixels(mMapView.getViewInsetTop() + mMapView.getViewInsetBottom());
 
     // Calculate maximum length of scalebar in pixels
-    LinearUnit baseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
-        new LinearUnit(LinearUnitId.FEET) : new LinearUnit(LinearUnitId.METERS);
+    LinearUnit baseUnits = mUnitSystem == UnitSystem.METRIC ?
+        new LinearUnit(LinearUnitId.METERS) : new LinearUnit(LinearUnitId.FEET);
     float maxScaleBarLengthPixels;
-    if (mDrawInMapView) {
-      // When scalebar is part of the MapView, its length is based on the size of the visible part of the MapView
-      maxScaleBarLengthPixels = mapViewVisWidth > mapViewVisHeight ? mapViewVisWidth / 4 : mapViewVisWidth / 3;
+    if (mScalebarIsChildOfMapView) {
+      // When scalebar is a child of the MapView, its length is based on the size of the visible part of the MapView
+      maxScaleBarLengthPixels =
+          mapViewVisibleWidth > mapViewVisibleHeight ? mapViewVisibleWidth / 4 : mapViewVisibleWidth / 3;
     } else {
-      // When scalebar is a separate view, its length is based on the view's width
-      maxScaleBarLengthPixels = getWidth() - widthOfUnitsString(null, textPaint);
+      // When scalebar is a separate view, its length is based on the view's width; note we allow padding of
+      // mLineWidthDp at each end of the scalebar to ensure the lines at the ends fit within the view
+      maxScaleBarLengthPixels = getWidth() - mRenderer.calculateExtraSpaceForUnits(null, textPaint) -
+          (2 * dpToPixels(mLineWidthDp));
     }
 
     // Calculate geodetic length of scalebar based on its maximum length in pixels
-    int centerX = (int) (mMapView.getLeft() + dpToPixels(mMapView.getViewInsetLeft()) + (mapViewVisWidth / 2));
-    int centerY = (int) (mMapView.getTop() + dpToPixels(mMapView.getViewInsetTop()) + (mapViewVisHeight / 2));
+    int centerX = (int) (mMapView.getLeft() + dpToPixels(mMapView.getViewInsetLeft()) + (mapViewVisibleWidth / 2));
+    int centerY = (int) (mMapView.getTop() + dpToPixels(mMapView.getViewInsetTop()) + (mapViewVisibleHeight / 2));
     PolylineBuilder builder = new PolylineBuilder(mMapView.getSpatialReference());
     Point p1 =
         mMapView.screenToLocation(new android.graphics.Point((int)(centerX - maxScaleBarLengthPixels / 2), centerY));
@@ -651,7 +697,7 @@ public final class Scalebar extends View {
     float left = calculateLeftPos(mAlignment, scalebarLengthPixels, displayUnits, textPaint);
     float right = left + scalebarLengthPixels;
     float bottom;
-    if (mDrawInMapView) {
+    if (mScalebarIsChildOfMapView) {
       bottom = mMapView.getHeight() - mAttributionTextHeight -
           dpToPixels(mMapView.getViewInsetBottom() + mPadYDp + mTextSizeDp);
     } else {
@@ -672,8 +718,7 @@ public final class Scalebar extends View {
   private void setupMapView(MapView mapView) {
     // Remove listeners from old MapView
     if (mMapView != null) {
-      mMapView.removeViewpointChangedListener(mViewpointChangedListener);
-      mMapView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+      removeListenersFromMapView();
     }
 
     // Add listeners to new MapView
@@ -681,6 +726,16 @@ public final class Scalebar extends View {
     mMapView.addViewpointChangedListener(mViewpointChangedListener);
     mMapView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
     mDisplayDensity = mMapView.getContext().getResources().getDisplayMetrics().density;
+  }
+
+  /**
+   * Removes the listeners from mMapView.
+   *
+   * @since 100.1.0
+   */
+  private void removeListenersFromMapView() {
+    mMapView.removeViewpointChangedListener(mViewpointChangedListener);
+    mMapView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
   }
 
   /**
@@ -786,8 +841,8 @@ public final class Scalebar extends View {
   private float calculateLeftPos(Alignment alignment, float scalebarLength, LinearUnit displayUnits, Paint textPaint) {
     int left = 0;
     int right = getWidth();
-    int padding = 0;
-    if (mDrawInMapView) {
+    int padding = dpToPixels(mLineWidthDp); // padding to ensure the lines at the ends fit within the view
+    if (mScalebarIsChildOfMapView) {
       left = dpToPixels(mMapView.getViewInsetLeft());
       right -= dpToPixels(mMapView.getViewInsetRight());
       padding = dpToPixels(mPadXDp);
@@ -795,7 +850,7 @@ public final class Scalebar extends View {
     switch (alignment) {
       case LEFT:
       default:
-        // Position start of scalebar at left hand edge of the view, plus padding (if any)
+        // Position start of scalebar at left hand edge of the view, plus padding
         return left + padding;
       case RIGHT:
         // Position end of scalebar at right hand edge of the view, less padding and the width of the units string (if
@@ -943,15 +998,12 @@ public final class Scalebar extends View {
         double distance, LinearUnit displayUnits, Paint textPaint);
 
     /**
-     * Indicates if this style of scalebar is segmented. The default implementation returns false, so subclasses need to
-     * override this method if their scalebar is segmented.
+     * Indicates if this style of scalebar is segmented.
      *
      * @return true if this style of scalebar is segmented, false otherwise
      * @since 100.1.0
      */
-    public boolean isSegmented() {
-      return false;
-    }
+    public abstract boolean isSegmented();
 
     /**
      * Calculates the extra space required at the right hand end of the scalebar to draw the units. This affects the
@@ -1076,6 +1128,11 @@ public final class Scalebar extends View {
   private final class BarRenderer extends ScalebarRenderer {
 
     @Override
+    public boolean isSegmented() {
+      return false;
+    }
+
+    @Override
     public void drawScalebar(Canvas canvas, float left, float top, float right, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
 
@@ -1179,6 +1236,11 @@ public final class Scalebar extends View {
   private final class LineRenderer extends ScalebarRenderer {
 
     @Override
+    public boolean isSegmented() {
+      return false;
+    }
+
+    @Override
     public void drawScalebar(Canvas canvas, float left, float top, float right, float bottom, double distance,
         LinearUnit displayUnits, Paint textPaint) {
 
@@ -1270,6 +1332,11 @@ public final class Scalebar extends View {
   private final class DualUnitLineRenderer extends ScalebarRenderer {
 
     @Override
+    public boolean isSegmented() {
+      return false;
+    }
+
+    @Override
     public float calculateExtraSpaceForUnits(LinearUnit displayUnits, Paint textPaint) {
       return widthOfUnitsString(displayUnits, textPaint);
     }
@@ -1279,8 +1346,8 @@ public final class Scalebar extends View {
         LinearUnit displayUnits, Paint textPaint) {
 
       // Calculate scalebar length in the secondary units
-      LinearUnit secondaryBaseUnits = mUnitSystem == UnitSystem.IMPERIAL ?
-          new LinearUnit(LinearUnitId.METERS) : new LinearUnit(LinearUnitId.FEET);
+      LinearUnit secondaryBaseUnits = mUnitSystem == UnitSystem.METRIC ?
+          new LinearUnit(LinearUnitId.FEET) : new LinearUnit(LinearUnitId.METERS);
       double fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, distance);
 
       // Reduce the secondary units length to make it a nice number
@@ -1290,7 +1357,7 @@ public final class Scalebar extends View {
       float xPosSecondaryTick = left + (float) (lineDisplayLength * secondaryUnitsLength / fullLengthInSecondaryUnits);
 
       // Change units if secondaryUnitsLength is too big a number in the base units
-      UnitSystem secondaryUnitSystem = mUnitSystem == UnitSystem.IMPERIAL ? UnitSystem.METRIC : UnitSystem.IMPERIAL;
+      UnitSystem secondaryUnitSystem = mUnitSystem == UnitSystem.METRIC ? UnitSystem.IMPERIAL : UnitSystem.METRIC;
       LinearUnit secondaryDisplayUnits = ScalebarUtil.selectLinearUnit(secondaryUnitsLength, secondaryUnitSystem);
       if (secondaryDisplayUnits != secondaryBaseUnits) {
         secondaryUnitsLength = secondaryBaseUnits.convertTo(secondaryDisplayUnits, secondaryUnitsLength);
