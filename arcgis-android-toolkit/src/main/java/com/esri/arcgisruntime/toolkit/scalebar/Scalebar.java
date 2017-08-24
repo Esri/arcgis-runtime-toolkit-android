@@ -697,11 +697,12 @@ public final class Scalebar extends View {
     float left = calculateLeftPos(mAlignment, scalebarLengthPixels, displayUnits, textPaint);
     float right = left + scalebarLengthPixels;
     float bottom;
+    float maxPixelsBelowBaseline = textPaint.getFontMetrics().bottom;
     if (mScalebarIsChildOfMapView) {
-      bottom = mMapView.getHeight() - mAttributionTextHeight -
+      bottom = mMapView.getHeight() - mAttributionTextHeight - maxPixelsBelowBaseline -
           dpToPixels(mMapView.getViewInsetBottom() + mPadYDp + mTextSizeDp);
     } else {
-      bottom = getHeight() - dpToPixels(mTextSizeDp);
+      bottom = getHeight() - dpToPixels(mTextSizeDp) - maxPixelsBelowBaseline;
     }
     float top = bottom - dpToPixels(mBarHeightDp);
 
@@ -1395,7 +1396,8 @@ public final class Scalebar extends View {
       canvas.drawPath(linePath, paint);
 
       // Draw the primary units label above the tick at the right hand end
-      float yPosText = top;
+      float maxPixelsBelowBaseline = textPaint.getFontMetrics().bottom;
+      float yPosText = top - maxPixelsBelowBaseline;
       textPaint.setTextAlign(Paint.Align.RIGHT);
       canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint);
       textPaint.setTextAlign(Paint.Align.LEFT);
