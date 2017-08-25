@@ -79,7 +79,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  *   scalebar.lineColor="#FFC0C0C0"
  * /&gt;
  * </pre>
- *
+ * <p>
  * Notice that some of the scalebar attributes are overridden. Here's a list of all the scalebar attributes that can be
  * set in this way:
  * <table>
@@ -273,7 +273,7 @@ public final class Scalebar extends View {
    * {@link Scalebar} above).
    *
    * @param context the current execution Context
-   * @param attrs the attributes of the XML tag that is inflating the view
+   * @param attrs   the attributes of the XML tag that is inflating the view
    * @since 100.1.0
    */
   public Scalebar(Context context, AttributeSet attrs) {
@@ -293,7 +293,7 @@ public final class Scalebar extends View {
     mTextColor = getColorFromAttributes(context, attrs, "scalebar.textColor", DEFAULT_TEXT_COLOR);
     mTextShadowColor = getColorFromAttributes(context, attrs, "scalebar.textShadowColor", DEFAULT_TEXT_SHADOW_COLOR);
     mTextSizeDp = attrs.getAttributeIntValue(null, "scalebar.textSize", DEFAULT_TEXT_SIZE_DP);
-    mBarHeightDp = attrs.getAttributeIntValue(null,"scalebar.barHeight", DEFAULT_BAR_HEIGHT_DP);
+    mBarHeightDp = attrs.getAttributeIntValue(null, "scalebar.barHeight", DEFAULT_BAR_HEIGHT_DP);
   }
 
   /**
@@ -301,7 +301,7 @@ public final class Scalebar extends View {
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
-   * @throws IllegalStateException if this Scalebar is already added to or bound to a MapView
+   * @throws IllegalStateException    if this Scalebar is already added to or bound to a MapView
    * @since 100.1.0
    */
   public void addToMapView(MapView mapView) {
@@ -334,7 +334,7 @@ public final class Scalebar extends View {
    *
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
-   * @throws IllegalStateException if this Scalebar is currently added to a MapView
+   * @throws IllegalStateException    if this Scalebar is currently added to a MapView
    * @since 100.1.0
    */
   public void bindTo(MapView mapView) {
@@ -671,9 +671,9 @@ public final class Scalebar extends View {
     int centerY = (int) (mMapView.getTop() + dpToPixels(mMapView.getViewInsetTop()) + (mapViewVisibleHeight / 2));
     PolylineBuilder builder = new PolylineBuilder(mMapView.getSpatialReference());
     Point p1 =
-        mMapView.screenToLocation(new android.graphics.Point((int)(centerX - maxScaleBarLengthPixels / 2), centerY));
+        mMapView.screenToLocation(new android.graphics.Point((int) (centerX - maxScaleBarLengthPixels / 2), centerY));
     Point p2 =
-        mMapView.screenToLocation(new android.graphics.Point((int)(centerX + maxScaleBarLengthPixels / 2), centerY));
+        mMapView.screenToLocation(new android.graphics.Point((int) (centerX + maxScaleBarLengthPixels / 2), centerY));
     if (p1 == null || p2 == null) {
       return;
     }
@@ -832,10 +832,10 @@ public final class Scalebar extends View {
   /**
    * Calculates the x-coordinate of the left hand end of the scalebar.
    *
-   * @param alignment the alignment of the scalebar
+   * @param alignment      the alignment of the scalebar
    * @param scalebarLength the length of the scalebar in pixels
-   * @param displayUnits the units to be displayed
-   * @param textPaint the Paint used to draw the text
+   * @param displayUnits   the units to be displayed
+   * @param textPaint      the Paint used to draw the text
    * @return the x-coordinate of the left hand end of the scalebar
    * @since 100.1.0
    */
@@ -868,7 +868,7 @@ public final class Scalebar extends View {
    * Calculates the width of the units string.
    *
    * @param displayUnits the units to be displayed, or null if not known yet
-   * @param textPaint the Paint used to draw the text
+   * @param textPaint    the Paint used to draw the text
    * @return the width of the units string, in pixels
    * @since 100.1.0
    */
@@ -888,7 +888,7 @@ public final class Scalebar extends View {
    */
   private int dpToPixels(double dp) {
     double pixels = dp * mDisplayDensity;
-    return (int) (pixels + Integer.signum((int) pixels) * 0.5);
+    return Math.round((float) pixels);
   }
 
   /**
@@ -985,14 +985,14 @@ public final class Scalebar extends View {
     /**
      * Draws a scalebar.
      *
-     * @param canvas the Canvas to draw on
-     * @param left the x-coordinate of the left hand edge of the scalebar
-     * @param top the y-coordinate of the top of the scalebar
-     * @param right the x-coordinate of the right hand edge of the scalebar
-     * @param bottom the y-coordinate of the bottom of the scalebar
-     * @param distance the distance represented by the length of the whole scalebar
+     * @param canvas       the Canvas to draw on
+     * @param left         the x-coordinate of the left hand edge of the scalebar
+     * @param top          the y-coordinate of the top of the scalebar
+     * @param right        the x-coordinate of the right hand edge of the scalebar
+     * @param bottom       the y-coordinate of the bottom of the scalebar
+     * @param distance     the distance represented by the length of the whole scalebar
      * @param displayUnits the units of distance
-     * @param textPaint the Paint to use for drawing the label text
+     * @param textPaint    the Paint to use for drawing the label text
      * @since 100.1.0
      */
     public abstract void drawScalebar(Canvas canvas, float left, float top, float right, float bottom,
@@ -1012,7 +1012,7 @@ public final class Scalebar extends View {
      * override this method if they write the units to the right of the end of the scalebar.
      *
      * @param displayUnits the units
-     * @param textPaint the Paint to use for drawing the units
+     * @param textPaint    the Paint to use for drawing the units
      * @return the extra space required, in pixels
      * @since 100.1.0
      */
@@ -1023,11 +1023,11 @@ public final class Scalebar extends View {
     /**
      * Draws a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
      *
-     * @param canvas the Canvas to draw on
-     * @param left the x-coordinate of the left hand edge of the scalebar
-     * @param top the y-coordinate of the top of the scalebar
-     * @param right the x-coordinate of the right hand edge of the scalebar
-     * @param bottom the y-coordinate of the bottom of the scalebar
+     * @param canvas   the Canvas to draw on
+     * @param left     the x-coordinate of the left hand edge of the scalebar
+     * @param top      the y-coordinate of the top of the scalebar
+     * @param right    the x-coordinate of the right hand edge of the scalebar
+     * @param bottom   the y-coordinate of the bottom of the scalebar
      * @param barColor the fill color for the bar
      * @since 100.1.0
      */
@@ -1051,9 +1051,9 @@ public final class Scalebar extends View {
      * Draws a line and its shadow, including the ticks at each end. Used by LineRenderer and GraduatedLineRenderer.
      *
      * @param canvas the Canvas to draw on
-     * @param left the x-coordinate of the left hand edge of the scalebar
-     * @param top the y-coordinate of the top of the scalebar
-     * @param right the x-coordinate of the right hand edge of the scalebar
+     * @param left   the x-coordinate of the left hand edge of the scalebar
+     * @param top    the y-coordinate of the top of the scalebar
+     * @param right  the x-coordinate of the right hand edge of the scalebar
      * @param bottom the y-coordinate of the bottom of the scalebar
      * @since 100.1.0
      */
@@ -1088,9 +1088,9 @@ public final class Scalebar extends View {
      * Calculates the optimal number of segments in a segmented scalebar of a particular length. Used by
      * AlternatingBarRenderer and GraduatedLineRenderer.
      *
-     * @param distance the distance represented by the length of the whole scalebar
+     * @param distance      the distance represented by the length of the whole scalebar
      * @param displayLength the length of the scalebar in pixels
-     * @param textPaint the Paint to use for drawing the label text
+     * @param textPaint     the Paint to use for drawing the label text
      * @return the number of segments
      * @since 100.1.0
      */
@@ -1225,7 +1225,6 @@ public final class Scalebar extends View {
         xPos += segmentDisplayLength;
       }
     }
-
   }
 
   /**

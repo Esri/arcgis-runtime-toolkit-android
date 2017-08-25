@@ -28,7 +28,7 @@ public class ToolkitUtil {
    * Throws IllegalArgumentException if the value of a given argument is null.
    *
    * @param argValue the argument value to check
-   * @param argName the name of the argument
+   * @param argName  the name of the argument
    * @throws IllegalArgumentException if argValue is null
    * @since 100.1.0
    */

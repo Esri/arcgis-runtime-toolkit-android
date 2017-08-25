@@ -29,27 +29,27 @@ public class ScalebarUtil {
   // Array containing the multipliers that may be used for a scalebar and arrays of segment options appropriate for each
   // multiplier
   private static final MultiplierData[] MULTIPLIER_DATA_ARRAY = {
-      new MultiplierData(1.0, new int[] {1, 2, 4, 5}),
-      new MultiplierData(1.2, new int[] {1, 2, 3, 4}),
-      new MultiplierData(1.5, new int[] {1, 2, 3, 5}),
-      new MultiplierData(1.6, new int[] {1, 2, 4}),
-      new MultiplierData(2.0, new int[] {1, 2, 4, 5}),
-      new MultiplierData(2.4, new int[] {1, 2, 3, 4}),
-      new MultiplierData(3.0, new int[] {1, 2, 3}),
-      new MultiplierData(3.6, new int[] {1, 2, 3}),
-      new MultiplierData(4.0, new int[] {1, 2, 4}),
-      new MultiplierData(5.0, new int[] {1, 2, 5}),
-      new MultiplierData(6.0, new int[] {1, 2, 3}),
-      new MultiplierData(8.0, new int[] {1, 2, 4}),
-      new MultiplierData(9.0, new int[] {1, 2, 3}),
-      new MultiplierData(10.0, new int[] {1, 2, 5})
+      new MultiplierData(1.0, new int[] { 1, 2, 4, 5 }),
+      new MultiplierData(1.2, new int[] { 1, 2, 3, 4 }),
+      new MultiplierData(1.5, new int[] { 1, 2, 3, 5 }),
+      new MultiplierData(1.6, new int[] { 1, 2, 4 }),
+      new MultiplierData(2.0, new int[] { 1, 2, 4, 5 }),
+      new MultiplierData(2.4, new int[] { 1, 2, 3, 4 }),
+      new MultiplierData(3.0, new int[] { 1, 2, 3 }),
+      new MultiplierData(3.6, new int[] { 1, 2, 3 }),
+      new MultiplierData(4.0, new int[] { 1, 2, 4 }),
+      new MultiplierData(5.0, new int[] { 1, 2, 5 }),
+      new MultiplierData(6.0, new int[] { 1, 2, 3 }),
+      new MultiplierData(8.0, new int[] { 1, 2, 4 }),
+      new MultiplierData(9.0, new int[] { 1, 2, 3 }),
+      new MultiplierData(10.0, new int[] { 1, 2, 5 })
   };
 
   /**
    * Calculates the best length for the scalebar to fit within a given maximum length.
    *
-   * @param maxLength the maximum length
-   * @param unit indicates the unit of length being used: meters or feet
+   * @param maxLength   the maximum length
+   * @param unit        indicates the unit of length being used: meters or feet
    * @param isSegmented true if the scalebar is segmented
    * @return the "best length", the highest "nice" number less than or equal to maxLength
    * @since 100.1.0
@@ -82,8 +82,8 @@ public class ScalebarUtil {
    * Calculates the optimal number of segments in the scalebar when the distance represented by the whole scalebar has
    * a particular value. This is optimized so that the labels on the segments are all "nice" numbers.
    *
-   * @param distance the distance represented by the whole scalebar, that is the value to be displayed at the end of the
-   *                 scalebar
+   * @param distance       the distance represented by the whole scalebar, that is the value to be displayed at the
+   *                       end of the scalebar
    * @param maxNumSegments the maximum number of segments to avoid the labels of the segments overwriting each other
    *                       (this is passed in by the caller to allow this method to be platform independent)
    * @return the optimal number of segments in the scalebar
@@ -95,7 +95,7 @@ public class ScalebarUtil {
 
     // Select the largest option that's <= maxNumSegments
     int ret = 1;
-    for (int i=0; i < options.length; i++) {
+    for (int i = 0; i < options.length; i++) {
       if (options[i] > maxNumSegments) {
         break;
       }
@@ -108,14 +108,13 @@ public class ScalebarUtil {
    * Selects the appropriate LinearUnit to use when the distance represented by the whole scalebar has a particular
    * value.
    *
-   * @param distance the distance represented by the whole scalebar, that is the value to be displayed at the end of the
-   *                 scalebar; in feet if unitSystem is IMPERIAL or meters if unitSystem is METRIC
+   * @param distance   the distance represented by the whole scalebar, that is the value to be displayed at the end
+   *                   of the scalebar; in feet if unitSystem is IMPERIAL or meters if unitSystem is METRIC
    * @param unitSystem the UnitSystem being used
    * @return the LinearUnit
    * @since 100.1.0
    */
   public static LinearUnit selectLinearUnit(double distance, UnitSystem unitSystem) {
-
     switch (unitSystem) {
       case IMPERIAL:
         // use MILES if at least half a mile
@@ -173,7 +172,7 @@ public class ScalebarUtil {
    * Selects the "multiplier" used when calculating the length of a scalebar or the number of segments in the
    * scalebar. This is chosen to give "nice" numbers for all the labels on the scalebar.
    *
-   * @param distance the distance represented by the scalebar
+   * @param distance  the distance represented by the scalebar
    * @param magnitude the "magnitude" used when calculating the length of a scalebar or the number of segments
    * @return a MultiplierData object containing the multiplier, which will give the scalebar length when multiplied by
    * the magnitude
@@ -218,7 +217,7 @@ public class ScalebarUtil {
     /**
      * Constructs a MultiplierData.
      *
-     * @param multiplier the multiplier
+     * @param multiplier     the multiplier
      * @param segmentOptions the array of segment options appropriate for the multiplier; these are ints representing
      *                       number of segments in the scalebar; it's important that they are in ascending order
      * @since 100.1.0
