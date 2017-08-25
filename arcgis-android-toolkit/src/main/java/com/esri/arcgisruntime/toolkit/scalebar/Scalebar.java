@@ -166,6 +166,10 @@ public final class Scalebar extends View {
 
   private static final String TAG = "Scalebar";
 
+  private static final LinearUnit LINEAR_UNITS_METERS = new LinearUnit(LinearUnitId.METERS);
+
+  private static final LinearUnit LINEAR_UNITS_FEET = new LinearUnit(LinearUnitId.FEET);
+
   private static final int ALPHA_50_PC = 0x80000000;
 
   private static final int LABEL_X_PAD_DP = 6;
@@ -652,8 +656,7 @@ public final class Scalebar extends View {
         mMapView.getHeight() - dpToPixels(mMapView.getViewInsetTop() + mMapView.getViewInsetBottom());
 
     // Calculate maximum length of scalebar in pixels
-    LinearUnit baseUnits = mUnitSystem == UnitSystem.METRIC ?
-        new LinearUnit(LinearUnitId.METERS) : new LinearUnit(LinearUnitId.FEET);
+    LinearUnit baseUnits = mUnitSystem == UnitSystem.METRIC ? LINEAR_UNITS_METERS : LINEAR_UNITS_FEET;
     float maxScaleBarLengthPixels;
     if (mScalebarIsChildOfMapView) {
       // When scalebar is a child of the MapView, its length is based on the size of the visible part of the MapView
@@ -1346,8 +1349,7 @@ public final class Scalebar extends View {
         LinearUnit displayUnits, Paint textPaint) {
 
       // Calculate scalebar length in the secondary units
-      LinearUnit secondaryBaseUnits = mUnitSystem == UnitSystem.METRIC ?
-          new LinearUnit(LinearUnitId.FEET) : new LinearUnit(LinearUnitId.METERS);
+      LinearUnit secondaryBaseUnits = mUnitSystem == UnitSystem.METRIC ? LINEAR_UNITS_FEET : LINEAR_UNITS_METERS;
       double fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, distance);
 
       // Reduce the secondary units length to make it a nice number
