@@ -48,11 +48,19 @@ the MapView. This causes default settings to be used. Optionally, setter methods
 (bottom-left, bottom-right or bottom-centered) and no control over the size (it is sized automatically to fit
 comfortably within the MapView).
 
-For example:
+For example in Java:
 ```
 mScalebar = new Scalebar(mMapView.getContext());
-mScalebar.setAlignment(ScalebarAlignment.CENTER); // optionally override default settings
+mScalebar.setAlignment(Scalebar.Alignment.CENTER); // optionally override default settings
 mScalebar.addToMapView(mMapView);
+```
+and the same thing in Kotlin:
+```
+val scaleBar = Scalebar(this)
+with (scaleBar) {
+    alignment = Scalebar.Alignment.CENTER
+    addToMapView(mapView)
+}
 ```
 
 ## Workflow 2
@@ -91,8 +99,13 @@ values of `fillColor`, `alternateFillColor` and `lineColor`:
 </FrameLayout>
 ```
 
-And here's example Java code to bind the `Scalebar` to the MapView:
+Here's example Java code to bind the `Scalebar` to the MapView:
 ```
 mScalebar = (Scalebar) findViewById(R.id.scalebar);
 mScalebar.bindTo(mMapView);
+```
+and the same thing in Kotlin:
+```
+//HOW TO FIND THE Scalebar IN KOTLIN???
+scalebar.bindTo(mapView)
 ```
