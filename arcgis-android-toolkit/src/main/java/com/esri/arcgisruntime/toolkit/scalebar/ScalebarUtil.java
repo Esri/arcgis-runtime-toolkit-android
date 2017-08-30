@@ -26,6 +26,14 @@ import com.esri.arcgisruntime.geometry.LinearUnitId;
  */
 public class ScalebarUtil {
 
+  private static final LinearUnit LINEAR_UNIT_METERS = new LinearUnit(LinearUnitId.METERS);
+
+  private static final LinearUnit LINEAR_UNIT_FEET = new LinearUnit(LinearUnitId.FEET);
+
+  private static final LinearUnit LINEAR_UNIT_KILOMETERS = new LinearUnit(LinearUnitId.KILOMETERS);
+
+  private static final LinearUnit LINEAR_UNIT_MILES = new LinearUnit(LinearUnitId.MILES);
+
   // Array containing the multipliers that may be used for a scalebar and arrays of segment options appropriate for each
   // multiplier
   private static final MultiplierData[] MULTIPLIER_DATA_ARRAY = {
@@ -95,11 +103,11 @@ public class ScalebarUtil {
 
     // Select the largest option that's <= maxNumSegments
     int ret = 1;
-    for (int i = 0; i < options.length; i++) {
-      if (options[i] > maxNumSegments) {
+    for (int option : options) {
+      if (option > maxNumSegments) {
         break;
       }
-      ret = options[i];
+      ret = option;
     }
     return ret;
   }
@@ -119,17 +127,17 @@ public class ScalebarUtil {
       case IMPERIAL:
         // use MILES if at least half a mile
         if (distance >= 2640) {
-          return new LinearUnit(LinearUnitId.MILES);
+          return LINEAR_UNIT_MILES;
         }
-        return new LinearUnit(LinearUnitId.FEET);
+        return LINEAR_UNIT_FEET;
 
       case METRIC:
       default:
         // use KILOMETERS if at least one kilometer
         if (distance >= 1000) {
-          return new LinearUnit(LinearUnitId.KILOMETERS);
+          return LINEAR_UNIT_KILOMETERS;
         }
-        return new LinearUnit(LinearUnitId.METERS);
+        return LINEAR_UNIT_METERS;
     }
   }
 
@@ -182,14 +190,14 @@ public class ScalebarUtil {
     double residual = distance / magnitude;
 
     // Select the largest multiplier that's <= residual
-    MultiplierData multiplierData = MULTIPLIER_DATA_ARRAY[0];
-    for (int i = 0; i < MULTIPLIER_DATA_ARRAY.length; i++) {
-      if (MULTIPLIER_DATA_ARRAY[i].getMultiplier() > residual) {
+    MultiplierData ret = MULTIPLIER_DATA_ARRAY[0];
+    for (MultiplierData multiplierData : MULTIPLIER_DATA_ARRAY) {
+      if (multiplierData.getMultiplier() > residual) {
         break;
       }
-      multiplierData = MULTIPLIER_DATA_ARRAY[i];
+      ret = multiplierData;
     }
-    return multiplierData;
+    return ret;
   }
 
   /**
