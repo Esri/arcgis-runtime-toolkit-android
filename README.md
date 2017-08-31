@@ -1,5 +1,10 @@
 # ArcGIS Runtime Toolkit Android
 
+## Components
+Please read the toolkit components usage guide on our [wiki](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki)
+
+- [Scalebar](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Scalebar)
+
 ## Usage
 
 ```groovy
