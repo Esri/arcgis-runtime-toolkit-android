@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Scalebar Test App</string>
+    <string name="title_regular">Regular</string>
+    <string name="title_custom1">Custom 1</string>
+    <string name="title_custom2">Custom 2</string>
+    <string name="message_regular">Regular Layout\nScalebar added to MapView</string>
+    <string name="message_custom1">Custom Layout 1\nScalebar overlayed on MapView</string>
+    <string name="message_custom2">Custom Layout 2\nScalebar outside MapView</string>
+</resources>

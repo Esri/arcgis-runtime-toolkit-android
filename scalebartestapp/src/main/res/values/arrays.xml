@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="scalebar_styles">
+        <item>Bar</item>
+        <item>Alternating Bar</item>
+        <item>Line</item>
+        <item>Graduated Line</item>
+        <item>Dual Unit Line</item>
+    </string-array>
+
+    <string-array name="scalebar_alignments">
+        <item>Left</item>
+        <item>Center</item>
+        <item>Right</item>
+    </string-array>
+
+    <string-array name="scalebar_units">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
+    <string-array name="scalebar_colors">
+        <item>Black</item>
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Dary Gray</item>
+        <item>Gray</item>
+        <item>Green</item>
+        <item>Light Gray</item>
+        <item>Magenta</item>
+        <item>Red</item>
+        <item>White</item>
+        <item>Yellow</item>
+    </string-array>
+
+    <string-array name="scalebar_typefaces">
+        <item>Monospace</item>
+        <item>Sans Serif</item>
+        <item>Serif</item>
+        <item>Default Bold</item>
+        <item>Default Bold Italic</item>
+    </string-array>
+
+</resources>
