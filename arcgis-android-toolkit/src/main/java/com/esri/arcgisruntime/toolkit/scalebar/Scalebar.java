@@ -165,7 +165,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  */
 public final class Scalebar extends View {
 
-  private static final String TAG = "Scalebar";
+  private static final String TAG = Scalebar.class.getSimpleName();
 
   private static final LinearUnit LINEAR_UNIT_METERS = new LinearUnit(LinearUnitId.METERS);
 
