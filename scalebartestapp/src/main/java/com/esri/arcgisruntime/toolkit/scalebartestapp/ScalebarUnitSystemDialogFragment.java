@@ -28,7 +28,7 @@ import com.esri.arcgisruntime.UnitSystem;
  *
  * @since 100.1.0
  */
-public final class SpecifyUnitSystemDialogFragment extends DialogFragment {
+public final class ScalebarUnitSystemDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
@@ -57,7 +57,7 @@ public final class SpecifyUnitSystemDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement SpecifyUnitSystemDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement ScalebarUnitSystemDialogFragment.Listener");
     }
   }
 

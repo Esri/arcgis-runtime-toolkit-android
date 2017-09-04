@@ -40,11 +40,12 @@ import java.util.concurrent.CancellationException;
  *
  * @since 100.1.0
  */
-public final class MainActivity extends AppCompatActivity implements SpecifyStyleDialogFragment.Listener,
-    SpecifyAlignmentDialogFragment.Listener, SpecifyUnitSystemDialogFragment.Listener,
-    SpecifyColorDialogFragment.Listener, SpecifyTypefaceDialogFragment.Listener, SpecifySizeDialogFragment.Listener {
+public final class ScalebarMainActivity extends AppCompatActivity implements ScalebarStyleDialogFragment.Listener,
+    ScalebarAlignmentDialogFragment.Listener, ScalebarUnitSystemDialogFragment.Listener,
+    ScalebarColorDialogFragment.Listener, ScalebarTypefaceDialogFragment.Listener, ScalebarSizeDialogFragment.Listener,
+    ScalebarBasemapDialogFragment.Listener {
 
-  private static final String TAG = "MainActivity";
+  private static final String TAG = ScalebarMainActivity.class.getSimpleName();
 
   private MapView mMapView;
 
@@ -59,7 +60,7 @@ public final class MainActivity extends AppCompatActivity implements SpecifyStyl
     super.onCreate(savedInstanceState);
 
     // Create a map containing just a Basemap
-    mMap = new ArcGISMap(Basemap.createNavigationVector());
+    mMap = new ArcGISMap(Basemap.createStreetsVector());
 
     // Set the content view, find the MapView within it and set the map created above on the MapView
     changeContentView(R.layout.activity_main, R.string.message_regular);
@@ -109,13 +110,13 @@ public final class MainActivity extends AppCompatActivity implements SpecifyStyl
     try {
       switch (mMenuItemId) {
         case R.id.action_style:
-          new SpecifyStyleDialogFragment().show(getSupportFragmentManager(), "StyleDialog");
+          new ScalebarStyleDialogFragment().show(getSupportFragmentManager(), "StyleDialog");
           return true;
         case R.id.action_alignment:
-          new SpecifyAlignmentDialogFragment().show(getSupportFragmentManager(), "AlignmentDialog");
+          new ScalebarAlignmentDialogFragment().show(getSupportFragmentManager(), "AlignmentDialog");
           return true;
         case R.id.action_unit_system:
-          new SpecifyUnitSystemDialogFragment().show(getSupportFragmentManager(), "UnitSystemDialog");
+          new ScalebarUnitSystemDialogFragment().show(getSupportFragmentManager(), "UnitSystemDialog");
           return true;
         case R.id.action_fill_color:
         case R.id.action_alternate_fill_color:
@@ -123,17 +124,17 @@ public final class MainActivity extends AppCompatActivity implements SpecifyStyl
         case R.id.action_shadow_color:
         case R.id.action_text_color:
         case R.id.action_text_shadow_color:
-          new SpecifyColorDialogFragment().show(getSupportFragmentManager(), "ColorDialog");
+          new ScalebarColorDialogFragment().show(getSupportFragmentManager(), "ColorDialog");
           return true;
         case R.id.action_typeface:
-          new SpecifyTypefaceDialogFragment().show(getSupportFragmentManager(), "TypefaceDialog");
+          new ScalebarTypefaceDialogFragment().show(getSupportFragmentManager(), "TypefaceDialog");
           return true;
         case R.id.action_text_size:
-          SpecifySizeDialogFragment.newInstance(
+          ScalebarSizeDialogFragment.newInstance(
               "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "SizeDialog");
           return true;
         case R.id.action_bar_height:
-          SpecifySizeDialogFragment.newInstance(
+          ScalebarSizeDialogFragment.newInstance(
               "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "SizeDialog");
           return true;
         case R.id.action_add_insets:
@@ -141,6 +142,9 @@ public final class MainActivity extends AppCompatActivity implements SpecifyStyl
           return true;
         case R.id.action_remove_insets:
           removeInsetsFromMapView();
+          return true;
+        case R.id.action_change_basemap:
+          new ScalebarBasemapDialogFragment().show(getSupportFragmentManager(), "BasemapDialog");
           return true;
       }
     } catch (CancellationException e) {
@@ -205,6 +209,12 @@ public final class MainActivity extends AppCompatActivity implements SpecifyStyl
         mScalebar.setBarHeight(size);
         break;
     }
+  }
+
+  @Override
+  public void onBasemapSpecified(Basemap basemap) {
+    mMap = new ArcGISMap(basemap);
+    mMapView.setMap(mMap);
   }
 
   /**

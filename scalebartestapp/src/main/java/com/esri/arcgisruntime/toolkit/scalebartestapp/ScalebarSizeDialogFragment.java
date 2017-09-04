@@ -31,7 +31,7 @@ import android.widget.EditText;
  *
  * @since 100.1.0
  */
-public final class SpecifySizeDialogFragment extends DialogFragment {
+public final class ScalebarSizeDialogFragment extends DialogFragment {
   private static final String KEY_TITLE = "KEY_TITLE";
 
   private static final String KEY_VALUE = "KEY_VALUE";
@@ -56,16 +56,16 @@ public final class SpecifySizeDialogFragment extends DialogFragment {
   private EditText mSizeField;
 
   /**
-   * Creates a new instance of SpecifySizeDialogFragment.
+   * Creates a new instance of ScalebarSizeDialogFragment.
    *
    * @param title the title of the dialog
    * @param value the current size value, for display as a hint
-   * @return the SpecifySizeDialogFragment
+   * @return the ScalebarSizeDialogFragment
    * @since 100.1.0
    */
-  public static SpecifySizeDialogFragment newInstance(String title, float value) {
+  public static ScalebarSizeDialogFragment newInstance(String title, float value) {
     // Create the fragment
-    SpecifySizeDialogFragment fragment = new SpecifySizeDialogFragment();
+    ScalebarSizeDialogFragment fragment = new ScalebarSizeDialogFragment();
 
     // Set arguments on the fragment
     Bundle args = new Bundle();
@@ -85,7 +85,7 @@ public final class SpecifySizeDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement SpecifySizeDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement ScalebarSizeDialogFragment.Listener");
     }
   }
 
@@ -119,7 +119,7 @@ public final class SpecifySizeDialogFragment extends DialogFragment {
             try {
               mListener.onScalebarSizeSpecified(Float.parseFloat(mSizeField.getText().toString()));
             } catch (NumberFormatException e) {
-              Log.e(SpecifySizeDialogFragment.this.getTag(), "Failed to parse input as a float");
+              Log.e(ScalebarSizeDialogFragment.this.getTag(), "Failed to parse input as a float");
             }
           }
         });

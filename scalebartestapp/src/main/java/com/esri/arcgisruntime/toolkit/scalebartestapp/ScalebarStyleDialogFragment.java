@@ -24,11 +24,11 @@ import android.support.v7.app.AlertDialog;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
 
 /**
- * Displays a dialog asking the user to select a scalebar alignment option.
+ * Displays a dialog asking the user to select a scalebar style option.
  *
  * @since 100.1.0
  */
-public final class SpecifyAlignmentDialogFragment extends DialogFragment {
+public final class ScalebarStyleDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
@@ -37,12 +37,12 @@ public final class SpecifyAlignmentDialogFragment extends DialogFragment {
    */
   public interface Listener {
     /**
-     * Called when user selects a scalebar alignment option.
+     * Called when user selects a scalebar style option.
      *
-     * @param alignment the selected alignment
+     * @param style the selected style
      * @since 100.1.0
      */
-    void onScalebarAlignmentSpecified(Scalebar.Alignment alignment);
+    void onScalebarStyleSpecified(Scalebar.Style style);
   }
 
   private Listener mListener;
@@ -57,31 +57,37 @@ public final class SpecifyAlignmentDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement SpecifyAlignmentDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement ScalebarStyleDialogFragment.Listener");
     }
   }
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setTitle("Scalebar alignment:")
+    builder.setTitle("Scalebar style:")
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             // User cancelled the dialog - do nothing
           }
         })
-        .setItems(R.array.scalebar_alignments, new DialogInterface.OnClickListener() {
+        .setItems(R.array.scalebar_styles, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
             // Make callback with the selected item
             switch (which) {
               case 0:
-                mListener.onScalebarAlignmentSpecified(Scalebar.Alignment.LEFT);
+                mListener.onScalebarStyleSpecified(Scalebar.Style.BAR);
                 break;
               case 1:
-                mListener.onScalebarAlignmentSpecified(Scalebar.Alignment.CENTER);
+                mListener.onScalebarStyleSpecified(Scalebar.Style.ALTERNATING_BAR);
                 break;
               case 2:
-                mListener.onScalebarAlignmentSpecified(Scalebar.Alignment.RIGHT);
+                mListener.onScalebarStyleSpecified(Scalebar.Style.LINE);
+                break;
+              case 3:
+                mListener.onScalebarStyleSpecified(Scalebar.Style.GRADUATED_LINE);
+                break;
+              case 4:
+                mListener.onScalebarStyleSpecified(Scalebar.Style.DUAL_UNIT_LINE);
                 break;
             }
           }

@@ -42,4 +42,12 @@
         <item>Default Bold Italic</item>
     </string-array>
 
+    <string-array name="scalebar_basemaps">
+        <item>Streets (102100)</item>
+        <item>Imagery with Labels (102100)</item>
+        <item>OS Open Carto (27700)</item>
+        <item>Arctic Ocean Base (5936)</item>
+        <item>Robinson Coordinate System (54030)</item>
+    </string-array>
+
 </resources>

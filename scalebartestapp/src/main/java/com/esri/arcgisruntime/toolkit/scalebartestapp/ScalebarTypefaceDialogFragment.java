@@ -18,17 +18,17 @@ package com.esri.arcgisruntime.toolkit.scalebartestapp;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
 
 /**
- * Displays a dialog asking the user to select a scalebar style option.
+ * Displays a dialog asking the user to select a scalebar typeface option.
  *
  * @since 100.1.0
  */
-public final class SpecifyStyleDialogFragment extends DialogFragment {
+public final class ScalebarTypefaceDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
@@ -37,12 +37,12 @@ public final class SpecifyStyleDialogFragment extends DialogFragment {
    */
   public interface Listener {
     /**
-     * Called when user selects a scalebar style option.
+     * Called when user selects a scalebar typeface option.
      *
-     * @param style the selected style
+     * @param typeface the selected typeface
      * @since 100.1.0
      */
-    void onScalebarStyleSpecified(Scalebar.Style style);
+    void onScalebarTypefaceSpecified(Typeface typeface);
   }
 
   private Listener mListener;
@@ -57,37 +57,37 @@ public final class SpecifyStyleDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement SpecifyStyleDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement ScalebarTypefaceDialogFragment.Listener");
     }
   }
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setTitle("Scalebar style:")
+    builder.setTitle("Scalebar typeface:")
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             // User cancelled the dialog - do nothing
           }
         })
-        .setItems(R.array.scalebar_styles, new DialogInterface.OnClickListener() {
+        .setItems(R.array.scalebar_typefaces, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
             // Make callback with the selected item
             switch (which) {
               case 0:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.BAR);
+                mListener.onScalebarTypefaceSpecified(Typeface.MONOSPACE);
                 break;
               case 1:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.ALTERNATING_BAR);
+                mListener.onScalebarTypefaceSpecified(Typeface.SANS_SERIF);
                 break;
               case 2:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.LINE);
+                mListener.onScalebarTypefaceSpecified(Typeface.SERIF);
                 break;
               case 3:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.GRADUATED_LINE);
+                mListener.onScalebarTypefaceSpecified(Typeface.DEFAULT_BOLD);
                 break;
               case 4:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.DUAL_UNIT_LINE);
+                mListener.onScalebarTypefaceSpecified(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC));
                 break;
             }
           }

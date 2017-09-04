@@ -18,17 +18,17 @@ package com.esri.arcgisruntime.toolkit.scalebartestapp;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Typeface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 /**
- * Displays a dialog asking the user to select a scalebar typeface option.
+ * Displays a dialog asking the user to select a color option.
  *
  * @since 100.1.0
  */
-public final class SpecifyTypefaceDialogFragment extends DialogFragment {
+public final class ScalebarColorDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
@@ -37,12 +37,12 @@ public final class SpecifyTypefaceDialogFragment extends DialogFragment {
    */
   public interface Listener {
     /**
-     * Called when user selects a scalebar typeface option.
+     * Called when user selects a scalebar color option.
      *
-     * @param typeface the selected typeface
+     * @param color the selected color
      * @since 100.1.0
      */
-    void onScalebarTypefaceSpecified(Typeface typeface);
+    void onScalebarColorSpecified(int color);
   }
 
   private Listener mListener;
@@ -57,37 +57,55 @@ public final class SpecifyTypefaceDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement SpecifyTypefaceDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement ScalebarColorDialogFragment.Listener");
     }
   }
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setTitle("Scalebar typeface:")
+    builder.setTitle("Select color:")
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             // User cancelled the dialog - do nothing
           }
         })
-        .setItems(R.array.scalebar_typefaces, new DialogInterface.OnClickListener() {
+        .setItems(R.array.scalebar_colors, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
             // Make callback with the selected item
             switch (which) {
               case 0:
-                mListener.onScalebarTypefaceSpecified(Typeface.MONOSPACE);
+                mListener.onScalebarColorSpecified(Color.BLACK);
                 break;
               case 1:
-                mListener.onScalebarTypefaceSpecified(Typeface.SANS_SERIF);
+                mListener.onScalebarColorSpecified(Color.BLUE);
                 break;
               case 2:
-                mListener.onScalebarTypefaceSpecified(Typeface.SERIF);
+                mListener.onScalebarColorSpecified(Color.CYAN);
                 break;
               case 3:
-                mListener.onScalebarTypefaceSpecified(Typeface.DEFAULT_BOLD);
+                mListener.onScalebarColorSpecified(Color.DKGRAY);
                 break;
               case 4:
-                mListener.onScalebarTypefaceSpecified(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC));
+                mListener.onScalebarColorSpecified(Color.GRAY);
+                break;
+              case 5:
+                mListener.onScalebarColorSpecified(Color.GREEN);
+                break;
+              case 6:
+                mListener.onScalebarColorSpecified(Color.LTGRAY);
+                break;
+              case 7:
+                mListener.onScalebarColorSpecified(Color.MAGENTA);
+                break;
+              case 8:
+                mListener.onScalebarColorSpecified(Color.RED);
+                break;
+              case 9:
+                mListener.onScalebarColorSpecified(Color.WHITE);
+                break;
+              case 10:
+                mListener.onScalebarColorSpecified(Color.YELLOW);
                 break;
             }
           }
