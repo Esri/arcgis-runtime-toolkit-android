@@ -1,1 +1,1 @@
-include ':arcgis-android-toolkit',':scalebartestapp'
+include ':arcgis-android-toolkit', ':toolkit-test-app'
