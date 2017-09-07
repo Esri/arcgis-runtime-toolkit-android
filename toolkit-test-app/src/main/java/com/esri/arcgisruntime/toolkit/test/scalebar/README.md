@@ -1,10 +1,10 @@
-# scalebartestapp
+# Scalebar Test Activity
 
 ## Introduction
 
-This is a test app for the Scalebar toolkit component. It displays a MapView and allows a Scalebar for that MapView to
-be displayed using a number of different layouts. It also offers a set of menu options to change the attributes of the
-Scalebar and modify the MapView.
+This is a test activity for the Scalebar toolkit component. It displays a MapView and allows a Scalebar for that MapView
+to be displayed using a number of different layouts. It also offers a set of menu options to change the attributes of
+the Scalebar and modify the MapView.
 
 ## Layout Selection
 
