@@ -7,15 +7,7 @@
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_margin="10dp"
-              android:text="Select test activity to run:"
+              android:text="Hello world compass!"
     />
-
-    <ListView
-            android:id="@+id/toolkit_main_listview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:verticalScrollbarPosition="right"
-            />
 
 </LinearLayout>

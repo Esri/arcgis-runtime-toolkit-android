@@ -26,8 +26,18 @@
         </activity>
 
         <activity
+                android:name="com.esri.arcgisruntime.toolkit.test.compass.CompassTestActivity"
+                android:label="Compass Test"
+                android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.TEST"/>
+            </intent-filter>
+        </activity>
+        <activity
                 android:name="com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity"
-                android:label="Scalebar Test App"
+                android:label="Scalebar Test"
                 android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

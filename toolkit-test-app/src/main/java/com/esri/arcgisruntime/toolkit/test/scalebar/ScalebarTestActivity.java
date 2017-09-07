@@ -37,7 +37,7 @@ import com.esri.arcgisruntime.toolkit.test.R;
 import java.util.concurrent.CancellationException;
 
 /**
- * The main Activity class for the app used to test the Scalebar.
+ * The Scalebar test activity.
  *
  * @since 100.1.0
  */

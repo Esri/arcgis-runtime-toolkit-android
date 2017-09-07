@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- This array drives the list of test activities that's displayed when the toolkit test app is invoked.
+         Each item is the fully-qualified class name of a test activity -->
+
     <string-array name="activityClassNames">
         <item>com.esri.arcgisruntime.toolkit.test.compass.CompassTestActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity</item>
