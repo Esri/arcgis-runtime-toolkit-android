@@ -44,7 +44,7 @@ public final class ToolkitTestAppMainActivity extends AppCompatActivity {
 
     // Set the content view and find the ListView within it
     setContentView(R.layout.toolkit_main);
-    ListView listView = (ListView) findViewById(R.id.toolkit_main_listview);
+    ListView listView = findViewById(R.id.toolkit_main_listview);
 
     // Set adapter on the ListView
     listView.setAdapter(new SimpleAdapter(this, getAdapterData(), android.R.layout.simple_list_item_1,
@@ -85,7 +85,7 @@ public final class ToolkitTestAppMainActivity extends AppCompatActivity {
           Intent intent = new Intent(ToolkitTestAppMainActivity.this, Class.forName(className));
 
           // Add a Map containing the title and Intent
-          Map<String, Object> map = new HashMap<String, Object>();
+          Map<String, Object> map = new HashMap<>();
           map.put("title", title);
           map.put("intent", intent);
           adapterData.add(map);

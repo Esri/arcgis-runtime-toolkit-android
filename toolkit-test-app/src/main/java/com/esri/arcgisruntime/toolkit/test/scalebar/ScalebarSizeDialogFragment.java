@@ -102,7 +102,7 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
     // Inflate the custom view we use for this dialog and initialize the size field
     LayoutInflater inflater = getActivity().getLayoutInflater();
     View sizeDialog = inflater.inflate(R.layout.scalebar_size_dialog, null);
-    mSizeField = (EditText) sizeDialog.findViewById(R.id.scalebar_size);
+    mSizeField = sizeDialog.findViewById(R.id.scalebar_size);
     mSizeField.setHint(valueString);
 
     // Setup the dialog builder
