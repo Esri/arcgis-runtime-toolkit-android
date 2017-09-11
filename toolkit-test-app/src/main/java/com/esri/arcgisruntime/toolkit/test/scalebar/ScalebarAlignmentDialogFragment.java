@@ -26,22 +26,17 @@ import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
  * Displays a dialog asking the user to select a scalebar alignment option.
- *
- * @since 100.1.0
  */
 public final class ScalebarAlignmentDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
-   *
-   * @since 100.1.0
    */
   public interface Listener {
     /**
      * Called when user selects a scalebar alignment option.
      *
      * @param alignment the selected alignment
-     * @since 100.1.0
      */
     void onScalebarAlignmentSpecified(Scalebar.Alignment alignment);
   }

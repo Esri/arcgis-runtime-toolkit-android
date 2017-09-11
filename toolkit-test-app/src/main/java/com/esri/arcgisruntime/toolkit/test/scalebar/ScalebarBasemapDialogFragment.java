@@ -27,8 +27,6 @@ import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
  * Displays a dialog asking the user to select a basemap.
- *
- * @since 100.1.0
  */
 public class ScalebarBasemapDialogFragment extends DialogFragment {
   private static final String URL_OS_OPEN_CARTO =
@@ -42,8 +40,6 @@ public class ScalebarBasemapDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
-   *
-   * @since 100.1.0
    */
   public interface Listener {
     /**

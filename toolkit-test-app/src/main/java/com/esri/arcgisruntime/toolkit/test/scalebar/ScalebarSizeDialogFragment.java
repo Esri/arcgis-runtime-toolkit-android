@@ -29,8 +29,6 @@ import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
  * Displays a dialog asking the user to specify a size.
- *
- * @since 100.1.0
  */
 public final class ScalebarSizeDialogFragment extends DialogFragment {
   private static final String KEY_TITLE = "KEY_TITLE";
@@ -39,8 +37,6 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
-   *
-   * @since 100.1.0
    */
   public interface Listener {
     /**
@@ -62,7 +58,6 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
    * @param title the title of the dialog
    * @param value the current size value, for display as a hint
    * @return the ScalebarSizeDialogFragment
-   * @since 100.1.0
    */
   public static ScalebarSizeDialogFragment newInstance(String title, float value) {
     // Create the fragment

@@ -31,8 +31,6 @@ import java.util.Map;
 
 /**
  * The main Activity class for the toolkit test app. Displays a list of test activities that can be run.
- *
- * @since 100.1.0
  */
 public final class ToolkitTestAppMainActivity extends AppCompatActivity {
 
@@ -66,7 +64,6 @@ public final class ToolkitTestAppMainActivity extends AppCompatActivity {
    * ListView) and an Intent that can be used to start the activity.
    *
    * @return the adapter data
-   * @since 100.1.0
    */
   private List<Map<String, Object>> getAdapterData() {
     List<Map<String, Object>> adapterData = new ArrayList<>();

@@ -26,22 +26,17 @@ import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
  * Displays a dialog asking the user to select a color option.
- *
- * @since 100.1.0
  */
 public final class ScalebarColorDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
-   *
-   * @since 100.1.0
    */
   public interface Listener {
     /**
      * Called when user selects a scalebar color option.
      *
      * @param color the selected color
-     * @since 100.1.0
      */
     void onScalebarColorSpecified(int color);
   }

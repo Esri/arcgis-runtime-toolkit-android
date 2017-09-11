@@ -38,8 +38,6 @@ import java.util.concurrent.CancellationException;
 
 /**
  * The Scalebar test activity.
- *
- * @since 100.1.0
  */
 public final class ScalebarTestActivity extends AppCompatActivity implements ScalebarStyleDialogFragment.Listener,
     ScalebarAlignmentDialogFragment.Listener, ScalebarUnitSystemDialogFragment.Listener,
@@ -223,7 +221,6 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
    *
    * @param layoutId        resource ID of the layout to set as the content view
    * @param messageStringId resource ID of a string to display in the 'message' field
-   * @since 100.1.0
    */
   private void changeContentView(int layoutId, int messageStringId) {
     // Set the content view
@@ -276,8 +273,6 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
    * Makes the "inset" views that overlay the 4 edges of the MapView visible and tells the MapView about them. Insets
    * controls the active visible area, instructing the MapView to ignore parts that are obstructed by overlaid UI
    * elements.
-   *
-   * @since 100.1.0
    */
   private void addInsetsToMapView() {
     RelativeLayout leftInset = findViewById(R.id.left_inset);
@@ -298,8 +293,6 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   /**
    * Makes the "inset" views that overlay the 4 edges of the MapView invisible and tells the MapView there are no
    * insets.
-   *
-   * @since 100.1.0
    */
   private void removeInsetsFromMapView() {
     RelativeLayout leftInset = findViewById(R.id.left_inset);
@@ -319,7 +312,6 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
    * Writes information about a load error to the log.
    *
    * @param loadError the load error
-   * @since 100.1.0
    */
   private void logLoadError(ArcGISRuntimeException loadError) {
     if (loadError != null) {
