@@ -1,57 +1,57 @@
-# Application Toolkit for the ArcGIS Android API.
-The application toolkit for ArcGIS Android provides simplification classes to assist in supporting some Mapping and Locator workflows. You can add the Application Toolkit to an Android Studio project by adding a dependency to the ArcGIS Runtime SDK for Android AAR (library module) bundle to your project. This AAR bundle includes both the main API and the application toolkit API.
+# ArcGIS Runtime Toolkit Android
 
-## API Usage
-==========================
+## Components
+Please read the toolkit components usage guide on our [wiki](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki)
 
-### MapViewHelper
-MapView helper class to assist in simplifiying programmatic workflows to easily show callouts, add geometries, and create popups. You create an MapViewHelper by passing a MapView to it's constructor: 
+- [Scalebar](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Scalebar)
 
-```java
-MapViewHelper mvHelper = new MapViewHelper(mMapView);
+## Usage
+
+```groovy
+repositories {
+    jcenter()
+    // Our internal artifactory repository
+    maven { url 'http://android:8080/artifactory/arcgis' }
+}
+
+dependencies {
+    // use compile for pre Android 3.0
+    implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.1.0-SNAPSHOT"
+}
 ```
 
-Now you can start calling methods on the ```MapViewHelper```.
+## Build the Toolkit AAR
 
-### Show Callout
-When you tap on a graphic in an app added by using methods below, a callout will open and show the title, snippet, and image of the selected graphic by default. This feature can be disabled by calling:
-
-```java
-mvHelper.setShowGraphicCallout(false);
+```groovy
+$ ./gradlew clean assembleDebug --info
 ```
 
-You can also interact with geometries by registering a listener with the `MapViewHelper` class and implementing the `onGraphicClick` method:
+## Publish the Toollkit AAR
 
-```java
-mvHelper.setOnGraphicClickListener(new OnGraphicClickListener(){
-		public void onGraphicClick(graphic){
-				// do something
- 	}
-});
+```groovy
+$ ./gradlew clean artifactoryPublish --info
 ```
 
-### Popup
-When you tap on a location on a map, the `MapViewHelper` will query all layers and create and return popups for the selected features to the listener using the following method. A popup does not need to be defined for any layers through webmap authoring or programmatically, the popup configuration will be used. 
+## Issues
+Find a bug or want to request a new feature enhancement?  Please let us know by submitting an issue.
 
-```java
-mvHelper.createPopup(screenX, screenY, new PopupCreateListener(){
-		public void onResult(popupContainer){
-			// do something
-		}
-});
-```
+## Contributing
+Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do accept pull requests.
 
-### Find Place and Address
-In addition to a MapViewHelper the application toolkit provides a `GeocodeHelper` to support geocode (find locations for given address/place name) and reverse geocode (find address for given location). 
+1. Get Involved
+2. Report Issues
+3. Contribute Code
+4. Improve Documentation
 
-```java
-GeocodeHelper geocodeHelper = new GeocodeHelper();
-// find an address for a given location
-Future<LocatorReverseGeocodeResult> = geocodeHelper.findAddress(screenX, screenY, locator, mMapView, callback)
-```
+Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/master/README.md)
 
-## Resources
-* [ArcGIS Runtime SDK for Android Developers Site](https://developers.arcgis.com/en/android/)
-* [ArcGIS Mobile Blog](http://blogs.esri.com/esri/arcgis/category/mobile/)
-* [ArcGIS Developer Blog](http://blogs.esri.com/esri/arcgis/category/developer/)
-* [twitter@esri](http://twitter.com/esri)
+## Licensing
+Copyright 2017 Esri
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+A copy of the license is available in the repository's [LICENSE](LICENSE) file.

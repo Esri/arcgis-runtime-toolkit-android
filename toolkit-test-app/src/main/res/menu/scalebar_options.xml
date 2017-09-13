@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_style"
+          android:title="setStyle"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_alignment"
+          android:title="setAlignment"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_unit_system"
+          android:title="setUnitSystem"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_fill_color"
+          android:title="setFillColor"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_alternate_fill_color"
+          android:title="setAlternateFillColor"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_line_color"
+          android:title="setLineColor"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_shadow_color"
+          android:title="setShadowColor"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_text_color"
+          android:title="setTextColor"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_text_shadow_color"
+          android:title="setTextShadowColor"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_typeface"
+          android:title="setTypeface"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_text_size"
+          android:title="setTextSize"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_bar_height"
+          android:title="setBarHeight"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_add_insets"
+          android:title="Add insets"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_remove_insets"
+          android:title="Remove insets"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_change_basemap"
+          android:title="Change basemap"
+          app:showAsAction="never"/>
+
+</menu>

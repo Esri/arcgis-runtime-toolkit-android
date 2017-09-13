@@ -1,0 +1,141 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="last-modified" content="2017-06-09">
+  <meta name="product" content="api-for-android">
+  <meta name="version" content="100.1.0">
+  <meta name="subject" content="DEVELOPER,MOBILE,ARCGIS RUNTIME">
+  <meta name="sub_category" content="Runtime SDK for Android">
+  <meta name="sub_category_label" content="ArcGIS Android">
+  <meta name="search-collection" content="help">
+  <meta name="content_type" content="API Reference">
+  <meta name="content_type_label" content="API Reference">
+  <meta name="search-category" content="help-api,help-api-ref">
+  <meta name="subject" content="MOBILE">
+  <meta name="subject_label" content="MOBILE">
+  <meta name="content-language" content="en">
+  <title>Licensing details by class | ArcGIS Android 100.1.0</title>
+  <link rel="stylesheet" type="text/css" href="license.css" />
+
+<!-- Google Analytics -->
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-215788-63', 'arcgis.com');
+ga('send', 'pageview');</script>
+<!-- End Google Analytics -->
+<!-- Adobe Analytics head code include -->
+<script src="//assets.adobedtm.com/2e9cd01e19dc5ac4867e752f17a2f1ea1923e5af/satelliteLib-0ed1001fd441a838aefe8e755be42aaafddcc46b.js"></script>
+<!-- END: Adobe Analytics head code include -->
+
+</head>
+  <body>
+    <li>Licensing details by class</li>
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-content"></div>
+    </div>
+    <h1 class="title">Licensing details by class</h1>
+    <span class="subtitle"></span>
+    <div class="descr"> <a name="details"></a>
+    <p>Before you deploy your ArcGIS Runtime app into production, you are required to license it. Esri provides four ArcGIS Runtime license levels: Lite, Basic, Standard, and Advanced. The license levels required to use some parts of the API depend on which members of Android Java classes or types you are using, and in some cases what you are using them for. The tables below are designed to clarify what license levels are needed.</p>
+    <p>&quot;Public&quot; feature services means services hosted on the Internet and available anonymously (not secured). &quot;Private&quot; includes all other scenarios such as feature services hosted on a local network, within an enterprise, or feature services hosted on the Internet but secured.</p>
+    <p>There are three tables below, one each for <a href="runtime-licensing-by-member.html#basiclicense">Basic</a>, <a href="runtime-licensing-by-member.html#standardlicense">Standard</a>, and <a href="runtime-licensing-by-member.html#advancedlicense">Advanced</a> license levels. Each table lists the class, the members that require a license and, in some cases, details about the type of operation that requires that license level. If a member is listed without details, then any use of that member requires a license.</p>
+    <p>Some class members appear in more than one of these tables when those members need a license level that depends on the work they are performing.</p>
+    <p>In addition, at the end of this topic is one table with details about <a href="runtime-licensing-by-member.html#streetmapextensions">Street Map for ArcGIS Runtime extensions</a>.</p>
+    <p>For more licensing details, see <a href="http://links.esri.com/arcgis-runtime-licensing-100-x">Licensing Your ArcGIS Runtime App</a>.</p>
+    <a name="basiclicense"></a><p><b> <i>Runtime Basic License Level</i></b></p>
+    <div class="table">
+      <table class="generic" width="75%">
+        <thead>
+          <tr class="qt-style"><th >Class / Type</th><th >Member</th><th >Details</th></tr>
+        </thead>
+        <tr valign="top" class="odd"><td  rowspan=" 6"><code>FeatureTable</code></td><td ><code>addFeatureAsync</code></td><td  rowspan=" 6">When editing a private feature service or mobile geodatabase.</td></tr>
+        <tr valign="top" class="even"><td ><code>addFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>updateFeatureAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>updateFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>deleteFeatureAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>deleteFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td rowspan=" 4"><code>ArcGISFeature</code></td><td ><code>addAttachmentAsync</code></td><td rowspan=" 4">When editing a private feature service or mobile geodatabase.</td></tr>
+        <tr valign="top" class="even"><td ><code>deleteAttachmentAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>deleteAttachmentsAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>updateAttachmentAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>GeodatabaseSyncTask</code></td><td ><code>syncGeodatabaseAsync</code></td><td >When sync direction is bidirectional or upload, or while using a private feature service.</td></tr>
+        <tr valign="top" class="odd"><td ><code>SyncGeodatabaseJob</code></td><td ><code>start</code></td><td >When job specifies sync direction is bidirectional or upload, or while using a private feature service.</td></tr>
+        <tr valign="top" class="even"><td ><code>OfflineMapSyncTask</code></td><td ><code>syncOfflineMap</code></td><td >When sync direction is bidirectional or upload, or while using a private feature service.</td></tr>
+        <tr valign="top" class="odd"><td ><code>OfflineMapSyncJob</code></td><td ><code>start</code></td><td >When job specifies sync direction is bidirectional or upload, or while using a private feature service.</td></tr>
+        <tr valign="top" class="even"><td  rowspan=" 6"><code>PortalUser</code></td><td ><code>addPortalItemAsync</code></td><td  rowspan=" 6"></td></tr>
+        <tr valign="top" class="even"><td ><code>deletePortalItemAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>movePortalItemAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>movePortalItemsAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>createFolderAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>deleteFolderAsync</code></td></tr>
+        <tr valign="top" class="odd"><td  rowspan=" 6"><code>PortalItem</code></td><td ><code>shareWithAsync</code></td><td ></td></tr>
+        <tr valign="top" class="even"><td ><code>shareWithGroupsAsync</code></td><td ></td></tr>
+        <tr valign="top" class="odd"><td ><code>unshareAsync</code></td><td ></td></tr>
+        <tr valign="top" class="even"><td ><code>unshareGroupsAsync</code></td><td ></td></tr>
+        <tr valign="top" class="odd"><td ><code>updateDataAsync</code></td><td ></td></tr>
+        <tr valign="top" class="even"><td ><code>updateItemPropertiesAsync</code></td><td ></td></tr>
+        <tr valign="top" class="odd"><td  rowspan=" 2"><code>FeatureCollection</code></td><td ><code>saveAsync</code></td><td ></td></tr>
+        <tr valign="top" class="even"><td ><code>saveAsAsync</code></td><td ></td></tr>
+        <tr valign="top" class="odd"><td  rowspan=" 2"><code>ArcGISMap</code></td><td ><code>saveAsync</code></td><td ></td></tr>
+        <tr valign="top" class="even"><td ><code>saveAsAsync</code></td><td ></td></tr>
+      </table>
+    </div>
+    <a name="standardlicense"></a><p><b> <i>Runtime Standard License Level</i></b></p>
+    <div class="table">
+      <table class="generic" width="75%">
+        <thead>
+          <tr class="qt-style"><th >Class / Type</th><th >Member</th><th >Details</th></tr>
+        </thead>
+        <tr valign="top" class="odd"><td ><code>Raster</code></td><td ><code>loadAsync</code></td><td ></td></tr>
+        <tr valign="top" class="even"><td ><code>MosaicDatasetRaster</code></td><td ><code>loadAsync</code></td><td ></td></tr>
+        <tr valign="top" class="odd"><td ><code>ImageServiceRaster</code></td><td ><code>loadAsync</code></td><td >When <code>RasterFunctions</code> are specified</td></tr>
+        <tr valign="top" class="even"><td ><code>RasterElevationSource</code></td><td ><code>loadAsync</code></td><td ></td></tr>
+        <tr valign="top" class="odd"><td  rowspan=" 6"><code>FeatureTable</code></td><td ><code>addFeatureAsync</code></td><td  rowspan=" 6">When editing a file geodatabase with a local feature service.</td></tr>
+        <tr valign="top" class="even"><td ><code>addFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>updateFeatureAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>updateFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>deleteFeatureAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>deleteFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td rowspan=" 4"><code>ArcGISFeature</code></td><td ><code>addAttachmentAsync</code></td><td rowspan=" 4">When editing a file geodatabase with a local feature service.</td></tr>
+        <tr valign="top" class="even"><td ><code>deleteAttachmentAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>deleteAttachmentsAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>updateAttachmentAsync</code></td></tr>
+        <!--<tr valign="top" class="even"><td ><code>LocalServer</code></td><td ><code>start</code></td><td >Starting a local service may require Standard, Advanced, and an Analysis extension license. See the Advanced section in this document or the Local Server Geoprocessing Tools document for license requirements.</td></tr>-->
+        <tr valign="top" class="odd"></tr>
+      </table>
+    </div>
+    <a name="advancedlicense"></a><p><b> <i>Runtime Advanced License Level</i></b></p>
+    <div class="table">
+      <table class="generic" width="75%">
+        <thead><tr class="qt-style"><th >Class / Type</th><th >Member</th><th >Details</th></tr>
+        </thead>
+        <tr valign="top" class="odd"><td  rowspan=" 6"><code>FeatureTable</code></td><td ><code>addFeatureAsync</code></td><td  rowspan=" 6">When editing an enterprise geodatabase with a local feature service.</td></tr>
+        <tr valign="top" class="even"><td ><code>addFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>updateFeatureAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>updateFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>deleteFeatureAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>deleteFeaturesAsync</code></td></tr>
+        <tr valign="top" class="odd"><td rowspan=" 4"><code>ArcGISFeature</code></td><td ><code>addAttachmentAsync</code></td><td rowspan=" 4">When editing an enterprise geodatabase with a local feature service.</td></tr>
+        <tr valign="top" class="even"><td ><code>deleteAttachmentAsync</code></td></tr>
+        <tr valign="top" class="odd"><td ><code>deleteAttachmentsAsync</code></td></tr>
+        <tr valign="top" class="even"><td ><code>updateAttachmentAsync</code></td></tr>
+        <tr valign="top" class="even"></tr>
+      </table>
+    </div>
+    <a name="streetmapextensions"></a><p><b> <i>StreetMap for ArcGIS Runtime extensions</i></b></p>
+    <div class="table">
+      <table class="generic" width="75%">
+        <thead><tr class="qt-style"><th >Class / Type</th><th >Member</th><th >Details</th></tr>
+        </thead>
+        <tr valign="top" class="odd"><td ><code>MobileMapPackage</code></td><td ><code>loadAsync</code></td><td >When opening a StreetMap Premium for ArcGIS Runtime mobile map package, appropriate regional license required.</td></tr>
+      </table>
+    </div>
+  <!--</div>-->
+    <div id="footer">
+      Return to <a href="../reference/packages.html">Javadoc</a>.
+    </div> <!-- end footer -->
+    <script type="text/javascript" src="https://go.pardot.com/dcjs/82202/1182/dc.js"></script>
+  </body>
+</html>
