@@ -22,13 +22,15 @@ import static org.junit.Assert.fail;
 public class CompassTest {
 
   /**
-   * Tests that a compass can be created.
+   * Tests that a compass can be created and test its default values.
    *
    * @since 100.1.0
    */
   @Test
   public void testConstructor() {
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
+    assertTrue(compass.isAutoHide());
+    assertEquals(0.0, compass.getHeading(), TestUtil.DOUBLE_DELTA);
   }
 
   /**
@@ -115,6 +117,4 @@ public class CompassTest {
     compass.addToMapView(mapView);
     assertTrue(compass.getParent() == mapView);
   }
-
-
 }

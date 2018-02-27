@@ -17,17 +17,38 @@ package com.esri.arcgisruntime.toolkit.test.compass;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.esri.arcgisruntime.toolkit.test.R;
+import android.util.Log;
+import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.toolkit.compass.Compass;
 
 /**
  * TODO
  */
 public final class CompassTestActivity extends AppCompatActivity {
 
+  MapView mMapView;
+  Compass mCompass;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.compass_test);
+    mMapView = new MapView(this);
+
+    final ArcGISMap map = new ArcGISMap(Basemap.createImagery());
+    map.addDoneLoadingListener(new Runnable() {
+      @Override public void run() {
+        Log.d("LoadStatus", map.getLoadStatus().toString());
+
+      }
+    });
+    mMapView.setMap(map);
+    //mCompass = findViewById(R.id.compass);
+    //mCompass.bindToMapView(mMapView);
+
+    mCompass = new Compass(this);
+    mCompass.addToMapView(mMapView);
+    setContentView(mMapView);
   }
 }
