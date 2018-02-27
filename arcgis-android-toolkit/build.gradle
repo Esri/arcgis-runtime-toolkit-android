@@ -8,13 +8,13 @@ apply plugin: 'android-maven'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 100
+        versionName "100.2.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -136,7 +136,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    implementation 'com.android.support:appcompat-v7:26.0.0'
+    implementation 'com.android.support:appcompat-v7:26.0.2'
     implementation 'com.esri.arcgisruntime:arcgis-android:100.1.0'
     testImplementation 'junit:junit:4.12'
 }

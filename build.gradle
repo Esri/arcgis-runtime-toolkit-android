@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta1'
+        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0'
     }
