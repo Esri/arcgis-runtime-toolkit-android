@@ -11,14 +11,9 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-
-import com.esri.arcgisruntime.mapping.view.DrawStatus;
-import com.esri.arcgisruntime.mapping.view.DrawStatusChangedEvent;
-import com.esri.arcgisruntime.mapping.view.DrawStatusChangedListener;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.mapping.view.MapRotationChangedEvent;
-import com.esri.arcgisruntime.mapping.view.MapRotationChangedListener;
+import com.esri.arcgisruntime.mapping.view.ViewpointChangedEvent;
+import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener;
 import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 
@@ -47,10 +42,10 @@ public class Compass extends View {
   private int mHeight;
   private int mWidth;
 
-  private MapRotationChangedListener mMapRotationChangedListener = new MapRotationChangedListener() {
+  private final ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
     @Override
-    public void mapRotationChanged(MapRotationChangedEvent viewpointChangedEvent) {
-      mRotation = viewpointChangedEvent.getSource().getMapRotation();
+    public void viewpointChanged(ViewpointChangedEvent viewpointChangedEvent) {
+      mRotation = mMapView.getMapRotation();//TODO: what to do for SceneView?
 
       if (mIsAutoHide) {
         if (Double.compare(mRotation, 0) == 0) {
@@ -59,7 +54,9 @@ public class Compass extends View {
           mCompass.setVisibility(VISIBLE);
         }
       }
-      mCompass.invalidate();
+
+      // Invalidate the Compass view when the GeoView viewpoint changes
+      postInvalidate();
     }
   };
 
@@ -84,7 +81,6 @@ public class Compass extends View {
   public Compass(Context context, AttributeSet attributeSet) {
     super(context, attributeSet);
     initializeCompass(context);
-    this.setVisibility(GONE);
   }
 
   private void initializeCompass(Context context) {
@@ -100,6 +96,7 @@ public class Compass extends View {
       }
     });
     mCompass = this;
+    this.setVisibility(GONE);
   }
 
   /**
@@ -142,7 +139,7 @@ public class Compass extends View {
    *
    * @param heading the heading to set the compass to
    */
-  public void setHeading(double heading) {
+  public void setHeading(double heading) {//TODO: not used - remove it? and getHeading()?
     if(mMapView != null) {
       mMapView.setViewpointRotationAsync(heading);
     }
@@ -177,32 +174,8 @@ public class Compass extends View {
       throw new IllegalStateException("Compass already has a MapView");
     }
     mMapView = mapView;
-    if (mMapView.getDrawStatus() == DrawStatus.COMPLETED) {
-      onDrawCompleted();
-    } else {
-      mMapView.addDrawStatusChangedListener(new DrawStatusChangedListener() {
-        @Override public void drawStatusChanged(DrawStatusChangedEvent drawStatusChangedEvent) {
-          if (drawStatusChangedEvent.getDrawStatus() == DrawStatus.COMPLETED) {
-            mMapView.removeDrawStatusChangedListener(this);
-            //TODO figure out a better way to lay out the view dynamically - without this callback the view gets laid out
-            //in the wrong location on the second draw update.
-            mMapView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-              @Override public void onGlobalLayout() {
-                mMapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                onDrawCompleted();
-              }
-            });
-          }
-        }
-      });
-    }
-  }
+    setupGeoView(mapView);
 
-  /**
-   * Internal method used with the addToMapView workflow once the MapView has finished drawing.
-   */
-  private void onDrawCompleted() {
-    mMapView.addMapRotationChangedListener(mMapRotationChangedListener);
     mDrawInMapView = true;
     mMapView.addView(mCompass,
         new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -216,6 +189,38 @@ public class Compass extends View {
   }
 
   /**
+   * Sets up the Compass to work with the given GeoView.
+   *
+   * @param geoView the GeoView
+   * @since 100.1.0
+   */
+  private void setupGeoView(MapView geoView) {
+    // Remove listeners from old GeoView
+    if (mMapView != null) {
+      removeListenersFromGeoView();
+    }
+
+    // Add listeners to new MapView
+    mMapView = geoView;
+    mMapView.addViewpointChangedListener(mViewpointChangedListener);
+//    mMapView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+
+//    // Set display density and create the Paint used for text (note display density must be set first)
+//    mDisplayDensity = mMapView.getContext().getResources().getDisplayMetrics().density;
+//    createTextPaint();
+  }
+
+  /**
+   * Removes the listeners from mMapView.
+   *
+   * @since 100.1.0
+   */
+  private void removeListenersFromGeoView() {
+    mMapView.removeViewpointChangedListener(mViewpointChangedListener);
+//    mMapView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+  }
+
+  /**
    * Removes this Compass from the MapView it was added to. If this Compass was bound to a MapView this method will
    * unbind the compass from the MapView.
    *
@@ -224,11 +229,12 @@ public class Compass extends View {
   public void removeFromMapView() {
     if (mDrawInMapView) {
       mMapView.removeView(this);
-      mMapView.removeMapRotationChangedListener(mMapRotationChangedListener);
+      removeListenersFromGeoView();
       mMapView = null;
       mDrawInMapView = false;
     } else if (mMapView != null) {
-      mMapView.removeMapRotationChangedListener(mMapRotationChangedListener);
+      //TODO: scalebar doesn't do this bit; let's make them consistent
+      removeListenersFromGeoView();
       mMapView = null;
     }
     mRotation = 0;
@@ -250,12 +256,7 @@ public class Compass extends View {
       throw new IllegalStateException("Compass already added to a MapView");
     }
 
-    //if bound to a different MapView previously, clear the old listener
-    if (mMapView != null) {
-      mMapView.removeMapRotationChangedListener(mMapRotationChangedListener);
-    }
-    mMapView = mapView;
-    mMapView.addMapRotationChangedListener(mMapRotationChangedListener);
+    setupGeoView(mapView);
   }
 
   /**
@@ -266,21 +267,15 @@ public class Compass extends View {
    */
   @Override
   protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
-    //TODO is there a better way to position this? Want to account for possible MapView movement and resizing
     if (mDrawInMapView) {
-      int newTop = (int) (mMapView.getTop() + (.02 * mMapView.getHeight()));
-      this.setTop(newTop);
-      int newRight = (int) (mMapView.getRight() - (.02 * mMapView.getWidth()));
-      this.setRight(newRight);
-      this.setLeft(newRight - mWidth);
-      this.setBottom(newTop + mHeight);
+      setX((mMapView.getRight() - (.02f * mMapView.getWidth())) - mWidth);
+      setY(mMapView.getTop() + (.02f * mMapView.getHeight()));
     }
 
     mMatrix.reset();
     mMatrix.postRotate((float)-mRotation, mCompassBitmap.getWidth() / 2, mCompassBitmap.getHeight() / 2);
     //scale matrix by height of bitmap to height of compass view
-    float dimension = (float) getHeight() / mCompassBitmap.getHeight();
+    float dimension = (float) mHeight / mCompassBitmap.getHeight();
     mMatrix.postScale(dimension, dimension);
 
     canvas.drawBitmap(mCompassBitmap, mMatrix, mPaint);

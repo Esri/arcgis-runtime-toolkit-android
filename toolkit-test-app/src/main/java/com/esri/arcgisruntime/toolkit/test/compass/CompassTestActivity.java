@@ -47,7 +47,7 @@ public final class CompassTestActivity extends AppCompatActivity {
     mMap = new ArcGISMap(Basemap.createStreetsVector());
 
     // Set the content view, find the MapView within it and set the map created above on the MapView
-    setContentView(R.layout.compass_test);
+    setContentView(R.layout.compass_regular_mapview);
     mMapView = findViewById(R.id.mapview);
     mMapView.setMap(mMap);
 
