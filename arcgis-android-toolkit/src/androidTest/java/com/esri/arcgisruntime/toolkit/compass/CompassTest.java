@@ -30,7 +30,6 @@ public class CompassTest {
   public void testConstructor() {
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
     assertTrue(compass.isAutoHide());
-    assertEquals(0.0, compass.getHeading(), TestUtil.DOUBLE_DELTA);
   }
 
   /**
@@ -42,12 +41,12 @@ public class CompassTest {
   public void testSetAutoHide() {
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
     assertTrue(compass.isAutoHide());
-    compass.setIsAutoHide(false);
+    compass.setAutoHide(false);
     assertFalse(compass.isAutoHide());
   }
 
   /**
-   * Tests Compass.bindTo(MapView) and Compass.addToMapView(MapView)
+   * Tests Compass.bindTo(MapView) and Compass.addToGeoView(MapView)
    *
    * @since 100.1.0
    */
@@ -69,7 +68,7 @@ public class CompassTest {
 
     //binding to a MapView if it is added to a MapView should fail
     try {
-      compass.addToMapView(mapView);
+      compass.addToGeoView(mapView);
       compass.bindTo(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
     } catch (IllegalStateException e) {
@@ -77,17 +76,17 @@ public class CompassTest {
     }
 
     //should be able to bind again after removing from MapView
-    compass.removeFromMapView();
+    compass.removeFromGeoView();
     compass.bindTo(mapView);
 
     //reset test
-    compass.removeFromMapView();
+    compass.removeFromGeoView();
 
-    compass.addToMapView(mapView);
+    compass.addToGeoView(mapView);
     assertTrue(compass.getParent() == mapView);
 
     try {
-      compass.addToMapView(null);
+      compass.addToGeoView(null);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
@@ -95,8 +94,8 @@ public class CompassTest {
 
     //adding to a MapView if it is added to a MapView already should fail
     try {
-      compass.addToMapView(mapView);
-      compass.addToMapView(mapView);
+      compass.addToGeoView(mapView);
+      compass.addToGeoView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
     } catch (IllegalStateException e) {
       //success
@@ -105,16 +104,16 @@ public class CompassTest {
     //adding to a MapView if it is bound to a MapView already should fail
     try {
       compass.bindTo(mapView);
-      compass.addToMapView(mapView);
+      compass.addToGeoView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
     } catch (IllegalStateException e) {
       //success
     }
 
     //Test that the view was removed from the MapView and that it can be added again after removal
-    compass.removeFromMapView();
+    compass.removeFromGeoView();
     assertTrue(compass.getParent() == null);
-    compass.addToMapView(mapView);
+    compass.addToGeoView(mapView);
     assertTrue(compass.getParent() == mapView);
   }
 }

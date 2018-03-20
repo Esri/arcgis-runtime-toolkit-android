@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.esri.arcgisruntime.toolkit.compass;
 
 import android.content.Context;
@@ -11,31 +26,36 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import com.esri.arcgisruntime.mapping.view.Camera;
+import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedEvent;
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener;
 import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 
 /**
- * The purpose of the Compass is to show the current orientation of the Map. By default it is visible any time the map
- * is not orientated to 0 degrees. It can also be tapped to reset the map to 0 degrees orientation, which hides the
- * compass. The auto hide behavior can be disabled with {@link #setIsAutoHide(boolean)}. The expected use case for the
- * Compass is that the application manages the layout of the Compass view, and calls {@link #bindTo(MapView)}
- * which sets up the connection to the MapView so the orientation can be tracked. A second option is to simply create
- * a new Compass object and then call {@link #addToMapView(MapView)}, and then the Compass view will insert itself
- * into the MapView's ViewGroup and handle its own layout position and size.
+ * The purpose of the Compass is to show the current orientation of a map or scene. By default it is visible any time
+ * the map/scene is not orientated to 0 degrees. It can also be tapped to reset the map/scene to 0 degrees orientation,
+ * which hides the compass. The auto hide behavior can be disabled with {@link #setAutoHide(boolean)}.
+ * <p>
+ * The expected use case for the Compass is that the application manages the layout of the Compass view, and calls
+ * {@link #bindTo(GeoView)} which sets up the connection to the GeoView so the orientation can be tracked. A second
+ * option is to simply create a new Compass object and then call {@link #addToGeoView(GeoView)}, and then the Compass
+ * view will insert itself into the GeoView's ViewGroup and handle its own layout position and size.
  *
  * @since 100.1.0
  */
 public class Compass extends View {
+  private static final double AUTO_HIDE_THRESHOLD = 0.1E-10;
 
   private Bitmap mCompassBitmap;
-  private MapView mMapView;
+  private GeoView mGeoView;
   private double mRotation;
   private Compass mCompass;
   private boolean mIsAutoHide = true;
-  private boolean mDrawInMapView;
+  private boolean mDrawInGeoView;
   private Paint mPaint;
   private Matrix mMatrix;
   private DisplayMetrics mDisplayMetrics;
@@ -45,25 +65,31 @@ public class Compass extends View {
   private final ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
     @Override
     public void viewpointChanged(ViewpointChangedEvent viewpointChangedEvent) {
-      mRotation = mMapView.getMapRotation();//TODO: what to do for SceneView?
+      // Viewpoint has change - get current rotation or heading
+      if (mGeoView instanceof MapView) {
+        mRotation = ((MapView) mGeoView).getMapRotation();
+      } else {
+        mRotation = ((SceneView) mGeoView).getCurrentViewpointCamera().getHeading();
+      }
 
+      // If auto-hide enabled, hide compass if current rotation is less than the threshold; handle 0 and 360 degrees
       if (mIsAutoHide) {
-        if (Double.compare(mRotation, 0) == 0) {
+        if (Math.abs(mRotation) < AUTO_HIDE_THRESHOLD || Math.abs(360 - mRotation) < AUTO_HIDE_THRESHOLD) {
           mCompass.setVisibility(GONE);
         } else {
           mCompass.setVisibility(VISIBLE);
         }
       }
 
-      // Invalidate the Compass view when the GeoView viewpoint changes
+      // Invalidate the Compass view to update it
       postInvalidate();
     }
   };
 
   /**
-   * Creates a new instance of a Compass.
+   * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see {@link Compass} above).
    *
-   * @param context the current Activity context
+   * @param context the current execution Context
    * @since 100.1.0
    */
   public Compass(Context context) {
@@ -72,17 +98,20 @@ public class Compass extends View {
   }
 
   /**
-   * Creates a new instance of a Compass. Called when the Compass is created within an XML layout.
+   * Constructor that's called when inflating a Compass from XML. Called by the system when Workflow 2 is used (see
+   * {@link Compass} above).
    *
-   * @param context the current Activity context
-   * @param attributeSet the attribute set for the view
+   * @param context the current execution Context
+   * @param attrs   the attributes of the XML tag that is inflating the view
    * @since 100.1.0
    */
-  public Compass(Context context, AttributeSet attributeSet) {
-    super(context, attributeSet);
+  public Compass(Context context, AttributeSet attrs) {
+    super(context, attrs);
     initializeCompass(context);
+    //TODO: initialise fields from attrs
   }
 
+  //TODO: javadoc
   private void initializeCompass(Context context) {
     mPaint = new Paint();
     mMatrix = new Matrix();
@@ -90,94 +119,79 @@ public class Compass extends View {
     mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_compass);
     mDisplayMetrics = context.getResources().getDisplayMetrics();
 
-    this.setOnTouchListener(new OnTouchListener() {
+    setOnTouchListener(new OnTouchListener() {
       @Override public boolean onTouch(View view, MotionEvent motionEvent) {
-        return performClick();
+        performClick();
+        return true;
       }
     });
     mCompass = this;
-    this.setVisibility(GONE);
+    setVisibility(GONE);
+    mRotation = 0;
   }
 
   /**
-   * Sets whether the compass will be shown when the map rotation is at 0 degrees.
+   * Sets whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
    *
    * @param autoHide true to auto hide the Compass, false to have it always show
    * @since 100.1.0
    */
-  public void setIsAutoHide(boolean autoHide) {
+  public void setAutoHide(boolean autoHide) {
     mIsAutoHide = autoHide;
     if (!mIsAutoHide) {
-      this.setVisibility(VISIBLE);
+      setVisibility(VISIBLE);
     } else {
-      this.setVisibility(GONE);
+      setVisibility(GONE);
     }
   }
 
   /**
-   * Returns if the compass is not being shown when the map rotation is at 0 degrees.
+   * Indicates if this Compass is automatically hidden when the map/scene rotation is 0 degrees.
    *
-   * @return true if the compass is not being shown at 0 degrees, false if it is
+   * @return true if the Compass is automatically hidden, false if it is always show
    */
   public boolean isAutoHide() {
     return mIsAutoHide;
   }
 
   /**
-   * Returns the current heading of the MapView and the Compass. If the compass is not bound to a MapView this will
-   * always be zero.
+   * Resets the map/scene to be oriented toward 0 degrees when the Compass is clicked.
    *
-   * @return the current heading.
-   */
-  public double getHeading() {
-    return mRotation;
-  }
-
-  /**
-   * Sets the heading of the Compass and MapView to the given value in degrees. If the Compass is not bound to a
-   * MapView this will have no effect.
-   *
-   * @param heading the heading to set the compass to
-   */
-  public void setHeading(double heading) {//TODO: not used - remove it? and getHeading()?
-    if(mMapView != null) {
-      mMapView.setViewpointRotationAsync(heading);
-    }
-  }
-  /**
-   * Resets the map to be oriented toward 0 degrees when the compass is clicked.
-   *
-   * @return
+   * @return true if there was an assigned OnClickListener that was called, false otherwise
    * @since 100.1.0
    */
   @Override
   public boolean performClick() {
-    if (mMapView != null) {
-      mMapView.setViewpointRotationAsync(0);
-      return true;
+    if (mGeoView != null) {
+      if (mGeoView instanceof MapView) {
+        ((MapView) mGeoView).setViewpointRotationAsync(0);
+      } else {
+        Camera camera = ((SceneView) mGeoView).getCurrentViewpointCamera();
+        ((SceneView) mGeoView).setViewpointCameraAsync(
+            new Camera(camera.getLocation(), 0, camera.getPitch(), camera.getRoll()));
+      }
     }
     return super.performClick();
   }
 
   /**
-   * Adds the Compass to a MapView, which inserts the Compass into the MapView's ViewGroup. When using this method,
-   * all layout and sizing will be handled by the Compass.
+    * Adds this Compass to the given GeoView. Used in Workflow 1 (see {@link Compass} above).
    *
-   * @param mapView the MapView to attach to
-   * @throws IllegalArgumentException if mapView is null
-   * @throws IllegalStateException if this Compass is already added to or bound to a MapView
+   * @param geoView the GeoView
+   * @throws IllegalArgumentException if geoView is null
+   * @throws IllegalStateException if this Compass is already added to or bound to a GeoView
    * @since 100.1.0
    */
-  public void addToMapView(MapView mapView) {
-    ToolkitUtil.throwIfNull(mapView, "mapView");
-    if (mMapView != null) {
-      throw new IllegalStateException("Compass already has a MapView");
+  public void addToGeoView(GeoView geoView) {
+    ToolkitUtil.throwIfNull(geoView, "geoView");
+    if (mGeoView != null) {
+      throw new IllegalStateException("Compass already has a GeoView");
     }
-    mMapView = mapView;
-    setupGeoView(mapView);
+    mGeoView = geoView;
+    setupGeoView(geoView);
 
-    mDrawInMapView = true;
-    mMapView.addView(mCompass,
+    mDrawInGeoView = true;
+    mGeoView.addView(mCompass,
         new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
     //TODO how big should the compass be?
@@ -185,7 +199,6 @@ public class Compass extends View {
     mWidth = (int) (50 * mDisplayMetrics.density);
     getLayoutParams().height = mHeight;
     getLayoutParams().width = mWidth;
-    setLayoutParams(this.getLayoutParams());
   }
 
   /**
@@ -194,82 +207,85 @@ public class Compass extends View {
    * @param geoView the GeoView
    * @since 100.1.0
    */
-  private void setupGeoView(MapView geoView) {
+  private void setupGeoView(GeoView geoView) {
     // Remove listeners from old GeoView
-    if (mMapView != null) {
+    if (mGeoView != null) {
       removeListenersFromGeoView();
     }
 
-    // Add listeners to new MapView
-    mMapView = geoView;
-    mMapView.addViewpointChangedListener(mViewpointChangedListener);
-//    mMapView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+    // Add listeners to new GeoView
+    mGeoView = geoView;
+    mGeoView.addViewpointChangedListener(mViewpointChangedListener);
+    //TODO: do we want the following (copied from Scalebar)
+//    mGeoView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
 
 //    // Set display density and create the Paint used for text (note display density must be set first)
-//    mDisplayDensity = mMapView.getContext().getResources().getDisplayMetrics().density;
+//    mDisplayDensity = mGeoView.getContext().getResources().getDisplayMetrics().density;
 //    createTextPaint();
   }
 
   /**
-   * Removes the listeners from mMapView.
+   * Removes the listeners from mGeoView.
    *
    * @since 100.1.0
    */
   private void removeListenersFromGeoView() {
-    mMapView.removeViewpointChangedListener(mViewpointChangedListener);
-//    mMapView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+    mGeoView.removeViewpointChangedListener(mViewpointChangedListener);
+    //TODO: do we want the following (copied from Scalebar)
+//    mGeoView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
   }
 
   /**
-   * Removes this Compass from the MapView it was added to. If this Compass was bound to a MapView this method will
-   * unbind the compass from the MapView.
+   * Removes and unbinds this Compass from the GeoView it was added or bound to (if any).
    *
    * @since 100.1.0
    */
-  public void removeFromMapView() {
-    if (mDrawInMapView) {
-      mMapView.removeView(this);
-      removeListenersFromGeoView();
-      mMapView = null;
-      mDrawInMapView = false;
-    } else if (mMapView != null) {
-      //TODO: scalebar doesn't do this bit; let's make them consistent
-      removeListenersFromGeoView();
-      mMapView = null;
+  public void removeFromGeoView() {
+    // If it was added to a GeoView, remove it
+    if (mDrawInGeoView) {
+      mGeoView.removeView(this);
+      mDrawInGeoView = false;
     }
-    mRotation = 0;
+
+    // Unbind from GeoView by removing listeners
+    if (mGeoView != null) {
+      removeListenersFromGeoView();
+      mGeoView = null;
+    }
   }
 
   /**
-   * Binds the compass to the given MapView so that the Compass can listen to changes in the Map's rotation. When using
-   * this method, only changes in rotation are handled by the compass, all sizing and layout are left to the
-   * application.
+   * Binds this Compass to the given GeoView. Used in Workflow 2 (see {@link Compass} above).
    *
-   * @param mapView the MapView to bind the Compass to
-   * @throws IllegalArgumentException if mapView is null
-   * @throws IllegalStateException if this Compass is currently added to a MapView
+   * @param geoView the GeoView to bind the Compass to
+   * @throws IllegalArgumentException if geoView is null
+   * @throws IllegalStateException if this Compass is currently added to a GeoView
    * @since 100.1.0
    */
-  public void bindTo(MapView mapView) {
-    ToolkitUtil.throwIfNull(mapView, "mapView");
-    if (mDrawInMapView) {
+  public void bindTo(GeoView geoView) {
+    ToolkitUtil.throwIfNull(geoView, "geoView");
+    if (mDrawInGeoView) {
       throw new IllegalStateException("Compass already added to a MapView");
     }
-
-    setupGeoView(mapView);
+    setupGeoView(geoView);
+    mDrawInGeoView = false;
   }
 
   /**
-   * Draws the compass with the current rotation to the screen.
+   * Draws the Compass with the current rotation to the screen.
    *
    * @param canvas the canvas to draw on
    * @since 100.1.0
    */
   @Override
   protected void onDraw(Canvas canvas) {
-    if (mDrawInMapView) {
-      setX((mMapView.getRight() - (.02f * mMapView.getWidth())) - mWidth);
-      setY(mMapView.getTop() + (.02f * mMapView.getHeight()));
+    if (mGeoView == null) {
+      return;
+    }
+
+    if (mDrawInGeoView) {
+      setX((mGeoView.getRight() - (.02f * mGeoView.getWidth())) - mWidth);
+      setY(mGeoView.getTop() + (.02f * mGeoView.getHeight()));
     }
 
     mMatrix.reset();

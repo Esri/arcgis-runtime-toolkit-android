@@ -55,7 +55,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * <pre>
  * mScalebar = new Scalebar(mMapView.getContext());
  * mScalebar.setAlignment(ScalebarAlignment.CENTER); // optionally override default settings
- * mScalebar.addToMapView(mMapView);
+ * mScalebar.addToGeoView(mMapView);
  * </pre>
  * <p>
  * <u>Workflow 2:</u>
@@ -325,16 +325,21 @@ public final class Scalebar extends View {
   }
 
   /**
-   * Removes this Scalebar from the MapView it was added to (if any).
+   * Removes and unbinds this Scalebar from the MapView it was added or bound to (if any).
    *
    * @since 100.1.0
    */
   public void removeFromMapView() {
+    // If it was added to a MapView, remove it
     if (mScalebarIsChildOfMapView) {
       mMapView.removeView(this);
+      mScalebarIsChildOfMapView = false;
+    }
+
+    // Unbind from MapView by removing listeners
+    if (mMapView != null) {
       removeListenersFromMapView();
       mMapView = null;
-      mScalebarIsChildOfMapView = false;
     }
   }
 

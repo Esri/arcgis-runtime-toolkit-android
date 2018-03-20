@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2018 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,29 @@ import android.util.Log;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.ArcGISScene;
 import com.esri.arcgisruntime.mapping.Basemap;
+import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.toolkit.compass.Compass;
+import com.esri.arcgisruntime.toolkit.test.MapOrSceneDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
  * TODO
  */
-public final class CompassTestActivity extends AppCompatActivity {
+public final class CompassTestActivity extends AppCompatActivity implements MapOrSceneDialogFragment.Listener {
 
   private static final String TAG = CompassTestActivity.class.getSimpleName();
 
-  private MapView mMapView;
+  private boolean mUseMap = true;
+
+  private GeoView mGeoView;
 
   private ArcGISMap mMap;
+
+  private ArcGISScene mScene;
 
   private Compass mCompass;
 
@@ -43,28 +51,53 @@ public final class CompassTestActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    // Create a map containing just a Basemap
-    mMap = new ArcGISMap(Basemap.createStreetsVector());
+    // Prompt user to select Map or Scene; note setContentView() isn't called till they do so
+    new MapOrSceneDialogFragment().show(getSupportFragmentManager(), "MapOrSceneDialog");
+  }
 
-    // Set the content view, find the MapView within it and set the map created above on the MapView
-    setContentView(R.layout.compass_regular_mapview);
-    mMapView = findViewById(R.id.mapview);
-    mMapView.setMap(mMap);
+  @Override
+  public void onMapOrSceneSpecified(boolean useMap) {
+    // Set content view etc based on whether map or scene was selected
+    mUseMap = useMap;
+    if (mUseMap) {
+      setContentView(R.layout.compass_regular_mapview);
+      MapView mapView = findViewById(R.id.mapview);
+      mGeoView = mapView;
+      mMap = new ArcGISMap(Basemap.createLightGrayCanvas());
+      mapView.setMap(mMap);
 
-    // Setting the map on the MapView causes the map to be loaded; set a DoneLoading listener
-    mMap.addDoneLoadingListener(new Runnable() {
-      @Override
-      public void run() {
-        // Log error information if the map's not loaded successfully
-        if (mMap.getLoadStatus() != LoadStatus.LOADED) {
-          logLoadError(mMap.getLoadError());
+      // Setting the map on the MapView causes the map to be loaded; set a DoneLoading listener
+      mMap.addDoneLoadingListener(new Runnable() {
+        @Override
+        public void run() {
+          // Log error information if the map's not loaded successfully
+          if (mMap.getLoadStatus() != LoadStatus.LOADED) {
+            logLoadError(mMap.getLoadError());
+          }
         }
+      });
+    } else {
+      setContentView(R.layout.compass_regular_sceneview);
+      SceneView sceneView = findViewById(R.id.sceneview);
+      mGeoView = sceneView;
+      mScene = new ArcGISScene(Basemap.createLightGrayCanvas());
+      sceneView.setScene(mScene);
 
-        // Create a Compass and add it to the MapView (Workflow 1)
-        mCompass = new Compass(mMapView.getContext());
-        mCompass.addToMapView(mMapView);
-      }
-    });
+      // Setting the scene on the SceneView causes the scene to be loaded; set a DoneLoading listener
+      mScene.addDoneLoadingListener(new Runnable() {
+        @Override
+        public void run() {
+          // Log error information if the map's not loaded successfully
+          if (mScene.getLoadStatus() != LoadStatus.LOADED) {
+            logLoadError(mScene.getLoadError());
+          }
+        }
+      });
+    }
+
+    // Create a Compass and add it to the GeoView (Workflow 1)
+    mCompass = new Compass(mGeoView.getContext());
+    mCompass.addToGeoView(mGeoView);
   }
 
   /**
