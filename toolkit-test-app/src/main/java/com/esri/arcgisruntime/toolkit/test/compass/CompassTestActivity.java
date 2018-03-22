@@ -15,9 +15,16 @@
  */
 package com.esri.arcgisruntime.toolkit.test.compass;
 
+import java.util.concurrent.CancellationException;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
@@ -47,6 +54,8 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
 
   private Compass mCompass;
 
+  private int mMenuItemId;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -56,11 +65,116 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
   }
 
   @Override
+  protected void onPause() {
+    super.onPause();
+    if (mGeoView != null) {
+      mGeoView.pause();
+    }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (mGeoView != null) {
+      mGeoView.resume();
+    }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the compass_options menu; this adds items to the action bar
+    getMenuInflater().inflate(R.menu.compass_options, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    mMenuItemId = item.getItemId();
+    try {
+      switch (mMenuItemId) {
+//        case R.id.action_style:
+//          new ScalebarStyleDialogFragment().show(getSupportFragmentManager(), "StyleDialog");
+//          return true;
+//        case R.id.action_alignment:
+//          new ScalebarAlignmentDialogFragment().show(getSupportFragmentManager(), "AlignmentDialog");
+//          return true;
+//        case R.id.action_unit_system:
+//          new ScalebarUnitSystemDialogFragment().show(getSupportFragmentManager(), "UnitSystemDialog");
+//          return true;
+//        case R.id.action_fill_color:
+//        case R.id.action_alternate_fill_color:
+//        case R.id.action_line_color:
+//        case R.id.action_shadow_color:
+//        case R.id.action_text_color:
+//        case R.id.action_text_shadow_color:
+//          new ScalebarColorDialogFragment().show(getSupportFragmentManager(), "ColorDialog");
+//          return true;
+//        case R.id.action_typeface:
+//          new ScalebarTypefaceDialogFragment().show(getSupportFragmentManager(), "TypefaceDialog");
+//          return true;
+//        case R.id.action_text_size:
+//          ScalebarSizeDialogFragment.newInstance(
+//              "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "SizeDialog");
+//          return true;
+//        case R.id.action_bar_height:
+//          ScalebarSizeDialogFragment.newInstance(
+//              "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "SizeDialog");
+//          return true;
+//        case R.id.action_add_insets:
+//          addInsetsToMapView();
+//          return true;
+//        case R.id.action_remove_insets:
+//          removeInsetsFromMapView();
+//          return true;
+//        case R.id.action_change_basemap:
+//          new ScalebarBasemapDialogFragment().show(getSupportFragmentManager(), "BasemapDialog");
+//          return true;
+      }
+    } catch (CancellationException e) {
+      // CancellationException is thrown if user cancels out of one of the selection dialogs
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  // The following methods are callbacks from the dialog fragments that are invoked above
+
+  @Override
   public void onMapOrSceneSpecified(boolean useMap) {
-    // Set content view etc based on whether map or scene was selected
+    // Set content view etc
     mUseMap = useMap;
+    changeContentView(LayoutOption.REGULAR);
+
+    // Create a Compass and add it to the GeoView (Workflow 1)
+    mCompass = new Compass(mGeoView.getContext());
+    mCompass.addToGeoView(mGeoView);
+  }
+
+  /**
+   * Changes the activity content view, finds the GeoView in the new content view and binds adds/binds a Compass to it.
+   *
+   * @param layoutOption indicates the type of layout to be displayed
+   */
+  private void changeContentView(LayoutOption layoutOption) {
+    // Set the content view
+    switch (layoutOption) {
+      case REGULAR:
+        setContentView(mUseMap ? R.layout.compass_regular_mapview : R.layout.compass_regular_sceneview);
+        break;
+      case CUSTOM1:
+        setContentView(mUseMap ? R.layout.compass_custom1_mapview : R.layout.compass_custom1_sceneview);
+        break;
+      case CUSTOM2:
+        setContentView(mUseMap ? R.layout.compass_custom2_mapview : R.layout.compass_custom2_sceneview);
+        break;
+    }
+
+    // If we already have a GeoView, tell it to release resources
+    if (mGeoView != null) {
+      mGeoView.dispose();
+    }
+
+    // Find the GeoView in the new content view and set the map/scene on it; this loads the map/scene
     if (mUseMap) {
-      setContentView(R.layout.compass_regular_mapview);
       MapView mapView = findViewById(R.id.mapview);
       mGeoView = mapView;
       mMap = new ArcGISMap(Basemap.createLightGrayCanvas());
@@ -77,7 +191,6 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
         }
       });
     } else {
-      setContentView(R.layout.compass_regular_sceneview);
       SceneView sceneView = findViewById(R.id.sceneview);
       mGeoView = sceneView;
       mScene = new ArcGISScene(Basemap.createLightGrayCanvas());
@@ -95,9 +208,34 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
       });
     }
 
-    // Create a Compass and add it to the GeoView (Workflow 1)
-    mCompass = new Compass(mGeoView.getContext());
-    mCompass.addToGeoView(mGeoView);
+    // Find the buttons used to select different layouts and set listeners on them
+    Button button = findViewById(R.id.regular_layout_button);
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        // In the 'regular' layout a new Compass is added to the MapView (Workflow 1)
+        changeContentView(LayoutOption.REGULAR);
+        mCompass = new Compass(mGeoView.getContext());
+        mCompass.addToGeoView(mGeoView);
+      }
+    });
+    button = findViewById(R.id.custom1_layout_button);
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        // In Custom Layout 1 the Compass is overlayed on top of the GeoView and bound to it using Workflow 2
+        changeContentView(LayoutOption.CUSTOM1);
+        mCompass = findViewById(R.id.compass);
+        mCompass.bindTo(mGeoView);
+      }
+    });
+    button = findViewById(R.id.custom2_layout_button);
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        // In Custom Layout 2 the Compass is displayed separate from the GeoView and bound to it using Workflow 2
+        changeContentView(LayoutOption.CUSTOM2);
+        mCompass = findViewById(R.id.compass);
+        mCompass.bindTo(mGeoView);
+      }
+    });
   }
 
   /**
@@ -116,6 +254,26 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
         loadError.getCause().printStackTrace();
       }
     }
+  }
+
+  /**
+   * Represents the type of layout to be displayed.
+   */
+  private enum LayoutOption {
+    /**
+     * In the 'regular' layout a new Compass is added to the GeoView (Workflow 1).
+     */
+    REGULAR,
+
+    /**
+     * In Custom Layout 1 the Compass is overlayed on top of the GeoView and bound to it using Workflow 2.
+     */
+    CUSTOM1,
+
+    /**
+     * TIn Custom Layout 2 the Compass is displayed separate from the GeoView and bound to it using Workflow 2.
+     */
+    CUSTOM2
   }
 
 }
