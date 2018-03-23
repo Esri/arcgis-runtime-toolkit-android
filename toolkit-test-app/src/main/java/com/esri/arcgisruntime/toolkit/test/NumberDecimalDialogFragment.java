@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.test.scalebar;
+package com.esri.arcgisruntime.toolkit.test;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -25,12 +25,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
- * Displays a dialog asking the user to specify a size.
+ * Displays a dialog asking the user to specify a decimal number.
  */
-public final class ScalebarSizeDialogFragment extends DialogFragment {
+public final class NumberDecimalDialogFragment extends DialogFragment {
   private static final String KEY_TITLE = "KEY_TITLE";
 
   private static final String KEY_VALUE = "KEY_VALUE";
@@ -40,28 +39,27 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
    */
   public interface Listener {
     /**
-     * Called when user specifies a size.
+     * Called when user specifies a decimal number.
      *
-     * @param size the specified size
-     * @since 100.1.0
+     * @param number the specified decimal number
      */
-    void onScalebarSizeSpecified(float size);
+    void onNumberDecimalSpecified(float number);
   }
 
   private Listener mListener;
 
-  private EditText mSizeField;
+  private EditText mInputField;
 
   /**
-   * Creates a new instance of ScalebarSizeDialogFragment.
+   * Creates a new instance of NumberDecimalDialogFragment.
    *
    * @param title the title of the dialog
-   * @param value the current size value, for display as a hint
-   * @return the ScalebarSizeDialogFragment
+   * @param value the current value of the number being specified, for display as a hint
+   * @return the NumberDecimalDialogFragment
    */
-  public static ScalebarSizeDialogFragment newInstance(String title, float value) {
+  public static NumberDecimalDialogFragment newInstance(String title, float value) {
     // Create the fragment
-    ScalebarSizeDialogFragment fragment = new ScalebarSizeDialogFragment();
+    NumberDecimalDialogFragment fragment = new NumberDecimalDialogFragment();
 
     // Set arguments on the fragment
     Bundle args = new Bundle();
@@ -81,7 +79,7 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement ScalebarSizeDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement NumberDecimalDialogFragment.Listener");
     }
   }
 
@@ -94,11 +92,11 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
       valueString = valueString.substring(0, valueString.length() - 2);
     }
 
-    // Inflate the custom view we use for this dialog and initialize the size field
+    // Inflate the custom view we use for this dialog and initialize the input field
     LayoutInflater inflater = getActivity().getLayoutInflater();
-    View sizeDialog = inflater.inflate(R.layout.scalebar_size_dialog, null);
-    mSizeField = sizeDialog.findViewById(R.id.scalebar_size);
-    mSizeField.setHint(valueString);
+    View sizeDialog = inflater.inflate(R.layout.number_decimal_dialog, null);
+    mInputField = sizeDialog.findViewById(R.id.number_decimal_input_field);
+    mInputField.setHint(valueString);
 
     // Setup the dialog builder
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -113,9 +111,9 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
           public void onClick(DialogInterface dialog, int id) {
             // Make callback with the specified size
             try {
-              mListener.onScalebarSizeSpecified(Float.parseFloat(mSizeField.getText().toString()));
+              mListener.onNumberDecimalSpecified(Float.parseFloat(mInputField.getText().toString()));
             } catch (NumberFormatException e) {
-              Log.e(ScalebarSizeDialogFragment.this.getTag(), "Failed to parse input as a float");
+              Log.e(NumberDecimalDialogFragment.this.getTag(), "Failed to parse input as a float");
             }
           }
         });

@@ -30,8 +30,8 @@
 
     <com.esri.arcgisruntime.toolkit.compass.Compass
             android:id="@+id/compass"
-            android:layout_width="300dp"
-            android:layout_height="145dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_margin="5dp"
             app:layout_constraintTop_toTopOf="@+id/mapview"
             app:layout_constraintLeft_toLeftOf="@+id/mapview"

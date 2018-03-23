@@ -5,7 +5,7 @@
               android:layout_height="match_parent">
 
     <EditText
-            android:id="@+id/scalebar_size"
+            android:id="@+id/number_decimal_input_field"
             android:inputType="numberDecimal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

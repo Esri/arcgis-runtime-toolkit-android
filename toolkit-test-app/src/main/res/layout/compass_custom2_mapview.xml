@@ -21,7 +21,7 @@
 
     <com.esri.arcgisruntime.toolkit.compass.Compass
             android:id="@+id/compass"
-            android:layout_width="200dp"
+            android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
             app:layout_constraintStart_toEndOf="@+id/message"

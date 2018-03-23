@@ -37,7 +37,6 @@ public final class ScalebarTypefaceDialogFragment extends DialogFragment {
      * Called when user selects a scalebar typeface option.
      *
      * @param typeface the selected typeface
-     * @since 100.1.0
      */
     void onScalebarTypefaceSpecified(Typeface typeface);
   }

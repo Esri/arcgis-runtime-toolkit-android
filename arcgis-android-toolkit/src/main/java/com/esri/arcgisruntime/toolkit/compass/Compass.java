@@ -20,9 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,17 +48,27 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 public final class Compass extends View {
   private static final double AUTO_HIDE_THRESHOLD = 0.1E-10;
 
+  private static final int DEFAULT_HEIGHT_DP = 50;
+
+  private static final int DEFAULT_WIDTH_DP = 50;
+
+  private final Matrix mMatrix = new Matrix();
+
   private Bitmap mCompassBitmap;
+
   private GeoView mGeoView;
-  private double mRotation;
-  private Compass mCompass;
+
+  private double mRotation = 0;
+
   private boolean mIsAutoHide = true;
+
   private boolean mDrawInGeoView;
-  private Paint mPaint;
-  private Matrix mMatrix;
-  private DisplayMetrics mDisplayMetrics;
-  private int mHeight;
-  private int mWidth;
+
+  private float mDisplayDensity;
+
+  private float mHeightDp = DEFAULT_HEIGHT_DP;
+
+  private float mWidthDp = DEFAULT_WIDTH_DP;
 
   private final ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
     @Override
@@ -72,14 +80,8 @@ public final class Compass extends View {
         mRotation = ((SceneView) mGeoView).getCurrentViewpointCamera().getHeading();
       }
 
-      // If auto-hide enabled, hide compass if current rotation is less than the threshold; handle 0 and 360 degrees
-      if (mIsAutoHide) {
-        if (Math.abs(mRotation) < AUTO_HIDE_THRESHOLD || Math.abs(360 - mRotation) < AUTO_HIDE_THRESHOLD) {
-          mCompass.setVisibility(GONE);
-        } else {
-          mCompass.setVisibility(VISIBLE);
-        }
-      }
+      // If auto-hide is enabled, show or hide compass depending on current rotation
+      showOrHideIfNecessary();
 
       // Invalidate the Compass view to update it
       postInvalidate();
@@ -89,7 +91,7 @@ public final class Compass extends View {
   /**
    * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see {@link Compass} above).
    *
-   * @param context the current execution Context
+   * @param context the execution Context
    * @since 100.1.0
    */
   public Compass(Context context) {
@@ -101,7 +103,7 @@ public final class Compass extends View {
    * Constructor that's called when inflating a Compass from XML. Called by the system when Workflow 2 is used (see
    * {@link Compass} above).
    *
-   * @param context the current execution Context
+   * @param context the execution Context
    * @param attrs   the attributes of the XML tag that is inflating the view
    * @since 100.1.0
    */
@@ -116,7 +118,7 @@ public final class Compass extends View {
    *
    * @param geoView the GeoView
    * @throws IllegalArgumentException if geoView is null
-   * @throws IllegalStateException if this Compass is already added to or bound to a GeoView
+   * @throws IllegalStateException    if this Compass is already added to or bound to a GeoView
    * @since 100.1.0
    */
   public void addToGeoView(GeoView geoView) {
@@ -125,8 +127,8 @@ public final class Compass extends View {
       throw new IllegalStateException("Compass already has a GeoView");
     }
     mDrawInGeoView = true;
-    geoView.addView(mCompass,
-        new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    geoView.addView(this,
+        new ViewGroup.LayoutParams(dpToPixels(mWidthDp), dpToPixels(mHeightDp)));
     setupGeoView(geoView);
   }
 
@@ -154,7 +156,7 @@ public final class Compass extends View {
    *
    * @param geoView the GeoView to bind the Compass to
    * @throws IllegalArgumentException if geoView is null
-   * @throws IllegalStateException if this Compass is currently added to a GeoView
+   * @throws IllegalStateException    if this Compass is currently added to a GeoView
    * @since 100.1.0
    */
   public void bindTo(GeoView geoView) {
@@ -165,37 +167,20 @@ public final class Compass extends View {
     setupGeoView(geoView);
   }
 
-  //TODO: javadoc
-  private void initializeCompass(Context context) {
-    mPaint = new Paint();
-    mMatrix = new Matrix();
-    //TODO should this be settable by the user?
-    mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_compass);
-    mDisplayMetrics = context.getResources().getDisplayMetrics();
-
-    setOnTouchListener(new OnTouchListener() {
-      @Override public boolean onTouch(View view, MotionEvent motionEvent) {
-        performClick();
-        return true;
-      }
-    });
-    mCompass = this;
-    setVisibility(GONE);
-    mRotation = 0;
-  }
-
   /**
    * Sets whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
    *
-   * @param autoHide true to auto hide the Compass, false to have it always show
+   * @param autoHide true to auto hide the Compass, false to have it always show; the default is true
    * @since 100.1.0
    */
   public void setAutoHide(boolean autoHide) {
     mIsAutoHide = autoHide;
-    if (!mIsAutoHide) {
-      setVisibility(VISIBLE);
+    if (mIsAutoHide) {
+      // Auto-hide enabled - show or hide compass depending on current rotation
+      showOrHideIfNecessary();
     } else {
-      setVisibility(GONE);
+      // Auto-hide disabled - always show the compass
+      setVisibility(VISIBLE);
     }
   }
 
@@ -206,6 +191,54 @@ public final class Compass extends View {
    */
   public boolean isAutoHide() {
     return mIsAutoHide;
+  }
+
+  /**
+   * Sets the height to use when drawing the icon for this Compass. The default is 50dp.
+   *
+   * @param heightDp the height to set, in density-independent pixels
+   * @since 100.1.0
+   */
+  public void setCompassHeight(float heightDp) {
+    mHeightDp = heightDp;
+    if (mDrawInGeoView) {
+      getLayoutParams().height = dpToPixels(mHeightDp);
+    }
+    postInvalidate();
+  }
+
+  /**
+   * Gets the height of the icon for this Compass.
+   *
+   * @return the height, in density-independent pixels
+   * @since 100.1.0
+   */
+  public float getCompassHeight() {
+    return mHeightDp;
+  }
+
+  /**
+   * Sets the width to use when drawing the icon for this Compass. The default is 50dp.
+   *
+   * @param widthDp the width to set, in density-independent pixels
+   * @since 100.1.0
+   */
+  public void setCompassWidth(float widthDp) {
+    mWidthDp = widthDp;
+    if (mDrawInGeoView) {
+      getLayoutParams().width = dpToPixels(mWidthDp);
+    }
+    postInvalidate();
+  }
+
+  /**
+   * Gets the width of the icon for this Compass.
+   *
+   * @return the width, in density-independent pixels
+   * @since 100.1.0
+   */
+  public float getCompassWidth() {
+    return mWidthDp;
   }
 
   /**
@@ -229,6 +262,55 @@ public final class Compass extends View {
   }
 
   /**
+   * Draws the Compass with the current rotation to the screen.
+   *
+   * @param canvas the canvas to draw on
+   * @since 100.1.0
+   */
+  @Override
+  protected void onDraw(Canvas canvas) {
+    if (mGeoView == null) {
+      return;
+    }
+
+    // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
+    if (mDrawInGeoView) {
+      setX((mGeoView.getRight() - (.02f * mGeoView.getWidth())) - dpToPixels(mWidthDp));
+      setY(mGeoView.getTop() + (.02f * mGeoView.getHeight()));
+    }
+
+    // Setup a matrix with the correct rotation
+    mMatrix.reset();
+    mMatrix.postRotate((float) -mRotation, mCompassBitmap.getWidth() / 2, mCompassBitmap.getHeight() / 2);
+
+    // Scale the matrix by the size of the bitmap to the size of the compass view
+    float xScale = (float) dpToPixels(mWidthDp) / mCompassBitmap.getWidth();
+    float yScale = (float) dpToPixels(mHeightDp) / mCompassBitmap.getHeight();
+    mMatrix.postScale(xScale, yScale);
+
+    // Draw the bitmap
+    canvas.drawBitmap(mCompassBitmap, mMatrix, null);
+  }
+
+  /**
+   * Performs initialization that's required by all constructors.
+   *
+   * @param context the execution Context
+   */
+  private void initializeCompass(Context context) {
+    mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_compass);//TODO: change name of drawable?
+    mDisplayDensity = context.getResources().getDisplayMetrics().density;
+    setVisibility(GONE);
+
+    setOnTouchListener(new OnTouchListener() {
+      @Override public boolean onTouch(View view, MotionEvent motionEvent) {
+        performClick();
+        return true;
+      }
+    });
+  }
+
+  /**
    * Sets up the Compass to work with the given GeoView.
    *
    * @param geoView the GeoView
@@ -243,18 +325,6 @@ public final class Compass extends View {
     // Add listeners to new GeoView
     mGeoView = geoView;
     mGeoView.addViewpointChangedListener(mViewpointChangedListener);
-    //TODO: do we want the following (copied from Scalebar)
-//    mGeoView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
-
-//    // Set display density and create the Paint used for text (note display density must be set first)
-//    mDisplayDensity = mGeoView.getContext().getResources().getDisplayMetrics().density;
-//    createTextPaint();
-
-    //TODO how big should the compass be?
-    mHeight = (int) (50 * mDisplayMetrics.density);
-    mWidth = (int) (50 * mDisplayMetrics.density);
-    getLayoutParams().height = mHeight;
-    getLayoutParams().width = mWidth;
   }
 
   /**
@@ -264,33 +334,32 @@ public final class Compass extends View {
    */
   private void removeListenersFromGeoView() {
     mGeoView.removeViewpointChangedListener(mViewpointChangedListener);
-    //TODO: do we want the following (copied from Scalebar)
-//    mGeoView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
   }
 
   /**
-   * Draws the Compass with the current rotation to the screen.
+   * If auto-hide is enabled, show or hide the compass depending on whether the current rotation is less than the
+   * threshold. Handle 0 and 360 degrees.
+   */
+  private void showOrHideIfNecessary() {
+    if (mIsAutoHide) {
+      if (Math.abs(mRotation) < AUTO_HIDE_THRESHOLD || Math.abs(360 - mRotation) < AUTO_HIDE_THRESHOLD) {
+        setVisibility(GONE);
+      } else {
+        setVisibility(VISIBLE);
+      }
+    }
+  }
+
+  /**
+   * Converts density-independent pixels to actual pixels.
    *
-   * @param canvas the canvas to draw on
+   * @param dp a number of density-independent pixels
+   * @return the equivalent number of actual pixels
    * @since 100.1.0
    */
-  @Override
-  protected void onDraw(Canvas canvas) {
-    if (mGeoView == null) {
-      return;
-    }
-
-    if (mDrawInGeoView) {
-      setX((mGeoView.getRight() - (.02f * mGeoView.getWidth())) - mWidth);
-      setY(mGeoView.getTop() + (.02f * mGeoView.getHeight()));
-    }
-
-    mMatrix.reset();
-    mMatrix.postRotate((float)-mRotation, mCompassBitmap.getWidth() / 2, mCompassBitmap.getHeight() / 2);
-    //scale matrix by height of bitmap to height of compass view
-    float dimension = (float) mHeight / mCompassBitmap.getHeight();
-    mMatrix.postScale(dimension, dimension);
-
-    canvas.drawBitmap(mCompassBitmap, mMatrix, mPaint);
+  private int dpToPixels(double dp) {
+    double pixels = dp * mDisplayDensity;
+    return Math.round((float) pixels);
   }
+
 }

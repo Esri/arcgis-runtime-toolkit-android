@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
@@ -36,11 +35,13 @@ import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.toolkit.compass.Compass;
 import com.esri.arcgisruntime.toolkit.test.MapOrSceneDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
+import com.esri.arcgisruntime.toolkit.test.NumberDecimalDialogFragment;
 
 /**
  * TODO
  */
-public final class CompassTestActivity extends AppCompatActivity implements MapOrSceneDialogFragment.Listener {
+public final class CompassTestActivity extends AppCompatActivity implements MapOrSceneDialogFragment.Listener,
+    CompassAutoHideDialogFragment.Listener, NumberDecimalDialogFragment.Listener {
 
   private static final String TAG = CompassTestActivity.class.getSimpleName();
 
@@ -81,6 +82,14 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
   }
 
   @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (mGeoView != null) {
+      mGeoView.dispose();
+    }
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the compass_options menu; this adds items to the action bar
     getMenuInflater().inflate(R.menu.compass_options, menu);
@@ -92,43 +101,23 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
     mMenuItemId = item.getItemId();
     try {
       switch (mMenuItemId) {
-//        case R.id.action_style:
-//          new ScalebarStyleDialogFragment().show(getSupportFragmentManager(), "StyleDialog");
-//          return true;
-//        case R.id.action_alignment:
-//          new ScalebarAlignmentDialogFragment().show(getSupportFragmentManager(), "AlignmentDialog");
-//          return true;
-//        case R.id.action_unit_system:
-//          new ScalebarUnitSystemDialogFragment().show(getSupportFragmentManager(), "UnitSystemDialog");
-//          return true;
-//        case R.id.action_fill_color:
-//        case R.id.action_alternate_fill_color:
-//        case R.id.action_line_color:
-//        case R.id.action_shadow_color:
-//        case R.id.action_text_color:
-//        case R.id.action_text_shadow_color:
-//          new ScalebarColorDialogFragment().show(getSupportFragmentManager(), "ColorDialog");
-//          return true;
-//        case R.id.action_typeface:
-//          new ScalebarTypefaceDialogFragment().show(getSupportFragmentManager(), "TypefaceDialog");
-//          return true;
-//        case R.id.action_text_size:
-//          ScalebarSizeDialogFragment.newInstance(
-//              "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "SizeDialog");
-//          return true;
-//        case R.id.action_bar_height:
-//          ScalebarSizeDialogFragment.newInstance(
-//              "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "SizeDialog");
-//          return true;
-//        case R.id.action_add_insets:
+        case R.id.action_auto_hide:
+          new CompassAutoHideDialogFragment().show(getSupportFragmentManager(), "AutoHideDialog");
+          return true;
+        case R.id.action_compass_height:
+          NumberDecimalDialogFragment.newInstance(
+              "Compass Height in DP", mCompass.getCompassHeight()).show(getSupportFragmentManager(), "NumberDialog");
+          return true;
+        case R.id.action_compass_width:
+          NumberDecimalDialogFragment.newInstance(
+              "Compass Width in DP", mCompass.getCompassWidth()).show(getSupportFragmentManager(), "NumberDialog");
+          return true;
+        case R.id.action_add_insets:
 //          addInsetsToMapView();
-//          return true;
-//        case R.id.action_remove_insets:
+          return true;
+        case R.id.action_remove_insets:
 //          removeInsetsFromMapView();
-//          return true;
-//        case R.id.action_change_basemap:
-//          new ScalebarBasemapDialogFragment().show(getSupportFragmentManager(), "BasemapDialog");
-//          return true;
+          return true;
       }
     } catch (CancellationException e) {
       // CancellationException is thrown if user cancels out of one of the selection dialogs
@@ -147,6 +136,23 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
     // Create a Compass and add it to the GeoView (Workflow 1)
     mCompass = new Compass(mGeoView.getContext());
     mCompass.addToGeoView(mGeoView);
+  }
+
+  @Override
+  public void onCompassAutoHideSpecified(boolean autoHide) {
+    mCompass.setAutoHide(autoHide);
+  }
+
+  @Override
+  public void onNumberDecimalSpecified(float number) {
+    switch (mMenuItemId) {
+      case R.id.action_compass_height:
+        mCompass.setCompassHeight(number);
+        break;
+      case R.id.action_compass_width:
+        mCompass.setCompassWidth(number);
+        break;
+    }
   }
 
   /**
@@ -170,8 +176,9 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
 
     // If we already have a GeoView, tell it to release resources
     if (mGeoView != null) {
-      mGeoView.dispose();
+//      mGeoView.dispose();//TODO: calling dispose() on SceneView seems to cuase fuzzy text
     }
+    final GeoView oldGeoView = mGeoView;//TODO: calling dispose() on SceneView seems to cuase fuzzy text
 
     // Find the GeoView in the new content view and set the map/scene on it; this loads the map/scene
     if (mUseMap) {
@@ -203,6 +210,9 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
           // Log error information if the map's not loaded successfully
           if (mScene.getLoadStatus() != LoadStatus.LOADED) {
             logLoadError(mScene.getLoadError());
+          }
+          if (oldGeoView != null) {
+            oldGeoView.dispose();
           }
         }
       });

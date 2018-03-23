@@ -46,7 +46,6 @@ public class ScalebarBasemapDialogFragment extends DialogFragment {
      * Called when user selects a basemap.
      *
      * @param basemap the selected basemap
-     * @since 100.1.0
      */
     void onBasemapSpecified(Basemap basemap);
   }
