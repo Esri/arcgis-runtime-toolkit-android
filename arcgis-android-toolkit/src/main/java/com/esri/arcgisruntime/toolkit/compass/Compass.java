@@ -80,8 +80,8 @@ public final class Compass extends View {
         mRotation = ((SceneView) mGeoView).getCurrentViewpointCamera().getHeading();
       }
 
-      // If auto-hide is enabled, show or hide compass depending on current rotation
-      showOrHideIfNecessary();
+      // Show or hide, depending on whether auto-hide is enabled, and if so depending on current rotation
+      showOrHide();
 
       // Invalidate the Compass view to update it
       postInvalidate();
@@ -110,7 +110,9 @@ public final class Compass extends View {
   public Compass(Context context, AttributeSet attrs) {
     super(context, attrs);
     initializeCompass(context);
-    //TODO: initialise fields from attrs
+    mIsAutoHide = attrs.getAttributeBooleanValue(null, "compass.autoHide", true);
+    mHeightDp = attrs.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_DP);
+    mWidthDp = attrs.getAttributeIntValue(null, "compass.width", DEFAULT_WIDTH_DP);
   }
 
   /**
@@ -127,8 +129,7 @@ public final class Compass extends View {
       throw new IllegalStateException("Compass already has a GeoView");
     }
     mDrawInGeoView = true;
-    geoView.addView(this,
-        new ViewGroup.LayoutParams(dpToPixels(mWidthDp), dpToPixels(mHeightDp)));
+    geoView.addView(this, new ViewGroup.LayoutParams(dpToPixels(mWidthDp), dpToPixels(mHeightDp)));
     setupGeoView(geoView);
   }
 
@@ -175,13 +176,7 @@ public final class Compass extends View {
    */
   public void setAutoHide(boolean autoHide) {
     mIsAutoHide = autoHide;
-    if (mIsAutoHide) {
-      // Auto-hide enabled - show or hide compass depending on current rotation
-      showOrHideIfNecessary();
-    } else {
-      // Auto-hide disabled - always show the compass
-      setVisibility(VISIBLE);
-    }
+    showOrHide();
   }
 
   /**
@@ -199,7 +194,7 @@ public final class Compass extends View {
    * @param heightDp the height to set, in density-independent pixels
    * @since 100.1.0
    */
-  public void setCompassHeight(float heightDp) {
+  public void setCompassHeight(int heightDp) {
     mHeightDp = heightDp;
     if (mDrawInGeoView) {
       getLayoutParams().height = dpToPixels(mHeightDp);
@@ -213,8 +208,8 @@ public final class Compass extends View {
    * @return the height, in density-independent pixels
    * @since 100.1.0
    */
-  public float getCompassHeight() {
-    return mHeightDp;
+  public int getCompassHeight() {
+    return Math.round(mHeightDp);
   }
 
   /**
@@ -223,7 +218,7 @@ public final class Compass extends View {
    * @param widthDp the width to set, in density-independent pixels
    * @since 100.1.0
    */
-  public void setCompassWidth(float widthDp) {
+  public void setCompassWidth(int widthDp) {
     mWidthDp = widthDp;
     if (mDrawInGeoView) {
       getLayoutParams().width = dpToPixels(mWidthDp);
@@ -237,8 +232,8 @@ public final class Compass extends View {
    * @return the width, in density-independent pixels
    * @since 100.1.0
    */
-  public float getCompassWidth() {
-    return mWidthDp;
+  public int getCompassWidth() {
+    return Math.round(mWidthDp);
   }
 
   /**
@@ -300,7 +295,7 @@ public final class Compass extends View {
   private void initializeCompass(Context context) {
     mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_compass);//TODO: change name of drawable?
     mDisplayDensity = context.getResources().getDisplayMetrics().density;
-    setVisibility(GONE);
+    showOrHide();
 
     setOnTouchListener(new OnTouchListener() {
       @Override public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -337,16 +332,20 @@ public final class Compass extends View {
   }
 
   /**
-   * If auto-hide is enabled, show or hide the compass depending on whether the current rotation is less than the
-   * threshold. Handle 0 and 360 degrees.
+   * Show or hide the Compass, depending on whether auto-hide is enabled, and if so whether the current rotation is less
+   * than the threshold. Handle 0 and 360 degrees.
    */
-  private void showOrHideIfNecessary() {
+  private void showOrHide() {
     if (mIsAutoHide) {
+      // Auto-hide enabled - hide if rotation is less than the threshold
       if (Math.abs(mRotation) < AUTO_HIDE_THRESHOLD || Math.abs(360 - mRotation) < AUTO_HIDE_THRESHOLD) {
         setVisibility(GONE);
       } else {
         setVisibility(VISIBLE);
       }
+    } else {
+      // Auto-hide disabled - always show the compass
+      setVisibility(VISIBLE);
     }
   }
 

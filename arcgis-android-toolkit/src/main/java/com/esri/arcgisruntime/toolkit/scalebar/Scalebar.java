@@ -610,7 +610,7 @@ public final class Scalebar extends View {
    * @param textSizeDp the text size to set, in density-independent pixels
    * @since 100.1.0
    */
-  public void setTextSize(float textSizeDp) {
+  public void setTextSize(int textSizeDp) {
     mTextSizeDp = textSizeDp;
     createTextPaint();
     postInvalidate();
@@ -622,8 +622,8 @@ public final class Scalebar extends View {
    * @return the text size, in density-independent pixels
    * @since 100.1.0
    */
-  public float getTextSize() {
-    return mTextSizeDp;
+  public int getTextSize() {
+    return Math.round(mTextSizeDp);
   }
 
   /**
@@ -633,7 +633,7 @@ public final class Scalebar extends View {
    * @param barHeightDp the bar height to set, in density-independent pixels
    * @since 100.1.0
    */
-  public void setBarHeight(float barHeightDp) {
+  public void setBarHeight(int barHeightDp) {
     mBarHeightDp = barHeightDp;
     mLineWidthDp = Math.max(mBarHeightDp / 4, 1);
     mCornerRadiusDp = Math.max(mBarHeightDp / 5, 1);
@@ -646,8 +646,8 @@ public final class Scalebar extends View {
    * @return the bar height, in density-independent pixels
    * @since 100.1.0
    */
-  public float getBarHeight() {
-    return mBarHeightDp;
+  public int getBarHeight() {
+    return Math.round(mBarHeightDp);
   }
 
   @Override

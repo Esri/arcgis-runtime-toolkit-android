@@ -34,14 +34,14 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.toolkit.compass.Compass;
 import com.esri.arcgisruntime.toolkit.test.MapOrSceneDialogFragment;
+import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
-import com.esri.arcgisruntime.toolkit.test.NumberDecimalDialogFragment;
 
 /**
  * TODO
  */
 public final class CompassTestActivity extends AppCompatActivity implements MapOrSceneDialogFragment.Listener,
-    CompassAutoHideDialogFragment.Listener, NumberDecimalDialogFragment.Listener {
+    CompassAutoHideDialogFragment.Listener, NumberDialogFragment.Listener {
 
   private static final String TAG = CompassTestActivity.class.getSimpleName();
 
@@ -105,11 +105,11 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
           new CompassAutoHideDialogFragment().show(getSupportFragmentManager(), "AutoHideDialog");
           return true;
         case R.id.action_compass_height:
-          NumberDecimalDialogFragment.newInstance(
+          NumberDialogFragment.newInstance(
               "Compass Height in DP", mCompass.getCompassHeight()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_compass_width:
-          NumberDecimalDialogFragment.newInstance(
+          NumberDialogFragment.newInstance(
               "Compass Width in DP", mCompass.getCompassWidth()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
@@ -144,7 +144,7 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
   }
 
   @Override
-  public void onNumberDecimalSpecified(float number) {
+  public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_compass_height:
         mCompass.setCompassHeight(number);
