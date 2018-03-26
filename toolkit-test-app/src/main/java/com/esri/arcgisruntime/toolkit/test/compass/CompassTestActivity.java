@@ -179,11 +179,10 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
         break;
     }
 
-    // If we already have a GeoView, tell it to release resources
-    if (mGeoView != null) {
-//      mGeoView.dispose();//TODO: calling dispose() on SceneView seems to cuase fuzzy text
-    }
-    final GeoView oldGeoView = mGeoView;//TODO: calling dispose() on SceneView seems to cuase fuzzy text
+    // Save a reference to the old GeoView, so we can release its resources once the new one's loaded.
+    // We don't just call dispose() on it here because doing so on a SceneView that's currently displayed causes other
+    // elements of the content view to become fuzzy
+    final GeoView oldGeoView = mGeoView;
 
     // Find the GeoView in the new content view and set the map/scene on it; this loads the map/scene
     if (mUseMap) {
@@ -199,6 +198,10 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
           // Log error information if the map's not loaded successfully
           if (mMap.getLoadStatus() != LoadStatus.LOADED) {
             logLoadError(mMap.getLoadError());
+          }
+          // If there's an old GeoView, call dispose() on it to release its resources
+          if (oldGeoView != null) {
+            oldGeoView.dispose();
           }
         }
       });
@@ -216,6 +219,7 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
           if (mScene.getLoadStatus() != LoadStatus.LOADED) {
             logLoadError(mScene.getLoadError());
           }
+          // If there's an old GeoView, call dispose() on it to release its resources
           if (oldGeoView != null) {
             oldGeoView.dispose();
           }

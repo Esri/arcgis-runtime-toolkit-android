@@ -311,7 +311,7 @@ public final class Compass extends View {
    * @param context the execution Context
    */
   private void initializeCompass(Context context) {
-    mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_menu_compass);//TODO: change name of drawable?
+    mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_compass);
     mDisplayDensity = context.getResources().getDisplayMetrics().density;
     showOrHide();
 
