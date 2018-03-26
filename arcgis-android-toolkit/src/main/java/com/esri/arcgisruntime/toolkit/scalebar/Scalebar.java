@@ -55,7 +55,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * <pre>
  * mScalebar = new Scalebar(mMapView.getContext());
  * mScalebar.setAlignment(ScalebarAlignment.CENTER); // optionally override default settings
- * mScalebar.addToGeoView(mMapView);
+ * mScalebar.addToMapView(mMapView);
  * </pre>
  * <p>
  * <u>Workflow 2:</u>

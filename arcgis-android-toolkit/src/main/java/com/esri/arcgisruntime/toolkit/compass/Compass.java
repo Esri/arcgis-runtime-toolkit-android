@@ -34,14 +34,77 @@ import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 
 /**
- * The purpose of the Compass is to show the current orientation of a map or scene. By default it is visible any time
- * the map/scene is not orientated to 0 degrees. It can also be tapped to reset the map/scene to 0 degrees orientation,
- * which hides the compass. The auto hide behavior can be disabled with {@link #setAutoHide(boolean)}.
+ * Shows the current orientation of a map or scene by displaying a compass icon that points towards North. The icon can
+ * be tapped to reset the map/scene to 0 degrees orientation. By default the icon is hidden any time the map/scene is
+ * orientated to 0 degrees. The auto hide behavior can be disabled using {@link #setAutoHide(boolean)}.
  * <p>
- * The expected use case for the Compass is that the application manages the layout of the Compass view, and calls
- * {@link #bindTo(GeoView)} which sets up the connection to the GeoView so the orientation can be tracked. A second
- * option is to simply create a new Compass object and then call {@link #addToGeoView(GeoView)}, and then the Compass
- * view will insert itself into the GeoView's ViewGroup and handle its own layout position and size.
+ * Two workflows are supported:
+ * <p>
+ * <u>Workflow 1:</u>
+ * <p>
+ * The simplest workflow is for the app to instantiate a Compass using {@link #Compass(Context)} and call
+ * {@link #addToGeoView(GeoView)} to display it within the GeoView. Optionally, setter methods may be called to override
+ * some of the default settings. This workflow gives the app no control over the position of the compass - it's always
+ * placed at the top-right corner of the GeoView.
+ * <p>
+ * For example:
+ * <pre>
+ * mCompass = new Compass(mGeoView.getContext());
+ * mCompass.setAutoHide(false); // optionally disable the auto hide behavior
+ * mCompass.addToGeoView(mGeoView);
+ * </pre>
+ * <p>
+ * <u>Workflow 2:</u>
+ * <p>
+ * Alternatively, the app could define a Compass anywhere it likes in its view hierarchy, because Compass extends the
+ * Android View class. The system will instantiate the Compass using {@link #Compass(Context, AttributeSet)}. The app
+ * then calls {@link #bindTo(GeoView)} to make it come to life as a compass for the given GeoView. This workflow gives
+ * the app complete control over where the compass is displayed - it could be positioned on top of any part of the
+ * GeoView, or placed somewhere outside the bounds of the GeoView.
+ * <p>
+ * Here's example XML code to define a Compass:
+ * <pre>
+ * &lt;com.esri.arcgisruntime.toolkit.compass.Compass
+ *   android:id="@+id/compass"
+ *   android:layout_width="60dp"
+ *   android:layout_height="60dp"
+ *   android:layout_margin="5dp"
+ *   compass.autoHide="false"
+ *   compass.height="60"
+ *   compass.width="60"
+ * /&gt;
+ * </pre>
+ * <p>
+ * Notice that some of the compass attributes are overridden. Here's a list of all the compass attributes that can be
+ * set in this way:
+ * <table>
+ * <tr>
+ * <th>XML Attribute</th>
+ * <th>Description</th>
+ * <th>Default Value</th>
+ * </tr>
+ * <tr>
+ * <td>compass.autoHide</td>
+ * <td>A boolean controlling whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.</td>
+ * <td>true</td>
+ * </tr>
+ * <tr>
+ * <td>compass.height</td>
+ * <td>The height of the icon displayed for this Compass, in density-independent pixels.</td>
+ * <td>50</td>
+ * </tr>
+ * <tr>
+ * <td>compass.width</td>
+ * <td>The width of the icon displayed for this Compass, in density-independent pixels.</td>
+ * <td>50</td>
+ * </tr>
+ * </table>
+ * <p>
+ * And here's example Java code to bind the Compass to the GeoView:
+ * <pre>
+ * mCompass = (Compass) findViewById(R.id.compass);
+ * mCompass.bindTo(mGeoView);
+ * </pre>
  *
  * @since 100.1.0
  */
