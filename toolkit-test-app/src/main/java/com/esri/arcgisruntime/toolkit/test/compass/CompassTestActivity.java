@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
@@ -113,10 +114,14 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
               "Compass Width in DP", mCompass.getCompassWidth()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
-//          addInsetsToMapView();
+          if (mUseMap) {
+            addInsetsToMapView();
+          }
           return true;
         case R.id.action_remove_insets:
-//          removeInsetsFromMapView();
+          if (mUseMap) {
+            removeInsetsFromMapView();
+          }
           return true;
       }
     } catch (CancellationException e) {
@@ -246,6 +251,47 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
         mCompass.bindTo(mGeoView);
       }
     });
+  }
+
+  /**
+   * Makes the "inset" views that overlay the 4 edges of the MapView visible and tells the MapView about them. Insets
+   * controls the active visible area, instructing the MapView to ignore parts that are obstructed by overlaid UI
+   * elements.
+   */
+  private void addInsetsToMapView() {
+    RelativeLayout leftInset = findViewById(R.id.left_inset);
+    RelativeLayout topInset = findViewById(R.id.top_inset);
+    RelativeLayout rightInset = findViewById(R.id.right_inset);
+    RelativeLayout bottomInset = findViewById(R.id.bottom_inset);
+    if (leftInset != null && topInset != null && rightInset != null && bottomInset != null) {
+      leftInset.setVisibility(View.VISIBLE);
+      topInset.setVisibility(View.VISIBLE);
+      rightInset.setVisibility(View.VISIBLE);
+      bottomInset.setVisibility(View.VISIBLE);
+      MapView mapView = (MapView) mGeoView;
+      float density = mapView.getContext().getResources().getDisplayMetrics().density;
+      mapView.setViewInsets(leftInset.getWidth() / density, topInset.getHeight() / density,
+          rightInset.getWidth() / density, bottomInset.getHeight() / density);
+    }
+  }
+
+  /**
+   * Makes the "inset" views that overlay the 4 edges of the MapView invisible and tells the MapView there are no
+   * insets.
+   */
+  private void removeInsetsFromMapView() {
+    RelativeLayout leftInset = findViewById(R.id.left_inset);
+    RelativeLayout topInset = findViewById(R.id.top_inset);
+    RelativeLayout rightInset = findViewById(R.id.right_inset);
+    RelativeLayout bottomInset = findViewById(R.id.bottom_inset);
+    if (leftInset != null && topInset != null && rightInset != null && bottomInset != null) {
+      leftInset.setVisibility(View.INVISIBLE);
+      topInset.setVisibility(View.INVISIBLE);
+      rightInset.setVisibility(View.INVISIBLE);
+      bottomInset.setVisibility(View.INVISIBLE);
+      MapView mapView = (MapView) mGeoView;
+      mapView.setViewInsets(0, 0, 0, 0);
+    }
   }
 
   /**

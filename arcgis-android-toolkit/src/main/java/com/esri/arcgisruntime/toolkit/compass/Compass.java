@@ -88,6 +88,16 @@ public final class Compass extends View {
     }
   };
 
+  private final OnLayoutChangeListener mAttributionViewLayoutChangeListener = new OnLayoutChangeListener() {
+    @Override
+    public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+        int oldRight, int oldBottom) {
+      // Invalidate the Compass view when the bounds of the attribution view change; this happens when view insets are
+      // set, which may affect where the Compass is drawn
+      postInvalidate();
+    }
+  };
+
   /**
    * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see {@link Compass} above).
    *
@@ -270,8 +280,16 @@ public final class Compass extends View {
 
     // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
     if (mDrawInGeoView) {
-      setX((mGeoView.getRight() - (.02f * mGeoView.getWidth())) - dpToPixels(mWidthDp));
-      setY(mGeoView.getTop() + (.02f * mGeoView.getHeight()));
+      float xPos = (mGeoView.getRight() - (.02f * mGeoView.getWidth())) - dpToPixels(mWidthDp);
+      float yPos = mGeoView.getTop() + (.02f * mGeoView.getHeight());
+      // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
+      if (mGeoView instanceof MapView) {
+        MapView mapView = (MapView) mGeoView;
+        xPos -= dpToPixels(mapView.getViewInsetRight());
+        yPos += dpToPixels(mapView.getViewInsetTop());
+      }
+      setX(xPos);
+      setY(yPos);
     }
 
     // Setup a matrix with the correct rotation
@@ -320,6 +338,7 @@ public final class Compass extends View {
     // Add listeners to new GeoView
     mGeoView = geoView;
     mGeoView.addViewpointChangedListener(mViewpointChangedListener);
+    mGeoView.addAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
   }
 
   /**
@@ -329,6 +348,7 @@ public final class Compass extends View {
    */
   private void removeListenersFromGeoView() {
     mGeoView.removeViewpointChangedListener(mViewpointChangedListener);
+    mGeoView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
   }
 
   /**
