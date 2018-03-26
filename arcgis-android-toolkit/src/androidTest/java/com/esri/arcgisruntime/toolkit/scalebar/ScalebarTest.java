@@ -166,7 +166,7 @@ public final class ScalebarTest {
     // Instantiate a Scalebar
     Scalebar scalebar = new Scalebar(InstrumentationRegistry.getTargetContext());
 
-    // Test addToGeoView()
+    // Test addToMapView()
     try {
       scalebar.addToMapView(null);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
@@ -210,7 +210,7 @@ public final class ScalebarTest {
   }
 
   /**
-   * Tests addToGeoView(), removeFromGeoView() and bindTo().
+   * Tests addToMapView(), removeFromMapView() and bindTo().
    *
    * @since 100.1.0
    */
@@ -226,7 +226,7 @@ public final class ScalebarTest {
     Scalebar scalebar = new Scalebar(context);
     scalebar.addToMapView(mapView);
 
-    // Check addToGeoView() fails when it's already added to a MapView
+    // Check addToMapView() fails when it's already added to a MapView
     try {
       scalebar.addToMapView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
@@ -234,7 +234,7 @@ public final class ScalebarTest {
       //success
     }
 
-    // Remove it from the MapView and check addToGeoView() can then be called again
+    // Remove it from the MapView and check addToMapView() can then be called again
     scalebar.removeFromMapView();
     scalebar.addToMapView(mapView);
 
@@ -253,7 +253,7 @@ public final class ScalebarTest {
     // Check bindTo() is allowed when already bound
     scalebar.bindTo(mapView);
 
-    // Check addToGeoView() fails when it's already bound to a MapView
+    // Check addToMapView() fails when it's already bound to a MapView
     try {
       scalebar.addToMapView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
@@ -261,7 +261,7 @@ public final class ScalebarTest {
       //success
     }
 
-    // Check removeFromGeoView() can be called when it's not added to a MapView
+    // Check removeFromMapView() can be called when it's not added to a MapView
     scalebar.removeFromMapView();
   }
 
