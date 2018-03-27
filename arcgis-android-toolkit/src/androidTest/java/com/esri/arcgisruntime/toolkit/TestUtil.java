@@ -26,6 +26,4 @@ public final class TestUtil {
 
   public static final String MISSING_ILLEGAL_STATE_EXCEPTION = "IllegalStateException should have been thrown";
 
-  public static final double DOUBLE_DELTA = .00001;
-
 }

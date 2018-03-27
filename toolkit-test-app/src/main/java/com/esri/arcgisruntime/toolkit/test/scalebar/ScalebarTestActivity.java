@@ -98,6 +98,14 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   }
 
   @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (mMapView != null) {
+      mMapView.dispose();
+    }
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the scalebar_options menu; this adds items to the action bar
     getMenuInflater().inflate(R.menu.scalebar_options, menu);
