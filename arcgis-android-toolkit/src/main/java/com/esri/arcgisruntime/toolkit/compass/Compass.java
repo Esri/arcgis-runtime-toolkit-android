@@ -182,10 +182,12 @@ public final class Compass extends View {
    */
   public Compass(Context context, AttributeSet attrs) {
     super(context, attrs);
-    initializeCompass(context);
-    mIsAutoHide = attrs.getAttributeBooleanValue(null, "compass.autoHide", true);
-    mHeightDp = attrs.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_DP);
-    mWidthDp = attrs.getAttributeIntValue(null, "compass.width", DEFAULT_WIDTH_DP);
+    if (attrs != null) {
+      initializeCompass(context);
+      mIsAutoHide = attrs.getAttributeBooleanValue(null, "compass.autoHide", true);
+      mHeightDp = attrs.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_DP);
+      mWidthDp = attrs.getAttributeIntValue(null, "compass.width", DEFAULT_WIDTH_DP);
+    }
   }
 
   /**
@@ -264,10 +266,12 @@ public final class Compass extends View {
   /**
    * Sets the height to use when drawing the icon for this Compass. The default is 50dp.
    *
-   * @param heightDp the height to set, in density-independent pixels
+   * @param heightDp the height to set, in density-independent pixels, must be > 0
+   * @throws IllegalArgumentException if heightDp is negative or 0
    * @since 100.1.0
    */
   public void setCompassHeight(int heightDp) {
+    ToolkitUtil.throwIfNotPositive(heightDp, "heightDp");
     mHeightDp = heightDp;
     if (mDrawInGeoView) {
       getLayoutParams().height = dpToPixels(mHeightDp);
@@ -288,10 +292,12 @@ public final class Compass extends View {
   /**
    * Sets the width to use when drawing the icon for this Compass. The default is 50dp.
    *
-   * @param widthDp the width to set, in density-independent pixels
+   * @param widthDp the width to set, in density-independent pixels, must be > 0
+   * @throws IllegalArgumentException if widthDp is negative or 0
    * @since 100.1.0
    */
   public void setCompassWidth(int widthDp) {
+    ToolkitUtil.throwIfNotPositive(widthDp, "widthDp");
     mWidthDp = widthDp;
     if (mDrawInGeoView) {
       getLayoutParams().width = dpToPixels(mWidthDp);

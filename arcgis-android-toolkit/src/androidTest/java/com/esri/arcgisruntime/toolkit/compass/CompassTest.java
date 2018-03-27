@@ -15,17 +15,21 @@
  */
 package com.esri.arcgisruntime.toolkit.compass;
 
+import android.content.Context;
 import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.TestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -37,69 +41,94 @@ import static org.junit.Assert.fail;
 public class CompassTest {
 
   /**
-   * Tests that a compass can be created and test its default values.
+   * Tests the default values set by the constructor that takes just a Context.
    *
    * @since 100.1.0
    */
   @Test
-  public void testConstructor() {
+  public void testSimpleConstructorDefaultValues() {
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
-    assertTrue(compass.isAutoHide());
+    checkDefaultValues(compass);
   }
 
   /**
-   * Tests default value and setting new value for Compass.isAutoHide().
+   * Tests the constructor that takes an AttributeSet when the AttributeSet is null.
    *
    * @since 100.1.0
    */
   @Test
-  public void testSetAutoHide() {
+  public void testNullAttributeSet() {
+    Compass compass = new Compass(InstrumentationRegistry.getTargetContext(), null);
+    checkDefaultValues(compass);
+  }
+
+  /**
+   * Tests the default values set from an XML file that doesn't set any of the Compass attributes.
+   *
+   * @since 100.1.0
+   */
+  @Test
+  public void testXmlNoScalebarAttributes() {
+    // Inflate layout containing a Compass that doesn't set any of the Compass attributes
+    Context context = InstrumentationRegistry.getTargetContext();
+    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs, null);
+
+    // Find and instantiate that Compass
+    Compass compass = viewGroup.findViewById(R.id.compass);
+
+    // Check it contains the correct default attribute values
+    checkDefaultValues(compass);
+  }
+
+  /**
+   * Tests the values set from a fully-populated XML file.
+   *
+   * @since 100.1.0
+   */
+  @Test
+  public void testXmlFullyPopulated() {
+    // Inflate layout containing a Compass that sets all of the Compass attributes
+    Context context = InstrumentationRegistry.getTargetContext();
+    ViewGroup viewGroup =
+        (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_fully_populated, null);
+
+    // Find and instantiate that Compass
+    Compass compass = viewGroup.findViewById(R.id.compass);
+
+    // Check it contains the correct attribute values
+    checkSetValues(compass);
+  }
+
+  /**
+   * Tests all the setter methods.
+   *
+   * @since 100.1.0
+   */
+  @Test
+  public void testSetters() {
+    // Instantiate a Compass
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
-    assertTrue(compass.isAutoHide());
+
+    // Call all the setters
     compass.setAutoHide(false);
-    assertFalse(compass.isAutoHide());
+    compass.setCompassHeight(99);
+    compass.setCompassWidth(100);
+
+    // Check all the values that were set
+    checkSetValues(compass);
   }
 
   /**
-   * Tests Compass.bindTo(MapView) and Compass.addToGeoView(MapView)
+   * Tests IllegalArgumentExceptions from all methods that throw IllegalArgumentException.
    *
    * @since 100.1.0
    */
   @Test
-  public void testBindToMapView() {
-    // Must initialize this thread as a Looper so it can instantiate a MapView
-    Looper.prepare();
-
+  public void testIllegalArgumentExceptions() {
+    // Instantiate a Compass
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
-    MapView mapView = new MapView(InstrumentationRegistry.getTargetContext());
-    compass.bindTo(mapView);
 
-    try {
-      compass.bindTo(null);
-      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
-    } catch (IllegalArgumentException e) {
-      //success
-    }
-
-    //binding to a MapView if it is added to a MapView should fail
-    try {
-      compass.addToGeoView(mapView);
-      compass.bindTo(mapView);
-      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
-    } catch (IllegalStateException e) {
-      //success
-    }
-
-    //should be able to bind again after removing from MapView
-    compass.removeFromGeoView();
-    compass.bindTo(mapView);
-
-    //reset test
-    compass.removeFromGeoView();
-
-    compass.addToGeoView(mapView);
-    assertTrue(compass.getParent() == mapView);
-
+    // Test addToMapView()
     try {
       compass.addToGeoView(null);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
@@ -107,28 +136,108 @@ public class CompassTest {
       //success
     }
 
-    //adding to a MapView if it is added to a MapView already should fail
+    // Test bindTo()
     try {
-      compass.addToGeoView(mapView);
+      compass.bindTo(null);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
+
+    // Test the setters
+    try {
+      compass.setCompassHeight(0);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
+    try {
+      compass.setCompassWidth(0);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
+  }
+
+  /**
+   * Tests addToGeoView(), removeFromGeoView() and bindTo().
+   *
+   * @since 100.1.0
+   */
+  @Test
+  public void testAddRemoveAndBind() {
+    // Must initialize this thread as a Looper so it can instantiate a GeoView
+    Looper.prepare();
+
+    Context context = InstrumentationRegistry.getTargetContext();
+    MapView mapView = new MapView(context);
+
+    // Instantiate a Compass and add it to a GeoView
+    Compass compass = new Compass(context);
+    compass.addToGeoView(mapView);
+
+    // Check addToGeoView() fails when it's already added to a GeoView
+    try {
       compass.addToGeoView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
     } catch (IllegalStateException e) {
       //success
     }
 
-    //adding to a MapView if it is bound to a MapView already should fail
+    // Remove it from the GeoView and check addToGeoView() can then be called again
+    compass.removeFromGeoView();
+    compass.addToGeoView(mapView);
+
+    // Check bindTo() fails when it's already added to a GeoView
     try {
       compass.bindTo(mapView);
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Remove it from the GeoView and check bindTo() can then be called
+    compass.removeFromGeoView();
+    compass.bindTo(mapView);
+
+    // Check bindTo() is allowed when already bound
+    compass.bindTo(mapView);
+
+    // Check addToGeoView() fails when it's already bound to a GeoView
+    try {
       compass.addToGeoView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
     } catch (IllegalStateException e) {
       //success
     }
 
-    //Test that the view was removed from the MapView and that it can be added again after removal
+    // Check removeFromGeoView() can be called when it's not added to a GeoView
     compass.removeFromGeoView();
-    assertTrue(compass.getParent() == null);
-    compass.addToGeoView(mapView);
-    assertTrue(compass.getParent() == mapView);
   }
+
+  /**
+   * Checks that the given Compass object contains default values for all attributes.
+   *
+   * @param compass the Compass
+   * @since 100.1.0
+   */
+  private void checkDefaultValues(Compass compass) {
+    assertTrue("Expected isAutoHide() to return true", compass.isAutoHide());
+    assertEquals(50, compass.getCompassHeight());
+    assertEquals(50, compass.getCompassWidth());
+  }
+
+  /**
+   * Checks that the given Compass object contains values that have been set (by setter methods or from XML) for all
+   * attributes.
+   *
+   * @param compass the Compass
+   * @since 100.1.0
+   */
+  private void checkSetValues(Compass compass) {
+    assertFalse("Expected isAutoHide() to return false", compass.isAutoHide());
+    assertEquals(99, compass.getCompassHeight());
+    assertEquals(100, compass.getCompassWidth());
+  }
+
 }

@@ -38,4 +38,18 @@ public class ToolkitUtil {
     }
   }
 
+  /**
+   * Throws IllegalArgumentException if the value of a given int argument is negative or zero.
+   *
+   * @param argValue the argument value to check
+   * @param argName  the name of the argument
+   * @throws IllegalArgumentException if argValue is negative or zero
+   * @since 100.1.0
+   */
+  public static void throwIfNotPositive(int argValue, String argName) {
+    if (argValue <= 0) {
+      throw new IllegalArgumentException(String.format(PARAMETER_NULL_EXCEPTION_MSG, argName));
+    }
+  }
+
 }
