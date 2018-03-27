@@ -41,8 +41,6 @@ import static org.junit.Assert.fail;
  */
 @RunWith(AndroidJUnit4.class)
 public final class ScalebarTest {
-  private static final double DELTA = 0.0000001;
-
   private static final int ALPHA_50_PC = 0x80000000;
 
   private static final Scalebar.Style DEFAULT_STYLE = Scalebar.Style.ALTERNATING_BAR;
@@ -207,6 +205,18 @@ public final class ScalebarTest {
     } catch (IllegalArgumentException e) {
       //success
     }
+    try {
+      scalebar.setTextSize(0);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
+    try {
+      scalebar.setBarHeight(0);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
   }
 
   /**
@@ -282,8 +292,8 @@ public final class ScalebarTest {
     assertEquals(DEFAULT_TEXT_COLOR, scalebar.getTextColor());
     assertEquals(DEFAULT_TEXT_SHADOW_COLOR, scalebar.getTextShadowColor());
     assertEquals(DEFAULT_TYPEFACE, scalebar.getTypeface());
-    assertEquals(DEFAULT_TEXT_SIZE_DP, scalebar.getTextSize(), DELTA);
-    assertEquals(DEFAULT_BAR_HEIGHT_DP, scalebar.getBarHeight(), DELTA);
+    assertEquals(DEFAULT_TEXT_SIZE_DP, scalebar.getTextSize());
+    assertEquals(DEFAULT_BAR_HEIGHT_DP, scalebar.getBarHeight());
   }
 
   /**
@@ -305,7 +315,7 @@ public final class ScalebarTest {
     assertEquals(Color.GREEN, scalebar.getTextColor());
     assertEquals(Color.BLUE, scalebar.getTextShadowColor());
     assertTrue("Unexpected Typeface", typeface.equals(scalebar.getTypeface()));
-    assertEquals(20, scalebar.getTextSize(), DELTA);
-    assertEquals(12, scalebar.getBarHeight(), DELTA);
+    assertEquals(20, scalebar.getTextSize());
+    assertEquals(12, scalebar.getBarHeight());
   }
 }
