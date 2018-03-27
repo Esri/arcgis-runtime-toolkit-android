@@ -39,7 +39,7 @@ import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
- * TODO
+ * The Compass test activity.
  */
 public final class CompassTestActivity extends AppCompatActivity implements MapOrSceneDialogFragment.Listener,
     CompassAutoHideDialogFragment.Listener, NumberDialogFragment.Listener {
