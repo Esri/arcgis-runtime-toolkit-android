@@ -136,14 +136,6 @@ public class CompassTest {
       //success
     }
 
-    // Test bindTo()
-    try {
-      compass.bindTo(null);
-      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
-    } catch (IllegalArgumentException e) {
-      //success
-    }
-
     // Test the setters
     try {
       compass.setCompassHeight(0);
@@ -203,7 +195,15 @@ public class CompassTest {
     // Check bindTo() is allowed when already bound
     compass.bindTo(mapView);
 
-    // Check addToGeoView() fails when it's already bound to a GeoView
+    // Check removeFromGeoView() fails when it's bound to a GeoView
+    try {
+      compass.removeFromGeoView();
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Check addToGeoView() fails when it's bound to a GeoView
     try {
       compass.addToGeoView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
@@ -211,8 +211,13 @@ public class CompassTest {
       //success
     }
 
-    // Check removeFromGeoView() can be called when it's not added to a GeoView
+    // Call bindTo(null) to unbind it and check addToGeoView() can then be called
+    compass.bindTo(null);
+    compass.addToGeoView(mapView);
+
+    // Remove it from the GeoView and check bindTo(null) can be called even when it's not bound
     compass.removeFromGeoView();
+    compass.bindTo(null);
   }
 
   /**

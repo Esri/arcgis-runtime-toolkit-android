@@ -217,38 +217,38 @@ public final class Compass extends View {
   }
 
   /**
-   * Removes and unbinds this Compass from the GeoView it was added or bound to (if any).
+   * Removes this Compass from the GeoView it was added to (if any). For use in Workflow 1 (see {@link Compass} above).
    *
+   * @throws IllegalStateException if this Compass is not currently added to a GeoView
    * @since 100.2.1
    */
   public void removeFromGeoView() {
-    // If it was added to a GeoView, remove it
-    if (mDrawInGeoView) {
-      mGeoView.removeView(this);
-      mDrawInGeoView = false;
+    if (!mDrawInGeoView) {
+      throw new IllegalStateException("Compass is not currently added to a GeoView");
     }
-
-    // Unbind from GeoView by removing listeners
-    if (mGeoView != null) {
-      removeListenersFromGeoView();
-      mGeoView = null;
-    }
+    mGeoView.removeView(this);
+    removeListenersFromGeoView();
+    mDrawInGeoView = false;
   }
 
   /**
-   * Binds this Compass to the given GeoView. Used in Workflow 2 (see {@link Compass} above).
+   * Binds this Compass to the given GeoView, or unbinds it. Used in Workflow 2 (see {@link Compass} above).
    *
-   * @param geoView the GeoView to bind the Compass to
-   * @throws IllegalArgumentException if geoView is null
-   * @throws IllegalStateException    if this Compass is currently added to a GeoView
+   * @param geoView the GeoView to bind to, or null to unbind it
+   * @throws IllegalStateException if this Compass is currently added to a GeoView
    * @since 100.2.1
    */
   public void bindTo(GeoView geoView) {
-    ToolkitUtil.throwIfNull(geoView, "geoView");
     if (mDrawInGeoView) {
-      throw new IllegalStateException("Compass already added to a GeoView");
+      throw new IllegalStateException("Compass is currently added to a GeoView");
     }
-    setupGeoView(geoView);
+    if (geoView == null) {
+      if (mGeoView != null) {
+        removeListenersFromGeoView();
+      }
+    } else {
+      setupGeoView(geoView);
+    }
   }
 
   /**
@@ -423,6 +423,7 @@ public final class Compass extends View {
   private void removeListenersFromGeoView() {
     mGeoView.removeViewpointChangedListener(mViewpointChangedListener);
     mGeoView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+    mGeoView = null;
   }
 
   /**

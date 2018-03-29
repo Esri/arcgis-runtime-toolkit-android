@@ -172,14 +172,6 @@ public final class ScalebarTest {
       //success
     }
 
-    // Test bindTo()
-    try {
-      scalebar.bindTo(null);
-      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
-    } catch (IllegalArgumentException e) {
-      //success
-    }
-
     // Test the setters
     try {
       scalebar.setStyle(null);
@@ -263,7 +255,15 @@ public final class ScalebarTest {
     // Check bindTo() is allowed when already bound
     scalebar.bindTo(mapView);
 
-    // Check addToMapView() fails when it's already bound to a MapView
+    // Check removeFromMapView() fails when it's bound to a MapView
+    try {
+      scalebar.removeFromMapView();
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Check addToMapView() fails when it's bound to a MapView
     try {
       scalebar.addToMapView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
@@ -271,8 +271,13 @@ public final class ScalebarTest {
       //success
     }
 
-    // Check removeFromMapView() can be called when it's not added to a MapView
+    // Call bindTo(null) to unbind it and check addToMapView() can then be called
+    scalebar.bindTo(null);
+    scalebar.addToMapView(mapView);
+
+    // Remove it from the MapView and check bindTo(null) can be called even when it's not bound
     scalebar.removeFromMapView();
+    scalebar.bindTo(null);
   }
 
   /**

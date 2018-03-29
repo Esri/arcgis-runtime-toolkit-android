@@ -325,39 +325,38 @@ public final class Scalebar extends View {
   }
 
   /**
-   * Removes and unbinds this Scalebar from the MapView it was added or bound to (if any).
+   * Removes this Scalebar from the MapView it was added to (if any). For use in Workflow 1 (see {@link Scalebar} above).
    *
+   * @throws IllegalStateException if this Scalebar is not currently added to a MapView
    * @since 100.2.1
    */
   public void removeFromMapView() {
-    // If it was added to a MapView, remove it
-    if (mScalebarIsChildOfMapView) {
-      mMapView.removeView(this);
-      mScalebarIsChildOfMapView = false;
+    if (!mScalebarIsChildOfMapView) {
+      throw new IllegalStateException("Scalebar is not currently added to a MapView");
     }
-
-    // Unbind from MapView by removing listeners
-    if (mMapView != null) {
-      removeListenersFromMapView();
-      mMapView = null;
-    }
+    mMapView.removeView(this);
+    removeListenersFromMapView();
+    mScalebarIsChildOfMapView = false;
   }
 
   /**
-   * Binds this Scalebar to the given MapView. Used in Workflow 2 (see {@link Scalebar} above).
+   * Binds this Scalebar to the given MapView, or unbinds it. Used in Workflow 2 (see {@link Scalebar} above).
    *
-   * @param mapView the MapView
-   * @throws IllegalArgumentException if mapView is null
-   * @throws IllegalStateException    if this Scalebar is currently added to a MapView
+   * @param mapView the MapView to bind to, or null to unbind it
+   * @throws IllegalStateException if this Scalebar is currently added to a MapView
    * @since 100.2.1
    */
   public void bindTo(MapView mapView) {
-    ToolkitUtil.throwIfNull(mapView, "mapView");
     if (mScalebarIsChildOfMapView) {
-      throw new IllegalStateException("Scalebar already added to a MapView");
+      throw new IllegalStateException("Scalebar is currently added to a MapView");
     }
-    setupMapView(mapView);
-    mScalebarIsChildOfMapView = false;
+    if (mapView == null) {
+      if (mMapView != null) {
+        removeListenersFromMapView();
+      }
+    } else {
+      setupMapView(mapView);
+    }
   }
 
   /**
@@ -772,6 +771,7 @@ public final class Scalebar extends View {
   private void removeListenersFromMapView() {
     mMapView.removeViewpointChangedListener(mViewpointChangedListener);
     mMapView.removeAttributionViewLayoutChangeListener(mAttributionViewLayoutChangeListener);
+    mMapView = null;
   }
 
   /**
