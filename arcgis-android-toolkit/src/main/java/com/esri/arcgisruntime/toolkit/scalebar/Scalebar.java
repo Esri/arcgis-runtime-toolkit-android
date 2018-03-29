@@ -607,8 +607,8 @@ public final class Scalebar extends View {
   /**
    * Sets the text size of this Scalebar. The default is 15dp.
    *
-   * @param textSizeDp the text size to set, in density-independent pixels, must be > 0
-   * @throws IllegalArgumentException if textSizeDp is negative or 0
+   * @param textSizeDp the text size to set, in density-independent pixels, must be &gt; 0
+   * @throws IllegalArgumentException if textSizeDp is &lt;= 0
    * @since 100.1.0
    */
   public void setTextSize(int textSizeDp) {
@@ -632,8 +632,8 @@ public final class Scalebar extends View {
    * Sets the bar height of this Scalebar. This is the height of the bar itself, not including the text. The default is
    * 10dp.
    *
-   * @param barHeightDp the bar height to set, in density-independent pixels, must be > 0
-   * @throws IllegalArgumentException if barHeightDp is negative or 0
+   * @param barHeightDp the bar height to set, in density-independent pixels, must be &gt; 0
+   * @throws IllegalArgumentException if barHeightDp is &lt;= 0
    * @since 100.1.0
    */
   public void setBarHeight(int barHeightDp) {

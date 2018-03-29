@@ -331,7 +331,7 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
     CUSTOM1,
 
     /**
-     * TIn Custom Layout 2 the Compass is displayed separate from the GeoView and bound to it using Workflow 2.
+     * In Custom Layout 2 the Compass is displayed separate from the GeoView and bound to it using Workflow 2.
      */
     CUSTOM2
   }
