@@ -15,11 +15,14 @@
  */
 package com.esri.arcgisruntime.toolkit.compass;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -111,6 +114,10 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
 public final class Compass extends View {
   private static final double AUTO_HIDE_THRESHOLD = 0.1E-10;
 
+  private static final int FADE_ANIMATION_DELAY = 300; // milliseconds
+
+  private static final int FADE_ANIMATION_DURATION = 500; // milliseconds
+
   private static final int DEFAULT_HEIGHT_DP = 50;
 
   private static final int DEFAULT_WIDTH_DP = 50;
@@ -132,6 +139,8 @@ public final class Compass extends View {
   private float mHeightDp = DEFAULT_HEIGHT_DP;
 
   private float mWidthDp = DEFAULT_WIDTH_DP;
+
+  private boolean mIsShown;
 
   private final ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
     @Override
@@ -378,6 +387,8 @@ public final class Compass extends View {
   private void initializeCompass(Context context) {
     mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_compass);
     mDisplayDensity = context.getResources().getDisplayMetrics().density;
+    mIsShown = !mIsAutoHide;
+    setAlpha(mIsShown ? 1.0f : 0.0f);
     showOrHide();
 
     setOnTouchListener(new OnTouchListener() {
@@ -421,17 +432,44 @@ public final class Compass extends View {
    * than the threshold. Handle 0 and 360 degrees.
    */
   private void showOrHide() {
-    if (mIsAutoHide) {
-      // Auto-hide enabled - hide if rotation is less than the threshold
-      if (mRotation < AUTO_HIDE_THRESHOLD || (360 - mRotation) < AUTO_HIDE_THRESHOLD) {
-        setVisibility(INVISIBLE);
-      } else {
-        setVisibility(VISIBLE);
+    // If auto-hide is enabled, hide if rotation is less than the threshold
+    if (mIsAutoHide && (mRotation < AUTO_HIDE_THRESHOLD || (360 - mRotation) < AUTO_HIDE_THRESHOLD)) {
+      if (mIsShown) {
+        showCompass(false);
       }
     } else {
-      // Auto-hide disabled - always show the compass
-      setVisibility(VISIBLE);
+      // Otherwise show the compass
+      if (!mIsShown) {
+        showCompass(true);
+      }
     }
+  }
+
+  /**
+   * Shows or hides the Compass, using an animator to make it fade in and out.
+   *
+   * @param show true to show the Compass, false to hide it
+   */
+  private void showCompass(final boolean show) {
+    // Set the desired state in mIsShown
+    mIsShown = show;
+
+    // Post a Runnable to the main UI thread, to run after a short delay; the delay prevents the Compass from starting
+    // to fade as it momentarily passes through north
+    Handler handler = new Handler(Looper.getMainLooper());
+    handler.postDelayed(new Runnable() {
+      @Override public void run() {
+        // Check if the conditions for showing/hiding still hold now the delay has happened
+        if (show == mIsShown) {
+          // Create an animator that changes the View's alpha to 1.0 (opaque) if we are showing or 0.0 (transparent) if
+          // we are hiding
+          ObjectAnimator animator = ObjectAnimator.ofFloat(Compass.this, "alpha", show ? 1.0f : 0.0f);
+
+          // Run the animation
+          animator.setDuration(FADE_ANIMATION_DURATION).start();
+        }
+      }
+    }, FADE_ANIMATION_DELAY);
   }
 
   /**
