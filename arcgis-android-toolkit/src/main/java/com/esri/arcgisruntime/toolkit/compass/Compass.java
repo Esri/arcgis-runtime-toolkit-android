@@ -109,7 +109,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * mCompass.bindTo(mGeoView);
  * </pre>
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 public final class Compass extends View {
   private static final double AUTO_HIDE_THRESHOLD = 0.1E-10;
@@ -174,7 +174,7 @@ public final class Compass extends View {
    * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see {@link Compass} above).
    *
    * @param context the execution Context
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Compass(Context context) {
     super(context);
@@ -187,7 +187,7 @@ public final class Compass extends View {
    *
    * @param context the execution Context
    * @param attrs   the attributes of the XML tag that is inflating the view
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Compass(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -205,7 +205,7 @@ public final class Compass extends View {
    * @param geoView the GeoView
    * @throws IllegalArgumentException if geoView is null
    * @throws IllegalStateException    if this Compass is already added to or bound to a GeoView
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void addToGeoView(GeoView geoView) {
     ToolkitUtil.throwIfNull(geoView, "geoView");
@@ -220,7 +220,7 @@ public final class Compass extends View {
   /**
    * Removes and unbinds this Compass from the GeoView it was added or bound to (if any).
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void removeFromGeoView() {
     // If it was added to a GeoView, remove it
@@ -242,7 +242,7 @@ public final class Compass extends View {
    * @param geoView the GeoView to bind the Compass to
    * @throws IllegalArgumentException if geoView is null
    * @throws IllegalStateException    if this Compass is currently added to a GeoView
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void bindTo(GeoView geoView) {
     ToolkitUtil.throwIfNull(geoView, "geoView");
@@ -256,7 +256,7 @@ public final class Compass extends View {
    * Sets whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
    *
    * @param autoHide true to auto hide the Compass, false to have it always show; the default is true
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setAutoHide(boolean autoHide) {
     mIsAutoHide = autoHide;
@@ -267,6 +267,7 @@ public final class Compass extends View {
    * Indicates if this Compass is automatically hidden when the map/scene rotation is 0 degrees.
    *
    * @return true if the Compass is automatically hidden, false if it is always shown
+   * @since 100.2.1
    */
   public boolean isAutoHide() {
     return mIsAutoHide;
@@ -277,7 +278,7 @@ public final class Compass extends View {
    *
    * @param heightDp the height to set, in density-independent pixels, must be &gt; 0
    * @throws IllegalArgumentException if heightDp is &lt;= 0
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setCompassHeight(int heightDp) {
     ToolkitUtil.throwIfNotPositive(heightDp, "heightDp");
@@ -292,7 +293,7 @@ public final class Compass extends View {
    * Gets the height of the icon for this Compass.
    *
    * @return the height, in density-independent pixels
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getCompassHeight() {
     return Math.round(mHeightDp);
@@ -303,7 +304,7 @@ public final class Compass extends View {
    *
    * @param widthDp the width to set, in density-independent pixels, must be &gt; 0
    * @throws IllegalArgumentException if widthDp is &lt;= 0
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setCompassWidth(int widthDp) {
     ToolkitUtil.throwIfNotPositive(widthDp, "widthDp");
@@ -318,7 +319,7 @@ public final class Compass extends View {
    * Gets the width of the icon for this Compass.
    *
    * @return the width, in density-independent pixels
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getCompassWidth() {
     return Math.round(mWidthDp);
@@ -328,7 +329,7 @@ public final class Compass extends View {
    * Resets the map/scene to be oriented toward 0 degrees when the Compass is clicked.
    *
    * @return true if there was an assigned OnClickListener that was called, false otherwise
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Override
   public boolean performClick() {
@@ -348,7 +349,7 @@ public final class Compass extends View {
    * Draws the Compass with the current rotation to the screen.
    *
    * @param canvas the canvas to draw on
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Override
   protected void onDraw(Canvas canvas) {
@@ -383,6 +384,7 @@ public final class Compass extends View {
    * Performs initialization that's required by all constructors.
    *
    * @param context the execution Context
+   * @since 100.2.1
    */
   private void initializeCompass(Context context) {
     mCompassBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_compass);
@@ -403,7 +405,7 @@ public final class Compass extends View {
    * Sets up the Compass to work with the given GeoView.
    *
    * @param geoView the GeoView
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void setupGeoView(GeoView geoView) {
     // Remove listeners from old GeoView
@@ -420,7 +422,7 @@ public final class Compass extends View {
   /**
    * Removes the listeners from mGeoView.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void removeListenersFromGeoView() {
     mGeoView.removeViewpointChangedListener(mViewpointChangedListener);
@@ -430,6 +432,8 @@ public final class Compass extends View {
   /**
    * Show or hide the Compass, depending on whether auto-hide is enabled, and if so whether the current rotation is less
    * than the threshold. Handle 0 and 360 degrees.
+   *
+   * @since 100.2.1
    */
   private void showOrHide() {
     // If auto-hide is enabled, hide if rotation is less than the threshold
@@ -449,6 +453,7 @@ public final class Compass extends View {
    * Shows or hides the Compass, using an animator to make it fade in and out.
    *
    * @param show true to show the Compass, false to hide it
+   * @since 100.2.1
    */
   private void showCompass(final boolean show) {
     // Set the desired state in mIsShown
@@ -477,7 +482,7 @@ public final class Compass extends View {
    *
    * @param dp a number of density-independent pixels
    * @return the equivalent number of actual pixels
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private int dpToPixels(double dp) {
     double pixels = dp * mDisplayDensity;

@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests for Scalebar.
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 @RunWith(AndroidJUnit4.class)
 public final class ScalebarTest {
@@ -70,7 +70,7 @@ public final class ScalebarTest {
   /**
    * Tests the default values set by the constructor that takes just a Context.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testSimpleConstructorDefaultValues() {
@@ -81,7 +81,7 @@ public final class ScalebarTest {
   /**
    * Tests the constructor that takes an AttributeSet when the AttributeSet is null.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testNullAttributeSet() {
@@ -92,7 +92,7 @@ public final class ScalebarTest {
   /**
    * Tests the default values set from an XML file that doesn't set any of the Scalebar attributes.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testXmlNoScalebarAttributes() {
@@ -110,7 +110,7 @@ public final class ScalebarTest {
   /**
    * Tests the values set from a fully-populated XML file.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testXmlFullyPopulated() {
@@ -129,7 +129,7 @@ public final class ScalebarTest {
   /**
    * Tests all the setter methods.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testSetters() {
@@ -157,7 +157,7 @@ public final class ScalebarTest {
   /**
    * Tests IllegalArgumentExceptions from all methods that throw IllegalArgumentException.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testIllegalArgumentExceptions() {
@@ -222,7 +222,7 @@ public final class ScalebarTest {
   /**
    * Tests addToMapView(), removeFromMapView() and bindTo().
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testAddRemoveAndBind() {
@@ -279,7 +279,7 @@ public final class ScalebarTest {
    * Checks that the given Scalebar object contains default values for all attributes.
    *
    * @param scalebar the Scalebar
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void checkDefaultValues(Scalebar scalebar) {
     assertEquals(DEFAULT_STYLE, scalebar.getStyle());
@@ -302,7 +302,7 @@ public final class ScalebarTest {
    *
    * @param scalebar the Scalebar
    * @param typeface the expected Typeface
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void checkSetValues(Scalebar scalebar, Typeface typeface) {
     assertEquals(Scalebar.Style.GRADUATED_LINE, scalebar.getStyle());

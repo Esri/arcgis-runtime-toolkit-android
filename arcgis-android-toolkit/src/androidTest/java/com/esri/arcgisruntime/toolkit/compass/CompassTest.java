@@ -35,7 +35,7 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests for Compass.
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 @RunWith(AndroidJUnit4.class)
 public class CompassTest {
@@ -43,7 +43,7 @@ public class CompassTest {
   /**
    * Tests the default values set by the constructor that takes just a Context.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testSimpleConstructorDefaultValues() {
@@ -54,7 +54,7 @@ public class CompassTest {
   /**
    * Tests the constructor that takes an AttributeSet when the AttributeSet is null.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testNullAttributeSet() {
@@ -65,7 +65,7 @@ public class CompassTest {
   /**
    * Tests the default values set from an XML file that doesn't set any of the Compass attributes.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testXmlNoCompassAttributes() {
@@ -83,7 +83,7 @@ public class CompassTest {
   /**
    * Tests the values set from a fully-populated XML file.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testXmlFullyPopulated() {
@@ -102,7 +102,7 @@ public class CompassTest {
   /**
    * Tests all the setter methods.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testSetters() {
@@ -121,7 +121,7 @@ public class CompassTest {
   /**
    * Tests IllegalArgumentExceptions from all methods that throw IllegalArgumentException.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testIllegalArgumentExceptions() {
@@ -162,7 +162,7 @@ public class CompassTest {
   /**
    * Tests addToGeoView(), removeFromGeoView() and bindTo().
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testAddRemoveAndBind() {
@@ -219,7 +219,7 @@ public class CompassTest {
    * Checks that the given Compass object contains default values for all attributes.
    *
    * @param compass the Compass
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void checkDefaultValues(Compass compass) {
     assertTrue("Expected isAutoHide() to return true", compass.isAutoHide());
@@ -232,7 +232,7 @@ public class CompassTest {
    * attributes.
    *
    * @param compass the Compass
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void checkSetValues(Compass compass) {
     assertFalse("Expected isAutoHide() to return false", compass.isAutoHide());

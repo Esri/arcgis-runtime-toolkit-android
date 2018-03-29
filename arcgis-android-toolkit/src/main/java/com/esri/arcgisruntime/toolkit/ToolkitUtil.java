@@ -18,7 +18,7 @@ package com.esri.arcgisruntime.toolkit;
 /**
  * Provides utility methods used by toolkit components.
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 public class ToolkitUtil {
 
@@ -32,7 +32,7 @@ public class ToolkitUtil {
    * @param value the argument value to check
    * @param name  the name of the argument
    * @throws IllegalArgumentException if value is null
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public static void throwIfNull(Object value, String name) {
     if (value == null) {
@@ -46,7 +46,7 @@ public class ToolkitUtil {
    * @param value the argument value to check
    * @param name  the name of the argument
    * @throws IllegalArgumentException if value is negative or zero
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public static void throwIfNotPositive(int value, String name) {
     if (value <= 0) {

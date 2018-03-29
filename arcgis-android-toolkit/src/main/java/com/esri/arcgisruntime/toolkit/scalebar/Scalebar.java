@@ -161,7 +161,7 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * mScalebar.bindTo(mMapView);
  * </pre>
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 public final class Scalebar extends View {
 
@@ -270,7 +270,7 @@ public final class Scalebar extends View {
    * Constructs a Scalebar programmatically. Called by the app when Workflow 1 is used (see {@link Scalebar} above).
    *
    * @param context the current execution Context
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Scalebar(Context context) {
     super(context);
@@ -283,7 +283,7 @@ public final class Scalebar extends View {
    *
    * @param context the current execution Context
    * @param attrs   the attributes of the XML tag that is inflating the view
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Scalebar(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -311,7 +311,7 @@ public final class Scalebar extends View {
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
    * @throws IllegalStateException    if this Scalebar is already added to or bound to a MapView
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void addToMapView(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
@@ -327,7 +327,7 @@ public final class Scalebar extends View {
   /**
    * Removes and unbinds this Scalebar from the MapView it was added or bound to (if any).
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void removeFromMapView() {
     // If it was added to a MapView, remove it
@@ -349,7 +349,7 @@ public final class Scalebar extends View {
    * @param mapView the MapView
    * @throws IllegalArgumentException if mapView is null
    * @throws IllegalStateException    if this Scalebar is currently added to a MapView
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void bindTo(MapView mapView) {
     ToolkitUtil.throwIfNull(mapView, "mapView");
@@ -365,7 +365,7 @@ public final class Scalebar extends View {
    *
    * @param style the style to set
    * @throws IllegalArgumentException if style is null
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setStyle(Style style) {
     ToolkitUtil.throwIfNull(style, "style");
@@ -394,7 +394,7 @@ public final class Scalebar extends View {
    * Gets the style of this Scalebar.
    *
    * @return the style
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Style getStyle() {
     return mStyle;
@@ -408,7 +408,7 @@ public final class Scalebar extends View {
    *
    * @param alignment the alignment to set
    * @throws IllegalArgumentException if alignment is null
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setAlignment(Alignment alignment) {
     ToolkitUtil.throwIfNull(alignment, "alignment");
@@ -420,7 +420,7 @@ public final class Scalebar extends View {
    * Gets the alignment of this Scalebar.
    *
    * @return the alignment
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Alignment getAlignment() {
     return mAlignment;
@@ -431,7 +431,7 @@ public final class Scalebar extends View {
    *
    * @param unitSystem the unit system to set
    * @throws IllegalArgumentException if unitSystem is null
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setUnitSystem(UnitSystem unitSystem) {
     ToolkitUtil.throwIfNull(unitSystem, "unitSystem");
@@ -443,7 +443,7 @@ public final class Scalebar extends View {
    * Gets the unit system of this Scalebar.
    *
    * @return the unit system
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public UnitSystem getUnitSystem() {
     return mUnitSystem;
@@ -454,7 +454,7 @@ public final class Scalebar extends View {
    * default is semi-transparent light gray.
    *
    * @param color the color to set
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setFillColor(int color) {
     mFillColor = color;
@@ -465,7 +465,7 @@ public final class Scalebar extends View {
    * Gets the fill color of this Scalebar.
    *
    * @return the fill color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getFillColor() {
     return mFillColor;
@@ -476,7 +476,7 @@ public final class Scalebar extends View {
    * is ALTERNATING_BAR. The default is black.
    *
    * @param color the color to set
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setAlternateFillColor(int color) {
     mAlternateFillColor = color;
@@ -487,7 +487,7 @@ public final class Scalebar extends View {
    * Gets the alternate fill color of this Scalebar.
    *
    * @return the alternate fill color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getAlternateFillColor() {
     return mAlternateFillColor;
@@ -497,7 +497,7 @@ public final class Scalebar extends View {
    * Sets the line color of this Scalebar. The default is white.
    *
    * @param color the color to set
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setLineColor(int color) {
     mLineColor = color;
@@ -508,7 +508,7 @@ public final class Scalebar extends View {
    * Gets the line color of this Scalebar.
    *
    * @return the line color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getLineColor() {
     return mLineColor;
@@ -519,7 +519,7 @@ public final class Scalebar extends View {
    * black.
    *
    * @param color the color to set
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setShadowColor(int color) {
     mShadowColor = color;
@@ -530,7 +530,7 @@ public final class Scalebar extends View {
    * Gets the shadow color of this Scalebar.
    *
    * @return the shadow color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getShadowColor() {
     return mShadowColor;
@@ -540,7 +540,7 @@ public final class Scalebar extends View {
    * Sets the text color of this Scalebar. The default is black.
    *
    * @param color the color to set
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setTextColor(int color) {
     mTextColor = color;
@@ -552,7 +552,7 @@ public final class Scalebar extends View {
    * Gets the text color of this Scalebar.
    *
    * @return the text color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getTextColor() {
     return mTextColor;
@@ -562,7 +562,7 @@ public final class Scalebar extends View {
    * Sets the text shadow color of this Scalebar. This is used for the shadow of the text. The default is white.
    *
    * @param color the color to set
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setTextShadowColor(int color) {
     mTextShadowColor = color;
@@ -574,7 +574,7 @@ public final class Scalebar extends View {
    * Gets the text shadow color of this Scalebar.
    *
    * @return the text shadow color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getTextShadowColor() {
     return mTextShadowColor;
@@ -585,7 +585,7 @@ public final class Scalebar extends View {
    *
    * @param typeface the typeface to set
    * @throws IllegalArgumentException if typeface is null
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setTypeface(Typeface typeface) {
     ToolkitUtil.throwIfNull(typeface, "typeface");
@@ -598,7 +598,7 @@ public final class Scalebar extends View {
    * Gets the typeface of this Scalebar.
    *
    * @return the typeface
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public Typeface getTypeface() {
     return mTypeface;
@@ -609,7 +609,7 @@ public final class Scalebar extends View {
    *
    * @param textSizeDp the text size to set, in density-independent pixels, must be &gt; 0
    * @throws IllegalArgumentException if textSizeDp is &lt;= 0
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setTextSize(int textSizeDp) {
     ToolkitUtil.throwIfNotPositive(textSizeDp, "textSizeDp");
@@ -622,7 +622,7 @@ public final class Scalebar extends View {
    * Gets the text size of this Scalebar.
    *
    * @return the text size, in density-independent pixels
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getTextSize() {
     return Math.round(mTextSizeDp);
@@ -634,7 +634,7 @@ public final class Scalebar extends View {
    *
    * @param barHeightDp the bar height to set, in density-independent pixels, must be &gt; 0
    * @throws IllegalArgumentException if barHeightDp is &lt;= 0
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public void setBarHeight(int barHeightDp) {
     ToolkitUtil.throwIfNotPositive(barHeightDp, "barHeightDp");
@@ -648,7 +648,7 @@ public final class Scalebar extends View {
    * Gets the bar height of this Scalebar.
    *
    * @return the bar height, in density-independent pixels
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public int getBarHeight() {
     return Math.round(mBarHeightDp);
@@ -733,7 +733,7 @@ public final class Scalebar extends View {
    * Sets up the Scalebar to work with the given MapView.
    *
    * @param mapView the MapView
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void setupMapView(MapView mapView) {
     // Remove listeners from old MapView
@@ -754,7 +754,7 @@ public final class Scalebar extends View {
   /**
    * Creates the Paint used for drawing text.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void createTextPaint() {
     mTextPaint = new Paint();
@@ -767,7 +767,7 @@ public final class Scalebar extends View {
   /**
    * Removes the listeners from mMapView.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void removeListenersFromMapView() {
     mMapView.removeViewpointChangedListener(mViewpointChangedListener);
@@ -779,7 +779,7 @@ public final class Scalebar extends View {
    *
    * @param attrs the AttributeSet object containing attributes and values to use
    * @return the scalebar style
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private Style getStyleFromAttributes(AttributeSet attrs) {
     Style style = DEFAULT_STYLE;
@@ -799,7 +799,7 @@ public final class Scalebar extends View {
    *
    * @param attrs the AttributeSet object containing attributes and values to use
    * @return the scalebar alignment
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private Alignment getAlignmentFromAttributes(AttributeSet attrs) {
     Alignment alignment = DEFAULT_ALIGNMENT;
@@ -819,7 +819,7 @@ public final class Scalebar extends View {
    *
    * @param attrs the AttributeSet object containing attributes and values to use
    * @return the scalebar unit system
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private UnitSystem getUnitSystemFromAttributes(AttributeSet attrs) {
     UnitSystem unitSystem = DEFAULT_UNIT_SYSTEM;
@@ -842,7 +842,7 @@ public final class Scalebar extends View {
    * @param attributeName the name of the color attribute to get
    * @param defaultValue  the default value to use if attributeName not found in attrs
    * @return the color
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private int getColorFromAttributes(Context context, AttributeSet attrs, String attributeName, int defaultValue) {
     int color = 0;
@@ -871,7 +871,7 @@ public final class Scalebar extends View {
    * @param scalebarLength the length of the scalebar in pixels
    * @param displayUnits   the units to be displayed
    * @return the x-coordinate of the left hand end of the scalebar
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private float calculateLeftPos(Alignment alignment, float scalebarLength, LinearUnit displayUnits) {
     int left = 0;
@@ -903,7 +903,7 @@ public final class Scalebar extends View {
    *
    * @param dp a number of density-independent pixels
    * @return the equivalent number of actual pixels
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private int dpToPixels(double dp) {
     double pixels = dp * mDisplayDensity;
@@ -913,14 +913,14 @@ public final class Scalebar extends View {
   /**
    * Represents the style of scalebar to be displayed.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public enum Style {
     /**
      * A simple, non-segmented bar. A single label is displayed showing the distance represented by the length of the
      * whole bar.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     BAR,
 
@@ -929,7 +929,7 @@ public final class Scalebar extends View {
      * the alternate fill color. A label is displayed at the end of each segment, showing the distance represented by
      * the length of the bar up to that point.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     ALTERNATING_BAR,
 
@@ -937,7 +937,7 @@ public final class Scalebar extends View {
      * A simple, non-segmented line. A single label is displayed showing the distance represented by the length of the
      * whole line.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     LINE,
 
@@ -945,7 +945,7 @@ public final class Scalebar extends View {
      * A line split up into equal-length segments. A tick and a label are displayed at the end of each segment, showing
      * the distance represented by the length of the line up to that point.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     GRADUATED_LINE,
 
@@ -955,7 +955,7 @@ public final class Scalebar extends View {
      * distance represented by the length of the whole line, in the primary unit system. A tick and another label are
      * displayed below the line, showing distance in the other unit system.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     DUAL_UNIT_LINE
   }
@@ -963,7 +963,7 @@ public final class Scalebar extends View {
   /**
    * Represents the alignment of scalebar to be displayed.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public enum Alignment {
     /**
@@ -971,7 +971,7 @@ public final class Scalebar extends View {
      * the right hand end. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
      * positioned near the bottom-left corner of the MapView.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     LEFT,
 
@@ -980,7 +980,7 @@ public final class Scalebar extends View {
      * at the left hand end. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
      * positioned near the bottom-right corner of the MapView.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     RIGHT,
 
@@ -989,7 +989,7 @@ public final class Scalebar extends View {
      * at both ends. If the scalebar is added to a MapView using {@link #addToMapView(MapView)}, it will be
      * positioned near the bottom the MapView, centered between the left and right edges.
      *
-     * @since 100.1.0
+     * @since 100.2.1
      */
     CENTER
   }
@@ -997,7 +997,7 @@ public final class Scalebar extends View {
   /**
    * Renders a scalebar. There are concrete subclasses corresponding to each {@link Scalebar.Style}.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private abstract class ScalebarRenderer {
 
@@ -1011,7 +1011,7 @@ public final class Scalebar extends View {
      * @param bottom       the y-coordinate of the bottom of the scalebar
      * @param distance     the distance represented by the length of the whole scalebar
      * @param displayUnits the units of distance
-     * @since 100.1.0
+     * @since 100.2.1
      */
     public abstract void drawScalebar(Canvas canvas, float left, float top, float right, float bottom,
         double distance, LinearUnit displayUnits);
@@ -1029,7 +1029,7 @@ public final class Scalebar extends View {
      * Indicates if this style of scalebar is segmented.
      *
      * @return true if this style of scalebar is segmented, false otherwise
-     * @since 100.1.0
+     * @since 100.2.1
      */
     public abstract boolean isSegmented();
 
@@ -1039,7 +1039,7 @@ public final class Scalebar extends View {
      *
      * @param displayUnits the units
      * @return the extra space required, in pixels
-     * @since 100.1.0
+     * @since 100.2.1
      */
     public abstract float calculateExtraSpaceForUnits(LinearUnit displayUnits);
 
@@ -1052,7 +1052,7 @@ public final class Scalebar extends View {
      * @param right    the x-coordinate of the right hand edge of the scalebar
      * @param bottom   the y-coordinate of the bottom of the scalebar
      * @param barColor the fill color for the bar
-     * @since 100.1.0
+     * @since 100.2.1
      */
     protected void drawBarAndShadow(Canvas canvas, float left, float top, float right, float bottom, int barColor) {
       // Draw the shadow of the bar, offset slightly from where the actual bar is drawn below
@@ -1078,7 +1078,7 @@ public final class Scalebar extends View {
      * @param top    the y-coordinate of the top of the scalebar
      * @param right  the x-coordinate of the right hand edge of the scalebar
      * @param bottom the y-coordinate of the bottom of the scalebar
-     * @since 100.1.0
+     * @since 100.2.1
      */
     protected void drawLineAndShadow(Canvas canvas, float left, float top, float right, float bottom) {
       // Create a path to draw the left-hand tick, the line itself and the right-hand tick
@@ -1114,7 +1114,7 @@ public final class Scalebar extends View {
      * @param distance      the distance represented by the length of the whole scalebar
      * @param displayLength the length of the scalebar in pixels
      * @return the number of segments
-     * @since 100.1.0
+     * @since 100.2.1
      */
     protected int calculateNumberOfSegments(double distance, double displayLength) {
       // The constraining factor is the space required to draw the labels. Create a testString containing the longest
@@ -1144,7 +1144,7 @@ public final class Scalebar extends View {
      *
      * @param displayUnits the units to be displayed, or null if not known yet
      * @return the width of the units string, in pixels
-     * @since 100.1.0
+     * @since 100.2.1
      */
     protected float calculateWidthOfUnitsString(LinearUnit displayUnits) {
       String unitsText = ' ' + (displayUnits == null ? "mm" : displayUnits.getAbbreviation());
@@ -1158,7 +1158,7 @@ public final class Scalebar extends View {
    * Renders a BAR style scalebar.
    *
    * @see Style#BAR
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private final class BarRenderer extends ScalebarRenderer {
 
@@ -1198,7 +1198,7 @@ public final class Scalebar extends View {
    * Renders an ALTERNATING_BAR style scalebar.
    *
    * @see Style#ALTERNATING_BAR
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private final class AlternatingBarRenderer extends ScalebarRenderer {
 
@@ -1270,7 +1270,7 @@ public final class Scalebar extends View {
    * Renders a LINE style scalebar.
    *
    * @see Style#LINE
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private final class LineRenderer extends ScalebarRenderer {
 
@@ -1302,7 +1302,7 @@ public final class Scalebar extends View {
    * Renders a GRADUATED_LINE style scalebar.
    *
    * @see Style#GRADUATED_LINE
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private final class GraduatedLineRenderer extends ScalebarRenderer {
 
@@ -1371,7 +1371,7 @@ public final class Scalebar extends View {
    * Renders a DUAL_UNIT_LINE style scalebar.
    *
    * @see Style#DUAL_UNIT_LINE
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private final class DualUnitLineRenderer extends ScalebarRenderer {
 
