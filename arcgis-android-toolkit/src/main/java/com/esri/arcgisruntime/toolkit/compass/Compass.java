@@ -118,9 +118,7 @@ public final class Compass extends View {
 
   private static final int FADE_ANIMATION_DURATION = 500; // milliseconds
 
-  private static final int DEFAULT_HEIGHT_DP = 50;
-
-  private static final int DEFAULT_WIDTH_DP = 50;
+  private static final int DEFAULT_HEIGHT_AND_WIDTH_DP = 50;
 
   private final Matrix mMatrix = new Matrix();
 
@@ -136,9 +134,9 @@ public final class Compass extends View {
 
   private float mDisplayDensity;
 
-  private float mHeightDp = DEFAULT_HEIGHT_DP;
+  private float mHeightDp = DEFAULT_HEIGHT_AND_WIDTH_DP;
 
-  private float mWidthDp = DEFAULT_WIDTH_DP;
+  private float mWidthDp = DEFAULT_HEIGHT_AND_WIDTH_DP;
 
   private boolean mIsShown;
 
@@ -193,8 +191,8 @@ public final class Compass extends View {
     super(context, attrs);
     if (attrs != null) {
       mIsAutoHide = attrs.getAttributeBooleanValue(null, "compass.autoHide", true);
-      mHeightDp = attrs.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_DP);
-      mWidthDp = attrs.getAttributeIntValue(null, "compass.width", DEFAULT_WIDTH_DP);
+      mHeightDp = attrs.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_AND_WIDTH_DP);
+      mWidthDp = attrs.getAttributeIntValue(null, "compass.width", DEFAULT_HEIGHT_AND_WIDTH_DP);
     }
     initializeCompass(context);
   }
@@ -213,7 +211,8 @@ public final class Compass extends View {
       throw new IllegalStateException("Compass already has a GeoView");
     }
     mDrawInGeoView = true;
-    geoView.addView(this, new ViewGroup.LayoutParams(dpToPixels(mWidthDp), dpToPixels(mHeightDp)));
+    float sizeDp = Math.min(mHeightDp, mWidthDp);
+    geoView.addView(this, new ViewGroup.LayoutParams(dpToPixels(sizeDp), dpToPixels(sizeDp)));
     setupGeoView(geoView);
   }
 
@@ -274,7 +273,8 @@ public final class Compass extends View {
   }
 
   /**
-   * Sets the height to use when drawing the icon for this Compass. The default is 50dp.
+   * Sets the height to use when drawing the icon for this Compass. The default is 50dp. If height and width are set to
+   * different values, the smaller of the two values is used for height and width when the icon is drawn.
    *
    * @param heightDp the height to set, in density-independent pixels, must be &gt; 0
    * @throws IllegalArgumentException if heightDp is &lt;= 0
@@ -283,10 +283,7 @@ public final class Compass extends View {
   public void setCompassHeight(int heightDp) {
     ToolkitUtil.throwIfNotPositive(heightDp, "heightDp");
     mHeightDp = heightDp;
-    if (mDrawInGeoView) {
-      getLayoutParams().height = dpToPixels(mHeightDp);
-    }
-    postInvalidate();
+    updateSize();
   }
 
   /**
@@ -300,7 +297,8 @@ public final class Compass extends View {
   }
 
   /**
-   * Sets the width to use when drawing the icon for this Compass. The default is 50dp.
+   * Sets the width to use when drawing the icon for this Compass. The default is 50dp. If height and width are set to
+   * different values, the smaller of the two values is used for height and width when the icon is drawn.
    *
    * @param widthDp the width to set, in density-independent pixels, must be &gt; 0
    * @throws IllegalArgumentException if widthDp is &lt;= 0
@@ -309,10 +307,7 @@ public final class Compass extends View {
   public void setCompassWidth(int widthDp) {
     ToolkitUtil.throwIfNotPositive(widthDp, "widthDp");
     mWidthDp = widthDp;
-    if (mDrawInGeoView) {
-      getLayoutParams().width = dpToPixels(mWidthDp);
-    }
-    postInvalidate();
+    updateSize();
   }
 
   /**
@@ -326,7 +321,7 @@ public final class Compass extends View {
   }
 
   /**
-   * Resets the map/scene to be oriented toward 0 degrees when the Compass is clicked.
+   * Resets the GeoView to be oriented toward 0 degrees when the Compass is clicked.
    *
    * @return true if there was an assigned OnClickListener that was called, false otherwise
    * @since 100.2.1
@@ -354,8 +349,9 @@ public final class Compass extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
+    float sizeDp = Math.min(mHeightDp, mWidthDp);
     if (mDrawInGeoView) {
-      float xPos = (mGeoView.getRight() - (0.02f * mGeoView.getWidth())) - dpToPixels(mWidthDp);
+      float xPos = (mGeoView.getRight() - (0.02f * mGeoView.getWidth())) - dpToPixels(sizeDp);
       float yPos = mGeoView.getTop() + (0.02f * mGeoView.getHeight());
       // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
       if (mGeoView instanceof MapView) {
@@ -372,8 +368,8 @@ public final class Compass extends View {
     mMatrix.postRotate((float) -mRotation, mCompassBitmap.getWidth() / 2, mCompassBitmap.getHeight() / 2);
 
     // Scale the matrix by the size of the bitmap to the size of the compass view
-    float xScale = (float) dpToPixels(mWidthDp) / mCompassBitmap.getWidth();
-    float yScale = (float) dpToPixels(mHeightDp) / mCompassBitmap.getHeight();
+    float xScale = (float) dpToPixels(sizeDp) / mCompassBitmap.getWidth();
+    float yScale = (float) dpToPixels(sizeDp) / mCompassBitmap.getHeight();
     mMatrix.postScale(xScale, yScale);
 
     // Draw the bitmap
@@ -475,6 +471,20 @@ public final class Compass extends View {
         }
       }
     }, FADE_ANIMATION_DELAY);
+  }
+
+  /**
+   * Updates the size of the Compass after height or width has been set.
+   *
+   * @since 100.2.1
+   */
+  private void updateSize() {
+    if (mDrawInGeoView) {
+      float sizeDp = Math.min(mHeightDp, mWidthDp);
+      getLayoutParams().height = dpToPixels(sizeDp);
+      getLayoutParams().width = dpToPixels(sizeDp);
+    }
+    postInvalidate();
   }
 
   /**
