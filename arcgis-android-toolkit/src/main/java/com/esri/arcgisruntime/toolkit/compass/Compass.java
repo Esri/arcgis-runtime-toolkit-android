@@ -183,11 +183,11 @@ public final class Compass extends View {
   public Compass(Context context, AttributeSet attrs) {
     super(context, attrs);
     if (attrs != null) {
-      initializeCompass(context);
       mIsAutoHide = attrs.getAttributeBooleanValue(null, "compass.autoHide", true);
       mHeightDp = attrs.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_DP);
       mWidthDp = attrs.getAttributeIntValue(null, "compass.width", DEFAULT_WIDTH_DP);
     }
+    initializeCompass(context);
   }
 
   /**
@@ -238,7 +238,7 @@ public final class Compass extends View {
   public void bindTo(GeoView geoView) {
     ToolkitUtil.throwIfNull(geoView, "geoView");
     if (mDrawInGeoView) {
-      throw new IllegalStateException("Compass already added to a MapView");
+      throw new IllegalStateException("Compass already added to a GeoView");
     }
     setupGeoView(geoView);
   }
@@ -257,7 +257,7 @@ public final class Compass extends View {
   /**
    * Indicates if this Compass is automatically hidden when the map/scene rotation is 0 degrees.
    *
-   * @return true if the Compass is automatically hidden, false if it is always show
+   * @return true if the Compass is automatically hidden, false if it is always shown
    */
   public boolean isAutoHide() {
     return mIsAutoHide;
@@ -266,8 +266,8 @@ public final class Compass extends View {
   /**
    * Sets the height to use when drawing the icon for this Compass. The default is 50dp.
    *
-   * @param heightDp the height to set, in density-independent pixels, must be > 0
-   * @throws IllegalArgumentException if heightDp is negative or 0
+   * @param heightDp the height to set, in density-independent pixels, must be &gt; 0
+   * @throws IllegalArgumentException if heightDp is &lt;= 0
    * @since 100.1.0
    */
   public void setCompassHeight(int heightDp) {
@@ -292,8 +292,8 @@ public final class Compass extends View {
   /**
    * Sets the width to use when drawing the icon for this Compass. The default is 50dp.
    *
-   * @param widthDp the width to set, in density-independent pixels, must be > 0
-   * @throws IllegalArgumentException if widthDp is negative or 0
+   * @param widthDp the width to set, in density-independent pixels, must be &gt; 0
+   * @throws IllegalArgumentException if widthDp is &lt;= 0
    * @since 100.1.0
    */
   public void setCompassWidth(int widthDp) {
@@ -343,14 +343,10 @@ public final class Compass extends View {
    */
   @Override
   protected void onDraw(Canvas canvas) {
-    if (mGeoView == null) {
-      return;
-    }
-
     // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
     if (mDrawInGeoView) {
-      float xPos = (mGeoView.getRight() - (.02f * mGeoView.getWidth())) - dpToPixels(mWidthDp);
-      float yPos = mGeoView.getTop() + (.02f * mGeoView.getHeight());
+      float xPos = (mGeoView.getRight() - (0.02f * mGeoView.getWidth())) - dpToPixels(mWidthDp);
+      float yPos = mGeoView.getTop() + (0.02f * mGeoView.getHeight());
       // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
       if (mGeoView instanceof MapView) {
         MapView mapView = (MapView) mGeoView;
@@ -427,8 +423,8 @@ public final class Compass extends View {
   private void showOrHide() {
     if (mIsAutoHide) {
       // Auto-hide enabled - hide if rotation is less than the threshold
-      if (Math.abs(mRotation) < AUTO_HIDE_THRESHOLD || Math.abs(360 - mRotation) < AUTO_HIDE_THRESHOLD) {
-        setVisibility(GONE);
+      if (mRotation < AUTO_HIDE_THRESHOLD || (360 - mRotation) < AUTO_HIDE_THRESHOLD) {
+        setVisibility(INVISIBLE);
       } else {
         setVisibility(VISIBLE);
       }

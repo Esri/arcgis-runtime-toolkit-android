@@ -68,7 +68,7 @@ public class CompassTest {
    * @since 100.1.0
    */
   @Test
-  public void testXmlNoScalebarAttributes() {
+  public void testXmlNoCompassAttributes() {
     // Inflate layout containing a Compass that doesn't set any of the Compass attributes
     Context context = InstrumentationRegistry.getTargetContext();
     ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs, null);
