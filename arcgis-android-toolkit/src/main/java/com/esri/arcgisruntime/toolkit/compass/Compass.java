@@ -108,15 +108,22 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * mCompass = (Compass) findViewById(R.id.compass);
  * mCompass.bindTo(mGeoView);
  * </pre>
+ * <p>
+ * <u>Mutually Exclusive Workflows:</u>
+ * <p>
+ * The methods to connect and disconnect a Compass to a GeoView are mutually exclusive between the two workflows. In
+ * Workflow 1, use {@link #addToGeoView(GeoView)} to connect it to a GeoView and {@link #removeFromGeoView()} to
+ * disconnect it. In Workflow 2, use {@link #bindTo(GeoView)} to connect it to a GeoView and {@code bindTo(null)} to
+ * disconnect it.
  *
  * @since 100.2.1
  */
 public final class Compass extends View {
   private static final double AUTO_HIDE_THRESHOLD = 0.1E-10;
 
-  private static final int FADE_ANIMATION_DELAY = 300; // milliseconds
+  private static final int FADE_ANIMATION_DELAY_MILLISECS = 300;
 
-  private static final int FADE_ANIMATION_DURATION = 500; // milliseconds
+  private static final int FADE_ANIMATION_DURATION_MILLISECS = 500;
 
   private static final int DEFAULT_HEIGHT_AND_WIDTH_DP = 50;
 
@@ -143,7 +150,7 @@ public final class Compass extends View {
   private final ViewpointChangedListener mViewpointChangedListener = new ViewpointChangedListener() {
     @Override
     public void viewpointChanged(ViewpointChangedEvent viewpointChangedEvent) {
-      // Viewpoint has change - get current rotation or heading
+      // Viewpoint has changed - get current rotation or heading
       if (mGeoView instanceof MapView) {
         mRotation = ((MapView) mGeoView).getMapRotation();
       } else {
@@ -217,7 +224,8 @@ public final class Compass extends View {
   }
 
   /**
-   * Removes this Compass from the GeoView it was added to (if any). For use in Workflow 1 (see {@link Compass} above).
+   * Removes this Compass from the GeoView it was added to (if any). For use in Workflow 1 only (see {@link Compass}
+   * above).
    *
    * @throws IllegalStateException if this Compass is not currently added to a GeoView
    * @since 100.2.1
@@ -468,10 +476,10 @@ public final class Compass extends View {
           ObjectAnimator animator = ObjectAnimator.ofFloat(Compass.this, "alpha", show ? 1.0f : 0.0f);
 
           // Run the animation
-          animator.setDuration(FADE_ANIMATION_DURATION).start();
+          animator.setDuration(FADE_ANIMATION_DURATION_MILLISECS).start();
         }
       }
-    }, FADE_ANIMATION_DELAY);
+    }, FADE_ANIMATION_DELAY_MILLISECS);
   }
 
   /**

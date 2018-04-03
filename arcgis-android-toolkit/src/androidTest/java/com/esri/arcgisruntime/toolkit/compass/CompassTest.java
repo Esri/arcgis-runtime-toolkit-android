@@ -128,7 +128,7 @@ public class CompassTest {
     // Instantiate a Compass
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
 
-    // Test addToMapView()
+    // Test addToGeoView()
     try {
       compass.addToGeoView(null);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
@@ -164,7 +164,7 @@ public class CompassTest {
     Context context = InstrumentationRegistry.getTargetContext();
     MapView mapView = new MapView(context);
 
-    // Instantiate a Compass and add it to a GeoView
+    // Instantiate a Compass and add it to a GeoView (Workflow 1)
     Compass compass = new Compass(context);
     compass.addToGeoView(mapView);
 
@@ -188,14 +188,25 @@ public class CompassTest {
       //success
     }
 
-    // Remove it from the GeoView and check bindTo() can then be called
+    // Remove it from the GeoView
     compass.removeFromGeoView();
+
+    // Call removeFromGeoView() again and check it fails because it's not currently added to a GeoView
+    try {
+      compass.removeFromGeoView();
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Call bindTo() to bind it to a GeoView (Workflow 2)
     compass.bindTo(mapView);
 
     // Check bindTo() is allowed when already bound
     compass.bindTo(mapView);
 
-    // Check removeFromGeoView() fails when it's bound to a GeoView
+    // Check removeFromGeoView() fails when it's bound to a GeoView, because removeFromGeoView() isn't applicable to
+    // Workflow 2
     try {
       compass.removeFromGeoView();
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
