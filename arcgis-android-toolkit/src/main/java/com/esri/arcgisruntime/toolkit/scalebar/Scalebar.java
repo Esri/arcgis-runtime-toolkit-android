@@ -160,6 +160,13 @@ import com.esri.arcgisruntime.toolkit.ToolkitUtil;
  * mScalebar = (Scalebar) findViewById(R.id.scalebar);
  * mScalebar.bindTo(mMapView);
  * </pre>
+ * <p>
+ * <u>Mutually Exclusive Workflows:</u>
+ * <p>
+ * The methods to connect and disconnect a Scalebar to a MapView are mutually exclusive between the two workflows. In
+ * Workflow 1, use {@link #addToMapView(MapView)} to connect it to a MapView and {@link #removeFromMapView()} to
+ * disconnect it. In Workflow 2, use {@link #bindTo(MapView)} to connect it to a MapView and {@code bindTo(null)} to
+ * disconnect it.
  *
  * @since 100.2.1
  */
@@ -325,7 +332,8 @@ public final class Scalebar extends View {
   }
 
   /**
-   * Removes this Scalebar from the MapView it was added to (if any). For use in Workflow 1 (see {@link Scalebar} above).
+   * Removes this Scalebar from the MapView it was added to (if any). For use in Workflow 1 only (see {@link Scalebar}
+   * above).
    *
    * @throws IllegalStateException if this Scalebar is not currently added to a MapView
    * @since 100.2.1

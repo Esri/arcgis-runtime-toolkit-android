@@ -224,7 +224,7 @@ public final class ScalebarTest {
     Context context = InstrumentationRegistry.getTargetContext();
     MapView mapView = new MapView(context);
 
-    // Instantiate a Scalebar and add it to a MapView
+    // Instantiate a Scalebar and add it to a MapView (Workflow 1)
     Scalebar scalebar = new Scalebar(context);
     scalebar.addToMapView(mapView);
 
@@ -248,14 +248,25 @@ public final class ScalebarTest {
       //success
     }
 
-    // Remove it from the MapView and check bindTo() can then be called
+    // Remove it from the MapView
     scalebar.removeFromMapView();
+
+    // Call removeFromMapView() again and check it fails because it's not currently added to a MapView
+    try {
+      scalebar.removeFromMapView();
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Call bindTo() to bind it to a MapView (Workflow 2)
     scalebar.bindTo(mapView);
 
     // Check bindTo() is allowed when already bound
     scalebar.bindTo(mapView);
 
-    // Check removeFromMapView() fails when it's bound to a MapView
+    // Check removeFromMapView() fails when it's bound to a MapView, because removeFromGeoView() isn't applicable to
+    // Workflow 2
     try {
       scalebar.removeFromMapView();
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
