@@ -22,7 +22,7 @@ import com.esri.arcgisruntime.geometry.LinearUnitId;
 /**
  * Utility methods used by Scalebar.
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 public class ScalebarUtil {
 
@@ -60,7 +60,7 @@ public class ScalebarUtil {
    * @param unit        indicates the unit of length being used: meters or feet
    * @param isSegmented true if the scalebar is segmented
    * @return the "best length", the highest "nice" number less than or equal to maxLength
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public static double calculateBestScalebarLength(double maxLength, LinearUnit unit, boolean isSegmented) {
     double magnitude = calculateMagnitude(maxLength);
@@ -95,7 +95,7 @@ public class ScalebarUtil {
    * @param maxNumSegments the maximum number of segments to avoid the labels of the segments overwriting each other
    *                       (this is passed in by the caller to allow this method to be platform independent)
    * @return the optimal number of segments in the scalebar
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public static int calculateOptimalNumberOfSegments(double distance, int maxNumSegments) {
     // Create an ordered array of options for the specified distance
@@ -120,7 +120,7 @@ public class ScalebarUtil {
    *                   of the scalebar; in feet if unitSystem is IMPERIAL or meters if unitSystem is METRIC
    * @param unitSystem the UnitSystem being used
    * @return the LinearUnit
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public static LinearUnit selectLinearUnit(double distance, UnitSystem unitSystem) {
     switch (unitSystem) {
@@ -146,7 +146,7 @@ public class ScalebarUtil {
    *
    * @param distance the distance
    * @return the label string
-   * @since 100.1.0
+   * @since 100.2.1
    */
   public static String labelString(double distance) {
     // Format with 2 decimal places
@@ -170,7 +170,7 @@ public class ScalebarUtil {
    *
    * @param distance the distance represented by the scalebar
    * @return the magnitude, a power of 10
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private static double calculateMagnitude(double distance) {
     return Math.pow(10, Math.floor(Math.log10(distance)));
@@ -184,7 +184,7 @@ public class ScalebarUtil {
    * @param magnitude the "magnitude" used when calculating the length of a scalebar or the number of segments
    * @return a MultiplierData object containing the multiplier, which will give the scalebar length when multiplied by
    * the magnitude
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private static MultiplierData selectMultiplierData(double distance, double magnitude) {
     double residual = distance / magnitude;
@@ -205,7 +205,7 @@ public class ScalebarUtil {
    *
    * @param distance the distance represented by the scalebar
    * @return the segment options; these are ints representing number of segments in the scalebar
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private static int[] segmentOptionsForDistance(double distance) {
     return selectMultiplierData(distance, calculateMagnitude(distance)).getSegmentOptions();
@@ -215,7 +215,7 @@ public class ScalebarUtil {
    * Container for a "multiplier" and the array of segment options appropriate for that multiplier. The multiplier is
    * used when calculating the length of a scalebar or the number of segments in the scalebar.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private static class MultiplierData {
     private final double mMultiplier;
@@ -228,7 +228,7 @@ public class ScalebarUtil {
      * @param multiplier     the multiplier
      * @param segmentOptions the array of segment options appropriate for the multiplier; these are ints representing
      *                       number of segments in the scalebar; it's important that they are in ascending order
-     * @since 100.1.0
+     * @since 100.2.1
      */
     public MultiplierData(double multiplier, int[] segmentOptions) {
       mMultiplier = multiplier;
@@ -239,7 +239,7 @@ public class ScalebarUtil {
      * Gets the multiplier.
      *
      * @return the multiplier
-     * @since 100.1.0
+     * @since 100.2.1
      */
     public double getMultiplier() {
       return mMultiplier;
@@ -249,7 +249,7 @@ public class ScalebarUtil {
      * Gets the segment options.
      *
      * @return the segment options; these are ints representing number of segments in the scalebar
-     * @since 100.1.0
+     * @since 100.2.1
      */
     public int[] getSegmentOptions() {
       return mSegmentOptions;

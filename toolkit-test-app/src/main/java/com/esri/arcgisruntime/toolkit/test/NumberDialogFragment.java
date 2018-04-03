@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.test.scalebar;
+package com.esri.arcgisruntime.toolkit.test;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -25,12 +25,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
- * Displays a dialog asking the user to specify a size.
+ * Displays a dialog asking the user to specify a number. Uses android:inputType="number" which results in an unsigned
+ * integer number.
  */
-public final class ScalebarSizeDialogFragment extends DialogFragment {
+public final class NumberDialogFragment extends DialogFragment {
   private static final String KEY_TITLE = "KEY_TITLE";
 
   private static final String KEY_VALUE = "KEY_VALUE";
@@ -40,33 +40,32 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
    */
   public interface Listener {
     /**
-     * Called when user specifies a size.
+     * Called when user specifies a number.
      *
-     * @param size the specified size
-     * @since 100.1.0
+     * @param number the specified number
      */
-    void onScalebarSizeSpecified(float size);
+    void onNumberSpecified(int number);
   }
 
   private Listener mListener;
 
-  private EditText mSizeField;
+  private EditText mInputField;
 
   /**
-   * Creates a new instance of ScalebarSizeDialogFragment.
+   * Creates a new instance of NumberDialogFragment.
    *
    * @param title the title of the dialog
-   * @param value the current size value, for display as a hint
-   * @return the ScalebarSizeDialogFragment
+   * @param value the current value of the number being specified, for display as a hint
+   * @return the NumberDialogFragment
    */
-  public static ScalebarSizeDialogFragment newInstance(String title, float value) {
+  public static NumberDialogFragment newInstance(String title, int value) {
     // Create the fragment
-    ScalebarSizeDialogFragment fragment = new ScalebarSizeDialogFragment();
+    NumberDialogFragment fragment = new NumberDialogFragment();
 
     // Set arguments on the fragment
     Bundle args = new Bundle();
     args.putString(KEY_TITLE, title);
-    args.putFloat(KEY_VALUE, value);
+    args.putInt(KEY_VALUE, value);
     fragment.setArguments(args);
     return fragment;
   }
@@ -81,7 +80,7 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
       mListener = (Listener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement ScalebarSizeDialogFragment.Listener");
+      throw new ClassCastException(context.toString() + " must implement NumberDialogFragment.Listener");
     }
   }
 
@@ -89,16 +88,13 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     // Get the arguments
     String title = getArguments().getString(KEY_TITLE);
-    String valueString = Float.toString(getArguments().getFloat(KEY_VALUE));
-    if (valueString.endsWith(".0")) {
-      valueString = valueString.substring(0, valueString.length() - 2);
-    }
+    String valueString = Integer.toString(getArguments().getInt(KEY_VALUE));
 
-    // Inflate the custom view we use for this dialog and initialize the size field
+    // Inflate the custom view we use for this dialog and initialize the input field
     LayoutInflater inflater = getActivity().getLayoutInflater();
-    View sizeDialog = inflater.inflate(R.layout.scalebar_size_dialog, null);
-    mSizeField = sizeDialog.findViewById(R.id.scalebar_size);
-    mSizeField.setHint(valueString);
+    View sizeDialog = inflater.inflate(R.layout.number_dialog, null);
+    mInputField = sizeDialog.findViewById(R.id.number_input_field);
+    mInputField.setHint(valueString);
 
     // Setup the dialog builder
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -113,9 +109,9 @@ public final class ScalebarSizeDialogFragment extends DialogFragment {
           public void onClick(DialogInterface dialog, int id) {
             // Make callback with the specified size
             try {
-              mListener.onScalebarSizeSpecified(Float.parseFloat(mSizeField.getText().toString()));
+              mListener.onNumberSpecified(Integer.parseInt(mInputField.getText().toString()));
             } catch (NumberFormatException e) {
-              Log.e(ScalebarSizeDialogFragment.this.getTag(), "Failed to parse input as a float");
+              Log.e(NumberDialogFragment.this.getTag(), "Failed to parse input as an integer");
             }
           }
         });

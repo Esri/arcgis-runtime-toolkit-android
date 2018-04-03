@@ -32,6 +32,7 @@ import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
+import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
 
 import java.util.concurrent.CancellationException;
@@ -41,7 +42,7 @@ import java.util.concurrent.CancellationException;
  */
 public final class ScalebarTestActivity extends AppCompatActivity implements ScalebarStyleDialogFragment.Listener,
     ScalebarAlignmentDialogFragment.Listener, ScalebarUnitSystemDialogFragment.Listener,
-    ScalebarColorDialogFragment.Listener, ScalebarTypefaceDialogFragment.Listener, ScalebarSizeDialogFragment.Listener,
+    ScalebarColorDialogFragment.Listener, ScalebarTypefaceDialogFragment.Listener, NumberDialogFragment.Listener,
     ScalebarBasemapDialogFragment.Listener {
 
   private static final String TAG = ScalebarTestActivity.class.getSimpleName();
@@ -97,6 +98,14 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   }
 
   @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (mMapView != null) {
+      mMapView.dispose();
+    }
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the scalebar_options menu; this adds items to the action bar
     getMenuInflater().inflate(R.menu.scalebar_options, menu);
@@ -129,12 +138,12 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
           new ScalebarTypefaceDialogFragment().show(getSupportFragmentManager(), "TypefaceDialog");
           return true;
         case R.id.action_text_size:
-          ScalebarSizeDialogFragment.newInstance(
-              "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "SizeDialog");
+          NumberDialogFragment.newInstance(
+              "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_bar_height:
-          ScalebarSizeDialogFragment.newInstance(
-              "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "SizeDialog");
+          NumberDialogFragment.newInstance(
+              "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
           addInsetsToMapView();
@@ -199,13 +208,13 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   }
 
   @Override
-  public void onScalebarSizeSpecified(float size) {
+  public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_text_size:
-        mScalebar.setTextSize(size);
+        mScalebar.setTextSize(number);
         break;
       case R.id.action_bar_height:
-        mScalebar.setBarHeight(size);
+        mScalebar.setBarHeight(number);
         break;
     }
   }

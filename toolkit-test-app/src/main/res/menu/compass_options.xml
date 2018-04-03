@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_auto_hide"
+          android:title="setAutoHide"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_compass_height"
+          android:title="setCompassHeight"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_compass_width"
+          android:title="setCompassWidth"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_add_insets"
+          android:title="Add insets"
+          app:showAsAction="never"/>
+
+    <item android:id="@+id/action_remove_insets"
+          android:title="Remove insets"
+          app:showAsAction="never"/>
+
+</menu>

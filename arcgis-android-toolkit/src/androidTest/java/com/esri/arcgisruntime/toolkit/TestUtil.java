@@ -18,7 +18,7 @@ package com.esri.arcgisruntime.toolkit;
 /**
  * Contains utility methods useful in unit tests.
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 public final class TestUtil {
 

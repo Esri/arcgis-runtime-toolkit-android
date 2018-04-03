@@ -37,12 +37,10 @@ import static org.junit.Assert.fail;
 /**
  * Unit tests for Scalebar.
  *
- * @since 100.1.0
+ * @since 100.2.1
  */
 @RunWith(AndroidJUnit4.class)
 public final class ScalebarTest {
-  private static final double DELTA = 0.0000001;
-
   private static final int ALPHA_50_PC = 0x80000000;
 
   private static final Scalebar.Style DEFAULT_STYLE = Scalebar.Style.ALTERNATING_BAR;
@@ -72,7 +70,7 @@ public final class ScalebarTest {
   /**
    * Tests the default values set by the constructor that takes just a Context.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testSimpleConstructorDefaultValues() {
@@ -83,7 +81,7 @@ public final class ScalebarTest {
   /**
    * Tests the constructor that takes an AttributeSet when the AttributeSet is null.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testNullAttributeSet() {
@@ -94,7 +92,7 @@ public final class ScalebarTest {
   /**
    * Tests the default values set from an XML file that doesn't set any of the Scalebar attributes.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testXmlNoScalebarAttributes() {
@@ -112,7 +110,7 @@ public final class ScalebarTest {
   /**
    * Tests the values set from a fully-populated XML file.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testXmlFullyPopulated() {
@@ -131,7 +129,7 @@ public final class ScalebarTest {
   /**
    * Tests all the setter methods.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testSetters() {
@@ -159,7 +157,7 @@ public final class ScalebarTest {
   /**
    * Tests IllegalArgumentExceptions from all methods that throw IllegalArgumentException.
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testIllegalArgumentExceptions() {
@@ -169,14 +167,6 @@ public final class ScalebarTest {
     // Test addToMapView()
     try {
       scalebar.addToMapView(null);
-      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
-    } catch (IllegalArgumentException e) {
-      //success
-    }
-
-    // Test bindTo()
-    try {
-      scalebar.bindTo(null);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
@@ -207,12 +197,24 @@ public final class ScalebarTest {
     } catch (IllegalArgumentException e) {
       //success
     }
+    try {
+      scalebar.setTextSize(0);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
+    try {
+      scalebar.setBarHeight(0);
+      fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
+    } catch (IllegalArgumentException e) {
+      //success
+    }
   }
 
   /**
    * Tests addToMapView(), removeFromMapView() and bindTo().
    *
-   * @since 100.1.0
+   * @since 100.2.1
    */
   @Test
   public void testAddRemoveAndBind() {
@@ -222,7 +224,7 @@ public final class ScalebarTest {
     Context context = InstrumentationRegistry.getTargetContext();
     MapView mapView = new MapView(context);
 
-    // Instantiate a Scalebar and add it to a MapView
+    // Instantiate a Scalebar and add it to a MapView (Workflow 1)
     Scalebar scalebar = new Scalebar(context);
     scalebar.addToMapView(mapView);
 
@@ -246,14 +248,33 @@ public final class ScalebarTest {
       //success
     }
 
-    // Remove it from the MapView and check bindTo() can then be called
+    // Remove it from the MapView
     scalebar.removeFromMapView();
+
+    // Call removeFromMapView() again and check it fails because it's not currently added to a MapView
+    try {
+      scalebar.removeFromMapView();
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Call bindTo() to bind it to a MapView (Workflow 2)
     scalebar.bindTo(mapView);
 
     // Check bindTo() is allowed when already bound
     scalebar.bindTo(mapView);
 
-    // Check addToMapView() fails when it's already bound to a MapView
+    // Check removeFromMapView() fails when it's bound to a MapView, because removeFromGeoView() isn't applicable to
+    // Workflow 2
+    try {
+      scalebar.removeFromMapView();
+      fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
+    } catch (IllegalStateException e) {
+      //success
+    }
+
+    // Check addToMapView() fails when it's bound to a MapView
     try {
       scalebar.addToMapView(mapView);
       fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION);
@@ -261,15 +282,20 @@ public final class ScalebarTest {
       //success
     }
 
-    // Check removeFromMapView() can be called when it's not added to a MapView
+    // Call bindTo(null) to unbind it and check addToMapView() can then be called
+    scalebar.bindTo(null);
+    scalebar.addToMapView(mapView);
+
+    // Remove it from the MapView and check bindTo(null) can be called even when it's not bound
     scalebar.removeFromMapView();
+    scalebar.bindTo(null);
   }
 
   /**
    * Checks that the given Scalebar object contains default values for all attributes.
    *
    * @param scalebar the Scalebar
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void checkDefaultValues(Scalebar scalebar) {
     assertEquals(DEFAULT_STYLE, scalebar.getStyle());
@@ -282,8 +308,8 @@ public final class ScalebarTest {
     assertEquals(DEFAULT_TEXT_COLOR, scalebar.getTextColor());
     assertEquals(DEFAULT_TEXT_SHADOW_COLOR, scalebar.getTextShadowColor());
     assertEquals(DEFAULT_TYPEFACE, scalebar.getTypeface());
-    assertEquals(DEFAULT_TEXT_SIZE_DP, scalebar.getTextSize(), DELTA);
-    assertEquals(DEFAULT_BAR_HEIGHT_DP, scalebar.getBarHeight(), DELTA);
+    assertEquals(DEFAULT_TEXT_SIZE_DP, scalebar.getTextSize());
+    assertEquals(DEFAULT_BAR_HEIGHT_DP, scalebar.getBarHeight());
   }
 
   /**
@@ -292,7 +318,7 @@ public final class ScalebarTest {
    *
    * @param scalebar the Scalebar
    * @param typeface the expected Typeface
-   * @since 100.1.0
+   * @since 100.2.1
    */
   private void checkSetValues(Scalebar scalebar, Typeface typeface) {
     assertEquals(Scalebar.Style.GRADUATED_LINE, scalebar.getStyle());
@@ -305,7 +331,7 @@ public final class ScalebarTest {
     assertEquals(Color.GREEN, scalebar.getTextColor());
     assertEquals(Color.BLUE, scalebar.getTextShadowColor());
     assertTrue("Unexpected Typeface", typeface.equals(scalebar.getTypeface()));
-    assertEquals(20, scalebar.getTextSize(), DELTA);
-    assertEquals(12, scalebar.getBarHeight(), DELTA);
+    assertEquals(20, scalebar.getTextSize());
+    assertEquals(12, scalebar.getBarHeight());
   }
 }

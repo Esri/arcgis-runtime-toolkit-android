@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2018 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.test.scalebar;
+package com.esri.arcgisruntime.toolkit.test;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import com.esri.arcgisruntime.toolkit.test.R;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
- * Displays a dialog asking the user to select a scalebar typeface option.
+ * Displays a dialog asking the user to select whether to use a map or a scene.
  */
-public final class ScalebarTypefaceDialogFragment extends DialogFragment {
+public final class MapOrSceneDialogFragment extends DialogFragment {
 
   /**
    * The host activity must implement this interface to receive the callback.
    */
   public interface Listener {
     /**
-     * Called when user selects a scalebar typeface option.
+     * Called when user selects map or scene.
      *
-     * @param typeface the selected typeface
+     * @param useMap true to use a map, false to use a scene
      */
-    void onScalebarTypefaceSpecified(Typeface typeface);
+    void onMapOrSceneSpecified(boolean useMap);
   }
 
   private Listener mListener;
@@ -52,39 +52,31 @@ public final class ScalebarTypefaceDialogFragment extends DialogFragment {
       // Instantiate the Listener so we can send events to the host
       mListener = (Listener) context;
     } catch (ClassCastException e) {
-      // The activity doesn't implement the interface, throw an exception
-      throw new ClassCastException(context.toString() + " must implement ScalebarTypefaceDialogFragment.Listener");
+      // The activity doesn't implement the interface: display message, log the exception and dismiss the dialog
+      String msg = "ERROR: the calling activity must implement MapOrSceneDialogFragment.Listener";
+      Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+      Log.e("MapOrSceneDialog", msg);
+      e.printStackTrace();
+      dismiss();
     }
   }
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setTitle("Scalebar typeface:")
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int id) {
-            // User cancelled the dialog - do nothing
-          }
-        })
-        .setItems(R.array.scalebar_typefaces, new DialogInterface.OnClickListener() {
+    builder.setTitle("Use Map or Scene?")
+        .setItems(R.array.map_or_scene, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int which) {
             // Make callback with the selected item
             switch (which) {
               case 0:
-                mListener.onScalebarTypefaceSpecified(Typeface.MONOSPACE);
+                mListener.onMapOrSceneSpecified(true);
                 break;
               case 1:
-                mListener.onScalebarTypefaceSpecified(Typeface.SANS_SERIF);
+                mListener.onMapOrSceneSpecified(false);
                 break;
-              case 2:
-                mListener.onScalebarTypefaceSpecified(Typeface.SERIF);
-                break;
-              case 3:
-                mListener.onScalebarTypefaceSpecified(Typeface.DEFAULT_BOLD);
-                break;
-              case 4:
-                mListener.onScalebarTypefaceSpecified(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC));
-                break;
+              default:
+                // shouldn't happen - do nothing
             }
           }
         });

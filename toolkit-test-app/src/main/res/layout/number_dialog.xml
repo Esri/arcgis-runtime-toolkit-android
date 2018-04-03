@@ -5,8 +5,8 @@
               android:layout_height="match_parent">
 
     <EditText
-            android:id="@+id/scalebar_size"
-            android:inputType="numberDecimal"
+            android:id="@+id/number_input_field"
+            android:inputType="number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
     />

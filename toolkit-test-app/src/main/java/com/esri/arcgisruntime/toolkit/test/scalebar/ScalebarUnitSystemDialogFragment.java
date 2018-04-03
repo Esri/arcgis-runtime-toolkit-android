@@ -37,7 +37,6 @@ public final class ScalebarUnitSystemDialogFragment extends DialogFragment {
      * Called when user selects a scalebar unit system option.
      *
      * @param unitSystem the selected unit system
-     * @since 100.1.0
      */
     void onScalebarUnitSystemSpecified(UnitSystem unitSystem);
   }

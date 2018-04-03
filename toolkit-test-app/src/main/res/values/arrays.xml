@@ -9,6 +9,18 @@
         <item>com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity</item>
     </string-array>
 
+    <!-- Compass -->
+
+    <string-array name="map_or_scene">
+        <item>Map</item>
+        <item>Scene</item>
+    </string-array>
+
+    <string-array name="compass_auto_hide">
+        <item>On</item>
+        <item>Off</item>
+    </string-array>
+
     <!-- Scalebar -->
 
     <string-array name="scalebar_styles">
