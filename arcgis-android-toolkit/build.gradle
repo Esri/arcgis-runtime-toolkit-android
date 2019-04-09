@@ -26,7 +26,7 @@ android {
     }
 }
 
-gradle.projectsEvaluated{
+gradle.projectsEvaluated {
     assembleDebug.dependsOn generateDebugDoclava
     assembleRelease.dependsOn generateReleaseDoclava
     artifactoryPublish.dependsOn assembleRelease
@@ -47,8 +47,8 @@ android.libraryVariants.all { variant ->
     task("generate${name}Doclava", type: Javadoc) {
         // include custom templates
         def tpldir = new File("${project.docsDir}/${name}/doclava/templates")
-        if( !tpldir.exists() ) {
-            if(!tpldir.mkdirs()) {
+        if (!tpldir.exists()) {
+            if (!tpldir.mkdirs()) {
                 println("mkdir failed: ${tpldir} ")
             }
         }
@@ -97,16 +97,16 @@ String localRepo = version.endsWith('SNAPSHOT') ? 'snapshots-local' : 'arcgis-lo
 
 // add apache licese to POM
 configure(install.repositories.mavenInstaller) {
-        pom.project {
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
+    pom.project {
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
             }
         }
     }
+}
 
 artifactory {
     contextUrl = ARTIFACTORY_URL
@@ -142,7 +142,7 @@ dependencies {
 }
 
 // generate build date for use in javadoc meta-tags
-static def buildDate(){
+static def buildDate() {
     def date = new Date()
     def formatDate = date.format('yyyy-MM-dd')
     return formatDate
