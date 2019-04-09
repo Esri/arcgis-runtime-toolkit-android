@@ -1,4 +1,6 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 apply from: "$rootProject.projectDir/versions.gradle"
 
 android {
@@ -30,7 +32,6 @@ android {
 
 dependencies {
     implementation project(':arcgis-android-toolkit')
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.android.support:design:$droid.support"
