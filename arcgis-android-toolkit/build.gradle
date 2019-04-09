@@ -1,11 +1,12 @@
+plugins {
+    id 'com.android.library'
+    id 'com.jfrog.artifactory'
+    id 'android-maven'
+}
+apply from: "$rootProject.projectDir/versions.gradle"
+
 group = GROUP
 version = VERSION_NAME
-
-apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.artifactory'
-// We need the patched maven plugin since 'install' task is overriden by 'installDebugTest', see: https://github.com/dcendents/android-maven-plugin
-apply plugin: 'android-maven'
-apply from: "$rootProject.projectDir/versions.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
@@ -32,10 +33,8 @@ gradle.projectsEvaluated {
 }
 
 // custom configurations
-// jaxDoclet is for building custom doclava doclet in javadocs
 // published is for artifactory
 configurations {
-    jaxDoclet
     published
 }
 
@@ -88,20 +87,10 @@ artifactory {
 }
 
 dependencies {
-    // custom doclava doclet
-    jaxDoclet 'com.google.doclava:doclava:1.0.6'
-
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-}
-
-// generate build date for use in javadoc meta-tags
-static def buildDate() {
-    def date = new Date()
-    def formatDate = date.format('yyyy-MM-dd')
-    return formatDate
 }
