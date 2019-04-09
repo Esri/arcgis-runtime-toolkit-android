@@ -1,7 +1,10 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android-extensions'
+    id 'kotlin-android'
     id 'com.jfrog.artifactory'
     id 'android-maven'
+    id 'org.jetbrains.dokka-android'
 }
 apply from: "$rootProject.projectDir/versions.gradle"
 
@@ -90,11 +93,20 @@ artifactory {
     }
 }
 
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+}
+
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+}
+repositories {
+    mavenCentral()
 }
