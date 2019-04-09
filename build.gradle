@@ -7,9 +7,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
+        classpath 'com.android.tools.build:gradle:3.3.2'
+        // We need the patched maven plugin since 'install' task is overriden by 'installDebugTest', see: https://github.com/dcendents/android-maven-plugin
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.7.5'
     }
 }
 

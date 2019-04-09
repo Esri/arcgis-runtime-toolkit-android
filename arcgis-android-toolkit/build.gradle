@@ -5,14 +5,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.artifactory'
 // We need the patched maven plugin since 'install' task is overriden by 'installDebugTest', see: https://github.com/dcendents/android-maven-plugin
 apply plugin: 'android-maven'
+apply from: "$rootProject.projectDir/versions.gradle"
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion droid.targetSdk
+    buildToolsVersion droid.buildTools
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion droid.minSdk
+        targetSdkVersion droid.targetSdk
         versionCode 100
         versionName "100.2.0"
 
@@ -27,8 +28,6 @@ android {
 }
 
 gradle.projectsEvaluated {
-    assembleDebug.dependsOn generateDebugDoclava
-    assembleRelease.dependsOn generateReleaseDoclava
     artifactoryPublish.dependsOn assembleRelease
 }
 
@@ -38,58 +37,6 @@ gradle.projectsEvaluated {
 configurations {
     jaxDoclet
     published
-}
-
-// create javadoc for build variants
-android.libraryVariants.all { variant ->
-    def name = variant.name.capitalize()
-
-    task("generate${name}Doclava", type: Javadoc) {
-        // include custom templates
-        def tpldir = new File("${project.docsDir}/${name}/doclava/templates")
-        if (!tpldir.exists()) {
-            if (!tpldir.mkdirs()) {
-                println("mkdir failed: ${tpldir} ")
-            }
-        }
-
-        copy {
-            from("../doclava/templates") {
-                include "*"
-            }
-            into(tpldir)
-        }
-
-        description "Generates Javadoc for $variant.name."
-        source = variant.javaCompiler.source
-        title = null
-        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-        classpath = files(android.sourceSets.main.java.srcDirs, variant.javaCompiler.classpath.files, ext.androidJar)
-        destinationDir = file("${project.docsDir}/${name}/doclava")
-        failOnError = false
-        options {
-            docletpath = configurations.jaxDoclet.files as List
-            doclet "com.google.doclava.Doclava"
-            bootClasspath new File(System.getenv('JAVA_HOME') + "/jre/lib/rt.jar")
-            addStringOption "XDignore.symbol.file", "-quiet"
-            addStringOption "hdf project.name", "${project.name}"
-            addStringOption "hdf date", "${buildDate()}"
-            addStringOption "federate android", "https://developer.android.com/reference"
-            addStringOption "federationxml android", "http://doclava.googlecode.com/svn/static/api/android-10.xml"
-            addStringOption "federate JDK", "http://download.oracle.com/javase/6/docs/api/index.html?"
-            addStringOption "federationxml JDK", "http://doclava.googlecode.com/svn/static/api/openjdk-6.xml"
-            addStringOption "templatedir", "${project.docsDir}/${name}/doclava/templates"
-            addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
-//            addStringOption "since doclava/api-100.2.0.xml", "100.2.0"
-            addStringOption "apiversion", "${project.version}"
-        }
-        // exclude generated files
-        exclude '**/BuildConfig.java'
-        exclude '**/R.java'
-        // exclude internal packages
-        exclude '**/internal/**'
-        options.addStringOption "apixml", "${project.docsDir}/${name}/doclava/api-${project.version}.xml"
-    }
 }
 
 // snapshots publish to snapshots repo, release publish to arcgis repo
@@ -143,13 +90,13 @@ artifactory {
 dependencies {
     // custom doclava doclet
     jaxDoclet 'com.google.doclava:doclava:1.0.6'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+
+    implementation "com.android.support:appcompat-v7:$droid.support"
+    implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
+    testImplementation "junit:junit:$test.jUnit"
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-    implementation 'com.android.support:appcompat-v7:26.0.2'
-    implementation 'com.esri.arcgisruntime:arcgis-android:100.1.0'
-    testImplementation 'junit:junit:4.12'
 }
 
 // generate build date for use in javadoc meta-tags
