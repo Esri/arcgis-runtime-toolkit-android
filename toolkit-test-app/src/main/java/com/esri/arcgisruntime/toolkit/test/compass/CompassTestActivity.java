@@ -33,7 +33,7 @@ import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.mapping.view.SceneView;
-import com.esri.arcgisruntime.toolkit.compass.Compass;
+import com.esri.arcgisruntime.toolkit.java.compass.Compass;
 import com.esri.arcgisruntime.toolkit.test.MapOrSceneDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;

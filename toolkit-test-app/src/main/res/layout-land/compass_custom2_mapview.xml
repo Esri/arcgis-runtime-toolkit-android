@@ -20,7 +20,7 @@
             app:layout_constraintRight_toLeftOf="@+id/guideline"
     />
 
-    <com.esri.arcgisruntime.toolkit.compass.Compass
+    <com.esri.arcgisruntime.toolkit.java.compass.Compass
             android:id="@+id/compass"
             android:layout_width="80dp"
             android:layout_height="80dp"
