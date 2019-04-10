@@ -158,8 +158,11 @@ public class CompassTest {
    */
   @Test
   public void testAddRemoveAndBind() {
-    // Must initialize this thread as a Looper so it can instantiate a GeoView
-    Looper.prepare();
+    // Checks whether a Looper already exists for the current thread, if not, it creates one
+    if (Looper.myLooper() == null) {
+      // Must initialize this thread as a Looper so it can instantiate a MapView
+      Looper.prepare();
+    }
 
     Context context = InstrumentationRegistry.getTargetContext();
     MapView mapView = new MapView(context);
