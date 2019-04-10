@@ -61,8 +61,8 @@ class Compass : View {
 
     var widthDp: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
         set(value) {
-            field = value
             ToolkitUtil.throwIfNotPositive(value, "widthDp")
+            field = value
             updateSize()
         }
 
@@ -199,9 +199,10 @@ class Compass : View {
     }
 
     private fun removeListenersFromGeoView() {
-        geoView?.removeViewpointChangedListener(viewpointChangedListener)
-        geoView?.removeAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
-        geoView = null
+        geoView = geoView?.let {
+            it.removeViewpointChangedListener(viewpointChangedListener)
+            it.removeAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
+        }.let { null }
     }
 
     private fun showOrHide() {
@@ -252,8 +253,5 @@ class Compass : View {
         postInvalidate()
     }
 
-    private fun dpToPixels(dp: Double): Int {
-        val pixels = dp * displayDensity
-        return Math.round(pixels.toFloat())
-    }
+    private fun dpToPixels(dp: Double): Int = Math.round((dp * displayDensity).toFloat())
 }
