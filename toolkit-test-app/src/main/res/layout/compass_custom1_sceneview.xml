@@ -28,7 +28,7 @@
             app:layout_constraintBottom_toTopOf="@+id/regular_layout_button"
     />
 
-    <com.esri.arcgisruntime.toolkit.java.compass.Compass
+    <com.esri.arcgisruntime.toolkit.compass.Compass
             android:id="@+id/compass"
             android:layout_width="100dp"
             android:layout_height="100dp"

@@ -4,7 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <com.esri.arcgisruntime.toolkit.java.compass.Compass
+    <com.esri.arcgisruntime.toolkit.compass.Compass
             android:id="@+id/compass"
             android:layout_width="100dp"
             android:layout_height="100dp"

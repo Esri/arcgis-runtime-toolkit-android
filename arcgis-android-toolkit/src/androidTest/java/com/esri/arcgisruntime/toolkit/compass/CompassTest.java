@@ -24,14 +24,10 @@ import android.view.ViewGroup;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.TestUtil;
-import com.esri.arcgisruntime.toolkit.java.compass.Compass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for Compass.
@@ -112,8 +108,8 @@ public class CompassTest {
 
     // Call all the setters
     compass.setAutoHide(false);
-    compass.setCompassHeight(99);
-    compass.setCompassWidth(100);
+    compass.setHeightDp(99);
+    compass.setWidthDp(100);
 
     // Check all the values that were set
     checkSetValues(compass);
@@ -139,13 +135,13 @@ public class CompassTest {
 
     // Test the setters
     try {
-      compass.setCompassHeight(0);
+      compass.setHeightDp(0);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
     }
     try {
-      compass.setCompassWidth(0);
+      compass.setWidthDp(0);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
@@ -240,8 +236,8 @@ public class CompassTest {
    */
   private void checkDefaultValues(Compass compass) {
     assertTrue("Expected isAutoHide() to return true", compass.isAutoHide());
-    assertEquals(50, compass.getCompassHeight());
-    assertEquals(50, compass.getCompassWidth());
+    assertEquals(50, compass.getHeightDp());
+    assertEquals(50, compass.getWidthDp());
   }
 
   /**
@@ -253,8 +249,8 @@ public class CompassTest {
    */
   private void checkSetValues(Compass compass) {
     assertFalse("Expected isAutoHide() to return false", compass.isAutoHide());
-    assertEquals(99, compass.getCompassHeight());
-    assertEquals(100, compass.getCompassWidth());
+    assertEquals(99, compass.getHeightDp());
+    assertEquals(100, compass.getWidthDp());
   }
 
 }
