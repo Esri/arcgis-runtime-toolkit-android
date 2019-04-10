@@ -50,6 +50,3 @@ dependencies {
 
     testImplementation "junit:junit:$test.jUnit"
 }
-repositories {
-    mavenCentral()
-}
