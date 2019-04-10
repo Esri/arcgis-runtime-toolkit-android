@@ -28,7 +28,11 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
-import com.esri.arcgisruntime.mapping.view.*
+import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.mapping.view.GeoView
+import com.esri.arcgisruntime.mapping.view.MapView
+import com.esri.arcgisruntime.mapping.view.SceneView
+import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.ToolkitUtil
 
