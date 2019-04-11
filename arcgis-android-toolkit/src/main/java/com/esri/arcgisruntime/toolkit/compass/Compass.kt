@@ -59,6 +59,11 @@ class Compass : View {
     private val compassMatrix: Matrix = Matrix()
     private var compassIsShown = false
 
+    /**
+     * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
+     *
+     * @since 100.5.0
+     */
     var isAutoHidden: Boolean = true
         set(value) {
             field = value
