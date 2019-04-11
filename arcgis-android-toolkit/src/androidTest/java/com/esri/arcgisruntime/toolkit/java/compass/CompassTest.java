@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.compass;
+package com.esri.arcgisruntime.toolkit.java.compass;
 
 import android.content.Context;
 import android.os.Looper;
@@ -68,7 +68,7 @@ public class CompassTest {
   public void testXmlNoCompassAttributes() {
     // Inflate layout containing a Compass that doesn't set any of the Compass attributes
     Context context = InstrumentationRegistry.getTargetContext();
-    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs, null);
+    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs_java, null);
 
     // Find and instantiate that Compass
     Compass compass = viewGroup.findViewById(R.id.compass);
@@ -87,7 +87,7 @@ public class CompassTest {
     // Inflate layout containing a Compass that sets all of the Compass attributes
     Context context = InstrumentationRegistry.getTargetContext();
     ViewGroup viewGroup =
-        (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_fully_populated, null);
+        (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_fully_populated_java, null);
 
     // Find and instantiate that Compass
     Compass compass = viewGroup.findViewById(R.id.compass);
@@ -107,9 +107,9 @@ public class CompassTest {
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
 
     // Call all the setters
-    compass.setAutoHidden(false);
-    compass.setHeightDp(99);
-    compass.setWidthDp(100);
+    compass.setAutoHide(false);
+    compass.setCompassHeight(99);
+    compass.setCompassWidth(100);
 
     // Check all the values that were set
     checkSetValues(compass);
@@ -135,13 +135,13 @@ public class CompassTest {
 
     // Test the setters
     try {
-      compass.setHeightDp(0);
+      compass.setCompassHeight(0);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
     }
     try {
-      compass.setWidthDp(0);
+      compass.setCompassWidth(0);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
@@ -235,7 +235,9 @@ public class CompassTest {
    * @since 100.2.1
    */
   private void checkDefaultValues(Compass compass) {
-    assertTrue("Expected isAutoHidden() to return true", compass.isAutoHidden());
+    assertTrue("Expected isAutoHide() to return true", compass.isAutoHide());
+    assertEquals(50, compass.getCompassHeight());
+    assertEquals(50, compass.getCompassWidth());
   }
 
   /**
@@ -246,9 +248,9 @@ public class CompassTest {
    * @since 100.2.1
    */
   private void checkSetValues(Compass compass) {
-    assertFalse("Expected isAutoHidden() to return false", compass.isAutoHidden());
-    assertEquals(99, compass.getHeightDp());
-    assertEquals(100, compass.getWidthDp());
+    assertFalse("Expected isAutoHide() to return false", compass.isAutoHide());
+    assertEquals(99, compass.getCompassHeight());
+    assertEquals(100, compass.getCompassWidth());
   }
 
 }
