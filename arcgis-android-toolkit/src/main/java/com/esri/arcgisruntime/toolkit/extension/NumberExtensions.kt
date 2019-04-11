@@ -17,4 +17,6 @@
 package com.esri.arcgisruntime.toolkit.extension
 
 fun Int.toPixels(displayDensity: Float): Int = this * displayDensity.toInt()
-fun Double.toPixels(displayDensity: Float): Double = this * displayDensity.toDouble()
+fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).toInt()
+
+fun Int.toDp(displayDensity: Float): Int = (this / displayDensity).toInt()

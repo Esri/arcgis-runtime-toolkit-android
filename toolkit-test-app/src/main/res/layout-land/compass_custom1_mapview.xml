@@ -43,7 +43,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_margin="5dp"
-            compass.autoHidden="false"
+            app:autoHidden="false"
             compass.height="100"
             compass.width="100"
             app:layout_constraintTop_toTopOf="@+id/mapview"

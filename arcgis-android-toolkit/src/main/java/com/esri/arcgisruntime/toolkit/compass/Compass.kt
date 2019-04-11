@@ -34,8 +34,9 @@ import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
-import com.esri.arcgisruntime.toolkit.ToolkitUtil
+import com.esri.arcgisruntime.toolkit.extension.toDp
 import com.esri.arcgisruntime.toolkit.extension.toPixels
+
 
 private const val AUTO_HIDE_THRESHOLD = 0.00000000001
 private const val FADE_ANIMATION_DELAY_MILLISECS = 300L
@@ -57,26 +58,16 @@ class Compass : View {
             showOrHide()
         }
 
-    var compassHeight: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
-        set(value) {
-            ToolkitUtil.throwIfNotPositive(value, "compassHeight")
-            field = value
-            updateSize()
-        }
-
-    var compassWidth: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
-        set(value) {
-            ToolkitUtil.throwIfNotPositive(value, "compassWidth")
-            field = value
-            updateSize()
-        }
-
     private var geoView: GeoView? = null
     private var compassRotation: Double = 0.0
     private var drawInGeoView: Boolean = false
     private val displayDensity: Float by lazy {
         resources.displayMetrics.density
     }
+    private val defaultLayoutParams = ViewGroup.LayoutParams(
+        DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity),
+        DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity)
+    )
 
     private val viewpointChangedListener = ViewpointChangedListener {
         geoView?.let { geoView ->
@@ -116,13 +107,19 @@ class Compass : View {
      *
      * @param context the execution [Context]
      * @param attrs   the attributes of the XML tag that is inflating the view
-     * @since 100.2.1
+     * @since 100.5.0
      */
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        attrs?.let {
-            isAutoHidden = it.getAttributeBooleanValue(null, "compass.autoHidden", true)
-            compassHeight = it.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_AND_WIDTH_DP)
-            compassWidth = it.getAttributeIntValue(null, "compass.width", DEFAULT_HEIGHT_AND_WIDTH_DP)
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.Compass,
+            0, 0
+        ).apply {
+            try {
+                isAutoHidden = getBoolean(R.styleable.Compass_autoHidden, true)
+            } finally {
+                recycle()
+            }
         }
     }
 
@@ -148,7 +145,7 @@ class Compass : View {
             throw IllegalStateException("Compass already has a GeoView")
         }
         drawInGeoView = true
-        Math.min(compassHeight, compassWidth).toPixels(displayDensity).let {
+        Math.min(height, width).let {
             geoView.addView(this, ViewGroup.LayoutParams(it, it))
         }
         setupGeoView(geoView)
@@ -190,6 +187,40 @@ class Compass : View {
         }
     }
 
+    fun setHeightDp(height: Int) {
+        if (layoutParams == null) {
+            throw IllegalStateException("View hasn't been measured yet")
+        }
+        layoutParams.height = height.toPixels(displayDensity)
+        if (!isInLayout) {
+            requestLayout()
+        }
+    }
+
+    fun getHeightDp(): Int {
+        if (layoutParams == null) {
+            throw IllegalStateException("View hasn't been measured yet")
+        }
+        return layoutParams.height.toDp(displayDensity)
+    }
+
+    fun setWidthDp(width: Int) {
+        if (layoutParams == null) {
+            throw IllegalStateException("View hasn't been measured yet")
+        }
+        layoutParams.width = width.toPixels(displayDensity)
+        if (!isInLayout) {
+            requestLayout()
+        }
+    }
+
+    fun getWidthDp(): Int {
+        if (layoutParams == null) {
+            throw IllegalStateException("View hasn't been measured yet")
+        }
+        return layoutParams.width.toDp(displayDensity)
+    }
+
     /**
      * Resets the GeoView to be oriented toward 0 degrees when the [Compass] is clicked.
      *
@@ -211,6 +242,34 @@ class Compass : View {
     }
 
     /**
+     * Measure the view and its content to determine the measured width and the
+     * measured height.
+     * Overridden to determine if user has used Method 1 or Method 2 (see [Compass] above]. If user has used Method 1,
+     * no [ViewGroup.LayoutParams] have been provided and we fallback to using [defaultLayoutParams].
+     *
+     * @param widthMeasureSpec horizontal space requirements as imposed by the parent.
+     *                         The requirements are encoded with
+     *                         {@link android.view.View.MeasureSpec}.
+     * @param heightMeasureSpec vertical space requirements as imposed by the parent.
+     *                         The requirements are encoded with
+     *                         {@link android.view.View.MeasureSpec}.
+     * @since 100.5.0
+     */
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        this.setMeasuredDimension(
+            View.MeasureSpec.getSize(widthMeasureSpec),
+            View.MeasureSpec.getSize(heightMeasureSpec)
+        )
+        if (measuredWidth == 0 || measuredHeight == 0) {
+            layoutParams = defaultLayoutParams
+            if (!isInLayout) {
+                requestLayout()
+            }
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
+
+    /**
      * Draws the [Compass] with the current rotation to the screen.
      *
      * @param canvas the [Canvas] to draw on
@@ -218,10 +277,10 @@ class Compass : View {
      */
     override fun onDraw(canvas: Canvas?) {
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
-        val sizeDp = Math.min(compassHeight, compassWidth)
+        val sizeDp = Math.min(measuredHeight, measuredWidth)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = (it.right - (0.02f * it.width)) - sizeDp.toPixels(displayDensity)
+                var xPos = (it.right - (0.02f * it.width)) - sizeDp
                 var yPos = it.top + (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
@@ -238,8 +297,8 @@ class Compass : View {
         compassMatrix.postRotate(-compassRotation.toFloat(), (compassBitmap.width / 2F), (compassBitmap.height / 2F))
 
         // Scale the matrix by the size of the bitmap to the size of the compass view
-        val xScale = sizeDp.toPixels(displayDensity).toFloat() / compassBitmap.width
-        val yScale = sizeDp.toPixels(displayDensity).toFloat() / compassBitmap.height
+        val xScale = sizeDp.toFloat() / compassBitmap.width
+        val yScale = sizeDp.toFloat() / compassBitmap.height
         compassMatrix.postScale(xScale, yScale)
 
         // Draw the bitmap
@@ -323,22 +382,5 @@ class Compass : View {
                 }
             }, FADE_ANIMATION_DELAY_MILLISECS)
         }
-    }
-
-    /**
-     * Updates the size of the [Compass] after height or width has been set.
-     *
-     * @since 100.5.0
-     */
-    private fun updateSize() {
-        if (drawInGeoView) {
-            Math.min(compassHeight, compassWidth).toPixels(displayDensity).let {
-                layoutParams.apply {
-                    height = it
-                    width = it
-                }
-            }
-        }
-        postInvalidate()
     }
 }

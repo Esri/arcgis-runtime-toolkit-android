@@ -28,12 +28,10 @@
 
     <com.esri.arcgisruntime.toolkit.compass.Compass
         android:id="@+id/compass"
-        compass.autoHidden="false"
-        compass.height="100"
-        compass.width="100"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="5dp"
+        app:autoHidden="false"
         app:layout_constraintLeft_toLeftOf="@+id/mapview"
         app:layout_constraintTop_toTopOf="@+id/mapview" />
 
