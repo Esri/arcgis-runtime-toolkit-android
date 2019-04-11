@@ -120,8 +120,9 @@ class Compass : View {
             throw IllegalStateException("Compass already has a GeoView")
         }
         drawInGeoView = true
-        val sizeDp = Math.min(compassHeight, compassWidth)
-        geoView.addView(this, ViewGroup.LayoutParams(sizeDp.toPixels(displayDensity), sizeDp.toPixels(displayDensity)))
+        Math.min(compassHeight, compassWidth).toPixels(displayDensity).let {
+            geoView.addView(this, ViewGroup.LayoutParams(it, it))
+        }
         setupGeoView(geoView)
     }
 
