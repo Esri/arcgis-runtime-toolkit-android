@@ -16,10 +16,12 @@
 
 package com.esri.arcgisruntime.toolkit.extension
 
-fun Int.toPixels(displayDensity: Float): Int = this * displayDensity.toInt()
-fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).toInt()
+import kotlin.math.roundToInt
 
-fun Int.toDp(displayDensity: Float): Int = (this / displayDensity).toInt()
+fun Int.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
+fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
+
+fun Int.toDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
 
 fun Int.throwIfNotPositive() {
     if (this <= 0) throw IllegalArgumentException("Parameter ${this::class.qualifiedName} must be > 0")
