@@ -211,6 +211,10 @@ class CompassTest {
         compass.bindTo(null)
     }
 
+    /**
+     * Test [Compass.setWidthDp] and [Compass.setHeightDp] throws [IllegalStateException] when trying to set width and
+     * height before [Compass] has been measured
+     */
     @Test
     fun testIllegalStateExceptionThrownWhenViewHasNotBeenMeasured() {
         val compass = Compass(InstrumentationRegistry.getContext())
