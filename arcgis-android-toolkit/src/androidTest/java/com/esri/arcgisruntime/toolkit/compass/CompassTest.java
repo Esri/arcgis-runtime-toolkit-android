@@ -107,9 +107,9 @@ public class CompassTest {
     Compass compass = new Compass(InstrumentationRegistry.getTargetContext());
 
     // Call all the setters
-    compass.setAutoHide(false);
-    compass.setHeightDp(99);
-    compass.setWidthDp(100);
+    compass.setAutoHidden(false);
+    compass.setCompassHeight(99);
+    compass.setCompassWidth(100);
 
     // Check all the values that were set
     checkSetValues(compass);
@@ -135,13 +135,13 @@ public class CompassTest {
 
     // Test the setters
     try {
-      compass.setHeightDp(0);
+      compass.setCompassHeight(0);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
     }
     try {
-      compass.setWidthDp(0);
+      compass.setCompassWidth(0);
       fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION);
     } catch (IllegalArgumentException e) {
       //success
@@ -235,9 +235,9 @@ public class CompassTest {
    * @since 100.2.1
    */
   private void checkDefaultValues(Compass compass) {
-    assertTrue("Expected isAutoHide() to return true", compass.isAutoHide());
-    assertEquals(50, compass.getHeightDp());
-    assertEquals(50, compass.getWidthDp());
+    assertTrue("Expected isAutoHidden() to return true", compass.isAutoHidden());
+    assertEquals(50, compass.getCompassHeight());
+    assertEquals(50, compass.getCompassWidth());
   }
 
   /**
@@ -248,9 +248,9 @@ public class CompassTest {
    * @since 100.2.1
    */
   private void checkSetValues(Compass compass) {
-    assertFalse("Expected isAutoHide() to return false", compass.isAutoHide());
-    assertEquals(99, compass.getHeightDp());
-    assertEquals(100, compass.getWidthDp());
+    assertFalse("Expected isAutoHidden() to return false", compass.isAutoHidden());
+    assertEquals(99, compass.getCompassHeight());
+    assertEquals(100, compass.getCompassWidth());
   }
 
 }

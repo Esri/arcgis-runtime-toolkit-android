@@ -24,7 +24,7 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
-            compass.autoHide="false"
+            compass.autoHidden="false"
             app:layout_constraintStart_toEndOf="@+id/message"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>

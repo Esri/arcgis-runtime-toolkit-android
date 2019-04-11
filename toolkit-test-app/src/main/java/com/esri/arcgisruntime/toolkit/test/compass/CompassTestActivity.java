@@ -107,11 +107,11 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
           return true;
         case R.id.action_compass_height:
           NumberDialogFragment.newInstance(
-              "Compass Height in DP", mCompass.getHeightDp()).show(getSupportFragmentManager(), "NumberDialog");
+              "Compass Height in DP", mCompass.getCompassHeight()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_compass_width:
           NumberDialogFragment.newInstance(
-              "Compass Width in DP", mCompass.getWidthDp()).show(getSupportFragmentManager(), "NumberDialog");
+              "Compass Width in DP", mCompass.getCompassWidth()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
           if (mUseMap) {
@@ -145,17 +145,17 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
 
   @Override
   public void onCompassAutoHideSpecified(boolean autoHide) {
-    mCompass.setAutoHide(autoHide);
+    mCompass.setAutoHidden(autoHide);
   }
 
   @Override
   public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_compass_height:
-        mCompass.setHeightDp(number);
+        mCompass.setCompassHeight(number);
         break;
       case R.id.action_compass_width:
-        mCompass.setWidthDp(number);
+        mCompass.setCompassWidth(number);
         break;
     }
   }

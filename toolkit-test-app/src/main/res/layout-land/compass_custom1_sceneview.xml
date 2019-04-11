@@ -36,7 +36,7 @@
 
     <com.esri.arcgisruntime.toolkit.compass.Compass
         android:id="@+id/compass"
-        compass.autoHide="false"
+        compass.autoHidden="false"
         compass.height="100"
         compass.width="100"
         android:layout_width="100dp"

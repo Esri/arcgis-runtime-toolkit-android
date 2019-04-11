@@ -50,22 +50,22 @@ class Compass : View {
     private val compassMatrix: Matrix = Matrix()
     private var compassIsShown = false
 
-    var isAutoHide: Boolean = true
+    var isAutoHidden: Boolean = true
         set(value) {
             field = value
             showOrHide()
         }
 
-    var heightDp: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
+    var compassHeight: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
         set(value) {
-            ToolkitUtil.throwIfNotPositive(value, "heightDp")
+            ToolkitUtil.throwIfNotPositive(value, "compassHeight")
             field = value
             updateSize()
         }
 
-    var widthDp: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
+    var compassWidth: Int = DEFAULT_HEIGHT_AND_WIDTH_DP
         set(value) {
-            ToolkitUtil.throwIfNotPositive(value, "widthDp")
+            ToolkitUtil.throwIfNotPositive(value, "compassWidth")
             field = value
             updateSize()
         }
@@ -98,14 +98,14 @@ class Compass : View {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         attrs?.let {
-            isAutoHide = it.getAttributeBooleanValue(null, "compass.autoHide", true)
-            heightDp = it.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_AND_WIDTH_DP)
-            widthDp = it.getAttributeIntValue(null, "compass.width", DEFAULT_HEIGHT_AND_WIDTH_DP)
+            isAutoHidden = it.getAttributeBooleanValue(null, "compass.autoHidden", true)
+            compassHeight = it.getAttributeIntValue(null, "compass.height", DEFAULT_HEIGHT_AND_WIDTH_DP)
+            compassWidth = it.getAttributeIntValue(null, "compass.width", DEFAULT_HEIGHT_AND_WIDTH_DP)
         }
     }
 
     init {
-        compassIsShown = !isAutoHide
+        compassIsShown = !isAutoHidden
         alpha = if (compassIsShown) 1.0f else 0.0f
         showOrHide()
         setOnTouchListener { _, _ ->
@@ -119,7 +119,7 @@ class Compass : View {
             throw IllegalStateException("Compass already has a GeoView")
         }
         drawInGeoView = true
-        val sizeDp = Math.min(heightDp, widthDp).toDouble()
+        val sizeDp = Math.min(compassHeight, compassWidth).toDouble()
         geoView.addView(this, ViewGroup.LayoutParams(dpToPixels(sizeDp), dpToPixels(sizeDp)))
         setupGeoView(geoView)
     }
@@ -162,7 +162,7 @@ class Compass : View {
 
     override fun onDraw(canvas: Canvas?) {
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
-        val sizeDp = Math.min(heightDp, widthDp)
+        val sizeDp = Math.min(compassHeight, compassWidth)
         if (drawInGeoView) {
             geoView?.let {
                 var xPos = (it.right - (0.02f * it.width)) - dpToPixels(sizeDp.toDouble())
@@ -213,7 +213,7 @@ class Compass : View {
         // If auto-hide is enabled, hide if compassRotation is less than the threshold
         geoView?.let {
             with(compassRotation) {
-                if (isAutoHide && (this < AUTO_HIDE_THRESHOLD || (360 - this) < AUTO_HIDE_THRESHOLD)) {
+                if (isAutoHidden && (this < AUTO_HIDE_THRESHOLD || (360 - this) < AUTO_HIDE_THRESHOLD)) {
                     if (compassIsShown) {
                         showCompass(false)
                     }
@@ -247,7 +247,7 @@ class Compass : View {
 
     private fun updateSize() {
         if (drawInGeoView) {
-            Math.min(heightDp, widthDp).let {
+            dpToPixels(Math.min(compassHeight, compassWidth).toDouble()).let {
                 layoutParams.apply {
                     height = it
                     width = it
