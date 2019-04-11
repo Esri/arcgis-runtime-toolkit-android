@@ -41,22 +41,8 @@ class CompassTest {
      */
     @Test
     fun testSimpleConstructorDefaultValues() {
-        // Creating parent View to hold Compass
-        val parentView = FrameLayout(InstrumentationRegistry.getContext())
-        // Setting width and height of parent View to double that of Compass to ensure that the parent's size doesn't
-        // contribute to the size of the Compass View
-        parentView.layout(
-            0,
-            0,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2
-        )
-
         val compass = Compass(InstrumentationRegistry.getContext())
-        // Add the Compass to the parent View
-        parentView.addView(compass)
-        // Perform measure on Compass View to determine the measured width and height
-        compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
+        attachCompassToParentAndMeasure(compass)
         checkDefaultValues(compass)
     }
 
@@ -104,22 +90,8 @@ class CompassTest {
      */
     @Test
     fun testSetters() {
-        // Creating parent View to hold Compass
-        val parentView = FrameLayout(InstrumentationRegistry.getContext())
-        // Setting width and height of parent View to double that of Compass to ensure that the parent's size doesn't
-        // contribute to the size of the Compass View
-        parentView.layout(
-            0,
-            0,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2
-        )
-
         val compass = Compass(InstrumentationRegistry.getContext())
-        // Add the Compass to the parent View
-        parentView.addView(compass)
-        // Perform measure on Compass View to determine the measured width and height
-        compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
+        attachCompassToParentAndMeasure(compass)
 
         // Call all the setters
         compass.isAutoHidden = false
@@ -137,22 +109,8 @@ class CompassTest {
      */
     @Test
     fun testIllegalArgumentExceptions() {
-        // Creating parent View to hold Compass
-        val parentView = FrameLayout(InstrumentationRegistry.getContext())
-        // Setting width and height of parent View to double that of Compass to ensure that the parent's size doesn't
-        // contribute to the size of the Compass View
-        parentView.layout(
-            0,
-            0,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2
-        )
-
         val compass = Compass(InstrumentationRegistry.getContext())
-        // Add the Compass to the parent View
-        parentView.addView(compass)
-        // Perform measure on Compass View to determine the measured width and height
-        compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
+        attachCompassToParentAndMeasure(compass)
 
         // Test the setters
         try {
@@ -276,6 +234,29 @@ class CompassTest {
         assertFalse("Expected isAutoHide() to return false", compass.isAutoHidden)
         assertEquals(99, compass.getHeightDp())
         assertEquals(100, compass.getWidthDp())
+    }
+
+    /**
+     * Attaches supplied [Compass] to a parent View and measures it forces a measure inside the parent
+     *
+     * @param compass [Compass] to measure
+     */
+    private fun attachCompassToParentAndMeasure(compass: Compass) {
+        // Creating parent View to hold Compass
+        val parentView = FrameLayout(InstrumentationRegistry.getContext())
+        // Setting width and height of parent View to double that of Compass to ensure that the parent's size doesn't
+        // contribute to the size of the Compass View
+        parentView.layout(
+            0,
+            0,
+            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2,
+            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2
+        )
+
+        // Add the Compass to the parent View
+        parentView.addView(compass)
+        // Perform measure on Compass View to determine the measured width and height
+        compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
     }
 
 }
