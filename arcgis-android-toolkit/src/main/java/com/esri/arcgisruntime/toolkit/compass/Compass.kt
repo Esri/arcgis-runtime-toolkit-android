@@ -87,16 +87,37 @@ class Compass : View {
                 compassRotation = it.heading
             }
         }
+
+        // Show or hide, depending on whether auto-hide is enabled, and if so depending on current rotation
         showOrHide()
+
+        // Invalidate the Compass view to update it
         postInvalidate()
     }
 
     private val attributionViewLayoutChangeListener =
         OnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
+            // Invalidate the Compass view when the bounds of the attribution view change; this happens when view insets are
+            // set, which may affect where the Compass is drawn
             postInvalidate()
         }
 
+    /**
+     * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see [Compass] above).
+     *
+     * @param context the execution [Context]
+     * @since 100.5.0
+     */
     constructor(context: Context) : super(context)
+
+    /**
+     * Constructor that's called when inflating a Compass from XML. Called by the system when Workflow 2 is used (see
+     * [Compass] above).
+     *
+     * @param context the execution [Context]
+     * @param attrs   the attributes of the XML tag that is inflating the view
+     * @since 100.2.1
+     */
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         attrs?.let {
             isAutoHidden = it.getAttributeBooleanValue(null, "compass.autoHidden", true)
@@ -115,6 +136,13 @@ class Compass : View {
         }
     }
 
+    /**
+     * Adds this Compass to the given GeoView. Used in Workflow 1 (see [Compass] above).
+     *
+     * @param geoView the GeoView
+     * @throws IllegalStateException    if this [Compass] is already added to or bound to a GeoView
+     * @since 100.5.0
+     */
     fun addToGeoView(geoView: GeoView) {
         this.geoView?.let {
             throw IllegalStateException("Compass already has a GeoView")
@@ -126,6 +154,13 @@ class Compass : View {
         setupGeoView(geoView)
     }
 
+    /**
+     * Removes this Compass from the GeoView it was added to (if any). For use in Workflow 1 only (see [Compass]
+     * above).
+     *
+     * @throws IllegalStateException if this Compass is not currently added to a GeoView
+     * @since 100.5.0
+     */
     fun removeFromGeoView() {
         if (!drawInGeoView) {
             throw IllegalStateException("Compass is not currently added to a GeoView")
@@ -135,6 +170,13 @@ class Compass : View {
         drawInGeoView = false
     }
 
+    /**
+     * Binds this [Compass] to the given GeoView, or unbinds it. Used in Workflow 2 (see [Compass] above).
+     *
+     * @param geoView the GeoView to bind to, or null to unbind it
+     * @throws IllegalStateException if this [Compass] is currently added to a GeoView
+     * @since 100.5.0
+     */
     fun bindTo(geoView: GeoView?) {
         if (drawInGeoView) {
             throw IllegalStateException("Compass is currently added to a GeoView")
@@ -148,6 +190,12 @@ class Compass : View {
         }
     }
 
+    /**
+     * Resets the GeoView to be oriented toward 0 degrees when the [Compass] is clicked.
+     *
+     * @return true if there was an assigned [View.OnClickListener] that was called, false otherwise
+     * @since 100.5.0
+     */
     override fun performClick(): Boolean {
         geoView?.let {
             (it as? MapView)?.apply {
@@ -162,6 +210,12 @@ class Compass : View {
         return super.performClick()
     }
 
+    /**
+     * Draws the [Compass] with the current rotation to the screen.
+     *
+     * @param canvas the [Canvas] to draw on
+     * @since 100.5.0
+     */
     override fun onDraw(canvas: Canvas?) {
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
         val sizeDp = Math.min(compassHeight, compassWidth)
@@ -192,6 +246,12 @@ class Compass : View {
         canvas?.drawBitmap(compassBitmap, compassMatrix, null)
     }
 
+    /**
+     * Sets up the [Compass] to work with the given GeoView.
+     *
+     * @param geoView the GeoView
+     * @since 100.5.0
+     */
     private fun setupGeoView(geoView: GeoView) {
         // Remove listeners from old GeoView
         this.geoView?.let {
@@ -204,6 +264,11 @@ class Compass : View {
         geoView.addAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
     }
 
+    /**
+     * Removes the listeners from [geoView].
+     *
+     * @since 100.5.0
+     */
     private fun removeListenersFromGeoView() {
         geoView = geoView?.let {
             it.removeViewpointChangedListener(viewpointChangedListener)
@@ -211,15 +276,22 @@ class Compass : View {
         }.let { null }
     }
 
+    /**
+     * Show or hide the [Compass], depending on whether auto-hide is enabled, and if so whether the current rotation is less
+     * than the threshold. Handle 0 and 360 degrees.
+     *
+     * @since 100.5.0
+     */
     private fun showOrHide() {
-        // If auto-hide is enabled, hide if compassRotation is less than the threshold
         geoView?.let {
             with(compassRotation) {
+                // If auto-hide is enabled, hide if compassRotation is less than the threshold
                 if (isAutoHidden && (this < AUTO_HIDE_THRESHOLD || (360 - this) < AUTO_HIDE_THRESHOLD)) {
                     if (compassIsShown) {
                         showCompass(false)
                     }
                 } else {
+                    // Otherwise show the compass
                     if (!compassIsShown) {
                         showCompass(true)
                     }
@@ -228,6 +300,12 @@ class Compass : View {
         }
     }
 
+    /**
+     * Shows or hides the [Compass], using an animator to make it fade in and out.
+     *
+     * @param show true to show the [Compass], false to hide it
+     * @since 100.5.0
+     */
     private fun showCompass(show: Boolean) {
         // Set the desired state in mIsShown
         compassIsShown = show
@@ -247,6 +325,11 @@ class Compass : View {
         }
     }
 
+    /**
+     * Updates the size of the [Compass] after height or width has been set.
+     *
+     * @since 100.5.0
+     */
     private fun updateSize() {
         if (drawInGeoView) {
             Math.min(compassHeight, compassWidth).toPixels(displayDensity).let {

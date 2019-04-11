@@ -96,6 +96,15 @@ artifactory {
 dokka {
     outputFormat = 'html'
     outputDirectory = "$buildDir/javadoc"
+    jdkVersion = 8 // Used for linking to JDK
+
+    // This just mutes a warning that spams the console: `Can't find node by signature` but still cannot link
+    // external classes in KDocs
+    // https://github.com/Kotlin/dokka/issues/269#issuecomment-468733943
+    externalDocumentationLink {
+        packageListUrl = new URL("https://developers.arcgis.com/android/latest/api-reference/")
+        url = new URL("https://developers.arcgis.com/android/latest/api-reference/")
+    }
 }
 
 dependencies {
