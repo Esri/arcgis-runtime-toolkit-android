@@ -46,6 +46,9 @@ private const val FADE_ANIMATION_DURATION_MILLISECS = 500L
 class Compass : View {
 
     companion object {
+        /**
+         * Default height and width of [Compass] in DP
+         */
         const val DEFAULT_HEIGHT_AND_WIDTH_DP = 50
     }
 
