@@ -191,6 +191,14 @@ class Compass : View {
         }
     }
 
+    /**
+     * Provide a DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
+     * otherwise the [ViewGroup.LayoutParams] are null.
+     *
+     * @throws [IllegalStateException] if [View] hasn't been measured yet
+     * @param height DP height to apply to the [Compass]
+     * @since 100.5.0
+     */
     fun setHeightDp(height: Int) {
         height.throwIfNotPositive()
 
@@ -203,13 +211,28 @@ class Compass : View {
         }
     }
 
+    /**
+     * Get the DP height of the [Compass]. Must be called after the [View] has been measured as
+     * otherwise the [ViewGroup.LayoutParams] are null.
+     *
+     * @throws [IllegalStateException] if [View] hasn't been measured yet
+     * @since 100.5.0
+     */
     fun getHeightDp(): Int {
-        if (layoutParams == null) {
-            throw IllegalStateException("View hasn't been measured yet")
+        layoutParams?.height?.toDp(displayDensity)?.let {
+            return it
         }
-        return layoutParams.height.toDp(displayDensity)
+        throw IllegalStateException("View hasn't been measured yet")
     }
 
+    /**
+     * Provide a DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
+     * otherwise the [ViewGroup.LayoutParams] are null.
+     *
+     * @throws [IllegalStateException] if [View] hasn't been measured yet
+     * @param width DP width to apply to the [Compass]
+     * @since 100.5.0
+     */
     fun setWidthDp(width: Int) {
         width.throwIfNotPositive()
 
@@ -222,11 +245,18 @@ class Compass : View {
         }
     }
 
+    /**
+     * Get the DP width of the [Compass]. Must be called after the [View] has been measured as
+     * otherwise the [ViewGroup.LayoutParams] are null.
+     *
+     * @throws [IllegalStateException] if [View] hasn't been measured yet
+     * @since 100.5.0
+     */
     fun getWidthDp(): Int {
-        if (layoutParams == null) {
-            throw IllegalStateException("View hasn't been measured yet")
+        layoutParams?.width?.toDp(displayDensity)?.let {
+            return it
         }
-        return layoutParams.width.toDp(displayDensity)
+        throw IllegalStateException("View hasn't been measured yet")
     }
 
     /**
@@ -253,7 +283,7 @@ class Compass : View {
      * Measure the view and its content to determine the measured width and the
      * measured height.
      * Overridden to determine if user has used Method 1 or Method 2 (see [Compass] above]. If user has used Method 1,
-     * no [ViewGroup.LayoutParams] have been provided and we fallback to using [defaultLayoutParams].
+     * no [ViewGroup.LayoutParams] have been provided and we fallback to using defaultLayoutParams.
      *
      * @param widthMeasureSpec horizontal space requirements as imposed by the parent.
      *                         The requirements are encoded with

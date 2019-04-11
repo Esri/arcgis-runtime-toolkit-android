@@ -211,6 +211,25 @@ class CompassTest {
         compass.bindTo(null)
     }
 
+    @Test
+    fun testIllegalStateExceptionThrownWhenViewHasNotBeenMeasured() {
+        val compass = Compass(InstrumentationRegistry.getContext())
+
+        try {
+            compass.setWidthDp(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP)
+            fail("Expected IllegalStateException")
+        } catch (e: IllegalStateException) {
+            // success
+        }
+
+        try {
+            compass.setHeightDp(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP)
+            fail("Expected IllegalStateException")
+        } catch (e: IllegalStateException) {
+            // success
+        }
+    }
+
     /**
      * Checks that the given [Compass] object contains default values for all attributes.
      *
