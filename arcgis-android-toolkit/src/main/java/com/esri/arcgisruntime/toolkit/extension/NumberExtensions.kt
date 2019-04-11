@@ -20,3 +20,7 @@ fun Int.toPixels(displayDensity: Float): Int = this * displayDensity.toInt()
 fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).toInt()
 
 fun Int.toDp(displayDensity: Float): Int = (this / displayDensity).toInt()
+
+fun Int.throwIfNotPositive() {
+    if (this <= 0) throw IllegalArgumentException("Parameter ${this::class.qualifiedName} must be > 0")
+}

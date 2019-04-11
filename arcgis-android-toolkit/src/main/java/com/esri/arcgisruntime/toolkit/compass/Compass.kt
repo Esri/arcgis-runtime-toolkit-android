@@ -34,6 +34,7 @@ import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
+import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
 import com.esri.arcgisruntime.toolkit.extension.toDp
 import com.esri.arcgisruntime.toolkit.extension.toPixels
 
@@ -191,6 +192,8 @@ class Compass : View {
     }
 
     fun setHeightDp(height: Int) {
+        height.throwIfNotPositive()
+
         if (layoutParams == null) {
             throw IllegalStateException("View hasn't been measured yet")
         }
@@ -208,6 +211,8 @@ class Compass : View {
     }
 
     fun setWidthDp(width: Int) {
+        width.throwIfNotPositive()
+
         if (layoutParams == null) {
             throw IllegalStateException("View hasn't been measured yet")
         }
