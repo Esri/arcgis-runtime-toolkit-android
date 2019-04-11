@@ -41,9 +41,12 @@ import com.esri.arcgisruntime.toolkit.extension.toPixels
 private const val AUTO_HIDE_THRESHOLD = 0.00000000001
 private const val FADE_ANIMATION_DELAY_MILLISECS = 300L
 private const val FADE_ANIMATION_DURATION_MILLISECS = 500L
-private const val DEFAULT_HEIGHT_AND_WIDTH_DP = 50
 
 class Compass : View {
+
+    companion object {
+        const val DEFAULT_HEIGHT_AND_WIDTH_DP = 50
+    }
 
     private val compassBitmap: Bitmap by lazy {
         BitmapFactory.decodeResource(resources, R.drawable.ic_compass)
@@ -65,8 +68,8 @@ class Compass : View {
         resources.displayMetrics.density
     }
     private val defaultLayoutParams = ViewGroup.LayoutParams(
-        DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity),
-        DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity)
+        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity),
+        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity)
     )
 
     private val viewpointChangedListener = ViewpointChangedListener {
