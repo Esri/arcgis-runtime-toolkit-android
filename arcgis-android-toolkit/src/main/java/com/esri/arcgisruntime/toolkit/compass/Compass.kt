@@ -35,6 +35,7 @@ import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.ToolkitUtil
+import com.esri.arcgisruntime.toolkit.extension.toPixels
 
 private const val AUTO_HIDE_THRESHOLD = 0.00000000001
 private const val FADE_ANIMATION_DELAY_MILLISECS = 300L
@@ -119,8 +120,8 @@ class Compass : View {
             throw IllegalStateException("Compass already has a GeoView")
         }
         drawInGeoView = true
-        val sizeDp = Math.min(compassHeight, compassWidth).toDouble()
-        geoView.addView(this, ViewGroup.LayoutParams(dpToPixels(sizeDp), dpToPixels(sizeDp)))
+        val sizeDp = Math.min(compassHeight, compassWidth)
+        geoView.addView(this, ViewGroup.LayoutParams(sizeDp.toPixels(displayDensity), sizeDp.toPixels(displayDensity)))
         setupGeoView(geoView)
     }
 
@@ -165,12 +166,12 @@ class Compass : View {
         val sizeDp = Math.min(compassHeight, compassWidth)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = (it.right - (0.02f * it.width)) - dpToPixels(sizeDp.toDouble())
+                var xPos = (it.right - (0.02f * it.width)) - sizeDp.toPixels(displayDensity)
                 var yPos = it.top + (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
-                    xPos -= dpToPixels(mapView.viewInsetRight).toFloat()
-                    yPos += dpToPixels(mapView.viewInsetTop).toFloat()
+                    xPos -= mapView.viewInsetRight.toPixels(displayDensity).toFloat()
+                    yPos += mapView.viewInsetTop.toPixels(displayDensity).toFloat()
                 }
                 x = xPos
                 y = yPos
@@ -182,8 +183,8 @@ class Compass : View {
         compassMatrix.postRotate(-compassRotation.toFloat(), (compassBitmap.width / 2F), (compassBitmap.height / 2F))
 
         // Scale the matrix by the size of the bitmap to the size of the compass view
-        val xScale = dpToPixels(sizeDp.toDouble()).toFloat() / compassBitmap.width
-        val yScale = dpToPixels(sizeDp.toDouble()).toFloat() / compassBitmap.height
+        val xScale = sizeDp.toPixels(displayDensity).toFloat() / compassBitmap.width
+        val yScale = sizeDp.toPixels(displayDensity).toFloat() / compassBitmap.height
         compassMatrix.postScale(xScale, yScale)
 
         // Draw the bitmap
@@ -247,7 +248,7 @@ class Compass : View {
 
     private fun updateSize() {
         if (drawInGeoView) {
-            dpToPixels(Math.min(compassHeight, compassWidth).toDouble()).let {
+            Math.min(compassHeight, compassWidth).toPixels(displayDensity).let {
                 layoutParams.apply {
                     height = it
                     width = it
@@ -256,6 +257,4 @@ class Compass : View {
         }
         postInvalidate()
     }
-
-    private fun dpToPixels(dp: Double): Int = Math.round((dp * displayDensity).toFloat())
 }
