@@ -18,7 +18,9 @@ package com.esri.arcgisruntime.toolkit.compass
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import android.view.LayoutInflater
 import android.widget.FrameLayout
+import com.esri.arcgisruntime.toolkit.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -50,6 +52,24 @@ class CompassTest {
         parentView.addView(compass)
         // Perform measure on Compass View to determine the measured width and height
         compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
+        checkDefaultValues(compass)
+    }
+
+    /**
+     * Tests the default values set from an XML file that doesn't set any of the Compass attributes.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun testXmlNoCompassAttributes() {
+        // Inflate layout containing a Compass that doesn't set any of the Compass attributes
+        val context = InstrumentationRegistry.getTargetContext()
+        val viewGroup = LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs, null)
+
+        // Find and instantiate that Compass
+        val compass = viewGroup.findViewById<Compass>(R.id.compass)
+
+        // Check it contains the correct default attribute values
         checkDefaultValues(compass)
     }
 
