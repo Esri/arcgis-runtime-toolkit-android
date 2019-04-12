@@ -29,7 +29,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            multiDexKeepProguard file('proguard-multidex-rules.pro')
+            multiDexKeepProguard file("$rootProject.projectDir/proguard-multidex-rules.pro")
         }
     }
     compileOptions {
