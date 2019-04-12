@@ -2,9 +2,8 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android-extensions'
     id 'kotlin-android'
-    id 'com.jfrog.artifactory'
-    id 'android-maven'
     id 'org.jetbrains.dokka-android'
+    id 'android-maven'
 }
 apply from: "$rootProject.projectDir/versions.gradle"
 
@@ -35,20 +34,7 @@ android {
     }
 }
 
-gradle.projectsEvaluated {
-    artifactoryPublish.dependsOn assembleRelease
-}
-
-// custom configurations
-// published is for artifactory
-configurations {
-    published
-}
-
-// snapshots publish to snapshots repo, release publish to arcgis repo
-String localRepo = version.endsWith('SNAPSHOT') ? 'snapshots-local' : 'arcgis-local'
-
-// add apache licese to POM
+// add apache license to POM
 configure(install.repositories.mavenInstaller) {
     pom.project {
         licenses {
@@ -58,38 +44,6 @@ configure(install.repositories.mavenInstaller) {
                 distribution 'repo'
             }
         }
-    }
-}
-
-artifactory {
-    def artifactoryUsername = project.hasProperty('ARTIFACTORY_USER') ? ARTIFACTORY_USER : null
-    def artifactoryPassword = project.hasProperty('ARTIFACTORY_PASSWORD') ? ARTIFACTORY_USER : null
-
-    contextUrl = ARTIFACTORY_URL
-
-    // disable publish task if artifactory credentials have not been set
-    artifactoryPublish.enabled = artifactoryUsername && artifactoryPassword
-
-    publish {
-        repository {
-            repoKey = localRepo //The artifactory repository key to publish to
-            if (artifactoryUsername) {
-                username = ARTIFACTORY_USER //The publisher user name, property taken from gradle.properties
-            }
-            if (artifactoryPassword) {
-                password = ARTIFACTORY_PASSWORD //The publisher password, property taken from gradle.properties
-            }
-        }
-        defaults {
-            // artifacts to be published to Artifactory.
-            publishConfigs('archives', 'published')
-            publishArtifacts = true
-            publishPom = true //Publish generated POM files to Artifactory (true by default)
-            publishIvy = false //Publish generated Ivy descriptor files to Artifactory (true by default)
-        }
-    }
-    resolve {
-        repoKey = 'arcgis' //The Artifactory (preferably virtual) repository key to resolve from
     }
 }
 
