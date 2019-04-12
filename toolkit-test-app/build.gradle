@@ -16,10 +16,9 @@ android {
         targetSdkVersion droid.targetSdk
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -46,9 +45,12 @@ dependencies {
     implementation "com.android.support:design:$droid.support"
     implementation "com.android.support:support-vector-drawable:$droid.support"
     implementation "com.android.support.constraint:constraint-layout:$droid.constraintLayout"
+    implementation "com.android.support:multidex:$droid.multiDex"
     implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
-
     testImplementation "junit:junit:$test.jUnit"
+    androidTestImplementation "junit:junit:$test.jUnit"
+    androidTestImplementation "com.android.support:support-annotations:$droid.support"
+    androidTestImplementation "com.android.support.test:runner:$droid.testRunner"
 }
 repositories {
     mavenCentral()
