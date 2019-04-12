@@ -7,9 +7,6 @@ plugins {
 }
 apply from: "$rootProject.projectDir/versions.gradle"
 
-group = GROUP
-version = VERSION_NAME
-
 android {
     compileSdkVersion droid.targetSdk
     buildToolsVersion droid.buildTools
