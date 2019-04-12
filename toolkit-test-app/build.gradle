@@ -4,7 +4,6 @@ plugins {
     id 'kotlin-android'
     id 'org.jetbrains.dokka-android'
 }
-apply from: "$rootProject.projectDir/versions.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
@@ -41,7 +40,7 @@ dokka {
 dependencies {
     implementation project(':arcgis-android-toolkit')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.android.support:design:$droid.support"
     implementation "com.android.support:support-vector-drawable:$droid.support"

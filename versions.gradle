@@ -10,6 +10,6 @@ ext {
         espresso = "2.2.2"
         jUnit = "4.12"
     }
-    kotlin = "1.3.21"
+    kotlin_version = "1.3.21"
     arcgis = "100.5.0"
 }
