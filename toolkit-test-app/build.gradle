@@ -14,8 +14,8 @@ android {
         applicationId "com.esri.arcgisruntime.toolkit"
         minSdkVersion droid.minSdk
         targetSdkVersion droid.targetSdk
-        versionCode 1
-        versionName "1.0"
+        versionCode project.property("versionCode")
+        versionName project.property("versionName")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

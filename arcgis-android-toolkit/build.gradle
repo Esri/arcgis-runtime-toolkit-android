@@ -18,8 +18,8 @@ android {
     defaultConfig {
         minSdkVersion droid.minSdk
         targetSdkVersion droid.targetSdk
-        versionCode 100
-        versionName "100.2.0"
+        versionCode project.property("versionCode")
+        versionName project.property("versionName")
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
