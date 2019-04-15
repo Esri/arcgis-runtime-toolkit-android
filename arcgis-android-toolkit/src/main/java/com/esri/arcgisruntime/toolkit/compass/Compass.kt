@@ -43,6 +43,59 @@ private const val AUTO_HIDE_THRESHOLD = 0.00000000001
 private const val FADE_ANIMATION_DELAY_MILLISECS = 300L
 private const val FADE_ANIMATION_DURATION_MILLISECS = 500L
 
+/**
+ * Shows the current orientation of a map or scene by displaying a compass icon that points towards North. The icon can
+ * be tapped to reset the map/scene to 0 degrees orientation. By default the icon is hidden any time the map/scene is
+ * orientated to 0 degrees. The auto hide behavior can be disabled using the property [isAutoHidden].
+ *
+ * Two workflows are supported:
+ *
+ * _Workflow 1:_
+ *
+ * The simplest workflow is for the app to instantiate a Compass using an instance of [Context] and call
+ * [addToGeoView] to display it within the GeoView. Optionally, properties may be set to override
+ * some of the default settings. This workflow gives the app no control over the position of the compass - it's always
+ * placed at the top-right corner of the GeoView.
+ *
+ * For example:
+ * ```
+ * val compass: Compass = Compass(geoView.context);
+ * compass.isAutoHidden = false // optionally disable the auto hide behavior
+ * compass.addToGeoView(geoView)
+ * ```
+ *
+ * _Workflow 2:_
+ *
+ * Alternatively, the app could define a Compass anywhere it likes in its view hierarchy, because Compass extends the
+ * Android View class. The system will instantiate the Compass. The app then calls [bindTo] to make it
+ * come to life as a compass for the given GeoView. This workflow gives the app complete control over where the compass
+ * is displayed - it could be positioned on top of any part of the GeoView, or placed somewhere outside the bounds of the GeoView.
+ *
+ * Here's example XML code to define a Compass:
+ * ```
+ * <com.esri.arcgisruntime.toolkit.compass.Compass
+ * android:id="@+id/compass"
+ * android:layout_width="100dp"
+ * android:layout_height="50dp"
+ * android:layout_margin="5dp"
+ * app:autoHidden="false"/>
+ * ```
+ *
+ * And here's example Kotlin code to bind the Compass to the GeoView:
+ * ```
+ * val compass = findViewById(R.id.compass)
+ * compass.bindTo(geoView)
+ * ```
+ *
+ * _Mutually Exclusive Workflows:_
+ *
+ * The methods to connect and disconnect a Compass to a GeoView are mutually exclusive between the two workflows. In
+ * Workflow 1, use [addToGeoView] to connect it to a GeoView and [removeFromGeoView] to disconnect it. In Workflow 2,
+ * use [bindTo], passing a non-null instance of GeoView as an argument to connect it to a GeoView and [bindTo],
+ * passing **_null_** as an argument to disconnect it.
+ *
+ * @since 100.5.0
+ */
 class Compass : View {
 
     companion object {
