@@ -4,7 +4,6 @@ plugins {
     id 'kotlin-android'
     id 'org.jetbrains.dokka-android'
 }
-apply from: "$rootProject.projectDir/versions.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
@@ -54,7 +53,4 @@ dependencies {
     androidTestImplementation "junit:junit:$test.jUnit"
     androidTestImplementation "com.android.support:support-annotations:$droid.support"
     androidTestImplementation "com.android.support.test:runner:$droid.testRunner"
-}
-repositories {
-    mavenCentral()
 }
