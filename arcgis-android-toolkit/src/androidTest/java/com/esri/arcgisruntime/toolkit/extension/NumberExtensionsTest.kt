@@ -16,13 +16,55 @@
 
 package com.esri.arcgisruntime.toolkit.extension
 
+import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import com.esri.arcgisruntime.toolkit.R
+import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NumberExtensionsTest {
+
+    @Test
+    fun intToPixelsEightyDpReturnsSameValue() {
+        with(InstrumentationRegistry.getContext().resources) {
+            val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
+            val actual = 80.toPixels(this.displayMetrics.density)
+            assertEquals(expected, actual)
+        }
+    }
+
+    @Test
+    fun intToPixelsZeroDpReturnsSameValue() {
+        with(InstrumentationRegistry.getContext().resources)
+        {
+            val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
+            val actual = 0.toPixels(this.displayMetrics.density)
+            assertEquals(expected, actual)
+        }
+    }
+
+    @Test
+    fun doubleToPixelsEightyDpReturnsSameValue() {
+        with(InstrumentationRegistry.getContext().resources)
+        {
+            val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
+            val actual = 80.0.toPixels(this.displayMetrics.density)
+            assertEquals(expected, actual)
+        }
+    }
+
+    @Test
+    fun doubleToPixelsZeroDpReturnsSameValue() {
+        with(InstrumentationRegistry.getContext().resources)
+        {
+            val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
+            val actual = 0.0.toPixels(this.displayMetrics.density)
+            assertEquals(expected, actual)
+        }
+    }
 
     @Test
     fun intThrowIfNotPositivePositiveOneDoesNotThrow() {
