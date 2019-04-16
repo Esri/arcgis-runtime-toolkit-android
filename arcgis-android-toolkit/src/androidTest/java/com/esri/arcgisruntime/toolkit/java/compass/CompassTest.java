@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.compass;
+package com.esri.arcgisruntime.toolkit.java.compass;
 
 import android.content.Context;
 import android.os.Looper;
@@ -27,10 +27,7 @@ import com.esri.arcgisruntime.toolkit.TestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for Compass.
@@ -71,7 +68,7 @@ public class CompassTest {
   public void testXmlNoCompassAttributes() {
     // Inflate layout containing a Compass that doesn't set any of the Compass attributes
     Context context = InstrumentationRegistry.getTargetContext();
-    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs, null);
+    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs_java, null);
 
     // Find and instantiate that Compass
     Compass compass = viewGroup.findViewById(R.id.compass);
@@ -90,7 +87,7 @@ public class CompassTest {
     // Inflate layout containing a Compass that sets all of the Compass attributes
     Context context = InstrumentationRegistry.getTargetContext();
     ViewGroup viewGroup =
-        (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_fully_populated, null);
+        (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_fully_populated_java, null);
 
     // Find and instantiate that Compass
     Compass compass = viewGroup.findViewById(R.id.compass);
@@ -158,9 +155,9 @@ public class CompassTest {
    */
   @Test
   public void testAddRemoveAndBind() {
-    // Checks whether a Looper already exists for the current thread, if not, it creates one
+    // Checking if Looper has been prepared, if not, prepare it as we must initialize this thread as a Looper
+    // so it can instantiate a GeoView
     if (Looper.myLooper() == null) {
-      // Must initialize this thread as a Looper so it can instantiate a MapView
       Looper.prepare();
     }
 
