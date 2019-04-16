@@ -18,4 +18,26 @@
     <declare-styleable name="Compass">
         <attr name="autoHidden" format="boolean" />
     </declare-styleable>
+    <declare-styleable name="Scalebar">
+        <attr name="style" format="enum">
+            <enum name="bar" value="bar" />
+            <enum name="alternatingBar" value="alternatingBar" />
+            <enum name="line" value="line" />
+            <enum name="graduatedLine" value="graduatedLine" />
+            <enum name="dualUnitLine" value="dualUnitLine" />
+        </attr>
+        <attr name="alignment" format="enum">
+            <enum name="left" value="left" />
+            <enum name="right" value="right" />
+            <enum name="center" value="center" />
+        </attr>
+        <attr name="fillColor" format="color" />
+        <attr name="alternateFillColor" format="color" />
+        <attr name="lineColor" format="color" />
+        <attr name="shadowColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="textShadowColor" format="color" />
+        <attr name="textSize" format="dimension" />
+        <attr name="barHeight" format="dimension" />
+    </declare-styleable>
 </resources>
