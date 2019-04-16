@@ -20,7 +20,7 @@
             app:layout_constraintRight_toLeftOf="@+id/guideline"
     />
 
-    <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+    <com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
             android:id="@+id/scalebar"
             android:layout_width="150dp"
             android:layout_height="50dp"

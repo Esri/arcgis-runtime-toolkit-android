@@ -38,7 +38,7 @@
             app:layout_constraintRight_toLeftOf="@+id/select_layout"
     />
 
-    <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+    <com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
             android:id="@+id/scalebar"
             android:layout_width="300dp"
             android:layout_height="45dp"

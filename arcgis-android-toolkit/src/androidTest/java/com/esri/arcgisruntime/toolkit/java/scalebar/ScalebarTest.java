@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.scalebar;
+package com.esri.arcgisruntime.toolkit.java.scalebar;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -27,6 +27,7 @@ import com.esri.arcgisruntime.UnitSystem;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.toolkit.R;
 import com.esri.arcgisruntime.toolkit.TestUtil;
+import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

@@ -21,7 +21,7 @@
             app:layout_constraintEnd_toStartOf="@+id/scalebar"
             app:layout_constraintHorizontal_chainStyle="spread_inside"/>
 
-    <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+    <com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
             android:id="@+id/scalebar"
             android:layout_width="200dp"
             android:layout_height="50dp"
