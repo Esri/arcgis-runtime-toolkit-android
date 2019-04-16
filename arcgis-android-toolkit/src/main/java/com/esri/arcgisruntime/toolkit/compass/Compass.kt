@@ -16,18 +16,16 @@
 
 package com.esri.arcgisruntime.toolkit.compass
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Matrix
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
+import android.view.ViewPropertyAnimator
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.GeoView
 import com.esri.arcgisruntime.mapping.view.MapView
@@ -37,11 +35,11 @@ import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
 import com.esri.arcgisruntime.toolkit.extension.toDp
 import com.esri.arcgisruntime.toolkit.extension.toPixels
+import kotlin.reflect.KProperty
 
 
-private const val AUTO_HIDE_THRESHOLD = 0.00000000001
-private const val FADE_ANIMATION_DELAY_MILLISECS = 300L
-private const val FADE_ANIMATION_DURATION_MILLISECS = 500L
+private const val AUTO_HIDE_THRESHOLD_DEGREES = 5
+private const val ANIMATION_DURATION_MILLISECS = 500L
 
 /**
  * Shows the current orientation of a map or scene by displaying a compass icon that points towards North. The icon can
@@ -110,7 +108,6 @@ class Compass : View {
     }
 
     private val compassMatrix: Matrix = Matrix()
-    private var compassIsShown = false
 
     /**
      * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
@@ -125,6 +122,11 @@ class Compass : View {
 
     private var geoView: GeoView? = null
     private var compassRotation: Double = 0.0
+        set(value) {
+            field = value
+            showOrHide()
+        }
+
     private var drawInGeoView: Boolean = false
     private val displayDensity: Float by lazy {
         resources.displayMetrics.density
@@ -144,9 +146,6 @@ class Compass : View {
             }
         }
 
-        // Show or hide, depending on whether auto-hide is enabled, and if so depending on current rotation
-        showOrHide()
-
         // Invalidate the Compass view to update it
         postInvalidate()
     }
@@ -157,6 +156,29 @@ class Compass : View {
             // set, which may affect where the Compass is drawn
             postInvalidate()
         }
+
+    /**
+     * A [ViewPropertyAnimator] that animates the [Compass]. Using a [AnimatorDelegate] to ensure that an animation cannot
+     * be run before the previous animation is completed by nulling the backing property and returning null until the
+     * animation is complete.
+     */
+    private val animator: ViewPropertyAnimator? by AnimatorDelegate()
+
+    private class AnimatorDelegate {
+        private var _viewPropertyAnimator: ViewPropertyAnimator? = null
+
+        operator fun getValue(compass: Compass, property: KProperty<*>): ViewPropertyAnimator? {
+            _viewPropertyAnimator?.let {
+                return null
+            }
+            _viewPropertyAnimator = compass.animate()
+                .setDuration(ANIMATION_DURATION_MILLISECS)
+                .withEndAction {
+                    _viewPropertyAnimator = null
+                }
+            return _viewPropertyAnimator
+        }
+    }
 
     /**
      * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see [Compass] above).
@@ -189,9 +211,7 @@ class Compass : View {
     }
 
     init {
-        compassIsShown = !isAutoHidden
-        alpha = if (compassIsShown) 1.0f else 0.0f
-        showOrHide()
+        alpha = if (isAutoHidden) 0.0f else 1.0f
         setOnTouchListener { _, _ ->
             performClick()
             true
@@ -435,51 +455,22 @@ class Compass : View {
     }
 
     /**
-     * Show or hide the [Compass], depending on whether auto-hide is enabled, and if so whether the current rotation is less
+     * Set the alpha value of the [Compass], depending on whether auto-hide is enabled, and if so whether the current rotation is less
      * than the threshold. Handle 0 and 360 degrees.
      *
      * @since 100.5.0
      */
     private fun showOrHide() {
-        geoView?.let {
-            with(compassRotation) {
-                // If auto-hide is enabled, hide if compassRotation is less than the threshold
-                if (isAutoHidden && (this < AUTO_HIDE_THRESHOLD || (360 - this) < AUTO_HIDE_THRESHOLD)) {
-                    if (compassIsShown) {
-                        showCompass(false)
-                    }
-                } else {
-                    // Otherwise show the compass
-                    if (!compassIsShown) {
-                        showCompass(true)
-                    }
-                }
+        // Using the animator property, set the View's alpha to 1.0 (opaque) if we are showing or 0.0 (transparent)
+        // if we are hiding
+        if (isAutoHidden) {
+            if (alpha == 1.0f && (compassRotation < AUTO_HIDE_THRESHOLD_DEGREES || (360 - compassRotation) < AUTO_HIDE_THRESHOLD_DEGREES)) {
+                animator?.alpha(0.0f)
+            } else if (alpha == 0.0f && (compassRotation > AUTO_HIDE_THRESHOLD_DEGREES && ((360 - compassRotation) > AUTO_HIDE_THRESHOLD_DEGREES))) {
+                animator?.alpha(1.0f)
             }
-        }
-    }
-
-    /**
-     * Shows or hides the [Compass], using an animator to make it fade in and out.
-     *
-     * @param show true to show the [Compass], false to hide it
-     * @since 100.5.0
-     */
-    private fun showCompass(show: Boolean) {
-        // Set the desired state in mIsShown
-        compassIsShown = show
-
-        // Post a Runnable to the main UI thread, to run after a short delay; the delay prevents the Compass from starting
-        // to fade as it momentarily passes through north
-        with(Handler(Looper.getMainLooper())) {
-            this.postDelayed({
-                // Check if the conditions for showing/hiding still hold now the delay has happened
-                if (show == compassIsShown) {
-                    // Create an animator that changes the View's alpha to 1.0 (opaque) if we are showing or 0.0 (transparent) if
-                    // we are hiding
-                    ObjectAnimator.ofFloat(this@Compass, "alpha", if (show) 1.0f else 0.0f)
-                        .setDuration(FADE_ANIMATION_DURATION_MILLISECS).start()
-                }
-            }, FADE_ANIMATION_DELAY_MILLISECS)
+        } else {
+            animator?.alpha(1.0f)
         }
     }
 }
