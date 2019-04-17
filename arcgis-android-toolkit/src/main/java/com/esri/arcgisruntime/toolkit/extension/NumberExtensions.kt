@@ -19,25 +19,25 @@ package com.esri.arcgisruntime.toolkit.extension
 import kotlin.math.roundToInt
 
 /**
- * Calculate an [Int] as an [Int] of pixels using the supplied [displayDensity] value.
+ * Calculate an [Int] DP value as an [Int] of pixels using the supplied [displayDensity] value.
  *
  * @since 100.5.0
  */
-fun Int.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
+fun Int.dpToPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
 
 /**
- * Calculate a [Double] as an [Int] of pixels using the supplied [displayDensity] value.
+ * Calculate a [Double] DP value as an [Int] of pixels using the supplied [displayDensity] value.
  *
  * @since 100.5.0
  */
-fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
+fun Double.dpToPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
 
 /**
- * Calculate an [Int] as a DP value using the supplied [displayDensity] value.
+ * Calculate an [Int] of pixels as a DP value using the supplied [displayDensity] value.
  *
  * @since 100.5.0
  */
-fun Int.toDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
+fun Int.pixelsToDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
 
 /**
  * Throw a [IllegalArgumentException] when the [Int] is not positive

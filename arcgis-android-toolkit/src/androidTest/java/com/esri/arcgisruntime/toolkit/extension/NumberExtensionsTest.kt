@@ -31,20 +31,20 @@ import org.junit.runner.RunWith
 class NumberExtensionsTest {
 
     /**
-     * Tests [Int.toPixels] to determine if the calculation performed produces the same results as the system. Ensuring
+     * Tests [Int.dpToPixels] to determine if the calculation performed produces the same results as the system. Ensuring
      * expected results are adhered to.
      */
     @Test
     fun intToPixelsEightyDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources) {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
-            val actual = 80.toPixels(this.displayMetrics.density)
+            val actual = 80.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
     /**
-     * Tests [Int.toPixels] to determine if a calculation against a zero value performed produces the same results as
+     * Tests [Int.dpToPixels] to determine if a calculation against a zero value performed produces the same results as
      * the system. Ensuring expected results are adhered to.
      */
     @Test
@@ -52,13 +52,13 @@ class NumberExtensionsTest {
         with(InstrumentationRegistry.getContext().resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
-            val actual = 0.toPixels(this.displayMetrics.density)
+            val actual = 0.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
     /**
-     * Tests [Double.toPixels] to determine if the calculation performed produces the same results as the system. Ensuring
+     * Tests [Double.dpToPixels] to determine if the calculation performed produces the same results as the system. Ensuring
      * expected results are adhered to.
      */
     @Test
@@ -66,13 +66,13 @@ class NumberExtensionsTest {
         with(InstrumentationRegistry.getContext().resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
-            val actual = 80.0.toPixels(this.displayMetrics.density)
+            val actual = 80.0.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
     /**
-     * Tests [Double.toPixels] to determine if a calculation against a zero value performed produces the same results as
+     * Tests [Double.dpToPixels] to determine if a calculation against a zero value performed produces the same results as
      * the system. Ensuring expected results are adhered to.
      */
     @Test
@@ -80,7 +80,7 @@ class NumberExtensionsTest {
         with(InstrumentationRegistry.getContext().resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
-            val actual = 0.0.toPixels(this.displayMetrics.density)
+            val actual = 0.0.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }

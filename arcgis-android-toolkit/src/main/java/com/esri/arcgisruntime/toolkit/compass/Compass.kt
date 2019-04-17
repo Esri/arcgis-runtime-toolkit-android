@@ -33,8 +33,8 @@ import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
-import com.esri.arcgisruntime.toolkit.extension.toDp
-import com.esri.arcgisruntime.toolkit.extension.toPixels
+import com.esri.arcgisruntime.toolkit.extension.pixelsToDp
+import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import kotlin.reflect.KProperty
 
 
@@ -132,8 +132,8 @@ class Compass : View {
         resources.displayMetrics.density
     }
     private val defaultLayoutParams = ViewGroup.LayoutParams(
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity),
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity)
+        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
+        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
     )
 
     private val viewpointChangedListener = ViewpointChangedListener {
@@ -280,7 +280,7 @@ class Compass : View {
         if (layoutParams == null) {
             throw IllegalStateException("View hasn't been measured yet")
         }
-        layoutParams.height = height.toPixels(displayDensity)
+        layoutParams.height = height.dpToPixels(displayDensity)
         if (!isInLayout) {
             requestLayout()
         }
@@ -294,7 +294,7 @@ class Compass : View {
      * @since 100.5.0
      */
     fun getHeightDp(): Int {
-        layoutParams?.height?.toDp(displayDensity)?.let {
+        layoutParams?.height?.pixelsToDp(displayDensity)?.let {
             return it
         }
         throw IllegalStateException("View hasn't been measured yet")
@@ -313,7 +313,7 @@ class Compass : View {
         if (layoutParams == null) {
             throw IllegalStateException("View hasn't been measured yet")
         }
-        layoutParams.width = width.toPixels(displayDensity)
+        layoutParams.width = width.dpToPixels(displayDensity)
         if (!isInLayout) {
             requestLayout()
         }
@@ -327,7 +327,7 @@ class Compass : View {
      * @since 100.5.0
      */
     fun getWidthDp(): Int {
-        layoutParams?.width?.toDp(displayDensity)?.let {
+        layoutParams?.width?.pixelsToDp(displayDensity)?.let {
             return it
         }
         throw IllegalStateException("View hasn't been measured yet")
@@ -389,8 +389,8 @@ class Compass : View {
                 var yPos = it.top + (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
-                    xPos -= mapView.viewInsetRight.toPixels(displayDensity).toFloat()
-                    yPos += mapView.viewInsetTop.toPixels(displayDensity).toFloat()
+                    xPos -= mapView.viewInsetRight.dpToPixels(displayDensity).toFloat()
+                    yPos += mapView.viewInsetTop.dpToPixels(displayDensity).toFloat()
                 }
                 x = xPos
                 y = yPos
