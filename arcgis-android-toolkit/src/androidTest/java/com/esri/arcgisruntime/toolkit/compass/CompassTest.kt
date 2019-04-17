@@ -238,9 +238,8 @@ class CompassTest {
     }
 
     /**
-     * Checks that the given [Compass] object contains default values for all attributes.
+     * Checks that the provided [compass] instance contains default values for all attributes.
      *
-     * @param compass the [Compass]
      * @since 100.5.0
      */
     private fun checkDefaultValues(compass: Compass) {
@@ -250,10 +249,9 @@ class CompassTest {
     }
 
     /**
-     * Checks that the given [Compass] object contains values that have been set (by setter methods or from XML) for all
+     * Checks that the provided [compass] instance contains values that have been set (by setter methods or from XML) for all
      * attributes.
      *
-     * @param compass the [Compass]
      * @since 100.5.0
      */
     private fun checkSetValues(compass: Compass) {
@@ -263,9 +261,7 @@ class CompassTest {
     }
 
     /**
-     * Attaches supplied [Compass] to a parent View and measures it forces a measure inside the parent
-     *
-     * @param compass [Compass] to measure
+     * Attaches provided [compass] to a parent View and measures it forces a measure inside the parent
      */
     private fun attachCompassToParentAndMeasure(compass: Compass) {
         // Creating parent View to hold Compass
