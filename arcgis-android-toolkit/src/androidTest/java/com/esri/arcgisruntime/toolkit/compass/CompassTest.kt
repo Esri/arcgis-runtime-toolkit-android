@@ -243,7 +243,7 @@ class CompassTest {
      * @since 100.5.0
      */
     private fun checkDefaultValues(compass: Compass) {
-        assertTrue("Expected isAutoHide() to return true", compass.isAutoHidden)
+        assertTrue("Expected isAutoHidden to return true", compass.isAutoHidden)
         assertEquals(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP, compass.getHeightDp())
         assertEquals(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP, compass.getWidthDp())
     }
@@ -255,7 +255,7 @@ class CompassTest {
      * @since 100.5.0
      */
     private fun checkSetValues(compass: Compass) {
-        assertFalse("Expected isAutoHide() to return false", compass.isAutoHidden)
+        assertFalse("Expected isAutoHidden to return false", compass.isAutoHidden)
         assertEquals(99, compass.getHeightDp())
         assertEquals(100, compass.getWidthDp())
     }
@@ -280,5 +280,4 @@ class CompassTest {
         // Perform measure on Compass View to determine the measured width and height
         compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
     }
-
 }
