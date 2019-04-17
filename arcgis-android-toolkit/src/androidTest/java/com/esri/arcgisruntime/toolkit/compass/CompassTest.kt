@@ -31,6 +31,9 @@ import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Instrumented unit tests for [Compass]
+ */
 @RunWith(AndroidJUnit4::class)
 class CompassTest {
 
