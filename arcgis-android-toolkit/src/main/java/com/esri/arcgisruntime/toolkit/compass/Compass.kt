@@ -345,16 +345,31 @@ class Compass : View {
     }
 
     /**
+     * Measure the view using the provided [widthMeasureSpec] and [heightMeasureSpec] and its content to determine the
+     * measured width and the measured height.
+     * Overridden to force a "square" View, using the lowest dimension applied to width and height.
+     *
+     * @since 100.5.0
+     */
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        Math.min(measuredWidth - paddingLeft - paddingRight, measuredHeight - paddingTop - paddingBottom).let {
+            setMeasuredDimension(it + paddingLeft + paddingRight, it + paddingTop + paddingBottom)
+        }
+    }
+
+    /**
      * Draws the [Compass] onto the provided [canvas] with the current rotation to the screen.
      *
      * @since 100.5.0
      */
     override fun onDraw(canvas: Canvas?) {
+        val preferredSizePx =
+            Math.min(measuredHeight - paddingTop - paddingBottom, measuredWidth - paddingLeft - paddingRight)
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
-        val sizePx = Math.min(measuredHeight, measuredWidth)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = (it.right - (0.02f * it.width)) - sizePx
+                var xPos = (it.right - (0.02f * it.width)) - preferredSizePx
                 var yPos = it.top + (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
@@ -371,9 +386,12 @@ class Compass : View {
         compassMatrix.postRotate(-compassRotation.toFloat(), (compassBitmap.width / 2F), (compassBitmap.height / 2F))
 
         // Scale the matrix by the size of the bitmap to the size of the compass view
-        val xScale = sizePx.toFloat() / compassBitmap.width
-        val yScale = sizePx.toFloat() / compassBitmap.height
+        val xScale = preferredSizePx.toFloat() / compassBitmap.width
+        val yScale = preferredSizePx.toFloat() / compassBitmap.height
         compassMatrix.postScale(xScale, yScale)
+
+        // Translate matrix to obey padding
+        compassMatrix.postTranslate(paddingLeft.toFloat(), paddingTop.toFloat())
 
         // Draw the bitmap
         canvas?.drawBitmap(compassBitmap, compassMatrix, null)
