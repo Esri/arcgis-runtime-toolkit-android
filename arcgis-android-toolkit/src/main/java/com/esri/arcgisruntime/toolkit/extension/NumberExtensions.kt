@@ -44,6 +44,6 @@ fun Int.pixelsToDp(displayDensity: Float): Int = (this / displayDensity).roundTo
  *
  * @since 100.5.0
  */
-fun Int.throwIfNotPositive() {
-    if (this <= 0) throw IllegalArgumentException("Parameter ${this::class.qualifiedName} must be > 0")
+fun Int.throwIfNotPositive(parameterName: String) {
+    if (this <= 0) throw IllegalArgumentException("Parameter $parameterName must be > 0")
 }

@@ -90,7 +90,7 @@ class NumberExtensionsTest {
      */
     @Test
     fun intThrowIfNotPositivePositiveOneDoesNotThrow() {
-        1.throwIfNotPositive()
+        1.throwIfNotPositive("testParam")
     }
 
     /**
@@ -98,7 +98,7 @@ class NumberExtensionsTest {
      */
     @Test
     fun intThrowIfNotPositivePositiveLargeNumberDoesNotThrow() {
-        99999.throwIfNotPositive()
+        99999.throwIfNotPositive("testParam")
     }
 
     /**
@@ -108,7 +108,7 @@ class NumberExtensionsTest {
     @Test
     fun intThrowIfNotPositivePositiveZeroThrows() {
         try {
-            0.throwIfNotPositive()
+            0.throwIfNotPositive("testParam")
             fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             // success
@@ -122,7 +122,7 @@ class NumberExtensionsTest {
     @Test
     fun intThrowIfNotPositivePositiveMinusOneThrows() {
         try {
-            (-1).throwIfNotPositive()
+            (-1).throwIfNotPositive("testParam")
             fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             // success
@@ -136,7 +136,7 @@ class NumberExtensionsTest {
     @Test
     fun intThrowIfNotPositivePositiveMinusLargeNumberThrows() {
         try {
-            (-99999).throwIfNotPositive()
+            (-99999).throwIfNotPositive("testParam")
             fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             // success

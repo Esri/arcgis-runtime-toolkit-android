@@ -32,9 +32,9 @@ import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
-import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
-import com.esri.arcgisruntime.toolkit.extension.pixelsToDp
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
+import com.esri.arcgisruntime.toolkit.extension.pixelsToDp
+import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
 import kotlin.reflect.KProperty
 
 
@@ -275,7 +275,7 @@ class Compass : View {
      * @since 100.5.0
      */
     fun setHeightDp(height: Int) {
-        height.throwIfNotPositive()
+        height.throwIfNotPositive("height")
 
         if (layoutParams == null) {
             throw IllegalStateException("View hasn't been measured yet")
@@ -308,7 +308,7 @@ class Compass : View {
      * @since 100.5.0
      */
     fun setWidthDp(width: Int) {
-        width.throwIfNotPositive()
+        width.throwIfNotPositive("width")
 
         if (layoutParams == null) {
             throw IllegalStateException("View hasn't been measured yet")
