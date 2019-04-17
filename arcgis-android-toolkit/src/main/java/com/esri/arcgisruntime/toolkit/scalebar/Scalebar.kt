@@ -324,7 +324,8 @@ class Scalebar : View {
     }
 
     private fun removeListenersFromMapView() {
-        // TODO
+        mapView?.removeViewpointChangedListener(viewPointChangedListener)
+        mapView?.removeAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
     }
 
     /**
