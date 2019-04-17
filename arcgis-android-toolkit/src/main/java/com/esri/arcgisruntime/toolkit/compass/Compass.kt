@@ -185,6 +185,7 @@ class Compass : View {
      * @since 100.5.0
      */
     constructor(context: Context) : super(context) {
+        layoutParams = defaultLayoutParams
         initializeCompass()
     }
 
@@ -228,8 +229,10 @@ class Compass : View {
             throw IllegalStateException("Compass already has a GeoView")
         }
         drawInGeoView = true
-        Math.min(height, width).let {
-            geoView.addView(this, ViewGroup.LayoutParams(it, it))
+        layoutParams.let {
+            Math.min(it.height, it.width)
+        }.let {
+            geoView.addView(this@Compass, ViewGroup.LayoutParams(it, it))
         }
         setupGeoView(geoView)
     }
@@ -278,10 +281,6 @@ class Compass : View {
      */
     fun setHeightDp(height: Int) {
         height.throwIfNotPositive("height")
-
-        if (layoutParams == null) {
-            throw IllegalStateException("View hasn't been measured yet")
-        }
         layoutParams.height = height.dpToPixels(displayDensity)
         if (!isInLayout) {
             requestLayout()
@@ -296,10 +295,7 @@ class Compass : View {
      * @since 100.5.0
      */
     fun getHeightDp(): Int {
-        layoutParams?.height?.pixelsToDp(displayDensity)?.let {
-            return it
-        }
-        throw IllegalStateException("View hasn't been measured yet")
+        return layoutParams.height.pixelsToDp(displayDensity)
     }
 
     /**
@@ -311,10 +307,6 @@ class Compass : View {
      */
     fun setWidthDp(width: Int) {
         width.throwIfNotPositive("width")
-
-        if (layoutParams == null) {
-            throw IllegalStateException("View hasn't been measured yet")
-        }
         layoutParams.width = width.dpToPixels(displayDensity)
         if (!isInLayout) {
             requestLayout()
@@ -329,10 +321,7 @@ class Compass : View {
      * @since 100.5.0
      */
     fun getWidthDp(): Int {
-        layoutParams?.width?.pixelsToDp(displayDensity)?.let {
-            return it
-        }
-        throw IllegalStateException("View hasn't been measured yet")
+        return layoutParams.width.pixelsToDp(displayDensity)
     }
 
     /**
@@ -353,28 +342,6 @@ class Compass : View {
             }
         }
         return super.performClick()
-    }
-
-    /**
-     * Measure the view using the provided [widthMeasureSpec] and [heightMeasureSpec] and its content to determine the
-     * measured width and the measured height.
-     * Overridden to determine if user has used Workflow 1 or 2 (see [Compass] above]. If user has used Workflow 1,
-     * no [ViewGroup.LayoutParams] have been provided and we fallback to using defaultLayoutParams.
-     *
-     * @since 100.5.0
-     */
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        this.setMeasuredDimension(
-            View.MeasureSpec.getSize(widthMeasureSpec),
-            View.MeasureSpec.getSize(heightMeasureSpec)
-        )
-        if (measuredWidth == 0 || measuredHeight == 0) {
-            layoutParams = defaultLayoutParams
-            if (!isInLayout) {
-                requestLayout()
-            }
-        }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     /**
