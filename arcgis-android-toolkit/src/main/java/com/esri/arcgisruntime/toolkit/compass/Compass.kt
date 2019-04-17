@@ -87,7 +87,7 @@ private const val ANIMATION_DURATION_MILLISECS = 500L
  *
  * _Mutually Exclusive Workflows:_
  *
- * The methods to connect and disconnect a Compass to a GeoView are mutually exclusive between the two workflows. In
+ * The functions to connect and disconnect a Compass to a GeoView are mutually exclusive between the two workflows. In
  * Workflow 1, use [addToGeoView] to connect it to a GeoView and [removeFromGeoView] to disconnect it. In Workflow 2,
  * use [bindTo], passing a non-null instance of GeoView as an argument to connect it to a GeoView and [bindTo],
  * passing **_null_** as an argument to disconnect it.
@@ -358,7 +358,7 @@ class Compass : View {
     /**
      * Measure the view using the provided [widthMeasureSpec] and [heightMeasureSpec] and its content to determine the
      * measured width and the measured height.
-     * Overridden to determine if user has used Method 1 or Method 2 (see [Compass] above]. If user has used Method 1,
+     * Overridden to determine if user has used Workflow 1 or 2 (see [Compass] above]. If user has used Workflow 1,
      * no [ViewGroup.LayoutParams] have been provided and we fallback to using defaultLayoutParams.
      *
      * @since 100.5.0
