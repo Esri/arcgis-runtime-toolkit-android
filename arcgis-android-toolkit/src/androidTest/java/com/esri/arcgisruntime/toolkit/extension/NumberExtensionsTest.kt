@@ -24,9 +24,16 @@ import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Instrumented unit tests for NumberExtensions
+ */
 @RunWith(AndroidJUnit4::class)
 class NumberExtensionsTest {
 
+    /**
+     * Tests [Int.toPixels] to determine if the calculation performed produces the same results as the system. Ensuring
+     * expected results are adhered to.
+     */
     @Test
     fun intToPixelsEightyDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources) {
@@ -36,6 +43,10 @@ class NumberExtensionsTest {
         }
     }
 
+    /**
+     * Tests [Int.toPixels] to determine if a calculation against a zero value performed produces the same results as
+     * the system. Ensuring expected results are adhered to.
+     */
     @Test
     fun intToPixelsZeroDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources)
@@ -46,6 +57,10 @@ class NumberExtensionsTest {
         }
     }
 
+    /**
+     * Tests [Double.toPixels] to determine if the calculation performed produces the same results as the system. Ensuring
+     * expected results are adhered to.
+     */
     @Test
     fun doubleToPixelsEightyDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources)
@@ -56,6 +71,10 @@ class NumberExtensionsTest {
         }
     }
 
+    /**
+     * Tests [Double.toPixels] to determine if a calculation against a zero value performed produces the same results as
+     * the system. Ensuring expected results are adhered to.
+     */
     @Test
     fun doubleToPixelsZeroDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources)
@@ -66,16 +85,26 @@ class NumberExtensionsTest {
         }
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] to ensure that a positive [Int] does not throw an [Exception].
+     */
     @Test
     fun intThrowIfNotPositivePositiveOneDoesNotThrow() {
         1.throwIfNotPositive()
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a "high" value to ensure that a positive [Int] does not throw an [Exception].
+     */
     @Test
     fun intThrowIfNotPositivePositiveLargeNumberDoesNotThrow() {
         99999.throwIfNotPositive()
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a zero value to ensure that an instance of [IllegalArgumentException] is thrown
+     * as per requirements.
+     */
     @Test
     fun intThrowIfNotPositivePositiveZeroThrows() {
         try {
@@ -86,6 +115,10 @@ class NumberExtensionsTest {
         }
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a negative value to ensure that an instance of [IllegalArgumentException] is
+     * thrown.
+     */
     @Test
     fun intThrowIfNotPositivePositiveMinusOneThrows() {
         try {
@@ -96,6 +129,10 @@ class NumberExtensionsTest {
         }
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a "low" negative value to ensure that an instance of [IllegalArgumentException]
+     * is thrown.
+     */
     @Test
     fun intThrowIfNotPositivePositiveMinusLargeNumberThrows() {
         try {
