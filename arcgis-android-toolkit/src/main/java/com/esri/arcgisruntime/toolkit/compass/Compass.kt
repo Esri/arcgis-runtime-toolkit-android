@@ -16,32 +16,30 @@
 
 package com.esri.arcgisruntime.toolkit.compass
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Matrix
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
+import android.view.ViewPropertyAnimator
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.GeoView
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
+import com.esri.arcgisruntime.toolkit.extension.dpToPixels
+import com.esri.arcgisruntime.toolkit.extension.pixelsToDp
 import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
-import com.esri.arcgisruntime.toolkit.extension.toDp
-import com.esri.arcgisruntime.toolkit.extension.toPixels
+import kotlin.reflect.KProperty
 
 
-private const val AUTO_HIDE_THRESHOLD = 0.00000000001
-private const val FADE_ANIMATION_DELAY_MILLISECS = 300L
-private const val FADE_ANIMATION_DURATION_MILLISECS = 500L
+private const val AUTO_HIDE_THRESHOLD_DEGREES = 5
+private const val ANIMATION_DURATION_MILLISECS = 500L
 
 /**
  * Shows the current orientation of a map or scene by displaying a compass icon that points towards North. The icon can
@@ -89,7 +87,7 @@ private const val FADE_ANIMATION_DURATION_MILLISECS = 500L
  *
  * _Mutually Exclusive Workflows:_
  *
- * The methods to connect and disconnect a Compass to a GeoView are mutually exclusive between the two workflows. In
+ * The functions to connect and disconnect a Compass to a GeoView are mutually exclusive between the two workflows. In
  * Workflow 1, use [addToGeoView] to connect it to a GeoView and [removeFromGeoView] to disconnect it. In Workflow 2,
  * use [bindTo], passing a non-null instance of GeoView as an argument to connect it to a GeoView and [bindTo],
  * passing **_null_** as an argument to disconnect it.
@@ -110,7 +108,6 @@ class Compass : View {
     }
 
     private val compassMatrix: Matrix = Matrix()
-    private var compassIsShown = false
 
     /**
      * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
@@ -125,13 +122,18 @@ class Compass : View {
 
     private var geoView: GeoView? = null
     private var compassRotation: Double = 0.0
+        set(value) {
+            field = value
+            showOrHide()
+        }
+
     private var drawInGeoView: Boolean = false
     private val displayDensity: Float by lazy {
         resources.displayMetrics.density
     }
     private val defaultLayoutParams = ViewGroup.LayoutParams(
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity),
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.toPixels(displayDensity)
+        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
+        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
     )
 
     private val viewpointChangedListener = ViewpointChangedListener {
@@ -144,34 +146,53 @@ class Compass : View {
             }
         }
 
-        // Show or hide, depending on whether auto-hide is enabled, and if so depending on current rotation
-        showOrHide()
-
         // Invalidate the Compass view to update it
         postInvalidate()
     }
 
-    private val attributionViewLayoutChangeListener =
-        OnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
-            // Invalidate the Compass view when the bounds of the attribution view change; this happens when view insets are
-            // set, which may affect where the Compass is drawn
-            postInvalidate()
-        }
+    private val attributionViewLayoutChangeListener = OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+        // Invalidate the Compass view when the bounds of the attribution view change; this happens when view insets are
+        // set, which may affect where the Compass is drawn
+        postInvalidate()
+    }
 
     /**
-     * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see [Compass] above).
+     * A [ViewPropertyAnimator] that animates the [Compass]. Using a [AnimatorDelegate] to ensure that an animation cannot
+     * be run before the previous animation is completed by nulling the backing property and returning null until the
+     * animation is complete.
+     */
+    private val animator: ViewPropertyAnimator? by AnimatorDelegate()
+
+    private class AnimatorDelegate {
+        private var _viewPropertyAnimator: ViewPropertyAnimator? = null
+
+        operator fun getValue(compass: Compass, property: KProperty<*>): ViewPropertyAnimator? {
+            _viewPropertyAnimator?.let {
+                return null
+            }
+            _viewPropertyAnimator = compass.animate()
+                .setDuration(ANIMATION_DURATION_MILLISECS)
+                .withEndAction {
+                    _viewPropertyAnimator = null
+                }
+            return _viewPropertyAnimator
+        }
+    }
+
+    /**
+     * Constructs a Compass programmatically using the [context] provided. Called by the app when Workflow 1 is used (see [Compass] above).
      *
-     * @param context the execution [Context]
      * @since 100.5.0
      */
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context) {
+        layoutParams = defaultLayoutParams
+        initializeCompass()
+    }
 
     /**
-     * Constructor that's called when inflating a Compass from XML. Called by the system when Workflow 2 is used (see
-     * [Compass] above).
+     * Constructor that's called when inflating a Compass from XML using the [context] and [attrs] provided by the system.
+     * Called by the system when Workflow 2 is used (see [Compass] above).
      *
-     * @param context the execution [Context]
-     * @param attrs   the attributes of the XML tag that is inflating the view
      * @since 100.5.0
      */
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -186,12 +207,11 @@ class Compass : View {
                 recycle()
             }
         }
+        initializeCompass()
     }
 
-    init {
-        compassIsShown = !isAutoHidden
-        alpha = if (compassIsShown) 1.0f else 0.0f
-        showOrHide()
+    private fun initializeCompass() {
+        alpha = if (isAutoHidden) 0.0f else 1.0f
         setOnTouchListener { _, _ ->
             performClick()
             true
@@ -199,9 +219,8 @@ class Compass : View {
     }
 
     /**
-     * Adds this Compass to the given GeoView. Used in Workflow 1 (see [Compass] above).
+     * Adds this Compass to the provided [geoView]. Used in Workflow 1 (see [Compass] above).
      *
-     * @param geoView the GeoView
      * @throws IllegalStateException    if this [Compass] is already added to or bound to a GeoView
      * @since 100.5.0
      */
@@ -210,8 +229,10 @@ class Compass : View {
             throw IllegalStateException("Compass already has a GeoView")
         }
         drawInGeoView = true
-        Math.min(height, width).let {
-            geoView.addView(this, ViewGroup.LayoutParams(it, it))
+        layoutParams.let {
+            Math.min(it.height, it.width)
+        }.let {
+            geoView.addView(this@Compass, ViewGroup.LayoutParams(it, it))
         }
         setupGeoView(geoView)
     }
@@ -233,9 +254,8 @@ class Compass : View {
     }
 
     /**
-     * Binds this [Compass] to the given GeoView, or unbinds it. Used in Workflow 2 (see [Compass] above).
+     * Binds this [Compass] to the provided [geoView], or unbinds it. Used in Workflow 2 (see [Compass] above).
      *
-     * @param geoView the GeoView to bind to, or null to unbind it
      * @throws IllegalStateException if this [Compass] is currently added to a GeoView
      * @since 100.5.0
      */
@@ -253,20 +273,15 @@ class Compass : View {
     }
 
     /**
-     * Provide a DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
+     * Provide a [height] DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
      * @throws [IllegalStateException] if [View] hasn't been measured yet
-     * @param height DP height to apply to the [Compass]
      * @since 100.5.0
      */
     fun setHeightDp(height: Int) {
-        height.throwIfNotPositive()
-
-        if (layoutParams == null) {
-            throw IllegalStateException("View hasn't been measured yet")
-        }
-        layoutParams.height = height.toPixels(displayDensity)
+        height.throwIfNotPositive("height")
+        layoutParams.height = height.dpToPixels(displayDensity)
         if (!isInLayout) {
             requestLayout()
         }
@@ -280,27 +295,19 @@ class Compass : View {
      * @since 100.5.0
      */
     fun getHeightDp(): Int {
-        layoutParams?.height?.toDp(displayDensity)?.let {
-            return it
-        }
-        throw IllegalStateException("View hasn't been measured yet")
+        return layoutParams.height.pixelsToDp(displayDensity)
     }
 
     /**
-     * Provide a DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
+     * Provide a [width] DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
      * @throws [IllegalStateException] if [View] hasn't been measured yet
-     * @param width DP width to apply to the [Compass]
      * @since 100.5.0
      */
     fun setWidthDp(width: Int) {
-        width.throwIfNotPositive()
-
-        if (layoutParams == null) {
-            throw IllegalStateException("View hasn't been measured yet")
-        }
-        layoutParams.width = width.toPixels(displayDensity)
+        width.throwIfNotPositive("width")
+        layoutParams.width = width.dpToPixels(displayDensity)
         if (!isInLayout) {
             requestLayout()
         }
@@ -314,16 +321,13 @@ class Compass : View {
      * @since 100.5.0
      */
     fun getWidthDp(): Int {
-        layoutParams?.width?.toDp(displayDensity)?.let {
-            return it
-        }
-        throw IllegalStateException("View hasn't been measured yet")
+        return layoutParams.width.pixelsToDp(displayDensity)
     }
 
     /**
-     * Resets the GeoView to be oriented toward 0 degrees when the [Compass] is clicked.
+     * Resets the GeoView to be oriented toward 0 degrees when the [Compass] is clicked. Returns true if there was an
+     * assigned [View.OnClickListener] that was called, false otherwise.
      *
-     * @return true if there was an assigned [View.OnClickListener] that was called, false otherwise
      * @since 100.5.0
      */
     override fun performClick(): Boolean {
@@ -341,50 +345,36 @@ class Compass : View {
     }
 
     /**
-     * Measure the view and its content to determine the measured width and the
-     * measured height.
-     * Overridden to determine if user has used Method 1 or Method 2 (see [Compass] above]. If user has used Method 1,
-     * no [ViewGroup.LayoutParams] have been provided and we fallback to using defaultLayoutParams.
+     * Measure the view using the provided [widthMeasureSpec] and [heightMeasureSpec] and its content to determine the
+     * measured width and the measured height.
+     * Overridden to force a "square" View, using the lowest dimension applied to width and height.
      *
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent.
-     *                         The requirements are encoded with
-     *                         {@link android.view.View.MeasureSpec}.
-     * @param heightMeasureSpec vertical space requirements as imposed by the parent.
-     *                         The requirements are encoded with
-     *                         {@link android.view.View.MeasureSpec}.
      * @since 100.5.0
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        this.setMeasuredDimension(
-            View.MeasureSpec.getSize(widthMeasureSpec),
-            View.MeasureSpec.getSize(heightMeasureSpec)
-        )
-        if (measuredWidth == 0 || measuredHeight == 0) {
-            layoutParams = defaultLayoutParams
-            if (!isInLayout) {
-                requestLayout()
-            }
-        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        Math.min(measuredWidth - paddingLeft - paddingRight, measuredHeight - paddingTop - paddingBottom).let {
+            setMeasuredDimension(it + paddingLeft + paddingRight, it + paddingTop + paddingBottom)
+        }
     }
 
     /**
-     * Draws the [Compass] with the current rotation to the screen.
+     * Draws the [Compass] onto the provided [canvas] with the current rotation to the screen.
      *
-     * @param canvas the [Canvas] to draw on
      * @since 100.5.0
      */
     override fun onDraw(canvas: Canvas?) {
+        val preferredSizePx =
+            Math.min(measuredHeight - paddingTop - paddingBottom, measuredWidth - paddingLeft - paddingRight)
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
-        val sizeDp = Math.min(measuredHeight, measuredWidth)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = (it.right - (0.02f * it.width)) - sizeDp
+                var xPos = (it.right - (0.02f * it.width)) - preferredSizePx
                 var yPos = it.top + (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
-                    xPos -= mapView.viewInsetRight.toPixels(displayDensity).toFloat()
-                    yPos += mapView.viewInsetTop.toPixels(displayDensity).toFloat()
+                    xPos -= mapView.viewInsetRight.dpToPixels(displayDensity).toFloat()
+                    yPos += mapView.viewInsetTop.dpToPixels(displayDensity).toFloat()
                 }
                 x = xPos
                 y = yPos
@@ -396,18 +386,20 @@ class Compass : View {
         compassMatrix.postRotate(-compassRotation.toFloat(), (compassBitmap.width / 2F), (compassBitmap.height / 2F))
 
         // Scale the matrix by the size of the bitmap to the size of the compass view
-        val xScale = sizeDp.toFloat() / compassBitmap.width
-        val yScale = sizeDp.toFloat() / compassBitmap.height
+        val xScale = preferredSizePx.toFloat() / compassBitmap.width
+        val yScale = preferredSizePx.toFloat() / compassBitmap.height
         compassMatrix.postScale(xScale, yScale)
+
+        // Translate matrix to obey padding
+        compassMatrix.postTranslate(paddingLeft.toFloat(), paddingTop.toFloat())
 
         // Draw the bitmap
         canvas?.drawBitmap(compassBitmap, compassMatrix, null)
     }
 
     /**
-     * Sets up the [Compass] to work with the given GeoView.
+     * Sets up the [Compass] to work with the provided [geoView].
      *
-     * @param geoView the GeoView
      * @since 100.5.0
      */
     private fun setupGeoView(geoView: GeoView) {
@@ -435,51 +427,22 @@ class Compass : View {
     }
 
     /**
-     * Show or hide the [Compass], depending on whether auto-hide is enabled, and if so whether the current rotation is less
+     * Set the alpha value of the [Compass], depending on whether auto-hide is enabled, and if so whether the current rotation is less
      * than the threshold. Handle 0 and 360 degrees.
      *
      * @since 100.5.0
      */
     private fun showOrHide() {
-        geoView?.let {
-            with(compassRotation) {
-                // If auto-hide is enabled, hide if compassRotation is less than the threshold
-                if (isAutoHidden && (this < AUTO_HIDE_THRESHOLD || (360 - this) < AUTO_HIDE_THRESHOLD)) {
-                    if (compassIsShown) {
-                        showCompass(false)
-                    }
-                } else {
-                    // Otherwise show the compass
-                    if (!compassIsShown) {
-                        showCompass(true)
-                    }
-                }
+        // Using the animator property, set the View's alpha to 1.0 (opaque) if we are showing or 0.0 (transparent)
+        // if we are hiding
+        if (isAutoHidden) {
+            if (alpha == 1.0f && (compassRotation < AUTO_HIDE_THRESHOLD_DEGREES || (360 - compassRotation) < AUTO_HIDE_THRESHOLD_DEGREES)) {
+                animator?.alpha(0.0f)
+            } else if (alpha == 0.0f && (compassRotation > AUTO_HIDE_THRESHOLD_DEGREES && ((360 - compassRotation) > AUTO_HIDE_THRESHOLD_DEGREES))) {
+                animator?.alpha(1.0f)
             }
-        }
-    }
-
-    /**
-     * Shows or hides the [Compass], using an animator to make it fade in and out.
-     *
-     * @param show true to show the [Compass], false to hide it
-     * @since 100.5.0
-     */
-    private fun showCompass(show: Boolean) {
-        // Set the desired state in mIsShown
-        compassIsShown = show
-
-        // Post a Runnable to the main UI thread, to run after a short delay; the delay prevents the Compass from starting
-        // to fade as it momentarily passes through north
-        with(Handler(Looper.getMainLooper())) {
-            this.postDelayed({
-                // Check if the conditions for showing/hiding still hold now the delay has happened
-                if (show == compassIsShown) {
-                    // Create an animator that changes the View's alpha to 1.0 (opaque) if we are showing or 0.0 (transparent) if
-                    // we are hiding
-                    ObjectAnimator.ofFloat(this@Compass, "alpha", if (show) 1.0f else 0.0f)
-                        .setDuration(FADE_ANIMATION_DURATION_MILLISECS).start()
-                }
-            }, FADE_ANIMATION_DELAY_MILLISECS)
+        } else {
+            animator?.alpha(1.0f)
         }
     }
 }

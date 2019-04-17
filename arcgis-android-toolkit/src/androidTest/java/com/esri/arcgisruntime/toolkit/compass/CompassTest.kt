@@ -20,7 +20,6 @@ import android.os.Looper
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.view.LayoutInflater
-import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.TestUtil
@@ -31,6 +30,9 @@ import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Instrumented unit tests for [Compass]
+ */
 @RunWith(AndroidJUnit4::class)
 class CompassTest {
 
@@ -42,7 +44,6 @@ class CompassTest {
     @Test
     fun testSimpleConstructorDefaultValues() {
         val compass = Compass(InstrumentationRegistry.getContext())
-        attachCompassToParentAndMeasure(compass)
         checkDefaultValues(compass)
     }
 
@@ -91,7 +92,6 @@ class CompassTest {
     @Test
     fun testSetters() {
         val compass = Compass(InstrumentationRegistry.getContext())
-        attachCompassToParentAndMeasure(compass)
 
         // Call all the setters
         compass.isAutoHidden = false
@@ -110,7 +110,6 @@ class CompassTest {
     @Test
     fun testIllegalArgumentExceptions() {
         val compass = Compass(InstrumentationRegistry.getContext())
-        attachCompassToParentAndMeasure(compass)
 
         // Test the setters
         try {
@@ -212,74 +211,25 @@ class CompassTest {
     }
 
     /**
-     * Test [Compass.setWidthDp] and [Compass.setHeightDp] throws [IllegalStateException] when trying to set width and
-     * height before [Compass] has been measured
-     */
-    @Test
-    fun testIllegalStateExceptionThrownWhenViewHasNotBeenMeasured() {
-        val compass = Compass(InstrumentationRegistry.getContext())
-
-        try {
-            compass.setWidthDp(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP)
-            fail("Expected IllegalStateException")
-        } catch (e: IllegalStateException) {
-            // success
-        }
-
-        try {
-            compass.setHeightDp(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP)
-            fail("Expected IllegalStateException")
-        } catch (e: IllegalStateException) {
-            // success
-        }
-    }
-
-    /**
-     * Checks that the given [Compass] object contains default values for all attributes.
+     * Checks that the provided [compass] instance contains default values for all attributes.
      *
-     * @param compass the [Compass]
      * @since 100.5.0
      */
     private fun checkDefaultValues(compass: Compass) {
-        assertTrue("Expected isAutoHide() to return true", compass.isAutoHidden)
+        assertTrue("Expected isAutoHidden to return true", compass.isAutoHidden)
         assertEquals(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP, compass.getHeightDp())
         assertEquals(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP, compass.getWidthDp())
     }
 
     /**
-     * Checks that the given [Compass] object contains values that have been set (by setter methods or from XML) for all
+     * Checks that the provided [compass] instance contains values that have been set (by setter methods or from XML) for all
      * attributes.
      *
-     * @param compass the [Compass]
      * @since 100.5.0
      */
     private fun checkSetValues(compass: Compass) {
-        assertFalse("Expected isAutoHide() to return false", compass.isAutoHidden)
+        assertFalse("Expected isAutoHidden to return false", compass.isAutoHidden)
         assertEquals(99, compass.getHeightDp())
         assertEquals(100, compass.getWidthDp())
     }
-
-    /**
-     * Attaches supplied [Compass] to a parent View and measures it forces a measure inside the parent
-     *
-     * @param compass [Compass] to measure
-     */
-    private fun attachCompassToParentAndMeasure(compass: Compass) {
-        // Creating parent View to hold Compass
-        val parentView = FrameLayout(InstrumentationRegistry.getContext())
-        // Setting width and height of parent View to double that of Compass to ensure that the parent's size doesn't
-        // contribute to the size of the Compass View
-        parentView.layout(
-            0,
-            0,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2,
-            Compass.DEFAULT_HEIGHT_AND_WIDTH_DP * 2
-        )
-
-        // Add the Compass to the parent View
-        parentView.addView(compass)
-        // Perform measure on Compass View to determine the measured width and height
-        compass.measure(parentView.measuredWidthAndState, parentView.measuredHeightAndState)
-    }
-
 }

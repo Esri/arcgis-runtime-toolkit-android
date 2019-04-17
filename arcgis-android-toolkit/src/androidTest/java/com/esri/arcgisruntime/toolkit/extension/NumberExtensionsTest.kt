@@ -24,86 +24,122 @@ import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * Instrumented unit tests for NumberExtensions
+ */
 @RunWith(AndroidJUnit4::class)
 class NumberExtensionsTest {
 
+    /**
+     * Tests [Int.dpToPixels] to determine if the calculation performed produces the same results as the system. Ensuring
+     * expected results are adhered to.
+     */
     @Test
     fun intToPixelsEightyDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources) {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
-            val actual = 80.toPixels(this.displayMetrics.density)
+            val actual = 80.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
+    /**
+     * Tests [Int.dpToPixels] to determine if a calculation against a zero value performed produces the same results as
+     * the system. Ensuring expected results are adhered to.
+     */
     @Test
     fun intToPixelsZeroDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
-            val actual = 0.toPixels(this.displayMetrics.density)
+            val actual = 0.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
+    /**
+     * Tests [Double.dpToPixels] to determine if the calculation performed produces the same results as the system. Ensuring
+     * expected results are adhered to.
+     */
     @Test
     fun doubleToPixelsEightyDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
-            val actual = 80.0.toPixels(this.displayMetrics.density)
+            val actual = 80.0.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
+    /**
+     * Tests [Double.dpToPixels] to determine if a calculation against a zero value performed produces the same results as
+     * the system. Ensuring expected results are adhered to.
+     */
     @Test
     fun doubleToPixelsZeroDpReturnsSameValue() {
         with(InstrumentationRegistry.getContext().resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
-            val actual = 0.0.toPixels(this.displayMetrics.density)
+            val actual = 0.0.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
         }
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] to ensure that a positive [Int] does not throw an [Exception].
+     */
     @Test
     fun intThrowIfNotPositivePositiveOneDoesNotThrow() {
-        1.throwIfNotPositive()
+        1.throwIfNotPositive("testParam")
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a "high" value to ensure that a positive [Int] does not throw an [Exception].
+     */
     @Test
     fun intThrowIfNotPositivePositiveLargeNumberDoesNotThrow() {
-        99999.throwIfNotPositive()
+        99999.throwIfNotPositive("testParam")
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a zero value to ensure that an instance of [IllegalArgumentException] is thrown
+     * as per requirements.
+     */
     @Test
     fun intThrowIfNotPositivePositiveZeroThrows() {
         try {
-            0.throwIfNotPositive()
+            0.throwIfNotPositive("testParam")
             fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             // success
         }
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a negative value to ensure that an instance of [IllegalArgumentException] is
+     * thrown.
+     */
     @Test
     fun intThrowIfNotPositivePositiveMinusOneThrows() {
         try {
-            (-1).throwIfNotPositive()
+            (-1).throwIfNotPositive("testParam")
             fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             // success
         }
     }
 
+    /**
+     * Tests [Int.throwIfNotPositive] with a "low" negative value to ensure that an instance of [IllegalArgumentException]
+     * is thrown.
+     */
     @Test
     fun intThrowIfNotPositivePositiveMinusLargeNumberThrows() {
         try {
-            (-99999).throwIfNotPositive()
+            (-99999).throwIfNotPositive("testParam")
             fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             // success
         }
     }
-
 }

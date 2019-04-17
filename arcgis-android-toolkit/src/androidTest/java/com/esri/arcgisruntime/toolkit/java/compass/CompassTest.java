@@ -27,7 +27,10 @@ import com.esri.arcgisruntime.toolkit.TestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Unit tests for Compass.
@@ -68,7 +71,8 @@ public class CompassTest {
   public void testXmlNoCompassAttributes() {
     // Inflate layout containing a Compass that doesn't set any of the Compass attributes
     Context context = InstrumentationRegistry.getTargetContext();
-    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs_java, null);
+    ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context)
+        .inflate(R.layout.unit_test_compass_no_attrs_java, null);
 
     // Find and instantiate that Compass
     Compass compass = viewGroup.findViewById(R.id.compass);
