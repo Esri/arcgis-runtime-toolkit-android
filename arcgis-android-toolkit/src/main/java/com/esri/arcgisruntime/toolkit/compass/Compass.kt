@@ -384,10 +384,10 @@ class Compass : View {
      */
     override fun onDraw(canvas: Canvas?) {
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
-        val sizeDp = Math.min(measuredHeight, measuredWidth)
+        val sizePx = Math.min(measuredHeight, measuredWidth)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = (it.right - (0.02f * it.width)) - sizeDp
+                var xPos = (it.right - (0.02f * it.width)) - sizePx
                 var yPos = it.top + (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
@@ -404,8 +404,8 @@ class Compass : View {
         compassMatrix.postRotate(-compassRotation.toFloat(), (compassBitmap.width / 2F), (compassBitmap.height / 2F))
 
         // Scale the matrix by the size of the bitmap to the size of the compass view
-        val xScale = sizeDp.toFloat() / compassBitmap.width
-        val yScale = sizeDp.toFloat() / compassBitmap.height
+        val xScale = sizePx.toFloat() / compassBitmap.width
+        val yScale = sizePx.toFloat() / compassBitmap.height
         compassMatrix.postScale(xScale, yScale)
 
         // Draw the bitmap
