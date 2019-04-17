@@ -150,12 +150,11 @@ class Compass : View {
         postInvalidate()
     }
 
-    private val attributionViewLayoutChangeListener =
-        OnLayoutChangeListener { _: View, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int, _: Int ->
-            // Invalidate the Compass view when the bounds of the attribution view change; this happens when view insets are
-            // set, which may affect where the Compass is drawn
-            postInvalidate()
-        }
+    private val attributionViewLayoutChangeListener = OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+        // Invalidate the Compass view when the bounds of the attribution view change; this happens when view insets are
+        // set, which may affect where the Compass is drawn
+        postInvalidate()
+    }
 
     /**
      * A [ViewPropertyAnimator] that animates the [Compass]. Using a [AnimatorDelegate] to ensure that an animation cannot
