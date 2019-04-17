@@ -21,7 +21,6 @@ import kotlin.math.roundToInt
 /**
  * Calculate an [Int] as an [Int] of pixels using the supplied [displayDensity] value.
  *
- * @param displayDensity reported by the device
  * @since 100.5.0
  */
 fun Int.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
@@ -29,7 +28,6 @@ fun Int.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToIn
 /**
  * Calculate a [Double] as an [Int] of pixels using the supplied [displayDensity] value.
  *
- * @param displayDensity reported by the device
  * @since 100.5.0
  */
 fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).roundToInt()
@@ -37,7 +35,6 @@ fun Double.toPixels(displayDensity: Float): Int = (this * displayDensity).roundT
 /**
  * Calculate an [Int] as a DP value using the supplied [displayDensity] value.
  *
- * @param displayDensity reported by the device
  * @since 100.5.0
  */
 fun Int.toDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
