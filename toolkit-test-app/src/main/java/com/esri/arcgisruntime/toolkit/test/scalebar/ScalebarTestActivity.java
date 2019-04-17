@@ -31,7 +31,7 @@ import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar;
+import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
 import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
 
@@ -139,11 +139,11 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
           return true;
         case R.id.action_text_size:
           NumberDialogFragment.newInstance(
-              "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "NumberDialog");
+              "Text Size in DP", mScalebar.getTextSizeDp()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_bar_height:
           NumberDialogFragment.newInstance(
-              "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "NumberDialog");
+              "Bar Height in DP", mScalebar.getBarHeightDp()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
           addInsetsToMapView();
@@ -211,10 +211,10 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_text_size:
-        mScalebar.setTextSize(number);
+        mScalebar.setTextSizeDp(number);
         break;
       case R.id.action_bar_height:
-        mScalebar.setBarHeight(number);
+        mScalebar.setBarHeightDp(number);
         break;
     }
   }

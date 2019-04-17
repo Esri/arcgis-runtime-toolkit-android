@@ -20,16 +20,16 @@
     </declare-styleable>
     <declare-styleable name="Scalebar">
         <attr name="style" format="enum">
-            <enum name="bar" value="bar" />
-            <enum name="alternatingBar" value="alternatingBar" />
-            <enum name="line" value="line" />
-            <enum name="graduatedLine" value="graduatedLine" />
-            <enum name="dualUnitLine" value="dualUnitLine" />
+            <enum name="bar" value="0" />
+            <enum name="alternatingBar" value="1" />
+            <enum name="line" value="2" />
+            <enum name="graduatedLine" value="3" />
+            <enum name="dualUnitLine" value="4" />
         </attr>
         <attr name="alignment" format="enum">
-            <enum name="left" value="left" />
-            <enum name="right" value="right" />
-            <enum name="center" value="center" />
+            <enum name="left" value="0" />
+            <enum name="right" value="1" />
+            <enum name="center" value="2" />
         </attr>
         <attr name="fillColor" format="color" />
         <attr name="alternateFillColor" format="color" />
