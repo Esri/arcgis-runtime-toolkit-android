@@ -184,7 +184,9 @@ class Compass : View {
      *
      * @since 100.5.0
      */
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context) {
+        initializeCompass()
+    }
 
     /**
      * Constructor that's called when inflating a Compass from XML using the [context] and [attrs] provided by the system.
@@ -204,9 +206,10 @@ class Compass : View {
                 recycle()
             }
         }
+        initializeCompass()
     }
 
-    init {
+    private fun initializeCompass() {
         alpha = if (isAutoHidden) 0.0f else 1.0f
         setOnTouchListener { _, _ ->
             performClick()
