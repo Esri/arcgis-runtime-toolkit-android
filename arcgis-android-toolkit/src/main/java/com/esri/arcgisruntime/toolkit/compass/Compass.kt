@@ -181,19 +181,16 @@ class Compass : View {
     }
 
     /**
-     * Constructs a Compass programmatically. Called by the app when Workflow 1 is used (see [Compass] above).
+     * Constructs a Compass programmatically using the [context] provided. Called by the app when Workflow 1 is used (see [Compass] above).
      *
-     * @param context the execution [Context]
      * @since 100.5.0
      */
     constructor(context: Context) : super(context)
 
     /**
-     * Constructor that's called when inflating a Compass from XML. Called by the system when Workflow 2 is used (see
-     * [Compass] above).
+     * Constructor that's called when inflating a Compass from XML using the [context] and [attrs] provided by the system.
+     * Called by the system when Workflow 2 is used (see [Compass] above).
      *
-     * @param context the execution [Context]
-     * @param attrs   the attributes of the XML tag that is inflating the view
      * @since 100.5.0
      */
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -219,9 +216,8 @@ class Compass : View {
     }
 
     /**
-     * Adds this Compass to the given GeoView. Used in Workflow 1 (see [Compass] above).
+     * Adds this Compass to the provided [geoView]. Used in Workflow 1 (see [Compass] above).
      *
-     * @param geoView the GeoView
      * @throws IllegalStateException    if this [Compass] is already added to or bound to a GeoView
      * @since 100.5.0
      */
@@ -253,9 +249,8 @@ class Compass : View {
     }
 
     /**
-     * Binds this [Compass] to the given GeoView, or unbinds it. Used in Workflow 2 (see [Compass] above).
+     * Binds this [Compass] to the provided [geoView], or unbinds it. Used in Workflow 2 (see [Compass] above).
      *
-     * @param geoView the GeoView to bind to, or null to unbind it
      * @throws IllegalStateException if this [Compass] is currently added to a GeoView
      * @since 100.5.0
      */
@@ -273,11 +268,10 @@ class Compass : View {
     }
 
     /**
-     * Provide a DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
+     * Provide a [height] DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
      * @throws [IllegalStateException] if [View] hasn't been measured yet
-     * @param height DP height to apply to the [Compass]
      * @since 100.5.0
      */
     fun setHeightDp(height: Int) {
@@ -307,11 +301,10 @@ class Compass : View {
     }
 
     /**
-     * Provide a DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
+     * Provide a [width] DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
      * @throws [IllegalStateException] if [View] hasn't been measured yet
-     * @param width DP width to apply to the [Compass]
      * @since 100.5.0
      */
     fun setWidthDp(width: Int) {
@@ -341,9 +334,9 @@ class Compass : View {
     }
 
     /**
-     * Resets the GeoView to be oriented toward 0 degrees when the [Compass] is clicked.
+     * Resets the GeoView to be oriented toward 0 degrees when the [Compass] is clicked. Returns true if there was an
+     * assigned [View.OnClickListener] that was called, false otherwise.
      *
-     * @return true if there was an assigned [View.OnClickListener] that was called, false otherwise
      * @since 100.5.0
      */
     override fun performClick(): Boolean {
@@ -361,17 +354,11 @@ class Compass : View {
     }
 
     /**
-     * Measure the view and its content to determine the measured width and the
-     * measured height.
+     * Measure the view using the provided [widthMeasureSpec] and [heightMeasureSpec] and its content to determine the
+     * measured width and the measured height.
      * Overridden to determine if user has used Method 1 or Method 2 (see [Compass] above]. If user has used Method 1,
      * no [ViewGroup.LayoutParams] have been provided and we fallback to using defaultLayoutParams.
      *
-     * @param widthMeasureSpec horizontal space requirements as imposed by the parent.
-     *                         The requirements are encoded with
-     *                         {@link android.view.View.MeasureSpec}.
-     * @param heightMeasureSpec vertical space requirements as imposed by the parent.
-     *                         The requirements are encoded with
-     *                         {@link android.view.View.MeasureSpec}.
      * @since 100.5.0
      */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -389,9 +376,8 @@ class Compass : View {
     }
 
     /**
-     * Draws the [Compass] with the current rotation to the screen.
+     * Draws the [Compass] onto the provided [canvas] with the current rotation to the screen.
      *
-     * @param canvas the [Canvas] to draw on
      * @since 100.5.0
      */
     override fun onDraw(canvas: Canvas?) {
@@ -425,9 +411,8 @@ class Compass : View {
     }
 
     /**
-     * Sets up the [Compass] to work with the given GeoView.
+     * Sets up the [Compass] to work with the provided [geoView].
      *
-     * @param geoView the GeoView
      * @since 100.5.0
      */
     private fun setupGeoView(geoView: GeoView) {
