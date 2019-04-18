@@ -276,7 +276,7 @@ class Compass : View {
      * Provide a [height] DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
-     * @throws [IllegalStateException] if [View] hasn't been measured yet
+     * @throws [IllegalArgumentException] if [height] isn't positive
      * @since 100.5.0
      */
     fun setHeightDp(height: Int) {
@@ -291,7 +291,6 @@ class Compass : View {
      * Get the DP height of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
-     * @throws [IllegalStateException] if [View] hasn't been measured yet
      * @since 100.5.0
      */
     fun getHeightDp(): Int {
@@ -302,7 +301,7 @@ class Compass : View {
      * Provide a [width] DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
-     * @throws [IllegalStateException] if [View] hasn't been measured yet
+     * @throws [IllegalArgumentException] if [width] isn't positive
      * @since 100.5.0
      */
     fun setWidthDp(width: Int) {
@@ -317,7 +316,6 @@ class Compass : View {
      * Get the DP width of the [Compass]. Must be called after the [View] has been measured as
      * otherwise the [ViewGroup.LayoutParams] are null.
      *
-     * @throws [IllegalStateException] if [View] hasn't been measured yet
      * @since 100.5.0
      */
     fun getWidthDp(): Int {
