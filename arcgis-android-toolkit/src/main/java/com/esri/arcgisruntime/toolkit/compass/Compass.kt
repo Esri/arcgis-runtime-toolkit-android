@@ -74,7 +74,7 @@ private const val ANIMATION_DURATION_MILLISECS = 500L
  * <com.esri.arcgisruntime.toolkit.compass.Compass
  * android:id="@+id/compass"
  * android:layout_width="100dp"
- * android:layout_height="50dp"
+ * android:layout_height="100dp"
  * android:layout_margin="5dp"
  * app:autoHidden="false"/>
  * ```
