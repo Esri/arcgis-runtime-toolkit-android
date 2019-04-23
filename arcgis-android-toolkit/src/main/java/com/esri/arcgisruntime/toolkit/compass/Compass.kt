@@ -38,7 +38,7 @@ import com.esri.arcgisruntime.toolkit.extension.throwIfNotPositive
 import kotlin.reflect.KProperty
 
 
-private const val AUTO_HIDE_THRESHOLD_DEGREES = 0.1
+private const val AUTO_HIDE_THRESHOLD_DEGREES = 0.25
 private const val ANIMATION_DURATION_MILLISECS = 500L
 
 /**
