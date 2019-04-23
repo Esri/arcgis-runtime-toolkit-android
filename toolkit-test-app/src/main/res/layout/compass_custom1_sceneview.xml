@@ -31,7 +31,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="5dp"
-        app:autoHidden="false"
+        app:autoHide="false"
         app:layout_constraintLeft_toLeftOf="@+id/sceneview"
         app:layout_constraintTop_toTopOf="@+id/sceneview" />
 

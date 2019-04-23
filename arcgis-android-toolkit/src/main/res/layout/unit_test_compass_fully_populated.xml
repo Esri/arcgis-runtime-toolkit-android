@@ -10,6 +10,6 @@
         android:layout_width="100dp"
         android:layout_height="99dp"
         android:layout_margin="5dp"
-        app:autoHidden="false" />
+        app:autoHide="false" />
 
 </LinearLayout>

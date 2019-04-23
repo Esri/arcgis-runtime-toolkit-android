@@ -23,7 +23,7 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_margin="5dp"
-        app:autoHidden="false"
+        app:autoHide="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/message"
         app:layout_constraintTop_toTopOf="parent" />

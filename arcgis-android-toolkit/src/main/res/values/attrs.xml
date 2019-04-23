@@ -16,6 +16,6 @@
 
 <resources>
     <declare-styleable name="Compass">
-        <attr name="autoHidden" format="boolean" />
+        <attr name="autoHide" format="boolean" />
     </declare-styleable>
 </resources>

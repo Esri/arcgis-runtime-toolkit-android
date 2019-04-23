@@ -44,7 +44,7 @@ private const val ANIMATION_DURATION_MILLISECS = 500L
 /**
  * Shows the current orientation of a map or scene by displaying a compass icon that points towards North. The icon can
  * be tapped to reset the map/scene to 0 degrees orientation. By default the icon is hidden any time the map/scene is
- * orientated to 0 degrees. The auto hide behavior can be disabled using the property [isAutoHidden].
+ * orientated to 0 degrees. The auto hide behavior can be disabled using the property [isAutoHide].
  *
  * Two workflows are supported:
  *
@@ -58,7 +58,7 @@ private const val ANIMATION_DURATION_MILLISECS = 500L
  * For example:
  * ```
  * val compass: Compass = Compass(geoView.context);
- * compass.isAutoHidden = false // optionally disable the auto hide behavior
+ * compass.isAutoHide = false // optionally disable the auto hide behavior
  * compass.addToGeoView(geoView)
  * ```
  *
@@ -76,7 +76,7 @@ private const val ANIMATION_DURATION_MILLISECS = 500L
  * android:layout_width="100dp"
  * android:layout_height="100dp"
  * android:layout_margin="5dp"
- * app:autoHidden="false"/>
+ * app:autoHide="false"/>
  * ```
  *
  * And here's example Kotlin code to bind the Compass to the GeoView:
@@ -114,7 +114,7 @@ class Compass : View {
      *
      * @since 100.5.0
      */
-    var isAutoHidden: Boolean = true
+    var isAutoHide: Boolean = true
         set(value) {
             field = value
             showOrHide()
@@ -202,7 +202,7 @@ class Compass : View {
             0, 0
         ).apply {
             try {
-                isAutoHidden = getBoolean(R.styleable.Compass_autoHidden, true)
+                isAutoHide = getBoolean(R.styleable.Compass_autoHide, true)
             } finally {
                 recycle()
             }
@@ -211,7 +211,7 @@ class Compass : View {
     }
 
     private fun initializeCompass() {
-        alpha = if (isAutoHidden) 0.0f else 1.0f
+        alpha = if (isAutoHide) 0.0f else 1.0f
         setOnTouchListener { _, _ ->
             performClick()
             true
@@ -433,7 +433,7 @@ class Compass : View {
     private fun showOrHide() {
         // Using the animator property, set the View's alpha to 1.0 (opaque) if we are showing or 0.0 (transparent)
         // if we are hiding
-        if (isAutoHidden) {
+        if (isAutoHide) {
             if (alpha == 1.0f && (compassRotation < AUTO_HIDE_THRESHOLD_DEGREES || (360 - compassRotation) < AUTO_HIDE_THRESHOLD_DEGREES)) {
                 animator?.alpha(0.0f)
             } else if (alpha == 0.0f && (compassRotation > AUTO_HIDE_THRESHOLD_DEGREES && ((360 - compassRotation) > AUTO_HIDE_THRESHOLD_DEGREES))) {
