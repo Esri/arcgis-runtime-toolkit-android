@@ -145,7 +145,7 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
 
   @Override
   public void onCompassAutoHideSpecified(boolean autoHide) {
-    mCompass.setAutoHidden(autoHide);
+    mCompass.setAutoHide(autoHide);
   }
 
   @Override

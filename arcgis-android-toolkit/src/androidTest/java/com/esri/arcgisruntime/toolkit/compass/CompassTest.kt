@@ -32,6 +32,8 @@ import org.junit.runner.RunWith
 
 /**
  * Instrumented unit tests for [Compass]
+ *
+ * @since 100.5.0
  */
 @RunWith(AndroidJUnit4::class)
 class CompassTest {
@@ -94,7 +96,7 @@ class CompassTest {
         val compass = Compass(InstrumentationRegistry.getContext())
 
         // Call all the setters
-        compass.isAutoHidden = false
+        compass.isAutoHide = false
         compass.setHeightDp(99)
         compass.setWidthDp(100)
 
@@ -216,7 +218,7 @@ class CompassTest {
      * @since 100.5.0
      */
     private fun checkDefaultValues(compass: Compass) {
-        assertTrue("Expected isAutoHidden to return true", compass.isAutoHidden)
+        assertTrue("Expected isAutoHide to return true", compass.isAutoHide)
         assertEquals(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP, compass.getHeightDp())
         assertEquals(Compass.DEFAULT_HEIGHT_AND_WIDTH_DP, compass.getWidthDp())
     }
@@ -228,7 +230,7 @@ class CompassTest {
      * @since 100.5.0
      */
     private fun checkSetValues(compass: Compass) {
-        assertFalse("Expected isAutoHidden to return false", compass.isAutoHidden)
+        assertFalse("Expected isAutoHide to return false", compass.isAutoHide)
         assertEquals(99, compass.getHeightDp())
         assertEquals(100, compass.getWidthDp())
     }

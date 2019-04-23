@@ -26,6 +26,8 @@ import org.junit.runner.RunWith
 
 /**
  * Instrumented unit tests for NumberExtensions
+ *
+ * @since 100.5.0
  */
 @RunWith(AndroidJUnit4::class)
 class NumberExtensionsTest {
