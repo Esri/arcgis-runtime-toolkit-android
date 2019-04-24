@@ -29,44 +29,49 @@ import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
  *
  * @since 100.2.1
  */
-class AlternatingBarRenderer(
-    displayDensity: Float,
-    lineWidthDp: Int,
-    shadowColor: Int,
-    cornerRadiusDp: Int,
-    fillColor: Int,
-    var alternateFillColor: Int,
-    lineColor: Int,
-    textPaint: Paint,
-    textSizeDp: Int
-) : ScalebarRenderer(
-    displayDensity,
-    lineWidthDp,
-    shadowColor,
-    cornerRadiusDp,
-    fillColor,
-    lineColor,
-    textPaint,
-    textSizeDp
-) {
+class AlternatingBarRenderer : ScalebarRenderer() {
 
     override val isSegmented: Boolean = true
 
-    override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?): Float =
-        calculateWidthOfUnitsString(displayUnits)
+    override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float =
+        calculateWidthOfUnitsString(displayUnits, textPaint)
 
     override fun drawScalebar(
-        canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, distance: Double,
-        displayUnits: LinearUnit
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float,
+        distance: Double,
+        displayUnits: LinearUnit,
+        lineWidthDp: Int,
+        cornerRadiusDp: Int,
+        textSizeDp: Int,
+        fillColor: Int,
+        alternateFillColor: Int,
+        shadowColor: Int,
+        lineColor: Int,
+        textPaint: Paint,
+        displayDensity: Float
     ) {
-
         // Calculate the number of segments in the bar
         val barDisplayLength = right - left
-        val numSegments = calculateNumberOfSegments(distance, barDisplayLength.toDouble())
+        val numSegments = calculateNumberOfSegments(distance, barDisplayLength.toDouble(), displayDensity, textPaint)
         val segmentDisplayLength = barDisplayLength / numSegments
 
         // Draw a solid bar, using mAlternateFillColor, and its shadow
-        drawBarAndShadow(canvas, left, top, right, bottom, alternateFillColor)
+        drawBarAndShadow(
+            canvas,
+            left,
+            top,
+            right,
+            bottom,
+            lineWidthDp,
+            cornerRadiusDp,
+            alternateFillColor,
+            shadowColor,
+            displayDensity
+        )
 
         // Now draw every second segment on top of it using mFillColor
         paint.reset()

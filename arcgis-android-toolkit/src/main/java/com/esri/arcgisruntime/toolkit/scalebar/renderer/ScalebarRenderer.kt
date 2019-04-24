@@ -33,16 +33,7 @@ import com.esri.arcgisruntime.toolkit.scalebar.Scalebar
  *
  * @since 100.2.1
  */
-abstract class ScalebarRenderer(
-    protected val displayDensity: Float,
-    protected val lineWidthDp: Int,
-    var shadowColor: Int,
-    protected val cornerRadiusDp: Int,
-    var fillColor: Int,
-    var lineColor: Int,
-    var textPaint: Paint,
-    protected val textSizeDp: Int
-) {
+abstract class ScalebarRenderer {
 
     // The following are defined as member fields to minimize object allocation during draw operations
     private val rect = Rect()
@@ -71,8 +62,22 @@ abstract class ScalebarRenderer(
      * @since 100.2.1
      */
     abstract fun drawScalebar(
-        canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float,
-        distance: Double, displayUnits: LinearUnit
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float,
+        distance: Double,
+        displayUnits: LinearUnit,
+        lineWidthDp: Int,
+        cornerRadiusDp: Int,
+        textSizeDp: Int,
+        fillColor: Int,
+        alternateFillColor: Int,
+        shadowColor: Int,
+        lineColor: Int,
+        textPaint: Paint,
+        displayDensity: Float
     )
 
     /**
@@ -83,7 +88,7 @@ abstract class ScalebarRenderer(
      * @return the extra space required, in pixels
      * @since 100.2.1
      */
-    abstract fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?): Float
+    abstract fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float
 
     /**
      * Draws a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
@@ -102,7 +107,11 @@ abstract class ScalebarRenderer(
         top: Float,
         right: Float,
         bottom: Float,
-        barColor: Int
+        lineWidthDp: Int,
+        cornerRadiusDp: Int,
+        barColor: Int,
+        shadowColor: Int,
+        displayDensity: Float
     ) {
         // Draw the shadow of the bar, offset slightly from where the actual bar is drawn below
         rectF.set(left, top, right, bottom)
@@ -139,7 +148,16 @@ abstract class ScalebarRenderer(
      * @param bottom the y-coordinate of the bottom of the scalebar
      * @since 100.2.1
      */
-    protected fun drawLineAndShadow(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float) {
+    protected fun drawLineAndShadow(
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float,
+        lineWidthDp: Int,
+        lineColor: Int,
+        shadowColor: Int
+    ) {
         // Create a path to draw the left-hand tick, the line itself and the right-hand tick
         linePath.reset()
         linePath.moveTo(left, top)
@@ -175,7 +193,12 @@ abstract class ScalebarRenderer(
      * @return the number of segments
      * @since 100.2.1
      */
-    protected fun calculateNumberOfSegments(distance: Double, displayLength: Double): Int {
+    protected fun calculateNumberOfSegments(
+        distance: Double,
+        displayLength: Double,
+        displayDensity: Float,
+        textPaint: Paint
+    ): Int {
         // The constraining factor is the space required to draw the labels. Create a testString containing the longest
         // label, which is usually the one for 'distance' because the other labels will be smaller numbers.
         var testString = ScalebarUtil.labelString(distance)
@@ -205,7 +228,7 @@ abstract class ScalebarRenderer(
      * @return the width of the units string, in pixels
      * @since 100.2.1
      */
-    protected fun calculateWidthOfUnitsString(displayUnits: LinearUnit?): Float {
+    protected fun calculateWidthOfUnitsString(displayUnits: LinearUnit?, textPaint: Paint): Float {
         val unitsText = ' ' + if (displayUnits == null) "mm" else displayUnits.abbreviation
         textPaint.getTextBounds(unitsText, 0, unitsText.length, rect)
         return rect.right.toFloat()

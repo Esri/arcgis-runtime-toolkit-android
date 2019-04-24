@@ -30,37 +30,43 @@ import com.esri.arcgisruntime.toolkit.scalebar.Scalebar.Style
  *
  * @since 100.2.1
  */
-class BarRenderer(
-    displayDensity: Float,
-    lineWidthDp: Int,
-    shadowColor: Int,
-    cornerRadiusDp: Int,
-    fillColor: Int,
-    lineColor: Int,
-    textPaint: Paint,
-    textSizeDp: Int
-) : ScalebarRenderer(
-    displayDensity,
-    lineWidthDp,
-    shadowColor,
-    cornerRadiusDp,
-    fillColor,
-    lineColor,
-    textPaint,
-    textSizeDp
-) {
+class BarRenderer : ScalebarRenderer() {
 
     override val isSegmented: Boolean = false
 
-    override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?): Float = 0f
+    override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float = 0f
 
     override fun drawScalebar(
-        canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, distance: Double,
-        displayUnits: LinearUnit
+        canvas: Canvas,
+        left: Float,
+        top: Float,
+        right: Float,
+        bottom: Float,
+        distance: Double,
+        displayUnits: LinearUnit,
+        lineWidthDp: Int,
+        cornerRadiusDp: Int,
+        textSizeDp: Int,
+        fillColor: Int,
+        alternateFillColor: Int,
+        shadowColor: Int,
+        lineColor: Int,
+        textPaint: Paint,
+        displayDensity: Float
     ) {
-
         // Draw a solid bar and its shadow
-        drawBarAndShadow(canvas, left, top, right, bottom, fillColor)
+        drawBarAndShadow(
+            canvas,
+            left,
+            top,
+            right,
+            bottom,
+            lineWidthDp,
+            cornerRadiusDp,
+            fillColor,
+            shadowColor,
+            displayDensity
+        )
 
         // Draw a line round the outside
         rectF.set(left, top, right, bottom)
@@ -70,7 +76,7 @@ class BarRenderer(
         paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
         canvas.drawRoundRect(
             rectF,
-            cornerRadiusDp.toFloat(),
+            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
             cornerRadiusDp.toFloat(),
             paint
         )

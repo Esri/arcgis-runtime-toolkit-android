@@ -63,27 +63,8 @@ class Scalebar : View {
         set(value) {
             field = value
             renderer = when (value) {
-                Style.ALTERNATING_BAR -> AlternatingBarRenderer(
-                    displayDensity,
-                    lineWidthDp,
-                    shadowColor,
-                    cornerRadiusDp,
-                    fillColor,
-                    alternateFillColor,
-                    lineColor,
-                    textPaint,
-                    textSizeDp
-                )
-                else -> BarRenderer(
-                    displayDensity,
-                    lineWidthDp,
-                    shadowColor,
-                    cornerRadiusDp,
-                    fillColor,
-                    lineColor,
-                    textPaint,
-                    textSizeDp
-                )
+                Style.ALTERNATING_BAR -> AlternatingBarRenderer()
+                else -> BarRenderer()
                 /*Style.LINE -> LineRenderer()
                 Style.GRADUATED_LINE -> GraduatedLineRenderer()
                 Style.DUAL_UNIT_LINE -> DualUnitLineRenderer()*/
@@ -92,54 +73,52 @@ class Scalebar : View {
         }
 
     var alignment = DEFAULT_ALIGNMENT
+        set(value) {
+            field = value
+            postInvalidate()
+        }
     var fillColor: Int = DEFAULT_FILL_COLOR
         set(value) {
             field = value
-            renderer.fillColor = value
             postInvalidate()
         }
     var alternateFillColor: Int = DEFAULT_ALTERNATE_FILL_COLOR
         set(value) {
             field = value
-            (renderer as? AlternatingBarRenderer)?.let {
-                it.alternateFillColor = value
-            }
             postInvalidate()
         }
     var lineColor: Int = DEFAULT_LINE_COLOR
         set(value) {
             field = value
-            renderer.lineColor = value
             postInvalidate()
         }
     var shadowColor: Int = DEFAULT_SHADOW_COLOR
         set(value) {
             field = value
-            renderer.shadowColor = value
             postInvalidate()
         }
     var textColor: Int = DEFAULT_TEXT_COLOR
         set(value) {
             field = value
-            renderer.textPaint.color = value
+            textPaint.color = value
             postInvalidate()
         }
     var textShadowColor = DEFAULT_TEXT_SHADOW_COLOR
         set(value) {
             field = value
-            renderer.textPaint.setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, value)
+            textPaint.setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, value)
             postInvalidate()
         }
     var textSizeDp = DEFAULT_TEXT_SIZE_DP
         set(value) {
             field = value
-            renderer.textPaint.textSize = value.dpToPixels(displayDensity).toFloat()
+            textPaint.textSize = value.dpToPixels(displayDensity).toFloat()
             postInvalidate()
         }
     var typeface: Typeface = Typeface.DEFAULT
         set(value) {
             field = value
-            renderer.textPaint.typeface = value
+            textPaint.typeface = value
             postInvalidate()
         }
     var barHeightDp = DEFAULT_BAR_HEIGHT_DP
@@ -289,7 +268,7 @@ class Scalebar : View {
             } else {
                 // When scalebar is a separate view, its length is based on the view's width; note we allow padding of
                 // lineWidthDp at each end of the scalebar to ensure the lines at the ends fit within the view
-                maxScaleBarLengthPixels = width.toFloat() - renderer.calculateExtraSpaceForUnits(null) -
+                maxScaleBarLengthPixels = width.toFloat() - renderer.calculateExtraSpaceForUnits(null, textPaint) -
                         (2 * lineWidthDp.dpToPixels(displayDensity)).toFloat()
                 // But don't allow the scalebar length to be greater than the MapView width
                 maxScaleBarLengthPixels = Math.min(maxScaleBarLengthPixels, mapViewVisibleWidth.toFloat())
@@ -339,7 +318,24 @@ class Scalebar : View {
             val top = bottom - barHeightDp.dpToPixels(displayDensity)
 
             // Draw the scalebar
-            renderer.drawScalebar(canvas, left, top, right, bottom, scalebarLengthGeodetic, displayUnits)
+            renderer.drawScalebar(
+                canvas,
+                left,
+                top,
+                right,
+                bottom,
+                scalebarLengthGeodetic,
+                displayUnits,
+                lineWidthDp,
+                cornerRadiusDp,
+                textSizeDp,
+                fillColor,
+                alternateFillColor,
+                shadowColor,
+                lineColor,
+                textPaint,
+                displayDensity
+            )
         }
     }
 
@@ -389,10 +385,13 @@ class Scalebar : View {
                 // Position end of scalebar at right hand edge of the view, less padding and the width of the units string (if
                 // required)
                 right.toFloat() - padding.toFloat() - lineWidthDp.dpToPixels(displayDensity).toFloat() - scalebarLength -
-                        renderer.calculateExtraSpaceForUnits(displayUnits)
+                        renderer.calculateExtraSpaceForUnits(displayUnits, textPaint)
             Alignment.CENTER ->
                 // Position center of scalebar (plus units string if required) at center of the view
-                ((right + left).toFloat() - scalebarLength - renderer.calculateExtraSpaceForUnits(displayUnits)) / 2
+                ((right + left).toFloat() - scalebarLength - renderer.calculateExtraSpaceForUnits(
+                    displayUnits,
+                    textPaint
+                )) / 2
             else -> (left + padding).toFloat()
         }
     }
