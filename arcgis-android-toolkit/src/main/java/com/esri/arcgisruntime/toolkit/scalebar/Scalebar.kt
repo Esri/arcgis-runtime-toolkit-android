@@ -38,6 +38,7 @@ import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.renderer.AlternatingBarRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.renderer.BarRenderer
+import com.esri.arcgisruntime.toolkit.scalebar.renderer.LineRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.renderer.ScalebarRenderer
 
 private const val ALPHA_50_PC = -0x80000000
@@ -64,9 +65,9 @@ class Scalebar : View {
             field = value
             renderer = when (value) {
                 Style.ALTERNATING_BAR -> AlternatingBarRenderer()
+                Style.LINE -> LineRenderer()
                 else -> BarRenderer()
-                /*Style.LINE -> LineRenderer()
-                Style.GRADUATED_LINE -> GraduatedLineRenderer()
+                /*Style.GRADUATED_LINE -> GraduatedLineRenderer()
                 Style.DUAL_UNIT_LINE -> DualUnitLineRenderer()*/
             }
             postInvalidate()
@@ -480,119 +481,6 @@ class Scalebar : View {
         CENTER(2)
     }
 
-    /**
-     * Renders an ALTERNATING_BAR style scalebar.
-     *
-     * @see Style.ALTERNATING_BAR
-     *
-     * @since 100.2.1
-     *//*
-    private inner class AlternatingBarRenderer : ScalebarRenderer() {
-
-        override fun isSegmented(): Boolean {
-            return true
-        }
-
-        override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit): Float {
-            return calculateWidthOfUnitsString(displayUnits)
-        }
-
-        override fun drawScalebar(
-            canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, distance: Double,
-            displayUnits: LinearUnit
-        ) {
-
-            // Calculate the number of segments in the bar
-            val barDisplayLength = right - left
-            val numSegments = calculateNumberOfSegments(distance, barDisplayLength.toDouble())
-            val segmentDisplayLength = barDisplayLength / numSegments
-
-            // Draw a solid bar, using mAlternateFillColor, and its shadow
-            drawBarAndShadow(canvas, left, top, right, bottom, mAlternateFillColor)
-
-            // Now draw every second segment on top of it using mFillColor
-            mPaint.reset()
-            mPaint.setStyle(Paint.Style.FILL)
-            mPaint.setColor(mFillColor)
-            var xPos = left + segmentDisplayLength
-            var i = 1
-            while (i < numSegments) {
-                mRectF.set(xPos, top, xPos + segmentDisplayLength, bottom)
-                canvas.drawRect(mRectF, mPaint)
-                xPos += 2 * segmentDisplayLength
-                i += 2
-            }
-
-            // Draw a line round the outside of the complete bar
-            mRectF.set(left, top, right, bottom)
-            mPaint.reset()
-            mPaint.setColor(mLineColor)
-            mPaint.setStyle(Paint.Style.STROKE)
-            mPaint.setStrokeWidth(dpToPixels(mLineWidthDp.toDouble()).toFloat())
-            canvas.drawRoundRect(
-                mRectF,
-                dpToPixels(mCornerRadiusDp.toDouble()).toFloat(),
-                dpToPixels(mCornerRadiusDp.toDouble()).toFloat(),
-                mPaint
-            )
-
-            // Draw a label at the start of the bar
-            val yPosText = bottom + dpToPixels(mTextSizeDp.toDouble())
-            mTextPaint.setTextAlign(Paint.Align.LEFT)
-            canvas.drawText("0", left, yPosText, mTextPaint)
-
-            // Draw a label at the end of the bar
-            mTextPaint.setTextAlign(Paint.Align.RIGHT)
-            canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, mTextPaint)
-            mTextPaint.setTextAlign(Paint.Align.LEFT)
-            canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, mTextPaint)
-
-            // Draw a vertical line and a label at each segment boundary
-            xPos = left + segmentDisplayLength
-            val segmentDistance = distance / numSegments
-            mTextPaint.setTextAlign(Paint.Align.CENTER)
-            for (segNo in 1 until numSegments) {
-                canvas.drawLine(xPos, top, xPos, bottom, mPaint)
-                canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, mTextPaint)
-                xPos += segmentDisplayLength
-            }
-        }
-    }
-
-    */
-    /**
-     * Renders a LINE style scalebar.
-     *
-     * @see Style.LINE
-     *
-     * @since 100.2.1
-     *//*
-    private inner class LineRenderer : ScalebarRenderer() {
-
-        override fun isSegmented(): Boolean {
-            return false
-        }
-
-        override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit): Float {
-            return 0f
-        }
-
-        override fun drawScalebar(
-            canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, distance: Double,
-            displayUnits: LinearUnit
-        ) {
-
-            // Draw the line and its shadow, including the ticks at each end
-            drawLineAndShadow(canvas, left, top, right, bottom)
-
-            // Draw the label, centered on the center of the line
-            val label = ScalebarUtil.labelString(distance) + " " + displayUnits.abbreviation
-            mTextPaint.setTextAlign(Paint.Align.CENTER)
-            canvas.drawText(label, left + (right - left) / 2, bottom + dpToPixels(mTextSizeDp.toDouble()), mTextPaint)
-        }
-    }
-
-    */
     /**
      * Renders a GRADUATED_LINE style scalebar.
      *
