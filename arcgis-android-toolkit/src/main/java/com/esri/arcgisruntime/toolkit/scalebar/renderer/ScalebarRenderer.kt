@@ -36,11 +36,11 @@ import com.esri.arcgisruntime.toolkit.scalebar.Scalebar
 abstract class ScalebarRenderer(
     protected val displayDensity: Float,
     protected val lineWidthDp: Int,
-    private val shadowColor: Int,
+    var shadowColor: Int,
     protected val cornerRadiusDp: Int,
-    protected val fillColor: Int,
-    protected val lineColor: Int,
-    protected val textPaint: Paint,
+    var fillColor: Int,
+    var lineColor: Int,
+    var textPaint: Paint,
     protected val textSizeDp: Int
 ) {
 

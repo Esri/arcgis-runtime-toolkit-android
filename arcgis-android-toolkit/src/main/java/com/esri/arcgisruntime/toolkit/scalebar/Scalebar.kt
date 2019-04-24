@@ -93,15 +93,65 @@ class Scalebar : View {
 
     var alignment = DEFAULT_ALIGNMENT
     var fillColor: Int = DEFAULT_FILL_COLOR
+        set(value) {
+            field = value
+            renderer.fillColor = value
+            postInvalidate()
+        }
     var alternateFillColor: Int = DEFAULT_ALTERNATE_FILL_COLOR
+        set(value) {
+            field = value
+            (renderer as? AlternatingBarRenderer)?.let {
+                it.alternateFillColor = value
+            }
+            postInvalidate()
+        }
     var lineColor: Int = DEFAULT_LINE_COLOR
+        set(value) {
+            field = value
+            renderer.lineColor = value
+            postInvalidate()
+        }
     var shadowColor: Int = DEFAULT_SHADOW_COLOR
+        set(value) {
+            field = value
+            renderer.shadowColor = value
+            postInvalidate()
+        }
     var textColor: Int = DEFAULT_TEXT_COLOR
+        set(value) {
+            field = value
+            renderer.textPaint.color = value
+            postInvalidate()
+        }
     var textShadowColor = DEFAULT_TEXT_SHADOW_COLOR
+        set(value) {
+            field = value
+            renderer.textPaint.setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, value)
+            postInvalidate()
+        }
     var textSizeDp = DEFAULT_TEXT_SIZE_DP
-    var barHeightDp = DEFAULT_BAR_HEIGHT_DP
-    var unitSystem: UnitSystem? = UnitSystem.METRIC
+        set(value) {
+            field = value
+            renderer.textPaint.textSize = value.dpToPixels(displayDensity).toFloat()
+            postInvalidate()
+        }
     var typeface: Typeface = Typeface.DEFAULT
+        set(value) {
+            field = value
+            renderer.textPaint.typeface = value
+            postInvalidate()
+        }
+    var barHeightDp = DEFAULT_BAR_HEIGHT_DP
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+    var unitSystem: UnitSystem? = UnitSystem.METRIC
+        set(value) {
+            field = value
+            postInvalidate()
+        }
 
     private var mapView: MapView? = null
     private var drawInMapView: Boolean = false

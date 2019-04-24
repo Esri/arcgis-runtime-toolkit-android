@@ -35,7 +35,7 @@ class AlternatingBarRenderer(
     shadowColor: Int,
     cornerRadiusDp: Int,
     fillColor: Int,
-    val alternateFillColor: Int,
+    var alternateFillColor: Int,
     lineColor: Int,
     textPaint: Paint,
     textSizeDp: Int
