@@ -299,26 +299,10 @@ class Scalebar : View {
             removeListenersFromMapView()
         }
 
-        createTextPaint()
-
         // Add listeners to new MapView
         this.mapView = mapView
         mapView.addViewpointChangedListener(viewPointChangedListener)
         mapView.addAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
-    }
-
-    /**
-     * Creates the Paint used for drawing text.
-     *
-     * @since 100.2.1
-     */
-    private fun createTextPaint() {
-        textPaint = Paint().apply {
-            color = textColor
-            setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
-            typeface = this.typeface
-            textSize = textSizeDp.dpToPixels(displayDensity).toFloat()
-        }
     }
 
     private fun removeListenersFromMapView() {
@@ -338,12 +322,13 @@ class Scalebar : View {
     private fun calculateLeftPos(alignment: Alignment, scalebarLength: Float, displayUnits: LinearUnit): Float {
         var left = 0
         var right = width
-        var padding = lineWidthDp.toDouble() // padding to ensure the lines at the ends fit within the view
+        // padding to ensure the lines at the ends fit within the view
+        var padding = lineWidthDp.dpToPixels(displayDensity)
         if (drawInMapView) {
             mapView?.let { mapView ->
                 left = mapView.viewInsetLeft.dpToPixels(displayDensity)
                 right.minus(mapView.viewInsetRight.dpToPixels(displayDensity))
-                padding = SCALEBAR_X_PAD_DP.dpToPixels(displayDensity).toDouble()
+                padding = SCALEBAR_X_PAD_DP.dpToPixels(displayDensity)
             }
         }
         return when (alignment) {

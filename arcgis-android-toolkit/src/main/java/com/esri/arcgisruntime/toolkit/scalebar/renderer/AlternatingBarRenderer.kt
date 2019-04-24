@@ -53,7 +53,7 @@ class AlternatingBarRenderer(
     override val isSegmented: Boolean = true
 
     override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?): Float =
-        calculateExtraSpaceForUnits(displayUnits)
+        calculateWidthOfUnitsString(displayUnits)
 
     override fun drawScalebar(
         canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, distance: Double,
