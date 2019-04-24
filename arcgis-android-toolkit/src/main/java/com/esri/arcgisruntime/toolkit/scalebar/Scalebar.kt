@@ -36,6 +36,7 @@ import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.scalebar.renderer.AlternatingBarRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.renderer.BarRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.renderer.ScalebarRenderer
 
@@ -44,10 +45,10 @@ private val LINEAR_UNIT_METERS = LinearUnit(LinearUnitId.METERS)
 private val LINEAR_UNIT_FEET = LinearUnit(LinearUnitId.FEET)
 private val DEFAULT_STYLE = Scalebar.Style.ALTERNATING_BAR
 private val DEFAULT_ALIGNMENT = Scalebar.Alignment.LEFT
-private const val DEFAULT_FILL_COLOR = Color.LTGRAY.toByte() + ALPHA_50_PC.toByte()
+private const val DEFAULT_FILL_COLOR = Color.LTGRAY or ALPHA_50_PC
 private const val DEFAULT_ALTERNATE_FILL_COLOR = Color.BLACK
 private const val DEFAULT_LINE_COLOR = Color.WHITE
-private const val DEFAULT_SHADOW_COLOR = Color.BLACK.toByte() + ALPHA_50_PC.toByte()
+private const val DEFAULT_SHADOW_COLOR = Color.BLACK or ALPHA_50_PC
 private const val DEFAULT_TEXT_COLOR = Color.BLACK
 private const val DEFAULT_TEXT_SHADOW_COLOR = Color.WHITE
 private const val DEFAULT_TEXT_SIZE_DP = 15
@@ -62,6 +63,17 @@ class Scalebar : View {
         set(value) {
             field = value
             renderer = when (value) {
+                Style.ALTERNATING_BAR -> AlternatingBarRenderer(
+                    displayDensity,
+                    lineWidthDp,
+                    shadowColor,
+                    cornerRadiusDp,
+                    fillColor,
+                    alternateFillColor,
+                    lineColor,
+                    textPaint,
+                    textSizeDp
+                )
                 else -> BarRenderer(
                     displayDensity,
                     lineWidthDp,
@@ -72,8 +84,7 @@ class Scalebar : View {
                     textPaint,
                     textSizeDp
                 )
-                /*Style.ALTERNATING_BAR -> AlternatingBarRenderer()
-                Style.LINE -> LineRenderer()
+                /*Style.LINE -> LineRenderer()
                 Style.GRADUATED_LINE -> GraduatedLineRenderer()
                 Style.DUAL_UNIT_LINE -> DualUnitLineRenderer()*/
             }
@@ -156,11 +167,11 @@ class Scalebar : View {
                 textShadowColor = getColor(R.styleable.Scalebar_textShadowColor, DEFAULT_TEXT_SHADOW_COLOR)
                 textSizeDp = getDimensionPixelSize(
                     R.styleable.Scalebar_textSize,
-                    DEFAULT_TEXT_SIZE_DP.dpToPixels(context.resources.displayMetrics.density)
+                    DEFAULT_TEXT_SIZE_DP.dpToPixels(displayDensity)
                 )
                 barHeightDp = getDimensionPixelSize(
                     R.styleable.Scalebar_barHeight,
-                    DEFAULT_BAR_HEIGHT_DP.dpToPixels(context.resources.displayMetrics.density)
+                    DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity)
                 )
             } finally {
                 recycle()
@@ -211,10 +222,12 @@ class Scalebar : View {
     }
 
     override fun onDraw(canvas: Canvas) {
-        mapView?.let {
+        mapView?.let { mapView ->
             // Calculate width and height of visible part of MapView
-            val mapViewVisibleWidth = it.width - (it.viewInsetLeft + it.viewInsetRight).dpToPixels(displayDensity)
-            val mapViewVisibleHeight = it.height - (it.viewInsetTop + it.viewInsetBottom).dpToPixels(displayDensity)
+            val mapViewVisibleWidth =
+                mapView.width - (mapView.viewInsetLeft + mapView.viewInsetRight).dpToPixels(displayDensity)
+            val mapViewVisibleHeight =
+                mapView.height - (mapView.viewInsetTop + mapView.viewInsetBottom).dpToPixels(displayDensity)
 
             // Calculate maximum length of scalebar in pixels
             val baseUnits = if (unitSystem == UnitSystem.METRIC) LINEAR_UNIT_METERS else LINEAR_UNIT_FEET
@@ -233,18 +246,18 @@ class Scalebar : View {
             }
 
             // Calculate geodetic length of scalebar based on its maximum length in pixels
-            val centerX = it.viewInsetLeft.dpToPixels(displayDensity) + mapViewVisibleWidth / 2
-            val centerY = it.viewInsetTop.dpToPixels(displayDensity) + mapViewVisibleHeight / 2
+            val centerX = mapView.viewInsetLeft.dpToPixels(displayDensity) + mapViewVisibleWidth / 2
+            val centerY = mapView.viewInsetTop.dpToPixels(displayDensity) + mapViewVisibleHeight / 2
             graphicsPoint.set((centerX - maxScaleBarLengthPixels / 2).toInt(), centerY)
-            val p1 = it.screenToLocation(graphicsPoint)
+            val p1 = mapView.screenToLocation(graphicsPoint)
             graphicsPoint.set((centerX + maxScaleBarLengthPixels / 2).toInt(), centerY)
-            val p2 = it.screenToLocation(graphicsPoint)
-            val visibleArea = it.visibleArea
+            val p2 = mapView.screenToLocation(graphicsPoint)
+            val visibleArea = mapView.visibleArea
             if (p1 == null || p2 == null || visibleArea == null) {
                 return
             }
             val centerPoint = visibleArea.extent.center
-            val builder = PolylineBuilder(it.spatialReference)
+            val builder = PolylineBuilder(mapView.spatialReference)
             builder.addPoint(p1)
             builder.addPoint(centerPoint) // include center point to ensure it goes the correct way round the globe
             builder.addPoint(p2)
@@ -265,29 +278,14 @@ class Scalebar : View {
             // Calculate screen coordinates of left, right, top and bottom of the scalebar
             val left = calculateLeftPos(alignment, scalebarLengthPixels, displayUnits)
             val right = left + scalebarLengthPixels
-            val bottom: Float
-            val maxPixelsBelowBaseline = textPaint?.fontMetrics?.bottom
-            bottom = if (drawInMapView) {
-                it.height.toFloat().apply {
-                    this - attributionTextHeight.toFloat()
-                }.apply {
-                    maxPixelsBelowBaseline?.let { maxPixelsBelowBaseline ->
-                        this - maxPixelsBelowBaseline
-                    }
-                }.apply {
-                    (it.viewInsetBottom + SCALEBAR_Y_PAD_DP.toDouble() + textSizeDp.toDouble()).dpToPixels(
-                        displayDensity
-                    ).toFloat()
-                }
+            val maxPixelsBelowBaseline: Float = textPaint.fontMetrics?.bottom ?: 0.0f
+            val bottom = if (drawInMapView) {
+                mapView.height.toFloat() - attributionTextHeight - (mapView.viewInsetBottom + SCALEBAR_Y_PAD_DP
+                        + textSizeDp).dpToPixels(displayDensity) - maxPixelsBelowBaseline
             } else {
-                height.toFloat().apply {
-                    this - textSizeDp.dpToPixels(displayDensity)
-                }.apply {
-                    maxPixelsBelowBaseline?.let { maxPixelsBelowBaseline ->
-                        this - maxPixelsBelowBaseline
-                    }
-                }
+                height.toFloat() - (textSizeDp.dpToPixels(displayDensity)) - maxPixelsBelowBaseline
             }
+
             val top = bottom - barHeightDp.dpToPixels(displayDensity)
 
             // Draw the scalebar
@@ -342,9 +340,9 @@ class Scalebar : View {
         var right = width
         var padding = lineWidthDp.toDouble() // padding to ensure the lines at the ends fit within the view
         if (drawInMapView) {
-            mapView?.let {
-                left = it.viewInsetLeft.dpToPixels(displayDensity)
-                right.minus(it.viewInsetRight.dpToPixels(displayDensity))
+            mapView?.let { mapView ->
+                left = mapView.viewInsetLeft.dpToPixels(displayDensity)
+                right.minus(mapView.viewInsetRight.dpToPixels(displayDensity))
                 padding = SCALEBAR_X_PAD_DP.dpToPixels(displayDensity).toDouble()
             }
         }
