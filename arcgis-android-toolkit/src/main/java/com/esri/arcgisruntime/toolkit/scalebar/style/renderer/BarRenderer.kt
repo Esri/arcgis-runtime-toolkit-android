@@ -71,10 +71,12 @@ class BarRenderer : ScalebarRenderer() {
 
         // Draw a line round the outside
         rectF.set(left, top, right, bottom)
-        paint.reset()
-        paint.color = lineColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+        paint.apply {
+            reset()
+            color = lineColor
+            style = Paint.Style.STROKE
+            paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+        }
         canvas.drawRoundRect(
             rectF,
             cornerRadiusDp.dpToPixels(displayDensity).toFloat(),

@@ -108,7 +108,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         canvas.drawPath(linePath, paint)
 
         // Draw the primary units label above the tick at the right hand end
-        val maxPixelsBelowBaseline = textPaint.getFontMetrics().bottom
+        val maxPixelsBelowBaseline = textPaint.fontMetrics.bottom
         var yPosText = top - maxPixelsBelowBaseline
         textPaint.textAlign = Paint.Align.RIGHT
         canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
