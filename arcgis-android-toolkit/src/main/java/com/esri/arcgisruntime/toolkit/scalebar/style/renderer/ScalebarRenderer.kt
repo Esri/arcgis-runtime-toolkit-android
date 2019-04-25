@@ -116,28 +116,32 @@ abstract class ScalebarRenderer {
         displayDensity: Float
     ) {
         // Draw the shadow of the bar, offset slightly from where the actual bar is drawn below
-        rectF.set(left, top, right, bottom)
-        val offset = SHADOW_OFFSET_PIXELS + lineWidthDp.dpToPixels(displayDensity) / 2
-        rectF.offset(offset, offset)
-        paint.reset()
-        paint.color = shadowColor
-        paint.style = Paint.Style.FILL
-        canvas.drawRoundRect(
-            rectF,
-            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-            paint
-        )
-
-        // Now draw the bar
-        rectF.set(left, top, right, bottom)
-        paint.color = barColor
-        canvas.drawRoundRect(
-            rectF,
-            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-            paint
-        )
+        rectF.apply {
+            set(left, top, right, bottom)
+            with(SHADOW_OFFSET_PIXELS + lineWidthDp.dpToPixels(displayDensity) / 2) {
+                offset(this, this)
+            }
+            paint.let { paint ->
+                paint.reset()
+                paint.color = shadowColor
+                paint.style = Paint.Style.FILL
+                canvas.drawRoundRect(
+                    this,
+                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    paint
+                )
+                // Now draw the bar
+                this.set(left, top, right, bottom)
+                paint.color = barColor
+                canvas.drawRoundRect(
+                    this,
+                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    paint
+                )
+            }
+        }
     }
 
     /**
@@ -160,30 +164,36 @@ abstract class ScalebarRenderer {
         lineColor: Int,
         shadowColor: Int
     ) {
+
         // Create a path to draw the left-hand tick, the line itself and the right-hand tick
-        linePath.reset()
-        linePath.moveTo(left, top)
-        linePath.lineTo(left, bottom)
-        linePath.lineTo(right, bottom)
-        linePath.lineTo(right, top)
-        linePath.setLastPoint(right, top)
+        with(linePath) {
+            reset()
+            moveTo(left, top)
+            lineTo(left, bottom)
+            lineTo(right, bottom)
+            lineTo(right, top)
+            setLastPoint(right, top)
 
-        // Create a copy to be the path of the shadow, offset slightly from the path of the line
-        val shadowPath = Path(linePath)
-        shadowPath.offset(SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS)
+            // Draw the shadow
+            paint.let { paint ->
+                paint.reset()
+                paint.color = shadowColor
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = lineWidthDp.toFloat()
+                paint.strokeCap = Paint.Cap.ROUND
+                paint.strokeJoin = Paint.Join.ROUND
 
-        // Draw the shadow
-        paint.reset()
-        paint.color = shadowColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = lineWidthDp.toFloat()
-        paint.strokeCap = Paint.Cap.ROUND
-        paint.strokeJoin = Paint.Join.ROUND
-        canvas.drawPath(shadowPath, paint)
+                // Offset line path slightly from the path of the line
+                this.offset(SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS)
+                canvas.drawPath(this, paint)
+                // Reset offset of the path of the line
+                this.offset(-SHADOW_OFFSET_PIXELS, -SHADOW_OFFSET_PIXELS)
 
-        // Now draw the line on top of the shadow
-        paint.color = lineColor
-        canvas.drawPath(linePath, paint)
+                // Now draw the line on top of the shadow
+                paint.color = lineColor
+                canvas.drawPath(this, paint)
+            }
+        }
     }
 
     /**
@@ -203,24 +213,21 @@ abstract class ScalebarRenderer {
     ): Int {
         // The constraining factor is the space required to draw the labels. Create a testString containing the longest
         // label, which is usually the one for 'distance' because the other labels will be smaller numbers.
-        var testString = ScalebarUtil.labelString(distance)
-
-        // But if 'distance' is small some of the other labels may use decimals, so allow for each label needing at least
-        // 3 characters
-        if (testString.length < 3) {
-            testString = "9.9"
+        ScalebarUtil.labelString(distance).apply {
+            // But if 'distance' is small some of the other labels may use decimals, so allow for each label needing at least
+            // 3 characters
+            // Calculate the bounds of the testString to determine its length
+            textPaint.getTextBounds(if (this.length < 3) "9.9" else this, 0, this.length, rect)
         }
-
-        // Calculate the bounds of the testString to determine its length
-        textPaint.getTextBounds(testString, 0, testString.length, rect)
 
         // Calculate the minimum segment length to ensure the labels don't overlap; multiply the testString length by 1.5
         // to allow for the right-most label being right-justified whereas the other labels are center-justified
-        val minSegmentLength = rect.right * 1.5 + LABEL_X_PAD_DP.dpToPixels(displayDensity)
-
-        // Calculate the number of segments
-        val maxNumSegments = (displayLength / minSegmentLength).toInt()
-        return ScalebarUtil.calculateOptimalNumberOfSegments(distance, maxNumSegments)
+        with(rect.right * 1.5 + LABEL_X_PAD_DP.dpToPixels(displayDensity)) {
+            // Calculate the number of segments
+            ((displayLength / this).toInt()).let { maxNumSegments ->
+                return ScalebarUtil.calculateOptimalNumberOfSegments(distance, maxNumSegments)
+            }
+        }
     }
 
     /**
@@ -231,9 +238,12 @@ abstract class ScalebarRenderer {
      * @since 100.2.1
      */
     protected fun calculateWidthOfUnitsString(displayUnits: LinearUnit?, textPaint: Paint): Float {
-        val unitsText = ' ' + if (displayUnits == null) "mm" else displayUnits.abbreviation
-        textPaint.getTextBounds(unitsText, 0, unitsText.length, rect)
-        return rect.right.toFloat()
+        with(" ${if (displayUnits == null) "mm" else displayUnits.abbreviation}") {
+            rect.let { rect ->
+                textPaint.getTextBounds(this, 0, this.length, rect)
+                return rect.right.toFloat()
+            }
+        }
     }
 
 }
