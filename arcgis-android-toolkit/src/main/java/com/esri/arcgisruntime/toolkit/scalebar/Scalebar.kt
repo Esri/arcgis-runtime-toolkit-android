@@ -29,7 +29,6 @@ import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.GeodeticCurveType
 import com.esri.arcgisruntime.geometry.GeometryEngine
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.geometry.LinearUnitId
 import com.esri.arcgisruntime.geometry.PolylineBuilder
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
@@ -39,8 +38,6 @@ import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
 private const val ALPHA_50_PC = -0x80000000
-private val LINEAR_UNIT_METERS = LinearUnit(LinearUnitId.METERS)
-private val LINEAR_UNIT_FEET = LinearUnit(LinearUnitId.FEET)
 private val DEFAULT_STYLE = Style.ALTERNATING_BAR
 private val DEFAULT_ALIGNMENT = Scalebar.Alignment.LEFT
 private const val DEFAULT_FILL_COLOR = Color.LTGRAY or ALPHA_50_PC
@@ -115,7 +112,7 @@ class Scalebar : View {
             field = value
             postInvalidate()
         }
-    var unitSystem: UnitSystem? = UnitSystem.METRIC
+    var unitSystem: UnitSystem = UnitSystem.METRIC
         set(value) {
             field = value
             postInvalidate()
@@ -319,6 +316,7 @@ class Scalebar : View {
                 bottom,
                 scalebarLengthGeodetic,
                 displayUnits,
+                unitSystem,
                 lineWidthDp,
                 cornerRadiusDp,
                 textSizeDp,

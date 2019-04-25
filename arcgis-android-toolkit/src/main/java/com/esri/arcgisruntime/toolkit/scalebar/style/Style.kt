@@ -18,6 +18,7 @@ package com.esri.arcgisruntime.toolkit.scalebar.style
 
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.AlternatingBarRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.BarRenderer
+import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.DualUnitLineRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.GraduatedLineRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.LineRenderer
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.ScalebarRenderer
@@ -79,7 +80,7 @@ enum class Style(val value: Int) {
      * @since 100.2.1
      */
     DUAL_UNIT_LINE(4) {
-        override val renderer: ScalebarRenderer = BarRenderer()
+        override val renderer: ScalebarRenderer = DualUnitLineRenderer()
     };
 
     companion object {

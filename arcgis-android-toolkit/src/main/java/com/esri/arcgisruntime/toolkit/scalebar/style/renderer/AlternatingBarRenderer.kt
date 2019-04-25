@@ -18,6 +18,7 @@ package com.esri.arcgisruntime.toolkit.scalebar.style.renderer
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
@@ -44,6 +45,7 @@ class AlternatingBarRenderer : ScalebarRenderer() {
         bottom: Float,
         distance: Double,
         displayUnits: LinearUnit,
+        unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
         textSizeDp: Int,

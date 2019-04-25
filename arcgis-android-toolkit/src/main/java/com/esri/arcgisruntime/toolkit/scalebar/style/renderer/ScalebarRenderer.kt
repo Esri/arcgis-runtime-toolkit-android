@@ -21,6 +21,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
@@ -38,7 +39,7 @@ abstract class ScalebarRenderer {
     // The following are defined as member fields to minimize object allocation during draw operations
     private val rect = Rect()
     protected val rectF = RectF()
-    private val linePath = Path()
+    protected val linePath = Path()
     protected val paint = Paint()
 
     /**
@@ -69,6 +70,7 @@ abstract class ScalebarRenderer {
         bottom: Float,
         distance: Double,
         displayUnits: LinearUnit,
+        unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
         textSizeDp: Int,

@@ -16,6 +16,11 @@
 
 package com.esri.arcgisruntime.toolkit.scalebar
 
+import com.esri.arcgisruntime.geometry.LinearUnit
+import com.esri.arcgisruntime.geometry.LinearUnitId
+
 const val SHADOW_OFFSET_PIXELS = 2f
 const val LABEL_X_PAD_DP = 6
 const val SCALEBAR_X_PAD_DP = 10
+val LINEAR_UNIT_METERS = LinearUnit(LinearUnitId.METERS)
+val LINEAR_UNIT_FEET = LinearUnit(LinearUnitId.FEET)
