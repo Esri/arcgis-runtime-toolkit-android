@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.scalebar.renderer
+package com.esri.arcgisruntime.toolkit.scalebar.style.renderer
 
 import android.graphics.Canvas
 import android.graphics.Paint

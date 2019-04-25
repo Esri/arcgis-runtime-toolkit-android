@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.scalebar.renderer
+package com.esri.arcgisruntime.toolkit.scalebar.style.renderer
 
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
-import com.esri.arcgisruntime.toolkit.scalebar.Scalebar.Style
 
 /**
- * Renders a BAR style scalebar.
+ * Renders a LINE style scalebar.
  *
- * @see Style.BAR
+ * @see Style.LINE
  *
  * @since 100.2.1
  */
-class BarRenderer : ScalebarRenderer() {
+class LineRenderer : ScalebarRenderer() {
 
     override val isSegmented: Boolean = false
-
-    override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float = 0f
 
     override fun drawScalebar(
         canvas: Canvas,
@@ -54,36 +51,14 @@ class BarRenderer : ScalebarRenderer() {
         textPaint: Paint,
         displayDensity: Float
     ) {
-        // Draw a solid bar and its shadow
-        drawBarAndShadow(
-            canvas,
-            left,
-            top,
-            right,
-            bottom,
-            lineWidthDp,
-            cornerRadiusDp,
-            fillColor,
-            shadowColor,
-            displayDensity
-        )
+        // Draw the line and its shadow, including the ticks at each end
+        drawLineAndShadow(canvas, left, top, right, bottom, lineWidthDp, lineColor, shadowColor)
 
-        // Draw a line round the outside
-        rectF.set(left, top, right, bottom)
-        paint.reset()
-        paint.color = lineColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
-        canvas.drawRoundRect(
-            rectF,
-            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-            cornerRadiusDp.toFloat(),
-            paint
-        )
-
-        // Draw the label, centered on the center of the bar
+        // Draw the label, centered on the center of the line
         val label = ScalebarUtil.labelString(distance) + " " + displayUnits.abbreviation
         textPaint.textAlign = Paint.Align.CENTER
         canvas.drawText(label, left + (right - left) / 2, bottom + textSizeDp.dpToPixels(displayDensity), textPaint)
     }
+
+    override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float = 0f
 }

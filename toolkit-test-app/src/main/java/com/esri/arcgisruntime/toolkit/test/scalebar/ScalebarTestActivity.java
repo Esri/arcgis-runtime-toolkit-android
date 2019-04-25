@@ -32,6 +32,7 @@ import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style;
 import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
 
@@ -164,7 +165,7 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   // The following methods are callbacks from the dialog fragments that are invoked above
 
   @Override
-  public void onScalebarStyleSpecified(Scalebar.Style style) {
+  public void onScalebarStyleSpecified(Style style) {
     mScalebar.setStyle(style);
   }
 

@@ -36,15 +36,12 @@ import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
-import com.esri.arcgisruntime.toolkit.scalebar.renderer.AlternatingBarRenderer
-import com.esri.arcgisruntime.toolkit.scalebar.renderer.BarRenderer
-import com.esri.arcgisruntime.toolkit.scalebar.renderer.LineRenderer
-import com.esri.arcgisruntime.toolkit.scalebar.renderer.ScalebarRenderer
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
 private const val ALPHA_50_PC = -0x80000000
 private val LINEAR_UNIT_METERS = LinearUnit(LinearUnitId.METERS)
 private val LINEAR_UNIT_FEET = LinearUnit(LinearUnitId.FEET)
-private val DEFAULT_STYLE = Scalebar.Style.ALTERNATING_BAR
+private val DEFAULT_STYLE = Style.ALTERNATING_BAR
 private val DEFAULT_ALIGNMENT = Scalebar.Alignment.LEFT
 private const val DEFAULT_FILL_COLOR = Color.LTGRAY or ALPHA_50_PC
 private const val DEFAULT_ALTERNATE_FILL_COLOR = Color.BLACK
@@ -58,18 +55,9 @@ private const val SCALEBAR_Y_PAD_DP = 10
 
 class Scalebar : View {
 
-    private lateinit var renderer: ScalebarRenderer
-
     var style: Style = DEFAULT_STYLE
         set(value) {
             field = value
-            renderer = when (value) {
-                Style.ALTERNATING_BAR -> AlternatingBarRenderer()
-                Style.LINE -> LineRenderer()
-                else -> BarRenderer()
-                /*Style.GRADUATED_LINE -> GraduatedLineRenderer()
-                Style.DUAL_UNIT_LINE -> DualUnitLineRenderer()*/
-            }
             postInvalidate()
         }
 
@@ -189,6 +177,9 @@ class Scalebar : View {
             0, 0
         ).apply {
             try {
+                Style.fromInt(getInt(R.styleable.Scalebar_style, DEFAULT_STYLE.value))?.let {
+                    style = it
+                }
                 fillColor = getColor(R.styleable.Scalebar_fillColor, DEFAULT_FILL_COLOR)
                 alternateFillColor = getColor(R.styleable.Scalebar_alternateFillColor, DEFAULT_ALTERNATE_FILL_COLOR)
                 lineColor = getColor(R.styleable.Scalebar_lineColor, DEFAULT_LINE_COLOR)
@@ -269,8 +260,9 @@ class Scalebar : View {
             } else {
                 // When scalebar is a separate view, its length is based on the view's width; note we allow padding of
                 // lineWidthDp at each end of the scalebar to ensure the lines at the ends fit within the view
-                maxScaleBarLengthPixels = width.toFloat() - renderer.calculateExtraSpaceForUnits(null, textPaint) -
-                        (2 * lineWidthDp.dpToPixels(displayDensity)).toFloat()
+                maxScaleBarLengthPixels =
+                    width.toFloat() - style.renderer.calculateExtraSpaceForUnits(null, textPaint) -
+                            (2 * lineWidthDp.dpToPixels(displayDensity)).toFloat()
                 // But don't allow the scalebar length to be greater than the MapView width
                 maxScaleBarLengthPixels = Math.min(maxScaleBarLengthPixels, mapViewVisibleWidth.toFloat())
             }
@@ -296,7 +288,7 @@ class Scalebar : View {
 
             // Reduce length to make its geodetic length a nice number
             var scalebarLengthGeodetic =
-                ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits, renderer.isSegmented)
+                ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits, style.renderer.isSegmented)
             val scalebarLengthPixels = (maxScaleBarLengthPixels * scalebarLengthGeodetic / maxLengthGeodetic).toFloat()
 
             // Change units if the geodetic length is too big a number in the base units
@@ -319,7 +311,7 @@ class Scalebar : View {
             val top = bottom - barHeightDp.dpToPixels(displayDensity)
 
             // Draw the scalebar
-            renderer.drawScalebar(
+            style.renderer.drawScalebar(
                 canvas,
                 left,
                 top,
@@ -386,65 +378,15 @@ class Scalebar : View {
                 // Position end of scalebar at right hand edge of the view, less padding and the width of the units string (if
                 // required)
                 right.toFloat() - padding.toFloat() - lineWidthDp.dpToPixels(displayDensity).toFloat() - scalebarLength -
-                        renderer.calculateExtraSpaceForUnits(displayUnits, textPaint)
+                        style.renderer.calculateExtraSpaceForUnits(displayUnits, textPaint)
             Alignment.CENTER ->
                 // Position center of scalebar (plus units string if required) at center of the view
-                ((right + left).toFloat() - scalebarLength - renderer.calculateExtraSpaceForUnits(
+                ((right + left).toFloat() - scalebarLength - style.renderer.calculateExtraSpaceForUnits(
                     displayUnits,
                     textPaint
                 )) / 2
             else -> (left + padding).toFloat()
         }
-    }
-
-    /**
-     * Represents the style of scalebar to be displayed.
-     *
-     * @since 100.2.1
-     */
-    enum class Style(value: Int) {
-        /**
-         * A simple, non-segmented bar. A single label is displayed showing the distance represented by the length of the
-         * whole bar.
-         *
-         * @since 100.2.1
-         */
-        BAR(0),
-
-        /**
-         * A bar split up into equal-length segments, with the colors of the segments alternating between the fill color and
-         * the alternate fill color. A label is displayed at the end of each segment, showing the distance represented by
-         * the length of the bar up to that point.
-         *
-         * @since 100.2.1
-         */
-        ALTERNATING_BAR(1),
-
-        /**
-         * A simple, non-segmented line. A single label is displayed showing the distance represented by the length of the
-         * whole line.
-         *
-         * @since 100.2.1
-         */
-        LINE(2),
-
-        /**
-         * A line split up into equal-length segments. A tick and a label are displayed at the end of each segment, showing
-         * the distance represented by the length of the line up to that point.
-         *
-         * @since 100.2.1
-         */
-        GRADUATED_LINE(3),
-
-        /**
-         * A line showing distance in dual unit systems - metric and imperial. The primary unit system, as set by
-         * [.setUnitSystem], is used to determine the length of the line. A label above the line shows the
-         * distance represented by the length of the whole line, in the primary unit system. A tick and another label are
-         * displayed below the line, showing distance in the other unit system.
-         *
-         * @since 100.2.1
-         */
-        DUAL_UNIT_LINE(4)
     }
 
     /**
