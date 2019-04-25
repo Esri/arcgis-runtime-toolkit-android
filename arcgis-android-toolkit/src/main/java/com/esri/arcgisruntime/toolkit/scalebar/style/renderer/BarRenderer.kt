@@ -69,24 +69,28 @@ class BarRenderer : ScalebarRenderer() {
             displayDensity
         )
 
-        // Draw a line round the outside
-        rectF.set(left, top, right, bottom)
-        paint.apply {
-            reset()
-            color = lineColor
-            style = Paint.Style.STROKE
-            paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+        // Draw a rectangle round the outside
+        with(rectF) {
+            set(left, top, right, bottom)
+            paint.let { paint ->
+                paint.reset()
+                paint.color = lineColor
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+
+                canvas.drawRoundRect(
+                    this,
+                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    cornerRadiusDp.toFloat(),
+                    paint
+                )
+            }
         }
-        canvas.drawRoundRect(
-            rectF,
-            cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-            cornerRadiusDp.toFloat(),
-            paint
-        )
 
         // Draw the label, centered on the center of the bar
-        val label = ScalebarUtil.labelString(distance) + " " + displayUnits.abbreviation
-        textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(label, left + (right - left) / 2, bottom + textSizeDp.dpToPixels(displayDensity), textPaint)
+        with("${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}") {
+            textPaint.textAlign = Paint.Align.CENTER
+            canvas.drawText(this, left + (right - left) / 2, bottom + textSizeDp.dpToPixels(displayDensity), textPaint)
+        }
     }
 }
