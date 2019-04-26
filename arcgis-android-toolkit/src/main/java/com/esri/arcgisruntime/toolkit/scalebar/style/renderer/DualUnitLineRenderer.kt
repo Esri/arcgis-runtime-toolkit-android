@@ -77,50 +77,54 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         }
 
         // Create Paint for drawing the lines
-        paint.reset()
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
-        paint.strokeCap = Paint.Cap.ROUND
-        paint.strokeJoin = Paint.Join.ROUND
+        with(paint) {
+            reset()
+            style = Paint.Style.STROKE
+            strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
 
-        // Create a path to draw the line and the ticks
-        val yPosLine = (top + bottom) / 2
-        linePath.reset()
-        linePath.moveTo(left, top)
-        linePath.lineTo(left, bottom) // draw big tick at left
-        linePath.moveTo(xPosSecondaryTick, yPosLine) // move to top of secondary tick
-        linePath.lineTo(xPosSecondaryTick, bottom) // draw secondary tick
-        linePath.moveTo(left, yPosLine) // move to start of horizontal line
-        linePath.lineTo(right, yPosLine) // draw the line
-        linePath.lineTo(right, top) // draw tick at right
-        linePath.setLastPoint(right, top)
+            // Create a path to draw the line and the ticks
+            linePath.let { linePath ->
+                val yPosLine = (top + bottom) / 2
+                linePath.reset()
+                linePath.moveTo(left, top)
+                linePath.lineTo(left, bottom) // draw big tick at left
+                linePath.moveTo(xPosSecondaryTick, yPosLine) // move to top of secondary tick
+                linePath.lineTo(xPosSecondaryTick, bottom) // draw secondary tick
+                linePath.moveTo(left, yPosLine) // move to start of horizontal line
+                linePath.lineTo(right, yPosLine) // draw the line
+                linePath.lineTo(right, top) // draw tick at right
+                linePath.setLastPoint(right, top)
 
-        // Create a copy of the line path to be the path of its shadow, offset slightly from the line path
-        val shadowPath = Path(linePath)
-        shadowPath.offset(SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS)
+                // Create a copy of the line path to be the path of its shadow, offset slightly from the line path
+                val shadowPath = Path(linePath)
+                shadowPath.offset(SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS)
 
-        // Draw the shadow
-        paint.color = shadowColor
-        canvas.drawPath(shadowPath, paint)
+                // Draw the shadow
+                color = shadowColor
+                canvas.drawPath(shadowPath, this)
 
-        // Draw the line and the ticks
-        paint.color = lineColor
-        canvas.drawPath(linePath, paint)
+                // Draw the line and the ticks
+                color = lineColor
+                canvas.drawPath(linePath, this)
 
-        // Draw the primary units label above the tick at the right hand end
-        val maxPixelsBelowBaseline = textPaint.fontMetrics.bottom
-        var yPosText = top - maxPixelsBelowBaseline
-        textPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
-        textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
+                // Draw the primary units label above the tick at the right hand end
+                val maxPixelsBelowBaseline = textPaint.fontMetrics.bottom
+                var yPosText = top - maxPixelsBelowBaseline
+                textPaint.textAlign = Paint.Align.RIGHT
+                canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
+                textPaint.textAlign = Paint.Align.LEFT
+                canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
 
-        // Draw the secondary units label below its tick
-        yPosText = bottom + textSizeDp.dpToPixels(displayDensity)
-        textPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText(ScalebarUtil.labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint)
-        textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText(' ' + secondaryDisplayUnits.abbreviation, xPosSecondaryTick, yPosText, textPaint)
+                // Draw the secondary units label below its tick
+                yPosText = bottom + textSizeDp.dpToPixels(displayDensity)
+                textPaint.textAlign = Paint.Align.RIGHT
+                canvas.drawText(ScalebarUtil.labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint)
+                textPaint.textAlign = Paint.Align.LEFT
+                canvas.drawText(' ' + secondaryDisplayUnits.abbreviation, xPosSecondaryTick, yPosText, textPaint)
+            }
+        }
     }
 
     override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float {
