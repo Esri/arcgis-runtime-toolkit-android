@@ -39,5 +39,9 @@
         <attr name="textShadowColor" format="color" />
         <attr name="textSize" format="dimension" />
         <attr name="barHeight" format="dimension" />
+        <attr name="unitSystem" format="enum">
+            <enum name="imperial" value="0" />
+            <enum name="metric" value="1" />
+        </attr>
     </declare-styleable>
 </resources>

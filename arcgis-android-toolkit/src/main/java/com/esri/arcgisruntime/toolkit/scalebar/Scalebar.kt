@@ -34,8 +34,8 @@ import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
-import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
 import com.esri.arcgisruntime.toolkit.extension.spToPixels
+import com.esri.arcgisruntime.toolkit.extension.unitSystemFromInt
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
@@ -134,7 +134,7 @@ class Scalebar : View {
         typeface = this.typeface
         textSize = textSizeSp.spToPixels(displayMetrics).toFloat()
     }
-    
+
     private val graphicsPoint = android.graphics.Point()
     private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
     private val cornerRadiusDp = DEFAULT_BAR_HEIGHT_DP / 5
@@ -183,20 +183,18 @@ class Scalebar : View {
                 Style.fromInt(getInt(R.styleable.Scalebar_style, DEFAULT_STYLE.value))?.let {
                     style = it
                 }
+                unitSystemFromInt(getInt(R.styleable.Scalebar_unitSystem, 1)).let {
+                    unitSystem = it
+                }
                 fillColor = getColor(R.styleable.Scalebar_fillColor, DEFAULT_FILL_COLOR)
                 alternateFillColor = getColor(R.styleable.Scalebar_alternateFillColor, DEFAULT_ALTERNATE_FILL_COLOR)
                 lineColor = getColor(R.styleable.Scalebar_lineColor, DEFAULT_LINE_COLOR)
                 shadowColor = getColor(R.styleable.Scalebar_shadowColor, DEFAULT_SHADOW_COLOR)
                 textColor = getColor(R.styleable.Scalebar_textColor, DEFAULT_TEXT_COLOR)
                 textShadowColor = getColor(R.styleable.Scalebar_textShadowColor, DEFAULT_TEXT_SHADOW_COLOR)
-                textSizeSp = getDimensionPixelSize(
-                    R.styleable.Scalebar_textSize,
-                    DEFAULT_TEXT_SIZE_SP
-                ).pixelsToSp(displayMetrics)
-                barHeightDp = getDimensionPixelSize(
-                    R.styleable.Scalebar_barHeight,
-                    DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity)
-                )
+                getDimensionPixelSize(R.styleable.Scalebar_textSize, -1).let {
+                    textSizeSp = if (it == -1) DEFAULT_TEXT_SIZE_SP else it
+                }
             } finally {
                 recycle()
             }
@@ -311,7 +309,8 @@ class Scalebar : View {
                 height.toFloat() - (textSizeSp.spToPixels(displayMetrics)) - maxPixelsBelowBaseline
             }
 
-            val top = bottom - barHeightDp.dpToPixels(displayDensity)
+            val top: Float =
+                bottom - if (drawInMapView) DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else top.toFloat()
 
             // Draw the scalebar
             style.renderer.drawScalebar(
