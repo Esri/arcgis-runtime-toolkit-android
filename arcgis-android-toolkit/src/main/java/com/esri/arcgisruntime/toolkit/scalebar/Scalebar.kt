@@ -184,6 +184,9 @@ class Scalebar : View {
                 unitSystemFromInt(getInt(R.styleable.Scalebar_unitSystem, 1)).let {
                     unitSystem = it
                 }
+                Alignment.fromInt(getInt(R.styleable.Scalebar_alignment, DEFAULT_ALIGNMENT.value))?.let {
+                    alignment = it
+                }
                 fillColor = getColor(R.styleable.Scalebar_fillColor, DEFAULT_FILL_COLOR)
                 alternateFillColor = getColor(R.styleable.Scalebar_alternateFillColor, DEFAULT_ALTERNATE_FILL_COLOR)
                 lineColor = getColor(R.styleable.Scalebar_lineColor, DEFAULT_LINE_COLOR)
@@ -389,7 +392,7 @@ class Scalebar : View {
      *
      * @since 100.5.0
      */
-    enum class Alignment(value: Int) {
+    enum class Alignment(val value: Int) {
         /**
          * The scalebar is left-aligned, meaning that the left hand end of the scalebar is fixed and it shrinks and grows at
          * the right hand end. If the scalebar is added to a MapView using [addToMapView], it will be
@@ -415,6 +418,11 @@ class Scalebar : View {
          *
          * @since 100.5.0
          */
-        CENTER(2)
+        CENTER(2);
+
+        companion object {
+            private val map = Alignment.values().associateBy(Alignment::value)
+            fun fromInt(type: Int) = map[type]
+        }
     }
 }
