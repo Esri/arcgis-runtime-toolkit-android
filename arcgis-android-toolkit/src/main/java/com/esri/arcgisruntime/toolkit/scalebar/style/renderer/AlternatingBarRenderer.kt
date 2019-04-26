@@ -22,13 +22,14 @@ import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style.ALTERNATING_BAR
 
 /**
- * Renders an ALTERNATING_BAR style scalebar.
+ * Renders an [ALTERNATING_BAR] style scalebar.
  *
- * @see Style.ALTERNATING_BAR
- *
- * @since 100.2.1
+ * @see [ALTERNATING_BAR]
+ * 
+ * @since 100.5.0
  */
 class AlternatingBarRenderer : ScalebarRenderer() {
 
@@ -57,7 +58,7 @@ class AlternatingBarRenderer : ScalebarRenderer() {
         displayDensity: Float
     ) {
 
-        // Draw a solid bar, using mAlternateFillColor, and its shadow
+        // Draw a solid bar, using alternateFillColor, and its shadow
         drawBarAndShadow(
             canvas,
             left,
