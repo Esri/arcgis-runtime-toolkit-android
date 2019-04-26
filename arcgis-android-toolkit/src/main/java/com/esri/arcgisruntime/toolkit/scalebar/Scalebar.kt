@@ -156,9 +156,9 @@ class Scalebar : View {
         }
 
     /**
-     * Constructs a Scalebar programmatically. Called by the app when Workflow 1 is used (see [Scalebar] above).
+     * Constructs a Scalebar programmatically using the provided [context]. Called by the app when Workflow 1 is
+     * used (see [Scalebar] above).
      *
-     * @param context the execution [Context]
      * @since 100.5.0
      */
     constructor(context: Context) : super(context) {
@@ -166,11 +166,9 @@ class Scalebar : View {
     }
 
     /**
-     * Constructor that's called when inflating a Scalebar from XML. Called by the system when Workflow 2 is used (see
-     * [Scalebar] above).
+     * Constructor that's called when inflating a Scalebar from XML using the provided [context] and [attrs]. Called by
+     * the system when Workflow 2 is used (see [Scalebar] above).
      *
-     * @param context the execution [Context]
-     * @param attrs   the attributes of the XML tag that is inflating the view
      * @since 100.5.0
      */
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -202,12 +200,10 @@ class Scalebar : View {
     }
 
     /**
-     * Adds this Scalebar to the given MapView. Used in Workflow 1 (see {@link Scalebar} above).
+     * Adds this [Scalebar] to the provided [mapView]. Used in Workflow 1 (see [Scalebar] above).
      *
-     * @param mapView the MapView
-     * @throws IllegalArgumentException if mapView is null
      * @throws IllegalStateException    if this Scalebar is already added to or bound to a MapView
-     * @since 100.2.1
+     * @since 100.5.0
      */
     fun addToMapView(mapView: MapView) {
         this.mapView?.let {
@@ -224,11 +220,10 @@ class Scalebar : View {
     }
 
     /**
-     * Binds this Scalebar to the given MapView, or unbinds it. Used in Workflow 2 (see [Scalebar] above).
+     * Binds this [Scalebar] to the provided [mapView], or unbinds it. Used in Workflow 2 (see [Scalebar] above).
      *
-     * @param mapView the MapView to bind to, or null to unbind it
      * @throws IllegalStateException if this Scalebar is currently added to a MapView
-     * @since 100.2.1
+     * @since 100.5.0
      */
     fun bindTo(mapView: MapView?) {
         if (drawInMapView) {
@@ -353,13 +348,10 @@ class Scalebar : View {
     }
 
     /**
-     * Calculates the x-coordinate of the left hand end of the scalebar.
+     * Returns the x-coordinate of the left hand end of the scalebar using the provided [alignment], [scalebarLength]
+     * and [displayUnits] as a Float.
      *
-     * @param alignment      the alignment of the scalebar
-     * @param scalebarLength the length of the scalebar in pixels
-     * @param displayUnits   the units to be displayed
-     * @return the x-coordinate of the left hand end of the scalebar
-     * @since 100.2.1
+     * @since 100.5.0
      */
     private fun calculateLeftPos(alignment: Alignment, scalebarLength: Float, displayUnits: LinearUnit): Float {
         var left = 0
@@ -393,35 +385,35 @@ class Scalebar : View {
     }
 
     /**
-     * Represents the alignment of scalebar to be displayed.
+     * Represents the alignment of [Scalebar] to be displayed.
      *
-     * @since 100.2.1
+     * @since 100.5.0
      */
     enum class Alignment(value: Int) {
         /**
          * The scalebar is left-aligned, meaning that the left hand end of the scalebar is fixed and it shrinks and grows at
-         * the right hand end. If the scalebar is added to a MapView using [.addToMapView], it will be
+         * the right hand end. If the scalebar is added to a MapView using [addToMapView], it will be
          * positioned near the bottom-left corner of the MapView.
          *
-         * @since 100.2.1
+         * @since 100.5.0
          */
         LEFT(0),
 
         /**
          * The scalebar is right-aligned, meaning that the right hand end of the scalebar is fixed and it shrinks and grows
-         * at the left hand end. If the scalebar is added to a MapView using [.addToMapView], it will be
+         * at the left hand end. If the scalebar is added to a MapView using [addToMapView], it will be
          * positioned near the bottom-right corner of the MapView.
          *
-         * @since 100.2.1
+         * @since 100.5.0
          */
         RIGHT(1),
 
         /**
          * The scalebar is center-aligned, meaning that the center point of the scalebar is fixed and it shrinks and grows
-         * at both ends. If the scalebar is added to a MapView using [.addToMapView], it will be
+         * at both ends. If the scalebar is added to a MapView using [addToMapView], it will be
          * positioned near the bottom the MapView, centered between the left and right edges.
          *
-         * @since 100.2.1
+         * @since 100.5.0
          */
         CENTER(2)
     }
