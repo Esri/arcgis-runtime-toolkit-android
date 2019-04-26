@@ -56,10 +56,6 @@ class AlternatingBarRenderer : ScalebarRenderer() {
         textPaint: Paint,
         displayDensity: Float
     ) {
-        // Calculate the number of segments in the bar
-        val barDisplayLength = right - left
-        val numSegments = calculateNumberOfSegments(distance, barDisplayLength.toDouble(), displayDensity, textPaint)
-        val segmentDisplayLength = barDisplayLength / numSegments
 
         // Draw a solid bar, using mAlternateFillColor, and its shadow
         drawBarAndShadow(
@@ -75,51 +71,73 @@ class AlternatingBarRenderer : ScalebarRenderer() {
             displayDensity
         )
 
-        // Now draw every second segment on top of it using mFillColor
-        paint.reset()
-        paint.style = Paint.Style.FILL
-        paint.color = fillColor
-        var xPos = left + segmentDisplayLength
-        var i = 1
-        while (i < numSegments) {
-            rectF.set(xPos, top, xPos + segmentDisplayLength, bottom)
-            canvas.drawRect(rectF, paint)
-            xPos += 2 * segmentDisplayLength
-            i += 2
-        }
+        // Calculate the number of segments in the bar
+        (right - left).let { barDisplayLength ->
+            calculateNumberOfSegments(
+                distance,
+                barDisplayLength.toDouble(),
+                displayDensity,
+                textPaint
+            ).let { numSegments ->
+                with(barDisplayLength / numSegments) {
 
-        // Draw a line round the outside of the complete bar
-        rectF.set(left, top, right, bottom)
-        paint.reset()
-        paint.color = lineColor
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
-        canvas.drawRoundRect(
-            rectF,
-            cornerRadiusDp.toFloat(),
-            cornerRadiusDp.toFloat(),
-            paint
-        )
+                    // Now draw every second segment on top of it using fillColor
+                    paint.let { paint ->
+                        paint.reset()
+                        paint.style = Paint.Style.FILL
+                        paint.color = fillColor
 
-        // Draw a label at the start of the bar
-        val yPosText = bottom + textSizeDp.toDouble().dpToPixels(displayDensity)
-        textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText("0", left, yPosText, textPaint)
+                        rectF.let { rectF ->
+                            var xPos = left + this
+                            var i = 1
+                            while (i < numSegments) {
+                                rectF.set(xPos, top, xPos + this, bottom)
+                                canvas.drawRect(rectF, paint)
+                                xPos += 2 * this
+                                i += 2
+                            }
+                        }
+                    }
 
-        // Draw a label at the end of the bar
-        textPaint.textAlign = Paint.Align.RIGHT
-        canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
-        textPaint.textAlign = Paint.Align.LEFT
-        canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
+                    // Draw a line round the outside of the complete bar
+                    rectF.let { rectF ->
+                        rectF.set(left, top, right, bottom)
+                        paint.let { paint ->
+                            paint.reset()
+                            paint.color = lineColor
+                            paint.style = Paint.Style.STROKE
+                            paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+                            canvas.drawRoundRect(
+                                rectF,
+                                cornerRadiusDp.toFloat(),
+                                cornerRadiusDp.toFloat(),
+                                paint
+                            )
+                        }
+                    }
 
-        // Draw a vertical line and a label at each segment boundary
-        xPos = left + segmentDisplayLength
-        val segmentDistance = distance / numSegments
-        textPaint.textAlign = Paint.Align.CENTER
-        for (segNo in 1 until numSegments) {
-            canvas.drawLine(xPos, top, xPos, bottom, paint)
-            canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, textPaint)
-            xPos += segmentDisplayLength
+                    // Draw a label at the start of the bar
+                    val yPosText = bottom + textSizeDp.toDouble().dpToPixels(displayDensity)
+                    textPaint.textAlign = Paint.Align.LEFT
+                    canvas.drawText("0", left, yPosText, textPaint)
+
+                    // Draw a label at the end of the bar
+                    textPaint.textAlign = Paint.Align.RIGHT
+                    canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
+                    textPaint.textAlign = Paint.Align.LEFT
+                    canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
+
+                    // Draw a vertical line and a label at each segment boundary
+                    var xPos = left + this
+                    val segmentDistance = distance / numSegments
+                    textPaint.textAlign = Paint.Align.CENTER
+                    for (segNo in 1 until numSegments) {
+                        canvas.drawLine(xPos, top, xPos, bottom, paint)
+                        canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, textPaint)
+                        xPos += this
+                    }
+                }
+            }
         }
     }
 }
