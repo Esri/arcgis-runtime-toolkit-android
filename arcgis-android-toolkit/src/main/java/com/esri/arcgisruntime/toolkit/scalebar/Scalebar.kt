@@ -52,55 +52,65 @@ class Scalebar : View {
             field = value
             postInvalidate()
         }
+
     var fillColor: Int = DEFAULT_FILL_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
+
     var alternateFillColor: Int = DEFAULT_ALTERNATE_FILL_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
+
     var lineColor: Int = DEFAULT_LINE_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
+
     var shadowColor: Int = DEFAULT_SHADOW_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
+
     var textColor: Int = DEFAULT_TEXT_COLOR
         set(value) {
             field = value
             textPaint.color = value
             postInvalidate()
         }
+
     var textShadowColor = DEFAULT_TEXT_SHADOW_COLOR
         set(value) {
             field = value
             textPaint.setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, value)
             postInvalidate()
         }
+
     var textSizeSp = DEFAULT_TEXT_SIZE_SP
         set(value) {
             field = value
             textPaint.textSize = value.spToPixels(displayMetrics).toFloat()
             postInvalidate()
         }
+
     var typeface: Typeface = Typeface.DEFAULT
         set(value) {
             field = value
             textPaint.typeface = value
             postInvalidate()
         }
+
     var barHeightDp = DEFAULT_BAR_HEIGHT_DP
         set(value) {
             field = value
             postInvalidate()
         }
+
     var unitSystem: UnitSystem = UnitSystem.METRIC
         set(value) {
             field = value
@@ -109,18 +119,22 @@ class Scalebar : View {
 
     private var mapView: MapView? = null
     private var drawInMapView: Boolean = false
+
     private val displayDensity: Float by lazy {
         context.resources.displayMetrics.density
     }
+
     private val displayMetrics: DisplayMetrics by lazy {
         context.resources.displayMetrics
     }
+
     private var textPaint: Paint = Paint().apply {
         color = textColor
         setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
         typeface = this.typeface
         textSize = textSizeSp.spToPixels(displayMetrics).toFloat()
     }
+    
     private val graphicsPoint = android.graphics.Point()
     private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
     private val cornerRadiusDp = DEFAULT_BAR_HEIGHT_DP / 5
