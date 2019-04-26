@@ -22,11 +22,13 @@ import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style.BAR
 
 /**
- * Renders a BAR style scalebar.
+ * Renders a [BAR] style scalebar.
  *
- * @see Style.BAR
+ * @see [Style.BAR]
  *
  * @since 100.2.1
  */
@@ -88,9 +90,12 @@ class BarRenderer : ScalebarRenderer() {
         }
 
         // Draw the label, centered on the center of the bar
-        with("${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}") {
-            textPaint.textAlign = Paint.Align.CENTER
-            canvas.drawText(this, left + (right - left) / 2, bottom + textSizeDp.dpToPixels(displayDensity), textPaint)
-        }
+        textPaint.textAlign = Paint.Align.CENTER
+        canvas.drawText(
+            "${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}",
+            left + (right - left) / 2,
+            bottom + textSizeDp.dpToPixels(displayDensity),
+            textPaint
+        )
     }
 }
