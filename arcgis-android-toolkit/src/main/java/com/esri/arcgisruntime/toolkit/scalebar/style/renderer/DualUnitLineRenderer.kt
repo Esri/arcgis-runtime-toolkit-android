@@ -27,13 +27,14 @@ import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_FEET
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_METERS
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style.DUAL_UNIT_LINE
 
 /**
- * Renders a DUAL_UNIT_LINE style scalebar.
+ * Renders a [DUAL_UNIT_LINE] style scalebar.
  *
  * @see Style.DUAL_UNIT_LINE
  *
- * @since 100.2.1
+ * @since 100.5.0
  */
 class DualUnitLineRenderer : ScalebarRenderer() {
 
@@ -58,6 +59,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         textPaint: Paint,
         displayDensity: Float
     ) {
+
         // Calculate scalebar length in the secondary units
         val secondaryBaseUnits = if (unitSystem == UnitSystem.METRIC) LINEAR_UNIT_FEET else LINEAR_UNIT_METERS
         val fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, distance)
