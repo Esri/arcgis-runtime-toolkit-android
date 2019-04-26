@@ -57,9 +57,13 @@ class LineRenderer : ScalebarRenderer() {
         drawLineAndShadow(canvas, left, top, right, bottom, lineWidthDp, lineColor, shadowColor)
 
         // Draw the label, centered on the center of the line
-        val label = ScalebarUtil.labelString(distance) + " " + displayUnits.abbreviation
         textPaint.textAlign = Paint.Align.CENTER
-        canvas.drawText(label, left + (right - left) / 2, bottom + textSizeDp.dpToPixels(displayDensity), textPaint)
+        canvas.drawText(
+            "${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}",
+            left + (right - left) / 2,
+            bottom + textSizeDp.dpToPixels(displayDensity),
+            textPaint
+        )
     }
 
     override fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float = 0f
