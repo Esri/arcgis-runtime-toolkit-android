@@ -18,7 +18,6 @@ package com.esri.arcgisruntime.toolkit.scalebar
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
@@ -39,20 +38,6 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
 import com.esri.arcgisruntime.toolkit.extension.spToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
-
-private const val ALPHA_50_PC = -0x80000000
-private val DEFAULT_STYLE = Style.ALTERNATING_BAR
-private val DEFAULT_ALIGNMENT = Scalebar.Alignment.LEFT
-private const val DEFAULT_FILL_COLOR = Color.LTGRAY or ALPHA_50_PC
-private const val DEFAULT_ALTERNATE_FILL_COLOR = Color.BLACK
-private const val DEFAULT_LINE_COLOR = Color.WHITE
-private const val DEFAULT_SHADOW_COLOR = Color.BLACK or ALPHA_50_PC
-private const val DEFAULT_TEXT_COLOR = Color.BLACK
-private const val DEFAULT_TEXT_SHADOW_COLOR = Color.WHITE
-// Default text size obtained from Material Design Body 1 https://material.io/design/typography/#type-scale
-private const val DEFAULT_TEXT_SIZE_SP = 16
-private const val DEFAULT_BAR_HEIGHT_DP = 10
-private const val SCALEBAR_Y_PAD_DP = 10
 
 class Scalebar : View {
 
