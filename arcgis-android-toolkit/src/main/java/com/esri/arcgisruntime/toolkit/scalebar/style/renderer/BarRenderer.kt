@@ -30,7 +30,7 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style.BAR
  *
  * @see [Style.BAR]
  *
- * @since 100.2.1
+ * @since 100.5.0
  */
 class BarRenderer : ScalebarRenderer() {
 
