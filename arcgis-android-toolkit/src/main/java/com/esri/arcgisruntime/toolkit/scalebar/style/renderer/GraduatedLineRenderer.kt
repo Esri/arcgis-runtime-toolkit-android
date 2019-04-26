@@ -48,7 +48,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
         unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
-        textSizeDp: Int,
+        textSizePx: Float,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -73,7 +73,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
             var xPos = left + segmentDisplayLength
             val yPos = top + (bottom - top) / 4 // segment ticks are 3/4 the height of the ticks at the start and end
             val segmentDistance = distance / numSegments
-            val yPosText = bottom + textSizeDp.dpToPixels(displayDensity)
+            val yPosText = bottom + textSizePx
             textPaint.textAlign = Paint.Align.CENTER
             for (segNo in 1 until numSegments) {
                 // Draw the shadow, offset slightly from where the tick is drawn below

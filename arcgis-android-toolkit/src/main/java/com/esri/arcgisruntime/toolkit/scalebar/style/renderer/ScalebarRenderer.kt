@@ -27,12 +27,18 @@ import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.LABEL_X_PAD_DP
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
-import com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
 /**
- * Renders a scalebar. There are concrete subclasses corresponding to each [Scalebar.Style].
+ * Renders a scalebar. There are concrete subclasses corresponding to each [Style] including:
  *
- * @since 100.2.1
+ * - [BarRenderer]
+ * - [AlternatingBarRenderer]
+ * - [LineRenderer]
+ * - [GraduatedLineRenderer]
+ * - [DualUnitLineRenderer]
+ *
+ * @since 100.5.1
  */
 abstract class ScalebarRenderer {
 
@@ -43,24 +49,33 @@ abstract class ScalebarRenderer {
     protected val paint = Paint()
 
     /**
-     * Indicates if this style of scalebar is segmented.
+     * Indicates if this style of scalebar is segmented. Returns true if segmented, false otherwise.
      *
-     * @return true if this style of scalebar is segmented, false otherwise
-     * @since 100.2.1
+     * @since 100.5.1
      */
     abstract val isSegmented: Boolean
 
     /**
      * Draws a scalebar.
      *
-     * @param canvas       the Canvas to draw on
-     * @param left         the x-coordinate of the left hand edge of the scalebar
-     * @param top          the y-coordinate of the top of the scalebar
-     * @param right        the x-coordinate of the right hand edge of the scalebar
-     * @param bottom       the y-coordinate of the bottom of the scalebar
-     * @param distance     the distance represented by the length of the whole scalebar
-     * @param displayUnits the units of distance
-     * @since 100.2.1
+     * @param canvas                the Canvas to draw on
+     * @param left                  the x-coordinate of the left hand edge of the scalebar
+     * @param top                   the y-coordinate of the top of the scalebar
+     * @param right                 the x-coordinate of the right hand edge of the scalebar
+     * @param bottom                the y-coordinate of the bottom of the scalebar
+     * @param distance              the distance represented by the length of the whole scalebar
+     * @param displayUnits          the units of distance
+     * @param unitSystem            the unit system that the scalebar represents
+     * @param lineWidthDp           the DP value representing the width of the lines drawn onto the canvas
+     * @param cornerRadiusDp        the DP value representing the radius of the corners of a round rectangle when drawn
+     * @param textSizePx            the pixel value representing the size of the text to be drawn in the scalebar
+     * @param fillColor             the color of the bar used in [BarRenderer] and [AlternatingBarRenderer]
+     * @param alternateFillColor    the color used to show segmentation in a bar. Used in [AlternatingBarRenderer]
+     * @param shadowColor           the color used to draw the shadows of text, bars and lines
+     * @param lineColor             the color used to draw lines
+     * @param textPaint             the [Paint] used to draw text
+     * @param displayDensity        the value representing the density of the display
+     * @since 100.5.0
      */
     abstract fun drawScalebar(
         canvas: Canvas,
@@ -73,7 +88,7 @@ abstract class ScalebarRenderer {
         unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
-        textSizeDp: Int,
+        textSizePx: Float,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -83,25 +98,28 @@ abstract class ScalebarRenderer {
     )
 
     /**
-     * Calculates the extra space required at the right hand end of the scalebar to draw the units (if any). This
-     * affects the positioning of the scalebar when it is right-aligned.
+     * Calculates the extra space required at the right hand end of the scalebar to draw the units (if any), using the
+     * provided [displayUnits]. This affects the positioning of the scalebar when it is right-aligned. Returns the extra
+     * space required, in pixels
      *
-     * @param displayUnits the units
-     * @return the extra space required, in pixels
-     * @since 100.2.1
+     * @since 100.5.0
      */
     abstract fun calculateExtraSpaceForUnits(displayUnits: LinearUnit?, textPaint: Paint): Float
 
     /**
-     * Draws a solid bar and its shadow. Used by BarRenderer and AlternatingBarRenderer.
+     * Draws a solid bar and its shadow. Used by [BarRenderer] and [AlternatingBarRenderer].
      *
-     * @param canvas   the Canvas to draw on
-     * @param left     the x-coordinate of the left hand edge of the scalebar
-     * @param top      the y-coordinate of the top of the scalebar
-     * @param right    the x-coordinate of the right hand edge of the scalebar
-     * @param bottom   the y-coordinate of the bottom of the scalebar
-     * @param barColor the fill color for the bar
-     * @since 100.2.1
+     * @param canvas                the Canvas to draw on
+     * @param left                  the x-coordinate of the left hand edge of the scalebar
+     * @param top                   the y-coordinate of the top of the scalebar
+     * @param right                 the x-coordinate of the right hand edge of the scalebar
+     * @param bottom                the y-coordinate of the bottom of the scalebar
+     * @param lineWidthDp           the DP value representing the width of the lines drawn onto the canvas
+     * @param cornerRadiusDp        the DP value representing the radius of the corners of a round rectangle when drawn
+     * @param barColor              the color for the bar
+     * @param shadowColor           the color used to draw the shadows
+     * @param displayDensity        the value representing the density of the display
+     * @since 100.5.0
      */
     protected fun drawBarAndShadow(
         canvas: Canvas,
@@ -145,14 +163,17 @@ abstract class ScalebarRenderer {
     }
 
     /**
-     * Draws a line and its shadow, including the ticks at each end. Used by LineRenderer and GraduatedLineRenderer.
+     * Draws a line and its shadow, including the ticks at each end. Used by [LineRenderer] and [GraduatedLineRenderer].
      *
-     * @param canvas the Canvas to draw on
-     * @param left   the x-coordinate of the left hand edge of the scalebar
-     * @param top    the y-coordinate of the top of the scalebar
-     * @param right  the x-coordinate of the right hand edge of the scalebar
-     * @param bottom the y-coordinate of the bottom of the scalebar
-     * @since 100.2.1
+     * @param canvas                the Canvas to draw on
+     * @param left                  the x-coordinate of the left hand edge of the scalebar
+     * @param top                   the y-coordinate of the top of the scalebar
+     * @param right                 the x-coordinate of the right hand edge of the scalebar
+     * @param bottom                the y-coordinate of the bottom of the scalebar
+     * @param lineWidthDp           the DP value representing the width of the lines drawn onto the canvas
+     * @param lineColor             the color used to draw lines
+     * @param shadowColor           the color used to draw the shadows
+     * @since 100.5.0
      */
     protected fun drawLineAndShadow(
         canvas: Canvas,
@@ -197,13 +218,14 @@ abstract class ScalebarRenderer {
     }
 
     /**
-     * Calculates the optimal number of segments in a segmented scalebar of a particular length. Used by
-     * AlternatingBarRenderer and GraduatedLineRenderer.
+     * Returns the optimal number of segments in a segmented scalebar of a particular length. Used by
+     * [AlternatingBarRenderer] and [GraduatedLineRenderer].
      *
-     * @param distance      the distance represented by the length of the whole scalebar
-     * @param displayLength the length of the scalebar in pixels
-     * @return the number of segments
-     * @since 100.2.1
+     * @param distance              the distance represented by the length of the whole scalebar
+     * @param displayLength         the length of the scalebar in pixels
+     * @param displayDensity        the value representing the density of the display
+     * @param textPaint             the [Paint] used to draw text
+     * @since 100.5.0
      */
     protected fun calculateNumberOfSegments(
         distance: Double,
@@ -231,11 +253,9 @@ abstract class ScalebarRenderer {
     }
 
     /**
-     * Calculates the width of the units string.
+     * Returns the width of the units string in pixels using the provided [displayUnits].
      *
-     * @param displayUnits the units to be displayed, or null if not known yet
-     * @return the width of the units string, in pixels
-     * @since 100.2.1
+     * @since 100.5.0
      */
     protected fun calculateWidthOfUnitsString(displayUnits: LinearUnit?, textPaint: Paint): Float {
         with(" ${if (displayUnits == null) "mm" else displayUnits.abbreviation}") {

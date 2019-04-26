@@ -51,7 +51,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
-        textSizeDp: Int,
+        textSizePx: Float,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -120,7 +120,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
                 canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
 
                 // Draw the secondary units label below its tick
-                yPosText = bottom + textSizeDp.dpToPixels(displayDensity)
+                yPosText = bottom + textSizePx
                 textPaint.textAlign = Paint.Align.RIGHT
                 canvas.drawText(ScalebarUtil.labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT

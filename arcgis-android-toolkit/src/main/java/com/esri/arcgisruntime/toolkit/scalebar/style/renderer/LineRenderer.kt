@@ -20,7 +20,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style.LINE
@@ -47,7 +46,7 @@ class LineRenderer : ScalebarRenderer() {
         unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
-        textSizeDp: Int,
+        textSizePx: Float,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -64,7 +63,7 @@ class LineRenderer : ScalebarRenderer() {
         canvas.drawText(
             "${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}",
             left + (right - left) / 2,
-            bottom + textSizeDp.dpToPixels(displayDensity),
+            bottom + textSizePx,
             textPaint
         )
     }

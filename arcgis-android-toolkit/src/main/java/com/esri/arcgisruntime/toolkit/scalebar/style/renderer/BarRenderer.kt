@@ -49,7 +49,7 @@ class BarRenderer : ScalebarRenderer() {
         unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
-        textSizeDp: Int,
+        textSizePx: Float,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -94,7 +94,7 @@ class BarRenderer : ScalebarRenderer() {
         canvas.drawText(
             "${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}",
             left + (right - left) / 2,
-            bottom + textSizeDp.dpToPixels(displayDensity),
+            bottom + textSizePx,
             textPaint
         )
     }

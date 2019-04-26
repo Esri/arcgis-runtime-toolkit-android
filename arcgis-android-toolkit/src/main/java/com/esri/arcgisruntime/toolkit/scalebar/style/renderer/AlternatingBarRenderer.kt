@@ -50,7 +50,7 @@ class AlternatingBarRenderer : ScalebarRenderer() {
         unitSystem: UnitSystem,
         lineWidthDp: Int,
         cornerRadiusDp: Int,
-        textSizeDp: Int,
+        textSizePx: Float,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -119,7 +119,7 @@ class AlternatingBarRenderer : ScalebarRenderer() {
                     }
 
                     // Draw a label at the start of the bar
-                    val yPosText = bottom + textSizeDp.toDouble().dpToPixels(displayDensity)
+                    val yPosText = bottom + textSizePx
                     textPaint.textAlign = Paint.Align.LEFT
                     canvas.drawText("0", left, yPosText, textPaint)
 

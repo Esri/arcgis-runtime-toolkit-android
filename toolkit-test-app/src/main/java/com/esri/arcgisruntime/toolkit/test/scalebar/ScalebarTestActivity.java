@@ -140,7 +140,7 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
           return true;
         case R.id.action_text_size:
           NumberDialogFragment.newInstance(
-              "Text Size in DP", mScalebar.getTextSizeDp()).show(getSupportFragmentManager(), "NumberDialog");
+              "Text Size in SP", (int) mScalebar.getTextSizeSp()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_bar_height:
           NumberDialogFragment.newInstance(
@@ -212,7 +212,7 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_text_size:
-        mScalebar.setTextSizeDp(number);
+        mScalebar.setTextSizeSp(number);
         break;
       case R.id.action_bar_height:
         mScalebar.setBarHeightDp(number);

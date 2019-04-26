@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
@@ -34,6 +35,8 @@ import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
+import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
+import com.esri.arcgisruntime.toolkit.extension.spToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
@@ -46,7 +49,8 @@ private const val DEFAULT_LINE_COLOR = Color.WHITE
 private const val DEFAULT_SHADOW_COLOR = Color.BLACK or ALPHA_50_PC
 private const val DEFAULT_TEXT_COLOR = Color.BLACK
 private const val DEFAULT_TEXT_SHADOW_COLOR = Color.WHITE
-private const val DEFAULT_TEXT_SIZE_DP = 15
+// Default text size obtained from Material Design Body 1 https://material.io/design/typography/#type-scale
+private const val DEFAULT_TEXT_SIZE_SP = 16
 private const val DEFAULT_BAR_HEIGHT_DP = 10
 private const val SCALEBAR_Y_PAD_DP = 10
 
@@ -95,10 +99,10 @@ class Scalebar : View {
             textPaint.setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, value)
             postInvalidate()
         }
-    var textSizeDp = DEFAULT_TEXT_SIZE_DP
+    var textSizeSp = DEFAULT_TEXT_SIZE_SP
         set(value) {
             field = value
-            textPaint.textSize = value.dpToPixels(displayDensity).toFloat()
+            textPaint.textSize = value.spToPixels(displayMetrics)
             postInvalidate()
         }
     var typeface: Typeface = Typeface.DEFAULT
@@ -123,11 +127,14 @@ class Scalebar : View {
     private val displayDensity: Float by lazy {
         context.resources.displayMetrics.density
     }
+    private val displayMetrics: DisplayMetrics by lazy {
+        context.resources.displayMetrics
+    }
     private var textPaint: Paint = Paint().apply {
         color = textColor
         setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
         typeface = this.typeface
-        textSize = textSizeDp.dpToPixels(displayDensity).toFloat()
+        textSize = textSizeSp.spToPixels(displayMetrics)
     }
     private val graphicsPoint = android.graphics.Point()
     private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
@@ -183,10 +190,10 @@ class Scalebar : View {
                 shadowColor = getColor(R.styleable.Scalebar_shadowColor, DEFAULT_SHADOW_COLOR)
                 textColor = getColor(R.styleable.Scalebar_textColor, DEFAULT_TEXT_COLOR)
                 textShadowColor = getColor(R.styleable.Scalebar_textShadowColor, DEFAULT_TEXT_SHADOW_COLOR)
-                textSizeDp = getDimensionPixelSize(
+                textSizeSp = getDimensionPixelSize(
                     R.styleable.Scalebar_textSize,
-                    DEFAULT_TEXT_SIZE_DP.dpToPixels(displayDensity)
-                )
+                    DEFAULT_TEXT_SIZE_SP
+                ).pixelsToSp(displayMetrics)
                 barHeightDp = getDimensionPixelSize(
                     R.styleable.Scalebar_barHeight,
                     DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity)
@@ -300,9 +307,9 @@ class Scalebar : View {
             val maxPixelsBelowBaseline: Float = textPaint.fontMetrics?.bottom ?: 0.0f
             val bottom = if (drawInMapView) {
                 mapView.height.toFloat() - attributionTextHeight - (mapView.viewInsetBottom + SCALEBAR_Y_PAD_DP
-                        + textSizeDp).dpToPixels(displayDensity) - maxPixelsBelowBaseline
+                        + textSizeSp).dpToPixels(displayDensity) - maxPixelsBelowBaseline
             } else {
-                height.toFloat() - (textSizeDp.dpToPixels(displayDensity)) - maxPixelsBelowBaseline
+                height.toFloat() - (textSizeSp.spToPixels(displayMetrics)) - maxPixelsBelowBaseline
             }
 
             val top = bottom - barHeightDp.dpToPixels(displayDensity)
@@ -319,7 +326,7 @@ class Scalebar : View {
                 unitSystem,
                 lineWidthDp,
                 cornerRadiusDp,
-                textSizeDp,
+                textSizeSp.spToPixels(displayMetrics),
                 fillColor,
                 alternateFillColor,
                 shadowColor,

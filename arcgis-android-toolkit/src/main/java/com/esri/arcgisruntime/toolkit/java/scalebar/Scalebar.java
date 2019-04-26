@@ -615,11 +615,11 @@ public final class Scalebar extends View {
    * Sets the text size of this Scalebar. The default is 15dp.
    *
    * @param textSizeDp the text size to set, in density-independent pixels, must be &gt; 0
-   * @throws IllegalArgumentException if textSizeDp is &lt;= 0
+   * @throws IllegalArgumentException if textSizeSp is &lt;= 0
    * @since 100.2.1
    */
   public void setTextSize(int textSizeDp) {
-    ToolkitUtil.throwIfNotPositive(textSizeDp, "textSizeDp");
+    ToolkitUtil.throwIfNotPositive(textSizeDp, "textSizeSp");
     mTextSizeDp = textSizeDp;
     createTextPaint();
     postInvalidate();
