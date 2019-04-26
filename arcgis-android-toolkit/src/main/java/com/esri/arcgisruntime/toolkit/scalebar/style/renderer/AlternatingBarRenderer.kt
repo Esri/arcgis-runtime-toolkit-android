@@ -20,7 +20,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style.ALTERNATING_BAR
@@ -48,9 +47,9 @@ class AlternatingBarRenderer : ScalebarRenderer() {
         distance: Double,
         displayUnits: LinearUnit,
         unitSystem: UnitSystem,
-        lineWidthDp: Int,
-        cornerRadiusDp: Int,
-        textSizePx: Float,
+        lineWidthPx: Int,
+        cornerRadiusPx: Int,
+        textSizePx: Int,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -66,11 +65,10 @@ class AlternatingBarRenderer : ScalebarRenderer() {
             top,
             right,
             bottom,
-            lineWidthDp,
-            cornerRadiusDp,
+            lineWidthPx,
+            cornerRadiusPx,
             alternateFillColor,
-            shadowColor,
-            displayDensity
+            shadowColor
         )
 
         // Calculate the number of segments in the bar
@@ -108,11 +106,11 @@ class AlternatingBarRenderer : ScalebarRenderer() {
                             paint.reset()
                             paint.color = lineColor
                             paint.style = Paint.Style.STROKE
-                            paint.strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+                            paint.strokeWidth = lineWidthPx.toFloat()
                             canvas.drawRoundRect(
                                 rectF,
-                                cornerRadiusDp.toFloat(),
-                                cornerRadiusDp.toFloat(),
+                                cornerRadiusPx.toFloat(),
+                                cornerRadiusPx.toFloat(),
                                 paint
                             )
                         }

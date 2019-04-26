@@ -41,8 +41,8 @@ fun Double.dpToPixels(displayDensity: Float): Int = (this * displayDensity).roun
  */
 fun Int.pixelsToDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
 
-fun Int.spToPixels(displayMetrics: DisplayMetrics): Float =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this.toFloat(), displayMetrics)
+fun Int.spToPixels(displayMetrics: DisplayMetrics): Int =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this.toFloat(), displayMetrics).roundToInt()
 
 fun Int.pixelsToSp(displayMetrics: DisplayMetrics): Int = (this / displayMetrics.scaledDensity).roundToInt()
 

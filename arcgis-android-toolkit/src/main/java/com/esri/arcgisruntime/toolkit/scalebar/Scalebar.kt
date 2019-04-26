@@ -102,7 +102,7 @@ class Scalebar : View {
     var textSizeSp = DEFAULT_TEXT_SIZE_SP
         set(value) {
             field = value
-            textPaint.textSize = value.spToPixels(displayMetrics)
+            textPaint.textSize = value.spToPixels(displayMetrics).toFloat()
             postInvalidate()
         }
     var typeface: Typeface = Typeface.DEFAULT
@@ -134,7 +134,7 @@ class Scalebar : View {
         color = textColor
         setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
         typeface = this.typeface
-        textSize = textSizeSp.spToPixels(displayMetrics)
+        textSize = textSizeSp.spToPixels(displayMetrics).toFloat()
     }
     private val graphicsPoint = android.graphics.Point()
     private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
@@ -324,8 +324,8 @@ class Scalebar : View {
                 scalebarLengthGeodetic,
                 displayUnits,
                 unitSystem,
-                lineWidthDp,
-                cornerRadiusDp,
+                lineWidthDp.dpToPixels(displayDensity),
+                cornerRadiusDp.dpToPixels(displayDensity),
                 textSizeSp.spToPixels(displayMetrics),
                 fillColor,
                 alternateFillColor,

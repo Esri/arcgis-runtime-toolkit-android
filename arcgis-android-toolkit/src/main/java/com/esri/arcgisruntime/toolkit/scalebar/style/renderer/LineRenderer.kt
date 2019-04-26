@@ -44,9 +44,9 @@ class LineRenderer : ScalebarRenderer() {
         distance: Double,
         displayUnits: LinearUnit,
         unitSystem: UnitSystem,
-        lineWidthDp: Int,
-        cornerRadiusDp: Int,
-        textSizePx: Float,
+        lineWidthPx: Int,
+        cornerRadiusPx: Int,
+        textSizePx: Int,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -56,7 +56,7 @@ class LineRenderer : ScalebarRenderer() {
     ) {
 
         // Draw the line and its shadow, including the ticks at each end
-        drawLineAndShadow(canvas, left, top, right, bottom, lineWidthDp, lineColor, shadowColor)
+        drawLineAndShadow(canvas, left, top, right, bottom, lineWidthPx, lineColor, shadowColor)
 
         // Draw the label, centered on the center of the line
         textPaint.textAlign = Paint.Align.CENTER

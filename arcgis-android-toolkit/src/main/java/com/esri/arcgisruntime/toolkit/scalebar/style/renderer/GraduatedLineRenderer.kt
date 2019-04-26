@@ -20,7 +20,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
@@ -46,9 +45,9 @@ class GraduatedLineRenderer : ScalebarRenderer() {
         distance: Double,
         displayUnits: LinearUnit,
         unitSystem: UnitSystem,
-        lineWidthDp: Int,
-        cornerRadiusDp: Int,
-        textSizePx: Float,
+        lineWidthPx: Int,
+        cornerRadiusPx: Int,
+        textSizePx: Int,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -66,7 +65,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
         with(paint) {
             reset()
             style = Paint.Style.STROKE
-            strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+            strokeWidth = lineWidthPx.toFloat()
             strokeCap = Paint.Cap.ROUND
 
             // Draw a tick, its shadow and a label at each segment boundary
@@ -93,7 +92,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
             }
 
             // Draw the line and its shadow, including the ticks at each end
-            drawLineAndShadow(canvas, left, top, right, bottom, lineWidthDp, lineColor, shadowColor)
+            drawLineAndShadow(canvas, left, top, right, bottom, lineWidthPx, lineColor, shadowColor)
 
             // Draw a label at the start of the line
             textPaint.textAlign = Paint.Align.LEFT

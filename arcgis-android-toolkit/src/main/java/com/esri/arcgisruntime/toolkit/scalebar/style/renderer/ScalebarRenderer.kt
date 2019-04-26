@@ -66,8 +66,8 @@ abstract class ScalebarRenderer {
      * @param distance              the distance represented by the length of the whole scalebar
      * @param displayUnits          the units of distance
      * @param unitSystem            the unit system that the scalebar represents
-     * @param lineWidthDp           the DP value representing the width of the lines drawn onto the canvas
-     * @param cornerRadiusDp        the DP value representing the radius of the corners of a round rectangle when drawn
+     * @param lineWidthPx           the pixel value representing the width of the lines drawn onto the canvas
+     * @param cornerRadiusPx        the pixel value representing the radius of the corners of a round rectangle when drawn
      * @param textSizePx            the pixel value representing the size of the text to be drawn in the scalebar
      * @param fillColor             the color of the bar used in [BarRenderer] and [AlternatingBarRenderer]
      * @param alternateFillColor    the color used to show segmentation in a bar. Used in [AlternatingBarRenderer]
@@ -86,9 +86,9 @@ abstract class ScalebarRenderer {
         distance: Double,
         displayUnits: LinearUnit,
         unitSystem: UnitSystem,
-        lineWidthDp: Int,
-        cornerRadiusDp: Int,
-        textSizePx: Float,
+        lineWidthPx: Int,
+        cornerRadiusPx: Int,
+        textSizePx: Int,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -114,11 +114,10 @@ abstract class ScalebarRenderer {
      * @param top                   the y-coordinate of the top of the scalebar
      * @param right                 the x-coordinate of the right hand edge of the scalebar
      * @param bottom                the y-coordinate of the bottom of the scalebar
-     * @param lineWidthDp           the DP value representing the width of the lines drawn onto the canvas
-     * @param cornerRadiusDp        the DP value representing the radius of the corners of a round rectangle when drawn
+     * @param lineWidthPx           the pixel value representing the width of the lines drawn onto the canvas
+     * @param cornerRadiusPx        the pixel value representing the radius of the corners of a round rectangle when drawn
      * @param barColor              the color for the bar
      * @param shadowColor           the color used to draw the shadows
-     * @param displayDensity        the value representing the density of the display
      * @since 100.5.0
      */
     protected fun drawBarAndShadow(
@@ -127,16 +126,15 @@ abstract class ScalebarRenderer {
         top: Float,
         right: Float,
         bottom: Float,
-        lineWidthDp: Int,
-        cornerRadiusDp: Int,
+        lineWidthPx: Int,
+        cornerRadiusPx: Int,
         barColor: Int,
-        shadowColor: Int,
-        displayDensity: Float
+        shadowColor: Int
     ) {
         // Draw the shadow of the bar, offset slightly from where the actual bar is drawn below
         rectF.apply {
             set(left, top, right, bottom)
-            with(SHADOW_OFFSET_PIXELS + lineWidthDp.dpToPixels(displayDensity) / 2) {
+            with(SHADOW_OFFSET_PIXELS + lineWidthPx / 2) {
                 offset(this, this)
             }
             paint.let { paint ->
@@ -145,8 +143,8 @@ abstract class ScalebarRenderer {
                 paint.style = Paint.Style.FILL
                 canvas.drawRoundRect(
                     this,
-                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    cornerRadiusPx.toFloat(),
+                    cornerRadiusPx.toFloat(),
                     paint
                 )
                 // Now draw the bar
@@ -154,8 +152,8 @@ abstract class ScalebarRenderer {
                 paint.color = barColor
                 canvas.drawRoundRect(
                     this,
-                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
-                    cornerRadiusDp.dpToPixels(displayDensity).toFloat(),
+                    cornerRadiusPx.toFloat(),
+                    cornerRadiusPx.toFloat(),
                     paint
                 )
             }

@@ -21,7 +21,6 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_FEET
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_METERS
@@ -49,9 +48,9 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         distance: Double,
         displayUnits: LinearUnit,
         unitSystem: UnitSystem,
-        lineWidthDp: Int,
-        cornerRadiusDp: Int,
-        textSizePx: Float,
+        lineWidthPx: Int,
+        cornerRadiusPx: Int,
+        textSizePx: Int,
         fillColor: Int,
         alternateFillColor: Int,
         shadowColor: Int,
@@ -82,7 +81,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         with(paint) {
             reset()
             style = Paint.Style.STROKE
-            strokeWidth = lineWidthDp.dpToPixels(displayDensity).toFloat()
+            strokeWidth = lineWidthPx.toFloat()
             strokeCap = Paint.Cap.ROUND
             strokeJoin = Paint.Join.ROUND
 
