@@ -28,7 +28,7 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style.BAR
 /**
  * Renders a [BAR] style scalebar.
  *
- * @see [Style.BAR]
+ * @see Style.BAR
  *
  * @since 100.5.0
  */

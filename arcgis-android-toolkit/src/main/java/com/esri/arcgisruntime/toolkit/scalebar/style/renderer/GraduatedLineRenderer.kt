@@ -24,13 +24,14 @@ import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style.GRADUATED_LINE
 
 /**
- * Renders a GRADUATED_LINE style scalebar.
+ * Renders a [GRADUATED_LINE] style scalebar.
  *
  * @see Style.GRADUATED_LINE
  *
- * @since 100.2.1
+ * @since 100.5.0
  */
 class GraduatedLineRenderer : ScalebarRenderer() {
 
@@ -55,6 +56,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
         textPaint: Paint,
         displayDensity: Float
     ) {
+
         // Calculate the number of segments in the line
         val lineDisplayLength = right - left
         val numSegments = calculateNumberOfSegments(distance, lineDisplayLength.toDouble(), displayDensity, textPaint)

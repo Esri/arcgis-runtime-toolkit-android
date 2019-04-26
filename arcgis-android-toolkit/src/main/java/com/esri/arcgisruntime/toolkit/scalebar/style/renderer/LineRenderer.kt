@@ -22,13 +22,15 @@ import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style.LINE
 
 /**
- * Renders a LINE style scalebar.
+ * Renders a [LINE] style scalebar.
  *
  * @see Style.LINE
  *
- * @since 100.2.1
+ * @since 100.5.0
  */
 class LineRenderer : ScalebarRenderer() {
 
@@ -53,6 +55,7 @@ class LineRenderer : ScalebarRenderer() {
         textPaint: Paint,
         displayDensity: Float
     ) {
+
         // Draw the line and its shadow, including the ticks at each end
         drawLineAndShadow(canvas, left, top, right, bottom, lineWidthDp, lineColor, shadowColor)
 

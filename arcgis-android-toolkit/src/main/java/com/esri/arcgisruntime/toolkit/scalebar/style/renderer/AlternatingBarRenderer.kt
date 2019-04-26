@@ -28,7 +28,7 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style.ALTERNATING_BAR
 /**
  * Renders an [ALTERNATING_BAR] style scalebar.
  *
- * @see [Style.ALTERNATING_BAR]
+ * @see Style.ALTERNATING_BAR
  *
  * @since 100.5.0
  */
