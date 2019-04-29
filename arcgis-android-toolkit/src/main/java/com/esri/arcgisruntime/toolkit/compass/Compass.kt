@@ -211,6 +211,12 @@ class Compass : View {
         initializeCompass()
     }
 
+    /**
+     * Called during construction to set the initial alhpa value for the [Compass] and set the [View.OnTouchListener] to listen
+     * for touches from the user.
+     *
+     * @since 100.5.0
+     */
     private fun initializeCompass() {
         alpha = if (isAutoHide) 0.0f else 1.0f
         setOnTouchListener { _, _ ->
