@@ -280,8 +280,7 @@ class Compass : View {
     }
 
     /**
-     * Provide a [height] DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Provide a [height] DP value to set the height of the [Compass]. Must be positive.
      *
      * @throws [IllegalArgumentException] if [height] isn't positive
      * @since 100.5.0
@@ -295,8 +294,7 @@ class Compass : View {
     }
 
     /**
-     * Get the DP height of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Get the DP height of the [Compass].
      *
      * @since 100.5.0
      */
@@ -305,8 +303,7 @@ class Compass : View {
     }
 
     /**
-     * Provide a [width] DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Provide a [width] DP value to set the width of the [Compass]. Must be positive.
      *
      * @throws [IllegalArgumentException] if [width] isn't positive
      * @since 100.5.0
@@ -320,8 +317,7 @@ class Compass : View {
     }
 
     /**
-     * Get the DP width of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Get the DP width of the [Compass].
      *
      * @since 100.5.0
      */
