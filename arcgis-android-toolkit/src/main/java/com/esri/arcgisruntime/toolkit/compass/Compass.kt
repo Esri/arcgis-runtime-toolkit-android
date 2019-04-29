@@ -99,6 +99,7 @@ class Compass : View {
     companion object {
         /**
          * Default height and width of [Compass] in DP
+         * @suppress
          */
         const val DEFAULT_HEIGHT_AND_WIDTH_DP = 50
     }
