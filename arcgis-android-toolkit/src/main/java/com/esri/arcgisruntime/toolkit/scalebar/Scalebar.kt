@@ -36,9 +36,66 @@ import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.extension.spToPixels
 import com.esri.arcgisruntime.toolkit.extension.unitSystemFromInt
+import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
 import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
+/**
+ * Displays a bar or line indicating the current scale of a [MapView]. Two workflows are supported:
+ *
+ * _Workflow 1:_
+ *
+ * The simplest workflow is for the app to instantiate a Scalebar using using an instance of [Context] and call
+ * [addToMapView] to display it within the MapView. Optionally, setter methods may be called to override
+ * some of the default settings. The app has limited control over the position of the scalebar (bottom-left,
+ * bottom-right or bottom-centered) and no control over the size (it is sized automatically to fit comfortably within
+ * the MapView).
+ *
+ * For example:
+ * ```
+ * val scalebar = Scalebar(mapView.context)
+ * scalebar.alignment = Scalebar.Alignment.CENTER // optionally override default settings
+ * scalebar.addToMapView(mapView);
+ * ```
+ *
+ * _Workflow 2:_
+ *
+ * Alternatively, the app could define a Scalebar anywhere it likes in its view hierarchy, because Scalebar extends the
+ * Android View class. The system will instantiate the Scalebar. The app then calls [bindTo] to make it come to life as a
+ * scalebar for the given MapView. This workflow gives the app complete control over where the scalebar is displayed -
+ * it could be positioned on top of any part of the MapView, or placed somewhere outside the bounds of the MapView.
+ * It also gives the app complete control over the size of the scalebar.
+ *
+ * Here's example XML code to define a Scalebar:
+ * ```
+ * <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+ * android:id="@+id/scalebar"
+ * android:layout_width="300dp"
+ * android:layout_height="45dp"
+ * android:layout_margin="5dp"
+ * app:alternateFillColor="@android:color/holo_orange_light"
+ * app:fillColor="@android:color/holo_orange_dark"
+ * app:layout_constraintLeft_toLeftOf="@+id/mapview"
+ * app:layout_constraintTop_toTopOf="@+id/mapview"
+ * app:lineColor="#FFC0C0C0"
+ * app:style="graduatedLine" />
+ * ```
+ *
+ * Here's example Java code to bind the Scalebar to the MapView:
+ * ```
+ * val scalebar = findViewById(R.id.scalebar);
+ * scalebar.bindTo(mapView);
+ * ```
+ *
+ * _Mutually Exclusive Workflows:_
+ *
+ * The methods to connect and disconnect a Scalebar to a MapView are mutually exclusive between the two workflows. In
+ * Workflow 1, use [addToMapView] to connect it to a MapView and [removeFromMapView] to
+ * disconnect it. In Workflow 2, use [bindTo] to connect it to a MapView and [bindTo], passing **_null_** as an argument
+ * to disconnect it.
+ *
+ * @since 100.5.0
+ */
 class Scalebar : View {
 
     var style: Style = DEFAULT_STYLE
@@ -220,6 +277,21 @@ class Scalebar : View {
             )
         )
         drawInMapView = true
+    }
+
+    /**
+     * Removes this Scalebar from the MapView it was added to (if any). For use in Workflow 1 only (see [Scalebar] above).
+     *
+     * @throws IllegalStateException if this Scalebar is not currently added to a MapView
+     * @since 100.5.0
+     */
+    fun removeFromMapView() {
+        if (!drawInMapView) {
+            throw IllegalStateException("Scalebar is not currently added to a MapView")
+        }
+        mapView?.removeView(this)
+        removeListenersFromMapView()
+        drawInMapView = false
     }
 
     /**
