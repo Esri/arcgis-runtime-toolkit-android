@@ -109,19 +109,8 @@ class Compass : View {
     }
 
     private val compassMatrix: Matrix = Matrix()
-
-    /**
-     * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
-     *
-     * @since 100.5.0
-     */
-    var isAutoHide: Boolean = true
-        set(value) {
-            field = value
-            showOrHide()
-        }
-
     private var geoView: GeoView? = null
+
     private var compassRotation: Double = 0.0
         set(value) {
             field = value
@@ -129,9 +118,11 @@ class Compass : View {
         }
 
     private var drawInGeoView: Boolean = false
+
     private val displayDensity: Float by lazy {
         resources.displayMetrics.density
     }
+
     private val defaultLayoutParams = ViewGroup.LayoutParams(
         Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
         Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
@@ -179,6 +170,17 @@ class Compass : View {
             return _viewPropertyAnimator
         }
     }
+
+    /**
+     * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
+     *
+     * @since 100.5.0
+     */
+    var isAutoHide: Boolean = true
+        set(value) {
+            field = value
+            showOrHide()
+        }
 
     /**
      * Constructs a Compass programmatically using the [context] provided. Called by the app when Workflow 1 is used (see [Compass] above).
