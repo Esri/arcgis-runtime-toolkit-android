@@ -214,7 +214,7 @@ class Compass : View {
     }
 
     /**
-     * Called during construction to set the initial alhpa value for the [Compass] and set the [View.OnTouchListener] to listen
+     * Called during construction to set the initial alpha value for the [Compass] and set the [View.OnTouchListener] to listen
      * for touches from the user.
      *
      * @since 100.5.0
