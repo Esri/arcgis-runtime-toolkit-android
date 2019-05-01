@@ -372,7 +372,7 @@ class Compass : View {
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = it.width - (0.02f * it.width) - preferredSizePx
+                var xPos = (0.98f * it.width) - preferredSizePx
                 var yPos = (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
