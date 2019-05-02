@@ -29,7 +29,12 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.ScalebarRenderer
  *
  * @since 100.5.0
  */
-enum class Style(val value: Int) {
+enum class Style(
+    /**
+     * @suppress
+     */
+    val value: Int
+) {
 
     /**
      * A simple, non-segmented bar. A single label is displayed showing the distance represented by the length of the
@@ -86,8 +91,16 @@ enum class Style(val value: Int) {
 
     companion object {
         private val map = values().associateBy(Style::value)
+        /**
+         * @suppress
+         */
         fun fromInt(type: Int) = map[type]
     }
 
+    /**
+     * A subclass of [ScalebarRenderer] that renders a [Style]
+     *
+     * @since 100.5.0
+     */
     abstract val renderer: ScalebarRenderer
 }

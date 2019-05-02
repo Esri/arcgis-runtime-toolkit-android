@@ -465,7 +465,12 @@ class Scalebar : View {
      *
      * @since 100.5.0
      */
-    enum class Alignment(val value: Int) {
+    enum class Alignment(
+        /**
+         * @suppress
+         */
+        val value: Int
+    ) {
         /**
          * The scalebar is left-aligned, meaning that the left hand end of the scalebar is fixed and it shrinks and grows at
          * the right hand end. If the scalebar is added to a MapView using [addToMapView], it will be
@@ -495,6 +500,9 @@ class Scalebar : View {
 
         companion object {
             private val map = Alignment.values().associateBy(Alignment::value)
+            /**
+             * @suppress
+             */
             fun fromInt(type: Int) = map[type]
         }
     }
