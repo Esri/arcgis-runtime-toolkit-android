@@ -25,9 +25,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.mapping.view.MapView
-import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.TestUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
+import com.esri.arcgisruntime.toolkit.test.R
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import junit.framework.TestCase.fail
@@ -122,8 +122,7 @@ class ScalebarTest {
         scalebar.textColor = Color.GREEN
         scalebar.textShadowColor = Color.BLUE
         scalebar.typeface = Typeface.SANS_SERIF
-        scalebar.textSizeSp = 20
-        scalebar.barHeightDp = 12
+        scalebar.textSize = scalebar.resources.getDimensionPixelSize(R.dimen.scalebar_test_text_size)
 
         // Check all the values that were set
         checkSetValues(scalebar, Typeface.SANS_SERIF)
@@ -229,8 +228,7 @@ class ScalebarTest {
         assertEquals(DEFAULT_TEXT_COLOR, scalebar.textColor)
         assertEquals(DEFAULT_TEXT_SHADOW_COLOR, scalebar.textShadowColor)
         assertEquals(DEFAULT_TYPEFACE, scalebar.typeface)
-        assertEquals(DEFAULT_TEXT_SIZE_SP, scalebar.textSizeSp)
-        assertEquals(DEFAULT_BAR_HEIGHT_DP, scalebar.barHeightDp)
+        assertEquals(scalebar.resources.getDimensionPixelSize(R.dimen.scalebar_default_text_size), scalebar.textSize)
     }
 
     /**
@@ -252,8 +250,7 @@ class ScalebarTest {
         assertEquals(Color.GREEN, scalebar.textColor)
         assertEquals(Color.BLUE, scalebar.textShadowColor)
         assertTrue("Unexpected Typeface", typeface == scalebar.typeface)
-        assertEquals(20, scalebar.textSizeSp)
-        assertEquals(12, scalebar.barHeightDp)
+        assertEquals(scalebar.resources.getDimensionPixelSize(R.dimen.scalebar_test_text_size), scalebar.textSize)
     }
 
 }

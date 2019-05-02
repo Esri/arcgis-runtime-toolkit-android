@@ -19,7 +19,7 @@
         app:style="graduatedLine"
         app:textColor="#FF00FF00"
         app:textShadowColor="#FF0000FF"
-        app:textSize="20sp"
+        app:textSize="@dimen/scalebar_test_text_size"
         app:unitSystem="imperial" />
 
 </LinearLayout>

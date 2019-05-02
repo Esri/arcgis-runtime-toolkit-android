@@ -19,6 +19,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -140,11 +141,8 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
           return true;
         case R.id.action_text_size:
           NumberDialogFragment.newInstance(
-              "Text Size in SP", (int) mScalebar.getTextSizeSp()).show(getSupportFragmentManager(), "NumberDialog");
-          return true;
-        case R.id.action_bar_height:
-          NumberDialogFragment.newInstance(
-              "Bar Height in DP", mScalebar.getBarHeightDp()).show(getSupportFragmentManager(), "NumberDialog");
+              "Text Size in SP", (int) (mScalebar.getTextSize() / getResources().getDisplayMetrics().scaledDensity))
+              .show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
           addInsetsToMapView();
@@ -212,10 +210,8 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_text_size:
-        mScalebar.setTextSizeSp(number);
-        break;
-      case R.id.action_bar_height:
-        mScalebar.setBarHeightDp(number);
+        mScalebar.setTextSize(
+            (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, number, getResources().getDisplayMetrics()));
         break;
     }
   }

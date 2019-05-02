@@ -45,10 +45,6 @@
           android:title="setTextSize"
           app:showAsAction="never"/>
 
-    <item android:id="@+id/action_bar_height"
-          android:title="setBarHeight"
-          app:showAsAction="never"/>
-
     <item android:id="@+id/action_add_insets"
           android:title="Add insets"
           app:showAsAction="never"/>

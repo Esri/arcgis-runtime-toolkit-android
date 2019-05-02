@@ -25,9 +25,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.esri.arcgisruntime.UnitSystem;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.toolkit.R;
+import com.esri.arcgisruntime.toolkit.test.R;
 import com.esri.arcgisruntime.toolkit.TestUtil;
-import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
