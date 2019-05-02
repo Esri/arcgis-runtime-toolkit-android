@@ -16,8 +16,6 @@
 
 package com.esri.arcgisruntime.toolkit.extension
 
-import android.util.DisplayMetrics
-import android.util.TypedValue
 import kotlin.math.roundToInt
 
 /**
@@ -40,11 +38,6 @@ fun Double.dpToPixels(displayDensity: Float): Int = (this * displayDensity).roun
  * @since 100.5.0
  */
 fun Int.pixelsToDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
-
-fun Int.spToPixels(displayMetrics: DisplayMetrics): Int =
-    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this.toFloat(), displayMetrics).roundToInt()
-
-fun Int.pixelsToSp(displayMetrics: DisplayMetrics): Int = (this / displayMetrics.scaledDensity).roundToInt()
 
 /**
  * Throw a [IllegalArgumentException] when the [Int] is not positive

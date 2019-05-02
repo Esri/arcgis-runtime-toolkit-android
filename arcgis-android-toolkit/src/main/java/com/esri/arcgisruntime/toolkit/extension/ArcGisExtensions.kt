@@ -18,6 +18,11 @@ package com.esri.arcgisruntime.toolkit.extension
 
 import com.esri.arcgisruntime.UnitSystem
 
+/**
+ * Return an instance of [UnitSystem] mapped by an int.
+ *
+ * @since 100.5.0
+ */
 fun unitSystemFromInt(value: Int): UnitSystem {
     return when (value) {
         0 -> UnitSystem.IMPERIAL
