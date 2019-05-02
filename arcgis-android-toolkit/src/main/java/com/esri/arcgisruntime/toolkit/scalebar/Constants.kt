@@ -17,6 +17,8 @@
 package com.esri.arcgisruntime.toolkit.scalebar
 
 import android.graphics.Color
+import android.graphics.Typeface
+import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.geometry.LinearUnitId
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
@@ -35,6 +37,8 @@ internal const val DEFAULT_LINE_COLOR = Color.WHITE
 internal const val DEFAULT_SHADOW_COLOR = Color.BLACK or ALPHA_50_PC
 internal const val DEFAULT_TEXT_COLOR = Color.BLACK
 internal const val DEFAULT_TEXT_SHADOW_COLOR = Color.WHITE
+internal val DEFAULT_TYPEFACE = Typeface.DEFAULT
+internal val DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC
 // Default text size obtained from Material Design Body 1 https://material.io/design/typography/#type-scale
 internal const val DEFAULT_TEXT_SIZE_SP = 16
 internal const val DEFAULT_BAR_HEIGHT_DP = 10

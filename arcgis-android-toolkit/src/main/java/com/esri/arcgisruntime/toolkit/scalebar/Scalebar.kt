@@ -156,7 +156,7 @@ class Scalebar : View {
             postInvalidate()
         }
 
-    var typeface: Typeface = Typeface.DEFAULT
+    var typeface: Typeface = DEFAULT_TYPEFACE
         set(value) {
             field = value
             textPaint.typeface = value
@@ -169,7 +169,7 @@ class Scalebar : View {
             postInvalidate()
         }
 
-    var unitSystem: UnitSystem = UnitSystem.METRIC
+    var unitSystem: UnitSystem = DEFAULT_UNIT_SYSTEM
         set(value) {
             field = value
             postInvalidate()
@@ -293,6 +293,7 @@ class Scalebar : View {
         mapView?.removeView(this)
         removeListenersFromMapView()
         drawInMapView = false
+        mapView = null
     }
 
     /**
@@ -308,6 +309,7 @@ class Scalebar : View {
         if (mapView == null) {
             if (this.mapView != null) {
                 removeListenersFromMapView()
+                this.mapView = null
             }
         } else {
             setupMapView(mapView)
