@@ -98,7 +98,7 @@ fun ScalebarRenderer.calculateOptimalNumberOfSegments(distance: Double, maxNumSe
  * Returns the appropriate [LinearUnit] to use when the [distance] (in feet if [unitSystem] is IMPERIAL or meters if
  * [unitSystem] is METRIC) represented by the whole scalebar has a particular value.
  *
- * @since 100.5.1
+ * @since 100.5.0
  */
 fun ScalebarRenderer.selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearUnit {
     when (unitSystem) {

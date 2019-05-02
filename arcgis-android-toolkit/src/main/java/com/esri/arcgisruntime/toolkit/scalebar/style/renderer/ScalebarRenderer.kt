@@ -39,7 +39,7 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style
  * - [GraduatedLineRenderer]
  * - [DualUnitLineRenderer]
  *
- * @since 100.5.1
+ * @since 100.5.0
  */
 abstract class ScalebarRenderer {
 
@@ -61,7 +61,7 @@ abstract class ScalebarRenderer {
     /**
      * Indicates if this style of scalebar is segmented. Returns true if segmented, false otherwise.
      *
-     * @since 100.5.1
+     * @since 100.5.0
      */
     abstract val isSegmented: Boolean
 
