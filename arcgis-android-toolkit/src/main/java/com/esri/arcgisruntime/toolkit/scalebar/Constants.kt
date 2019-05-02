@@ -37,9 +37,7 @@ internal const val DEFAULT_LINE_COLOR = Color.WHITE
 internal const val DEFAULT_SHADOW_COLOR = Color.BLACK or ALPHA_50_PC
 internal const val DEFAULT_TEXT_COLOR = Color.BLACK
 internal const val DEFAULT_TEXT_SHADOW_COLOR = Color.WHITE
-internal val DEFAULT_TYPEFACE = Typeface.DEFAULT
+internal val DEFAULT_TYPEFACE = Typeface.DEFAULT_BOLD
 internal val DEFAULT_UNIT_SYSTEM = UnitSystem.METRIC
-// Default text size obtained from Material Design Body 1 https://material.io/design/typography/#type-scale
-internal const val DEFAULT_TEXT_SIZE_SP = 16
 internal const val DEFAULT_BAR_HEIGHT_DP = 10
 internal const val SCALEBAR_Y_PAD_DP = 10
