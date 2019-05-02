@@ -351,6 +351,8 @@ class Scalebar : View {
                 return
             }
             val centerPoint = visibleArea.extent.center
+            // We shouldn't be allocating an object here but the Polyline class appears to be immutable and the
+            // PolylineBuilder class doesn't allow us to clear points we've added
             val builder = PolylineBuilder(mapView.spatialReference)
             builder.addPoint(p1)
             builder.addPoint(centerPoint) // include center point to ensure it goes the correct way round the globe
