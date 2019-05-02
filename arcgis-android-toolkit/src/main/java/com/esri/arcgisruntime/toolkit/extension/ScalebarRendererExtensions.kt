@@ -184,11 +184,7 @@ private fun selectMultiplierData(distance: Double, magnitude: Double): Multiplie
  */
 private data class MultiplierData
 /**
- * Constructs a [MultiplierData].
- *
- * @param multiplier     the multiplier
- * @param segmentOptions the array of segment options appropriate for the multiplier; these are ints representing
- * number of segments in the scalebar; it's important that they are in ascending order
+ * @constructor
  * @since 100.5.0
  */
     (
