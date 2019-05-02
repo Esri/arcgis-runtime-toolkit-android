@@ -45,8 +45,17 @@ abstract class ScalebarRenderer {
 
     // The following are defined as member fields to minimize object allocation during draw operations
     private val rect = Rect()
+    /**
+     * @suppress
+     */
     protected val rectF = RectF()
+    /**
+     * @suppress
+     */
     protected val linePath = Path()
+    /**
+     * @suppress
+     */
     protected val paint = Paint()
 
     /**

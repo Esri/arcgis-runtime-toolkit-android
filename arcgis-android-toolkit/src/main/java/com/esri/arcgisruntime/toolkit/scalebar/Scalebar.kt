@@ -98,42 +98,86 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style
  */
 class Scalebar : View {
 
+    /**
+     * The [Style] of Scalebar that will be rendered. One of:
+     * - [Style.BAR]
+     * - [Style.ALTERNATING_BAR]
+     * - [Style.LINE]
+     * - [Style.GRADUATED_LINE]
+     * - [Style.DUAL_UNIT_LINE]
+     *
+     * @since 100.5.0
+     */
     var style: Style = DEFAULT_STYLE
         set(value) {
             field = value
             postInvalidate()
         }
 
+    /**
+     * The alignment of the Scalebar when using Workflow 1 (see [Scalebar] and [addToMapView]). One of:
+     * - [Alignment.LEFT]
+     * - [Alignment.RIGHT]
+     * - [Alignment.CENTER]
+     *
+     * @since 100.5.0
+     */
     var alignment = DEFAULT_ALIGNMENT
         set(value) {
             field = value
             postInvalidate()
         }
 
+    /**
+     * The resolved color used to fill bar based Scalebars. Used in [Style.BAR] and [Style.ALTERNATING_BAR].
+     *
+     * @since 100.5.0
+     */
     var fillColor: Int = DEFAULT_FILL_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
 
+    /**
+     * The resolved color used to fill the alternate bars in bar based Scalebars. Used in [Style.ALTERNATING_BAR].
+     *
+     * @since 100.5.0
+     */
     var alternateFillColor: Int = DEFAULT_ALTERNATE_FILL_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
 
+    /**
+     * The resolved color used to draw the lines in line based Scalebars. Used in [Style.LINE], [Style.GRADUATED_LINE] and
+     * [Style.DUAL_UNIT_LINE].
+     *
+     * @since 100.5.0
+     */
     var lineColor: Int = DEFAULT_LINE_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
 
+    /**
+     * The resolved color used to draw shadows around bars and lines.
+     *
+     * @since 100.5.0
+     */
     var shadowColor: Int = DEFAULT_SHADOW_COLOR
         set(value) {
             field = value
             postInvalidate()
         }
 
+    /**
+     * The resolved color used to draw text.
+     *
+     * @since 100.5.0
+     */
     var textColor: Int = DEFAULT_TEXT_COLOR
         set(value) {
             field = value
@@ -141,6 +185,11 @@ class Scalebar : View {
             postInvalidate()
         }
 
+    /**
+     * The resolved color used to draw text shadows.
+     *
+     * @since 100.5.0
+     */
     var textShadowColor = DEFAULT_TEXT_SHADOW_COLOR
         set(value) {
             field = value
@@ -149,7 +198,9 @@ class Scalebar : View {
         }
 
     /**
-     * Defines the size of the text displayed in a [Scalebar] in pixels.
+     * The size of the text displayed in a [Scalebar] in pixels.
+     *
+     * @since 100.5.0
      */
     var textSize: Int = resources.getDimensionPixelSize(R.dimen.scalebar_default_text_size)
         set(value) {
@@ -158,6 +209,11 @@ class Scalebar : View {
             postInvalidate()
         }
 
+    /**
+     * The [Typeface] used to draw text in a Scalebar.
+     *
+     * @since 100.5.0
+     */
     var typeface: Typeface = DEFAULT_TYPEFACE
         set(value) {
             field = value
@@ -165,6 +221,13 @@ class Scalebar : View {
             postInvalidate()
         }
 
+    /**
+     * The [UnitSystem] used that the Scalebar is representing. One of:
+     * - [UnitSystem.IMPERIAL]
+     * - [UnitSystem.METRIC]
+     *
+     * @since 100.5.0
+     */
     var unitSystem: UnitSystem = DEFAULT_UNIT_SYSTEM
         set(value) {
             field = value
@@ -313,6 +376,11 @@ class Scalebar : View {
         }
     }
 
+    /**
+     * Draws the [Scalebar] onto the provided [canvas] with the current scale.
+     *
+     * @since 100.5.0
+     */
     override fun onDraw(canvas: Canvas) {
         mapView?.let { mapView ->
             // Calculate width and height of visible part of MapView
