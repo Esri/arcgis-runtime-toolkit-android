@@ -241,10 +241,6 @@ class Scalebar : View {
         context.resources.displayMetrics.density
     }
 
-    private val displayMetrics: DisplayMetrics by lazy {
-        context.resources.displayMetrics
-    }
-
     private var textPaint: Paint = Paint().apply {
         color = textColor
         setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
