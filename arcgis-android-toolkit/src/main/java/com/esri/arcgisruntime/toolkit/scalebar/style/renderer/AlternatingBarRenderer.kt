@@ -20,7 +20,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.extension.labelString
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style.ALTERNATING_BAR
 
@@ -123,7 +123,7 @@ class AlternatingBarRenderer : ScalebarRenderer() {
 
                     // Draw a label at the end of the bar
                     textPaint.textAlign = Paint.Align.RIGHT
-                    canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
+                    canvas.drawText(labelString(distance), right, yPosText, textPaint)
                     textPaint.textAlign = Paint.Align.LEFT
                     canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
 
@@ -133,7 +133,7 @@ class AlternatingBarRenderer : ScalebarRenderer() {
                     textPaint.textAlign = Paint.Align.CENTER
                     for (segNo in 1 until numSegments) {
                         canvas.drawLine(xPos, top, xPos, bottom, paint)
-                        canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, textPaint)
+                        canvas.drawText(labelString(segmentDistance * segNo), xPos, yPosText, textPaint)
                         xPos += this
                     }
                 }

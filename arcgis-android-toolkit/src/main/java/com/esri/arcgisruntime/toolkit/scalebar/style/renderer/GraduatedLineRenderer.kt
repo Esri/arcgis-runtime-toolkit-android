@@ -20,7 +20,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.extension.labelString
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style.GRADUATED_LINE
@@ -87,7 +87,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
                 canvas.drawLine(xPos, yPos, xPos, bottom, this)
 
                 // Draw the label
-                canvas.drawText(ScalebarUtil.labelString(segmentDistance * segNo), xPos, yPosText, textPaint)
+                canvas.drawText(labelString(segmentDistance * segNo), xPos, yPosText, textPaint)
                 xPos += segmentDisplayLength
             }
 
@@ -100,7 +100,7 @@ class GraduatedLineRenderer : ScalebarRenderer() {
 
             // Draw a label at the end of the line
             textPaint.textAlign = Paint.Align.RIGHT
-            canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
+            canvas.drawText(labelString(distance), right, yPosText, textPaint)
             textPaint.textAlign = Paint.Align.LEFT
             canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
         }

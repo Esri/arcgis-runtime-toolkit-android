@@ -23,8 +23,9 @@ import android.graphics.Rect
 import android.graphics.RectF
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
+import com.esri.arcgisruntime.toolkit.extension.calculateOptimalNumberOfSegments
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
-import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.extension.labelString
 import com.esri.arcgisruntime.toolkit.scalebar.LABEL_X_PAD_DP
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
@@ -233,7 +234,7 @@ abstract class ScalebarRenderer {
     ): Int {
         // The constraining factor is the space required to draw the labels. Create a testString containing the longest
         // label, which is usually the one for 'distance' because the other labels will be smaller numbers.
-        ScalebarUtil.labelString(distance).apply {
+        labelString(distance).apply {
             // But if 'distance' is small some of the other labels may use decimals, so allow for each label needing at least
             // 3 characters
             // Calculate the bounds of the testString to determine its length
@@ -245,7 +246,7 @@ abstract class ScalebarRenderer {
         with(rect.right * 1.5 + LABEL_X_PAD_DP.dpToPixels(displayDensity)) {
             // Calculate the number of segments
             ((displayLength / this).toInt()).let { maxNumSegments ->
-                return ScalebarUtil.calculateOptimalNumberOfSegments(distance, maxNumSegments)
+                return calculateOptimalNumberOfSegments(distance, maxNumSegments)
             }
         }
     }

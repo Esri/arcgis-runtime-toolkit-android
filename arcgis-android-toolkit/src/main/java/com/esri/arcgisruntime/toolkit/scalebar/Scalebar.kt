@@ -33,11 +33,12 @@ import com.esri.arcgisruntime.geometry.PolylineBuilder
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.mapping.view.ViewpointChangedListener
 import com.esri.arcgisruntime.toolkit.R
+import com.esri.arcgisruntime.toolkit.extension.calculateBestLength
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
+import com.esri.arcgisruntime.toolkit.extension.selectLinearUnit
 import com.esri.arcgisruntime.toolkit.extension.spToPixels
 import com.esri.arcgisruntime.toolkit.extension.unitSystemFromInt
 import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
-import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 
 /**
@@ -358,12 +359,11 @@ class Scalebar : View {
                 GeometryEngine.lengthGeodetic(builder.toGeometry(), baseUnits, GeodeticCurveType.GEODESIC)
 
             // Reduce length to make its geodetic length a nice number
-            var scalebarLengthGeodetic =
-                ScalebarUtil.calculateBestScalebarLength(maxLengthGeodetic, baseUnits, style.renderer.isSegmented)
+            var scalebarLengthGeodetic = style.renderer.calculateBestLength(maxLengthGeodetic, baseUnits)
             val scalebarLengthPixels = (maxScaleBarLengthPixels * scalebarLengthGeodetic / maxLengthGeodetic).toFloat()
 
             // Change units if the geodetic length is too big a number in the base units
-            val displayUnits = ScalebarUtil.selectLinearUnit(scalebarLengthGeodetic, unitSystem)
+            val displayUnits = style.renderer.selectLinearUnit(scalebarLengthGeodetic, unitSystem)
             if (displayUnits != baseUnits) {
                 scalebarLengthGeodetic = baseUnits.convertTo(displayUnits, scalebarLengthGeodetic)
             }

@@ -21,7 +21,9 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.extension.calculateBestLength
+import com.esri.arcgisruntime.toolkit.extension.labelString
+import com.esri.arcgisruntime.toolkit.extension.selectLinearUnit
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_FEET
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_METERS
 import com.esri.arcgisruntime.toolkit.scalebar.SHADOW_OFFSET_PIXELS
@@ -64,15 +66,14 @@ class DualUnitLineRenderer : ScalebarRenderer() {
         val fullLengthInSecondaryUnits = displayUnits.convertTo(secondaryBaseUnits, distance)
 
         // Reduce the secondary units length to make it a nice number
-        var secondaryUnitsLength =
-            ScalebarUtil.calculateBestScalebarLength(fullLengthInSecondaryUnits, secondaryBaseUnits, false)
+        var secondaryUnitsLength = calculateBestLength(fullLengthInSecondaryUnits, secondaryBaseUnits)
         val lineDisplayLength = right - left
         val xPosSecondaryTick =
             left + (lineDisplayLength * secondaryUnitsLength / fullLengthInSecondaryUnits).toFloat()
 
         // Change units if secondaryUnitsLength is too big a number in the base units
         val secondaryUnitSystem = if (unitSystem == UnitSystem.METRIC) UnitSystem.IMPERIAL else UnitSystem.METRIC
-        val secondaryDisplayUnits = ScalebarUtil.selectLinearUnit(secondaryUnitsLength, secondaryUnitSystem)
+        val secondaryDisplayUnits = selectLinearUnit(secondaryUnitsLength, secondaryUnitSystem)
         if (secondaryDisplayUnits != secondaryBaseUnits) {
             secondaryUnitsLength = secondaryBaseUnits.convertTo(secondaryDisplayUnits, secondaryUnitsLength)
         }
@@ -114,14 +115,14 @@ class DualUnitLineRenderer : ScalebarRenderer() {
                 val maxPixelsBelowBaseline = textPaint.fontMetrics.bottom
                 var yPosText = top - maxPixelsBelowBaseline
                 textPaint.textAlign = Paint.Align.RIGHT
-                canvas.drawText(ScalebarUtil.labelString(distance), right, yPosText, textPaint)
+                canvas.drawText(labelString(distance), right, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT
                 canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
 
                 // Draw the secondary units label below its tick
                 yPosText = bottom + textSizePx
                 textPaint.textAlign = Paint.Align.RIGHT
-                canvas.drawText(ScalebarUtil.labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint)
+                canvas.drawText(labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT
                 canvas.drawText(' ' + secondaryDisplayUnits.abbreviation, xPosSecondaryTick, yPosText, textPaint)
             }

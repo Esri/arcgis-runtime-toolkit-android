@@ -20,7 +20,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.java.scalebar.ScalebarUtil
+import com.esri.arcgisruntime.toolkit.extension.labelString
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style.BAR
 
@@ -90,7 +90,7 @@ class BarRenderer : ScalebarRenderer() {
         // Draw the label, centered on the center of the bar
         textPaint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "${ScalebarUtil.labelString(distance)} ${displayUnits.abbreviation}",
+            "${labelString(distance)} ${displayUnits.abbreviation}",
             left + (right - left) / 2,
             bottom + textSizePx,
             textPaint
