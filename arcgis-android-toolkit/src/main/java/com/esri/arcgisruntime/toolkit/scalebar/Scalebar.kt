@@ -244,7 +244,7 @@ class Scalebar : View {
     private var textPaint: Paint = Paint().apply {
         color = textColor
         setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
-        typeface = this.typeface
+        typeface = this@Scalebar.typeface
         textSize = this@Scalebar.textSize.toFloat()
     }
 
