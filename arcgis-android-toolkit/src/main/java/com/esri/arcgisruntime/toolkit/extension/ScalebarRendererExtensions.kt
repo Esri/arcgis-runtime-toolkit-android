@@ -20,7 +20,6 @@ import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.geometry.LinearUnitId
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.ScalebarRenderer
-import java.util.*
 
 internal const val HALF_MILE_FEET = 2640
 internal const val KILOMETER_METERS = 1000
