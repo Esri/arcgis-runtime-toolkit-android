@@ -35,6 +35,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Int.dpToPixels] to determine if the calculation performed produces the same results as the system. Ensuring
      * expected results are adhered to.
+     *
+     * @since 100.5.0
      */
     @Test
     fun intToPixelsEightyDpReturnsSameValue() {
@@ -48,6 +50,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Int.dpToPixels] to determine if a calculation against a zero value performed produces the same results as
      * the system. Ensuring expected results are adhered to.
+     *
+     * @since 100.5.0
      */
     @Test
     fun intToPixelsZeroDpReturnsSameValue() {
@@ -62,6 +66,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Double.dpToPixels] to determine if the calculation performed produces the same results as the system. Ensuring
      * expected results are adhered to.
+     *
+     * @since 100.5.0
      */
     @Test
     fun doubleToPixelsEightyDpReturnsSameValue() {
@@ -76,6 +82,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Double.dpToPixels] to determine if a calculation against a zero value performed produces the same results as
      * the system. Ensuring expected results are adhered to.
+     *
+     * @since 100.5.0
      */
     @Test
     fun doubleToPixelsZeroDpReturnsSameValue() {
@@ -89,6 +97,8 @@ class NumberExtensionsTest {
 
     /**
      * Tests [Int.throwIfNotPositive] to ensure that a positive [Int] does not throw an [Exception].
+     *
+     * @since 100.5.0
      */
     @Test
     fun intThrowIfNotPositivePositiveOneDoesNotThrow() {
@@ -97,6 +107,8 @@ class NumberExtensionsTest {
 
     /**
      * Tests [Int.throwIfNotPositive] with a "high" value to ensure that a positive [Int] does not throw an [Exception].
+     *
+     * @since 100.5.0
      */
     @Test
     fun intThrowIfNotPositivePositiveLargeNumberDoesNotThrow() {
@@ -106,6 +118,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Int.throwIfNotPositive] with a zero value to ensure that an instance of [IllegalArgumentException] is thrown
      * as per requirements.
+     *
+     * @since 100.5.0
      */
     @Test
     fun intThrowIfNotPositivePositiveZeroThrows() {
@@ -120,6 +134,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Int.throwIfNotPositive] with a negative value to ensure that an instance of [IllegalArgumentException] is
      * thrown.
+     *
+     * @since 100.5.0
      */
     @Test
     fun intThrowIfNotPositivePositiveMinusOneThrows() {
@@ -134,6 +150,8 @@ class NumberExtensionsTest {
     /**
      * Tests [Int.throwIfNotPositive] with a "low" negative value to ensure that an instance of [IllegalArgumentException]
      * is thrown.
+     *
+     * @since 100.5.0
      */
     @Test
     fun intThrowIfNotPositivePositiveMinusLargeNumberThrows() {

@@ -99,6 +99,7 @@ class Compass : View {
     companion object {
         /**
          * Default height and width of [Compass] in DP
+         * @suppress
          */
         const val DEFAULT_HEIGHT_AND_WIDTH_DP = 50
     }
@@ -108,19 +109,8 @@ class Compass : View {
     }
 
     private val compassMatrix: Matrix = Matrix()
-
-    /**
-     * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
-     *
-     * @since 100.5.0
-     */
-    var isAutoHide: Boolean = true
-        set(value) {
-            field = value
-            showOrHide()
-        }
-
     private var geoView: GeoView? = null
+
     private var compassRotation: Double = 0.0
         set(value) {
             field = value
@@ -128,9 +118,11 @@ class Compass : View {
         }
 
     private var drawInGeoView: Boolean = false
+
     private val displayDensity: Float by lazy {
         resources.displayMetrics.density
     }
+
     private val defaultLayoutParams = ViewGroup.LayoutParams(
         Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
         Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
@@ -180,6 +172,17 @@ class Compass : View {
     }
 
     /**
+     * Whether this Compass is automatically hidden when the map/scene rotation is 0 degrees.
+     *
+     * @since 100.5.0
+     */
+    var isAutoHide: Boolean = true
+        set(value) {
+            field = value
+            showOrHide()
+        }
+
+    /**
      * Constructs a Compass programmatically using the [context] provided. Called by the app when Workflow 1 is used (see [Compass] above).
      *
      * @since 100.5.0
@@ -210,6 +213,12 @@ class Compass : View {
         initializeCompass()
     }
 
+    /**
+     * Called during construction to set the initial alpha value for the [Compass] and set the [View.OnTouchListener] to listen
+     * for touches from the user.
+     *
+     * @since 100.5.0
+     */
     private fun initializeCompass() {
         alpha = if (isAutoHide) 0.0f else 1.0f
         setOnTouchListener { _, _ ->
@@ -273,8 +282,7 @@ class Compass : View {
     }
 
     /**
-     * Provide a [height] DP value to set the height of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Provide a [height] DP value to set the height of the [Compass]. Must be positive.
      *
      * @throws [IllegalArgumentException] if [height] isn't positive
      * @since 100.5.0
@@ -288,8 +296,7 @@ class Compass : View {
     }
 
     /**
-     * Get the DP height of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Get the DP height of the [Compass].
      *
      * @since 100.5.0
      */
@@ -298,8 +305,7 @@ class Compass : View {
     }
 
     /**
-     * Provide a [width] DP value to set the width of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Provide a [width] DP value to set the width of the [Compass]. Must be positive.
      *
      * @throws [IllegalArgumentException] if [width] isn't positive
      * @since 100.5.0
@@ -313,8 +319,7 @@ class Compass : View {
     }
 
     /**
-     * Get the DP width of the [Compass]. Must be called after the [View] has been measured as
-     * otherwise the [ViewGroup.LayoutParams] are null.
+     * Get the DP width of the [Compass].
      *
      * @since 100.5.0
      */
@@ -367,8 +372,8 @@ class Compass : View {
         // Set the position of the compass if it's being drawn within the GeoView (workflow 1)
         if (drawInGeoView) {
             geoView?.let {
-                var xPos = (it.right - (0.02f * it.width)) - preferredSizePx
-                var yPos = it.top + (0.02f * it.height)
+                var xPos = (0.98f * it.width) - preferredSizePx
+                var yPos = (0.02f * it.height)
                 // If the GeoView is a MapView, adjust the position to take account of any view insets that may be set
                 (geoView as? MapView)?.let { mapView ->
                     xPos -= mapView.viewInsetRight.dpToPixels(displayDensity).toFloat()
