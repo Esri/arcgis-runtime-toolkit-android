@@ -32,11 +32,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ScalebarRendererExtensionsTest {
 
-    @Before
-    fun setUp() {
-        ArcGISRuntimeEnvironment.initialize()
-    }
-
     @Test
     fun selectLinearUnitDistanceIsZeroUnitSystemImperialSelectsLinearUnitFeet() {
         assertEquals(LINEAR_UNIT_FEET.linearUnitId, selectLinearUnit(0.0, UnitSystem.IMPERIAL).linearUnitId)
