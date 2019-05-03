@@ -22,13 +22,13 @@ import com.esri.arcgisruntime.geometry.LinearUnitId
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.ScalebarRenderer
 import java.util.*
 
-private val LINEAR_UNIT_METERS = LinearUnit(LinearUnitId.METERS)
+internal const val HALF_MILE_FEET = 2640
+internal const val KILOMETER_METERS = 1000
 
-private val LINEAR_UNIT_FEET = LinearUnit(LinearUnitId.FEET)
-
-private val LINEAR_UNIT_KILOMETERS = LinearUnit(LinearUnitId.KILOMETERS)
-
-private val LINEAR_UNIT_MILES = LinearUnit(LinearUnitId.MILES)
+internal val LINEAR_UNIT_METERS = LinearUnit(LinearUnitId.METERS)
+internal val LINEAR_UNIT_FEET = LinearUnit(LinearUnitId.FEET)
+internal val LINEAR_UNIT_KILOMETERS = LinearUnit(LinearUnitId.KILOMETERS)
+internal val LINEAR_UNIT_MILES = LinearUnit(LinearUnitId.MILES)
 
 /**
  * Array containing the multipliers that may be used for a scalebar and arrays of segment options appropriate for each multiplier.
@@ -107,13 +107,13 @@ internal fun selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearU
     return when (unitSystem) {
         UnitSystem.IMPERIAL -> {
             // use MILES if at least half a mile
-            if (distance >= 2640) {
+            if (distance >= HALF_MILE_FEET) {
                 LINEAR_UNIT_MILES
             } else LINEAR_UNIT_FEET
         }
         UnitSystem.METRIC -> {
             // use KILOMETERS if at least one kilometer
-            if (distance >= 1000) {
+            if (distance >= KILOMETER_METERS) {
                 LINEAR_UNIT_KILOMETERS
             } else LINEAR_UNIT_METERS
         }
