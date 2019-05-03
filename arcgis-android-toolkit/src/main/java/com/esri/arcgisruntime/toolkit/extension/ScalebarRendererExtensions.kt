@@ -121,26 +121,6 @@ internal fun selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearU
 }
 
 /**
- * Returns a string to display as a scalebar label corresponding to the provided [distance].
- *
- * @since 100.5.0
- */
-internal fun labelString(distance: Double): String {
-    // Format with 2 decimal places
-    val label = String.format(Locale.ROOT, "%.2f", distance)
-
-    // Strip off both decimal places if they're 0s
-    if (label.endsWith(".00") || label.endsWith(",00")) {
-        return label.substring(0, label.length - 3)
-    }
-
-    // Otherwise, strip off last decimal place if it's 0
-    return if (label.endsWith("0")) {
-        label.substring(0, label.length - 1)
-    } else label
-}
-
-/**
  * Returns Ints representing the appropriate number of segments in the scalebar when a scalebar represents a given [distance].
  *
  * @since 100.5.0

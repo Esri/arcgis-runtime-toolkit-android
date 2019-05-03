@@ -21,8 +21,8 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
+import com.esri.arcgisruntime.toolkit.extension.asDistanceString
 import com.esri.arcgisruntime.toolkit.extension.calculateBestLength
-import com.esri.arcgisruntime.toolkit.extension.labelString
 import com.esri.arcgisruntime.toolkit.extension.selectLinearUnit
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_FEET
 import com.esri.arcgisruntime.toolkit.scalebar.LINEAR_UNIT_METERS
@@ -115,14 +115,14 @@ class DualUnitLineRenderer : ScalebarRenderer() {
                 val maxPixelsBelowBaseline = textPaint.fontMetrics.bottom
                 var yPosText = top - maxPixelsBelowBaseline
                 textPaint.textAlign = Paint.Align.RIGHT
-                canvas.drawText(labelString(distance), right, yPosText, textPaint)
+                canvas.drawText(distance.asDistanceString(), right, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT
                 canvas.drawText(' ' + displayUnits.abbreviation, right, yPosText, textPaint)
 
                 // Draw the secondary units label below its tick
                 yPosText = bottom + textSizePx
                 textPaint.textAlign = Paint.Align.RIGHT
-                canvas.drawText(labelString(secondaryUnitsLength), xPosSecondaryTick, yPosText, textPaint)
+                canvas.drawText(secondaryUnitsLength.asDistanceString(), xPosSecondaryTick, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT
                 canvas.drawText(' ' + secondaryDisplayUnits.abbreviation, xPosSecondaryTick, yPosText, textPaint)
             }

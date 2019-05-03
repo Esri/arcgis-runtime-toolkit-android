@@ -20,7 +20,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
-import com.esri.arcgisruntime.toolkit.extension.labelString
+import com.esri.arcgisruntime.toolkit.extension.asDistanceString
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style.LINE
 
@@ -61,7 +61,7 @@ class LineRenderer : ScalebarRenderer() {
         // Draw the label, centered on the center of the line
         textPaint.textAlign = Paint.Align.CENTER
         canvas.drawText(
-            "${labelString(distance)} ${displayUnits.abbreviation}",
+            "${distance.asDistanceString()} ${displayUnits.abbreviation}",
             left + (right - left) / 2,
             bottom + textSizePx,
             textPaint
