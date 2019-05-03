@@ -30,8 +30,11 @@ private val LINEAR_UNIT_KILOMETERS = LinearUnit(LinearUnitId.KILOMETERS)
 
 private val LINEAR_UNIT_MILES = LinearUnit(LinearUnitId.MILES)
 
-// Array containing the multipliers that may be used for a scalebar and arrays of segment options appropriate for each
-// multiplier
+/**
+ * Array containing the multipliers that may be used for a scalebar and arrays of segment options appropriate for each multiplier.
+ *
+ * @since 100.5.0
+ */
 private val MULTIPLIER_DATA_ARRAY = arrayOf(
     MultiplierData(1.0, intArrayOf(1, 2, 4, 5)),
     MultiplierData(1.2, intArrayOf(1, 2, 3, 4)),
@@ -55,7 +58,7 @@ private val MULTIPLIER_DATA_ARRAY = arrayOf(
  *
  * @since 100.5.0
  */
-fun ScalebarRenderer.calculateBestLength(maxLength: Double, unit: LinearUnit): Double {
+internal fun ScalebarRenderer.calculateBestLength(maxLength: Double, unit: LinearUnit): Double {
     val magnitude = calculateMagnitude(maxLength)
     var multiplier = selectMultiplierData(maxLength, magnitude).multiplier
 
@@ -87,36 +90,30 @@ fun ScalebarRenderer.calculateBestLength(maxLength: Double, unit: LinearUnit): D
  *
  * @since 100.5.0
  */
-fun ScalebarRenderer.calculateOptimalNumberOfSegments(distance: Double, maxNumSegments: Int): Int {
+internal fun calculateOptimalNumberOfSegments(distance: Double, maxNumSegments: Int): Int {
     // Select the largest option that's <= maxNumSegments
-    return segmentOptionsForDistance(distance).first {
+    return segmentOptionsForDistance(distance).sortedArrayDescending().first {
         it <= maxNumSegments
     }
 }
 
 /**
- * Returns the appropriate [LinearUnit] to use when the [distance] (in feet if [unitSystem] is IMPERIAL or meters if
- * [unitSystem] is METRIC) represented by the whole scalebar has a particular value.
+ * Returns the appropriate [LinearUnit] to use when the [distance] (in feet if [unitSystem] is [UnitSystem.IMPERIAL] or meters if
+ * [unitSystem] is [UnitSystem.METRIC]) represented by the whole scalebar has a particular value.
  *
  * @since 100.5.0
  */
-fun ScalebarRenderer.selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearUnit {
-    when (unitSystem) {
+internal fun selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearUnit {
+    return when (unitSystem) {
         UnitSystem.IMPERIAL -> {
             // use MILES if at least half a mile
-            return if (distance >= 2640) {
+            if (distance >= 2640) {
                 LINEAR_UNIT_MILES
             } else LINEAR_UNIT_FEET
         }
-
         UnitSystem.METRIC -> {
             // use KILOMETERS if at least one kilometer
-            return if (distance >= 1000) {
-                LINEAR_UNIT_KILOMETERS
-            } else LINEAR_UNIT_METERS
-        }
-        else -> {
-            return if (distance >= 1000) {
+            if (distance >= 1000) {
                 LINEAR_UNIT_KILOMETERS
             } else LINEAR_UNIT_METERS
         }
@@ -128,7 +125,7 @@ fun ScalebarRenderer.selectLinearUnit(distance: Double, unitSystem: UnitSystem):
  *
  * @since 100.5.0
  */
-fun ScalebarRenderer.labelString(distance: Double): String {
+internal fun labelString(distance: Double): String {
     // Format with 2 decimal places
     val label = String.format(Locale.ROOT, "%.2f", distance)
 
@@ -182,7 +179,7 @@ private fun selectMultiplierData(distance: Double, magnitude: Double): Multiplie
  *
  * @since 100.5.0
  */
-private data class MultiplierData
+private class MultiplierData
 /**
  * @constructor
  * @since 100.5.0
@@ -201,22 +198,4 @@ private data class MultiplierData
      * @since 100.5.0
      */
     val segmentOptions: IntArray
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as MultiplierData
-
-        if (multiplier != other.multiplier) return false
-        if (!segmentOptions.contentEquals(other.segmentOptions)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = multiplier.hashCode()
-        result = 31 * result + segmentOptions.contentHashCode()
-        return result
-    }
-}
+)

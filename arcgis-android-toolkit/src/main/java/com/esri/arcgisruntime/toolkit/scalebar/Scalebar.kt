@@ -21,7 +21,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.view.ViewGroup
@@ -428,7 +427,7 @@ class Scalebar : View {
             val scalebarLengthPixels = (maxScaleBarLengthPixels * scalebarLengthGeodetic / maxLengthGeodetic).toFloat()
 
             // Change units if the geodetic length is too big a number in the base units
-            val displayUnits = style.renderer.selectLinearUnit(scalebarLengthGeodetic, unitSystem)
+            val displayUnits = selectLinearUnit(scalebarLengthGeodetic, unitSystem)
             if (displayUnits != baseUnits) {
                 scalebarLengthGeodetic = baseUnits.convertTo(displayUnits, scalebarLengthGeodetic)
             }
