@@ -17,10 +17,10 @@
 package com.esri.arcgisruntime.toolkit.extension
 
 import android.support.test.runner.AndroidJUnit4
-import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
 import com.esri.arcgisruntime.UnitSystem
+import com.esri.arcgisruntime.geometry.LinearUnit
+import com.esri.arcgisruntime.geometry.LinearUnitId
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -32,11 +32,23 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ScalebarRendererExtensionsTest {
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.FEET] when the
+     * provided distance is equal to 0 and the provided [UnitSystem] is equal to [UnitSystem.IMPERIAL].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceIsZeroUnitSystemImperialSelectsLinearUnitFeet() {
         assertEquals(LINEAR_UNIT_FEET.linearUnitId, selectLinearUnit(0.0, UnitSystem.IMPERIAL).linearUnitId)
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.FEET] when the
+     * provided distance is less than half a mile and the provided [UnitSystem] is equal to [UnitSystem.IMPERIAL].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceLessThanHalfMileUnitSystemImperialSelectsLinearUnitFeet() {
         assertEquals(
@@ -45,6 +57,12 @@ class ScalebarRendererExtensionsTest {
         )
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.MILES] when the
+     * provided distance is equal to half a mile and the provided [UnitSystem] is equal to [UnitSystem.IMPERIAL].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceEqualToHalfMileUnitSystemImperialSelectsLinearUnitMiles() {
         assertEquals(
@@ -53,6 +71,12 @@ class ScalebarRendererExtensionsTest {
         )
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.MILES] when the
+     * provided distance is greater than half a mile and the provided [UnitSystem] is equal to [UnitSystem.IMPERIAL].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceGreaterThanHalfMileUnitSystemImperialSelectsLinearUnitMiles() {
         assertEquals(
@@ -61,11 +85,23 @@ class ScalebarRendererExtensionsTest {
         )
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.METERS] when the
+     * provided distance is equal to 0 and the provided [UnitSystem] is equal to [UnitSystem.METRIC].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceIsZeroUnitSystemMetricSelectsLinearUnitMeters() {
         assertEquals(LINEAR_UNIT_METERS.linearUnitId, selectLinearUnit(0.0, UnitSystem.METRIC).linearUnitId)
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.METERS] when the
+     * provided distance is less than 1 kilometer and the provided [UnitSystem] is equal to [UnitSystem.METRIC].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceLessThanOneKilometerUnitSystemImperialSelectsLinearUnitMeters() {
         assertEquals(
@@ -74,6 +110,12 @@ class ScalebarRendererExtensionsTest {
         )
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.KILOMETERS] when the
+     * provided distance is equal to 1 kilometer and the provided [UnitSystem] is equal to [UnitSystem.METRIC].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceEqualToOneKilometerUnitSystemImperialSelectsLinearUnitKilometers() {
         assertEquals(
@@ -82,6 +124,12 @@ class ScalebarRendererExtensionsTest {
         )
     }
 
+    /**
+     * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.KILOMETERS] when the
+     * provided distance is greater than 1 kilometer and the provided [UnitSystem] is equal to [UnitSystem.METRIC].
+     *
+     * @since 100.5.0
+     */
     @Test
     fun selectLinearUnitDistanceGreaterThanOneKilometerUnitSystemImperialSelectsLinearUnitKilometers() {
         assertEquals(
@@ -89,5 +137,4 @@ class ScalebarRendererExtensionsTest {
             selectLinearUnit((KILOMETER_METERS + 1).toDouble(), UnitSystem.METRIC).linearUnitId
         )
     }
-
 }
