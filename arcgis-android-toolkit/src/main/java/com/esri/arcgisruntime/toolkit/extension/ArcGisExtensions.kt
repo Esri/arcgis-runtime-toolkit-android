@@ -19,13 +19,16 @@ package com.esri.arcgisruntime.toolkit.extension
 import com.esri.arcgisruntime.UnitSystem
 
 /**
- * Return an instance of [UnitSystem] mapped by an int.
+ * Return an instance of [UnitSystem] mapped by an int. Must be 0 for [UnitSystem.IMPERIAL] or 1 for [UnitSystem.METRIC].
  *
+ * @throws IllegalArgumentException if an int that is neither 0 or 1 is supplied.
  * @since 100.5.0
  */
-fun unitSystemFromInt(value: Int): UnitSystem {
+@Throws(IllegalArgumentException::class)
+internal fun unitSystemFromInt(value: Int): UnitSystem {
     return when (value) {
         0 -> UnitSystem.IMPERIAL
-        else -> UnitSystem.METRIC
+        1 -> UnitSystem.METRIC
+        else -> throw IllegalArgumentException("No valid Integer supplied to return a UnitSystem.")
     }
 }
