@@ -123,10 +123,12 @@ class Compass : View {
         resources.displayMetrics.density
     }
 
-    private val defaultLayoutParams = ViewGroup.LayoutParams(
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
-    )
+    private val defaultLayoutParams by lazy {
+        ViewGroup.LayoutParams(
+            DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
+            DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
+        )
+    }
 
     private val viewpointChangedListener = ViewpointChangedListener {
         geoView?.let { geoView ->
