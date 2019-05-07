@@ -23,6 +23,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
+            // Required to run Instrumented tests in API 19. Only applicable to debug variants as tests are only run
+            // on debug variants.
             multiDexKeepProguard file("$rootProject.projectDir/proguard-multidex-rules.pro")
         }
     }
