@@ -18,7 +18,7 @@ package com.esri.arcgisruntime.toolkit.extension
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import com.esri.arcgisruntime.toolkit.R
+import com.esri.arcgisruntime.toolkit.test.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test

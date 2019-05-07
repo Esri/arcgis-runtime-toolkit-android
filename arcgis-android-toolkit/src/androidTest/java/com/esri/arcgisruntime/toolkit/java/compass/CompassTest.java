@@ -22,7 +22,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.toolkit.R;
+import com.esri.arcgisruntime.toolkit.test.R;
 import com.esri.arcgisruntime.toolkit.TestUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
