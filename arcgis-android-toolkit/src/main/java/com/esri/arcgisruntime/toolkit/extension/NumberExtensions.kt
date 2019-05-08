@@ -60,13 +60,11 @@ fun Double.asDistanceString(): String {
         // Strip off both decimal places if they're 0s
         if (it.endsWith(".00") || it.endsWith(",00")) {
             it.substring(0, it.length - 3)
+            // Otherwise, strip off last decimal place if it's 0
+        } else if (it != "0" && it.endsWith("0")) {
+            it.substring(0, it.length - 1)
         } else {
             it
         }
-    }.let {
-        // Otherwise, strip off last decimal place if it's 0
-        if (it != "0" && it.endsWith("0")) {
-            it.substring(0, it.length - 1)
-        } else it
     }
 }

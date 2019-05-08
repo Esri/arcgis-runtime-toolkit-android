@@ -260,4 +260,14 @@ class NumberExtensionsTest {
     fun doubleAsDistanceLargeDouble() {
         assertEquals("99999", 99999.0.asDistanceString())
     }
+
+    /**
+     * Tests formatting Double as distance String with 12000.0
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceTwelveThousand() {
+        assertEquals("12000", 12000.0.asDistanceString())
+    }
 }
