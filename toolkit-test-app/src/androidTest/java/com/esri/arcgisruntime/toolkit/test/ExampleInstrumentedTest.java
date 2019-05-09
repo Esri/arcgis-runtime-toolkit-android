@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     // Context of the app under test.
     Context appContext = InstrumentationRegistry.getTargetContext();
 
-    assertEquals("com.esri.arcgisruntime.toolkit.scalebartestapp", appContext.getPackageName());
+    assertEquals("com.esri.arcgisruntime.toolkit", appContext.getPackageName());
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.compass;
+package com.esri.arcgisruntime.toolkit.java.compass;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;

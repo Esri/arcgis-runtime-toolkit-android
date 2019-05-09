@@ -15,8 +15,6 @@
  */
 package com.esri.arcgisruntime.toolkit.test.compass;
 
-import java.util.concurrent.CancellationException;
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -37,6 +35,8 @@ import com.esri.arcgisruntime.toolkit.compass.Compass;
 import com.esri.arcgisruntime.toolkit.test.MapOrSceneDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
+
+import java.util.concurrent.CancellationException;
 
 /**
  * The Compass test activity.
@@ -107,11 +107,11 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
           return true;
         case R.id.action_compass_height:
           NumberDialogFragment.newInstance(
-              "Compass Height in DP", mCompass.getCompassHeight()).show(getSupportFragmentManager(), "NumberDialog");
+              "Compass Height in DP", mCompass.getHeightDp()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_compass_width:
           NumberDialogFragment.newInstance(
-              "Compass Width in DP", mCompass.getCompassWidth()).show(getSupportFragmentManager(), "NumberDialog");
+              "Compass Width in DP", mCompass.getWidthDp()).show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
           if (mUseMap) {
@@ -152,10 +152,10 @@ public final class CompassTestActivity extends AppCompatActivity implements MapO
   public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_compass_height:
-        mCompass.setCompassHeight(number);
+        mCompass.setHeightDp(number);
         break;
       case R.id.action_compass_width:
-        mCompass.setCompassWidth(number);
+        mCompass.setWidthDp(number);
         break;
     }
   }
