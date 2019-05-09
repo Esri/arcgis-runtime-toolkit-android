@@ -1,0 +1,12 @@
+<resources>
+    <!-- Marks all resources as private. Expose resources you wish to expose with a <public> tag.
+    ~
+    ~ <resources>
+    ~   <public name="mylib_app_name" type="string"/>
+    ~   <public name="mylib_public_string" type="string"/>
+    ~ </resources>
+    ~
+    ~ https://developer.android.com/studio/projects/android-library#PrivateResources
+    -->
+    <public />
+</resources>

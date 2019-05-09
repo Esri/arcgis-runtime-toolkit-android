@@ -1,0 +1,46 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/select_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="Select Layout:"
+        app:layout_constraintBottom_toTopOf="@id/regular_layout_button"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/regular_layout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="Regular"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_layout" />
+
+    <Button
+        android:id="@+id/custom1_layout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="Custom1"
+        app:layout_constraintStart_toEndOf="@+id/regular_layout_button"
+        app:layout_constraintTop_toBottomOf="@id/select_layout" />
+
+    <Button
+        android:id="@+id/custom2_layout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:text="Custom2"
+        app:layout_constraintStart_toEndOf="@+id/custom1_layout_button"
+        app:layout_constraintTop_toBottomOf="@id/select_layout" />
+
+</android.support.constraint.ConstraintLayout>
