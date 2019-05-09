@@ -78,16 +78,11 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
-            app:fillColor="@android:color/holo_orange_light"
             app:layout_constraintEnd_toEndOf="@id/scalebar_graduated_line_style"
             app:layout_constraintStart_toStartOf="@id/scalebar_graduated_line_style"
             app:layout_constraintTop_toBottomOf="@id/scalebar_graduated_line_style"
-            app:lineColor="@android:color/holo_blue_bright"
             app:style="dualUnitLine"
-            app:textColor="@android:color/black"
-            app:textShadowColor="@android:color/white"
-            app:textSize="12sp"
-            app:unitSystem="imperial" />
+            app:textSize="12sp" />
 
         <View
             android:id="@+id/left_inset"
