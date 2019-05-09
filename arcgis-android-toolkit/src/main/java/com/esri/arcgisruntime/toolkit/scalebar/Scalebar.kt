@@ -444,8 +444,7 @@ class Scalebar : View {
                 height.toFloat() - textSize - maxPixelsBelowBaseline
             }
 
-            val top: Float =
-                bottom - if (drawInMapView) DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else top.toFloat()
+            val top: Float = if(drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else 0.0f
 
             // Draw the scalebar
             style.renderer.drawScalebar(

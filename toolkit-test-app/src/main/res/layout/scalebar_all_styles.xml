@@ -86,6 +86,7 @@
             app:style="dualUnitLine"
             app:textColor="@android:color/black"
             app:textShadowColor="@android:color/white"
+            app:textSize="12sp"
             app:unitSystem="imperial" />
 
         <View

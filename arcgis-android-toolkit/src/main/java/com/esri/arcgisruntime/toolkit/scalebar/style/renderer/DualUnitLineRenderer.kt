@@ -78,6 +78,8 @@ class DualUnitLineRenderer : ScalebarRenderer() {
             secondaryUnitsLength = secondaryBaseUnits.convertTo(secondaryDisplayUnits, secondaryUnitsLength)
         }
 
+        val verticalTextSpace = textSizePx + textPaint.fontMetrics.bottom
+
         // Create Paint for drawing the lines
         with(paint) {
             reset()
@@ -88,16 +90,16 @@ class DualUnitLineRenderer : ScalebarRenderer() {
 
             // Create a path to draw the line and the ticks
             linePath.let { linePath ->
-                val yPosLine = (top + bottom) / 2
+                val yPosLine = ((top + verticalTextSpace) + (bottom)) / 2
                 linePath.reset()
-                linePath.moveTo(left, top)
+                linePath.moveTo(left, top + verticalTextSpace)
                 linePath.lineTo(left, bottom) // draw big tick at left
                 linePath.moveTo(xPosSecondaryTick, yPosLine) // move to top of secondary tick
                 linePath.lineTo(xPosSecondaryTick, bottom) // draw secondary tick
                 linePath.moveTo(left, yPosLine) // move to start of horizontal line
                 linePath.lineTo(right, yPosLine) // draw the line
-                linePath.lineTo(right, top) // draw tick at right
-                linePath.setLastPoint(right, top)
+                linePath.lineTo(right, top + verticalTextSpace) // draw tick at right
+                linePath.setLastPoint(right, top + verticalTextSpace)
 
                 // Create a copy of the line path to be the path of its shadow, offset slightly from the line path
                 val shadowPath = Path(linePath)
@@ -112,8 +114,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
                 canvas.drawPath(linePath, this)
 
                 // Draw the primary units label above the tick at the right hand end
-                val maxPixelsBelowBaseline = textPaint.fontMetrics.bottom
-                var yPosText = top - maxPixelsBelowBaseline
+                var yPosText = top + textSizePx
                 textPaint.textAlign = Paint.Align.RIGHT
                 canvas.drawText(distance.asDistanceString(), right, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT
