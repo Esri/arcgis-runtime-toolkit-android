@@ -23,7 +23,6 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
@@ -52,6 +51,8 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   private MapView mMapView;
 
   private ArcGISMap mMap;
+
+  private boolean isAllStyles;
 
   private Scalebar mScalebar;
 
@@ -109,9 +110,10 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the scalebar_options menu; this adds items to the action bar
+    // Inflate the scalebar_options menu; this adds items to the action bar if the current layout is not the layout that
+    // shows all styles of Scalebar
     getMenuInflater().inflate(R.menu.scalebar_options, menu);
-    return true;
+    return !isAllStyles;
   }
 
   @Override
@@ -246,33 +248,45 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
     mMapView.setMap(mMap);
 
     // Find the buttons used to select different layouts and set listeners on them
-    Button button = findViewById(R.id.regular_layout_button);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        // In the 'regular' layout a new Scalebar is added to the MapView (Workflow 1)
-        changeContentView(R.layout.scalebar_regular, R.string.scalebar_message_regular);
-        mScalebar = new Scalebar(mMapView.getContext());
-        mScalebar.addToMapView(mMapView);
-      }
+    findViewById(R.id.regular_layout_button).setOnClickListener(view -> {
+      // In the 'regular' layout a new Scalebar is added to the MapView (Workflow 1)
+      changeContentView(R.layout.scalebar_regular, R.string.scalebar_message_regular);
+      isAllStyles = false;
+      mScalebar = new Scalebar(mMapView.getContext());
+      mScalebar.addToMapView(mMapView);
     });
-    button = findViewById(R.id.custom1_layout_button);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        // In Custom Layout 1 the Scalebar is overlayed on top of the MapView and bound to it using Workflow 2
-        changeContentView(R.layout.scalebar_custom1, R.string.scalebar_message_custom1);
-        mScalebar = findViewById(R.id.scalebar);
-        mScalebar.bindTo(mMapView);
-      }
+    findViewById(R.id.custom1_layout_button).setOnClickListener(view -> {
+      // In Custom Layout 1 the Scalebar is overlayed on top of the MapView and bound to it using Workflow 2
+      changeContentView(R.layout.scalebar_custom1, R.string.scalebar_message_custom1);
+      isAllStyles = false;
+      mScalebar = findViewById(R.id.scalebar);
+      mScalebar.bindTo(mMapView);
     });
-    button = findViewById(R.id.custom2_layout_button);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        // In Custom Layout 2 the Scalebar is displayed separate from the MapView and bound to it using Workflow 2
-        changeContentView(R.layout.scalebar_custom2, R.string.scalebar_message_custom2);
-        mScalebar = findViewById(R.id.scalebar);
-        mScalebar.bindTo(mMapView);
-      }
+    findViewById(R.id.custom2_layout_button).setOnClickListener(view -> {
+      // In Custom Layout 2 the Scalebar is displayed separate from the MapView and bound to it using Workflow 2
+      changeContentView(R.layout.scalebar_custom2, R.string.scalebar_message_custom2);
+      isAllStyles = false;
+      mScalebar = findViewById(R.id.scalebar);
+      mScalebar.bindTo(mMapView);
     });
+    findViewById(R.id.all_styles_layout_button).setOnClickListener(v -> {
+      // In All Styles Layout all the Styles of Scalebar are displayed over the MapView and bound to it using Workflow 2
+      changeContentView(R.layout.scalebar_all_styles, R.string.scalebar_message_all_styles);
+      isAllStyles = true;
+
+      Scalebar scalebarBarStyle = findViewById(R.id.scalebar_bar_style);
+      Scalebar scalebarAlternatingBarStyle = findViewById(R.id.scalebar_alternating_bar_style);
+      Scalebar scalebarLineStyle = findViewById(R.id.scalebar_line_style);
+      Scalebar scalebarGraduatedLineStyle = findViewById(R.id.scalebar_graduated_line_style);
+      Scalebar scalebarDualUnitLineStyle = findViewById(R.id.scalebar_dual_unit_line_style);
+
+      scalebarBarStyle.bindTo(mMapView);
+      scalebarAlternatingBarStyle.bindTo(mMapView);
+      scalebarLineStyle.bindTo(mMapView);
+      scalebarGraduatedLineStyle.bindTo(mMapView);
+      scalebarDualUnitLineStyle.bindTo(mMapView);
+    });
+    supportInvalidateOptionsMenu();
   }
 
   /**

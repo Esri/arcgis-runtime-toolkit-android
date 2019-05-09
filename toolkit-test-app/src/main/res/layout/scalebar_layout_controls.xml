@@ -1,0 +1,28 @@
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/layout_controls"
+            layout="@layout/layout_controls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/all_styles_layout_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:text="All Styles"
+            app:layout_constraintBottom_toBottomOf="@id/layout_controls"
+            app:layout_constraintStart_toEndOf="@id/layout_controls" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</HorizontalScrollView>
