@@ -20,9 +20,11 @@ import android.support.test.runner.AndroidJUnit4
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.geometry.LinearUnitId
+import com.esri.arcgisruntime.toolkit.scalebar.Multiplier
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.random.Random
 
 /**
  * Instrumented unit tests for ScalebarRendererExtensions
@@ -31,6 +33,29 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class ScalebarRendererExtensionsTest {
+
+    /**
+     * Array containing the multipliers that may be used for a scalebar and arrays of segment options appropriate for
+     * each multiplier. From ScalebarRendererExtensions.
+     *
+     * @since 100.5.0
+     */
+    private val multiplierArray = arrayOf(
+        Multiplier(1.0, intArrayOf(1, 2, 4, 5)),
+        Multiplier(1.2, intArrayOf(1, 2, 3, 4)),
+        Multiplier(1.5, intArrayOf(1, 2, 3, 5)),
+        Multiplier(1.6, intArrayOf(1, 2, 4)),
+        Multiplier(2.0, intArrayOf(1, 2, 4, 5)),
+        Multiplier(2.4, intArrayOf(1, 2, 3, 4)),
+        Multiplier(3.0, intArrayOf(1, 2, 3)),
+        Multiplier(3.6, intArrayOf(1, 2, 3)),
+        Multiplier(4.0, intArrayOf(1, 2, 4)),
+        Multiplier(5.0, intArrayOf(1, 2, 5)),
+        Multiplier(6.0, intArrayOf(1, 2, 3)),
+        Multiplier(8.0, intArrayOf(1, 2, 4)),
+        Multiplier(9.0, intArrayOf(1, 2, 3)),
+        Multiplier(10.0, intArrayOf(1, 2, 5))
+    )
 
     /**
      * Tests that [selectLinearUnit] returns an instance of [LinearUnit] with an id of [LinearUnitId.FEET] when the
@@ -136,5 +161,37 @@ class ScalebarRendererExtensionsTest {
             LINEAR_UNIT_KILOMETERS.linearUnitId,
             selectLinearUnit((KILOMETER_METERS + 1).toDouble(), UnitSystem.METRIC).linearUnitId
         )
+    }
+
+    /**
+     * Tests [calculateOptimalNumberOfSegments] using a range of distances stepped up randomly to 40000 in order to ensure
+     * that the implementation in ScalebarRendererExtensions remains consistent with expected behaviours defined previously.
+     * The data used, [multiplierArray], has been duplicated from ScalebarRendererExtensions.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun calculateOptimalNumberOfSegmentsTest() {
+        for (distance in 1..40000 step Random.nextInt(1, 10)) {
+            for (maxNoSegments in 1..5) {
+                val magnitude = Math.pow(10.0, Math.floor(Math.log10(distance.toDouble())))
+                val residualValue = distance / magnitude
+                val multiplierData =
+                    multiplierArray.sortedArrayWith(compareByDescending { it.multiplier }).first {
+                        it.multiplier <= residualValue
+                    }
+                val segmentOption = multiplierData.segmentOptions.sortedArrayDescending().first {
+                    it <= maxNoSegments
+                }
+                val result = calculateOptimalNumberOfSegments(distance.toDouble(), maxNoSegments)
+                assertEquals(
+                    "Expected segment option $segmentOption, got $result instead.\n" +
+                            "Distance: $distance - Max Number of segments: $maxNoSegments - Magnitude: $magnitude - " +
+                            "Residual Value: $residualValue - Multiplier: ${multiplierData.multiplier} - Result: $result\n",
+                    segmentOption,
+                    result
+                )
+            }
+        }
     }
 }

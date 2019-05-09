@@ -19,6 +19,7 @@ package com.esri.arcgisruntime.toolkit.extension
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.geometry.LinearUnit
 import com.esri.arcgisruntime.geometry.LinearUnitId
+import com.esri.arcgisruntime.toolkit.scalebar.Multiplier
 import com.esri.arcgisruntime.toolkit.scalebar.style.renderer.ScalebarRenderer
 
 internal const val HALF_MILE_FEET = 2640
@@ -35,20 +36,20 @@ internal val LINEAR_UNIT_MILES = LinearUnit(LinearUnitId.MILES)
  * @since 100.5.0
  */
 private val MULTIPLIER_DATA_ARRAY = arrayOf(
-    MultiplierData(1.0, intArrayOf(1, 2, 4, 5)),
-    MultiplierData(1.2, intArrayOf(1, 2, 3, 4)),
-    MultiplierData(1.5, intArrayOf(1, 2, 3, 5)),
-    MultiplierData(1.6, intArrayOf(1, 2, 4)),
-    MultiplierData(2.0, intArrayOf(1, 2, 4, 5)),
-    MultiplierData(2.4, intArrayOf(1, 2, 3, 4)),
-    MultiplierData(3.0, intArrayOf(1, 2, 3)),
-    MultiplierData(3.6, intArrayOf(1, 2, 3)),
-    MultiplierData(4.0, intArrayOf(1, 2, 4)),
-    MultiplierData(5.0, intArrayOf(1, 2, 5)),
-    MultiplierData(6.0, intArrayOf(1, 2, 3)),
-    MultiplierData(8.0, intArrayOf(1, 2, 4)),
-    MultiplierData(9.0, intArrayOf(1, 2, 3)),
-    MultiplierData(10.0, intArrayOf(1, 2, 5))
+    Multiplier(1.0, intArrayOf(1, 2, 4, 5)),
+    Multiplier(1.2, intArrayOf(1, 2, 3, 4)),
+    Multiplier(1.5, intArrayOf(1, 2, 3, 5)),
+    Multiplier(1.6, intArrayOf(1, 2, 4)),
+    Multiplier(2.0, intArrayOf(1, 2, 4, 5)),
+    Multiplier(2.4, intArrayOf(1, 2, 3, 4)),
+    Multiplier(3.0, intArrayOf(1, 2, 3)),
+    Multiplier(3.6, intArrayOf(1, 2, 3)),
+    Multiplier(4.0, intArrayOf(1, 2, 4)),
+    Multiplier(5.0, intArrayOf(1, 2, 5)),
+    Multiplier(6.0, intArrayOf(1, 2, 3)),
+    Multiplier(8.0, intArrayOf(1, 2, 4)),
+    Multiplier(9.0, intArrayOf(1, 2, 3)),
+    Multiplier(10.0, intArrayOf(1, 2, 5))
 )
 
 /**
@@ -126,47 +127,20 @@ internal fun selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearU
  *
  * @since 100.5.0
  */
-private fun calculateMagnitude(distance: Double): Double {
+fun calculateMagnitude(distance: Double): Double {
     return Math.pow(10.0, Math.floor(Math.log10(distance)))
 }
 
 /**
- * Returns the [MultiplierData] used when calculating the length of a scalebar or the number of segments in the
+ * Returns the [Multiplier] used when calculating the length of a scalebar or the number of segments in the
  * scalebar, using the provided [distance] and [magnitude]. This is chosen to give "nice" numbers for all the labels
  * on the scalebar.
  *
  * @since 100.5.0
  */
-private fun selectMultiplierData(distance: Double, magnitude: Double): MultiplierData {
+private fun selectMultiplierData(distance: Double, magnitude: Double): Multiplier {
     // Select the largest multiplier that's <= the residual value (distance / magnitude)
     return MULTIPLIER_DATA_ARRAY.sortedArrayWith(compareByDescending { it.multiplier }).first {
         it.multiplier <= (distance / magnitude)
     }
 }
-
-/**
- * Container for a "multiplier" and the array of segment options appropriate for that multiplier. The multiplier is
- * used when calculating the length of a scalebar or the number of segments in the scalebar.
- *
- * @since 100.5.0
- */
-private class MultiplierData
-/**
- * @constructor
- * @since 100.5.0
- */
-    (
-    /**
-     * Used when calculating the length of a scalebar or the number of segments in the scalebar.
-     *
-     * @since 100.5.0
-     */
-    val multiplier: Double,
-
-    /**
-     * The array of segment options appropriate for that multiplier.
-     *
-     * @since 100.5.0
-     */
-    val segmentOptions: IntArray
-)
