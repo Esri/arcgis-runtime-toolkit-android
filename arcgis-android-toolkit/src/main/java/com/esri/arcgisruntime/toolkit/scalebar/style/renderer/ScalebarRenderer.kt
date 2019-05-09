@@ -247,7 +247,9 @@ abstract class ScalebarRenderer {
             // But if 'distance' is small some of the other labels may use decimals, so allow for each label needing at least
             // 3 characters
             // Calculate the bounds of the testString to determine its length
-            textPaint.getTextBounds(if (this.length < 3) "9.9" else this, 0, this.length, rect)
+            with(if (this.length < 3) "9.9" else this) {
+                textPaint.getTextBounds(this, 0, this.length, rect)
+            }
         }
 
         // Calculate the minimum segment length to ensure the labels don't overlap; multiply the testString length by 1.5

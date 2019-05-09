@@ -91,9 +91,10 @@ internal fun ScalebarRenderer.calculateBestLength(maxLength: Double, unit: Linea
  */
 internal fun calculateOptimalNumberOfSegments(distance: Double, maxNumSegments: Int): Int {
     // Select the largest option that's <= maxNumSegments
-    return segmentOptionsForDistance(distance).sortedArrayDescending().first {
-        it <= maxNumSegments
-    }
+    return selectMultiplierData(distance, calculateMagnitude(distance)).segmentOptions
+        .sortedArrayDescending().first {
+            it <= maxNumSegments
+        }
 }
 
 /**
@@ -117,15 +118,6 @@ internal fun selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearU
             } else LINEAR_UNIT_METERS
         }
     }
-}
-
-/**
- * Returns Ints representing the appropriate number of segments in the scalebar when a scalebar represents a given [distance].
- *
- * @since 100.5.0
- */
-private fun segmentOptionsForDistance(distance: Double): IntArray {
-    return selectMultiplierData(distance, calculateMagnitude(distance)).segmentOptions
 }
 
 /**
