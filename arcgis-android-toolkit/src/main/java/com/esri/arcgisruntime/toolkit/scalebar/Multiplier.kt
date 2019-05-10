@@ -16,8 +16,6 @@
 
 package com.esri.arcgisruntime.toolkit.scalebar
 
-import android.support.annotation.VisibleForTesting
-
 /**
  * Container for a "multiplier" and the array of segment options appropriate for that multiplier. The multiplier is
  * used when calculating the length of a scalebar or the number of segments in the scalebar.
