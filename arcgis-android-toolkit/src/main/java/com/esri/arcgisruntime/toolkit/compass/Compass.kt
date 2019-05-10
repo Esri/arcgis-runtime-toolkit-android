@@ -123,10 +123,12 @@ class Compass : View {
         resources.displayMetrics.density
     }
 
-    private val defaultLayoutParams = ViewGroup.LayoutParams(
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
-        Companion.DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
-    )
+    private val defaultLayoutParams by lazy {
+        ViewGroup.LayoutParams(
+            DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity),
+            DEFAULT_HEIGHT_AND_WIDTH_DP.dpToPixels(displayDensity)
+        )
+    }
 
     private val viewpointChangedListener = ViewpointChangedListener {
         geoView?.let { geoView ->
@@ -156,18 +158,18 @@ class Compass : View {
     private val animator: ViewPropertyAnimator? by AnimatorDelegate()
 
     private class AnimatorDelegate {
-        private var _viewPropertyAnimator: ViewPropertyAnimator? = null
+        private var viewPropertyAnimator: ViewPropertyAnimator? = null
 
         operator fun getValue(compass: Compass, property: KProperty<*>): ViewPropertyAnimator? {
-            _viewPropertyAnimator?.let {
+            viewPropertyAnimator?.let {
                 return null
             }
-            _viewPropertyAnimator = compass.animate()
+            viewPropertyAnimator = compass.animate()
                 .setDuration(ANIMATION_DURATION_MILLISECS)
                 .withEndAction {
-                    _viewPropertyAnimator = null
+                    viewPropertyAnimator = null
                 }
-            return _viewPropertyAnimator
+            return viewPropertyAnimator
         }
     }
 

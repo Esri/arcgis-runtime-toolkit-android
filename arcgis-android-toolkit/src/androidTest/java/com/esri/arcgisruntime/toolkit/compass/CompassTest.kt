@@ -21,8 +21,8 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.view.LayoutInflater
 import com.esri.arcgisruntime.mapping.view.MapView
-import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.TestUtil
+import com.esri.arcgisruntime.toolkit.test.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
