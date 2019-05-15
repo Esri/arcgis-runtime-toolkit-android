@@ -374,7 +374,8 @@ class Scalebar : View {
     }
 
     /**
-     * Binds this [Scalebar] to the provided [mapView], or unbinds it. Used in Workflow 2 (see [Scalebar] above).
+     * Binds this [Scalebar] to the provided [mapView], or unbinds it when passing in null. Used in Workflow 2
+     * (see [Scalebar] above).
      *
      * @throws IllegalStateException if this Scalebar is currently added to a MapView
      * @since 100.5.0
