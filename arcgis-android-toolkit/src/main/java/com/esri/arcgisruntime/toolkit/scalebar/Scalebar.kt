@@ -74,7 +74,7 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style
  * android:layout_margin="5dp"
  * app:alternateFillColor="@android:color/holo_orange_light"
  * app:fillColor="@android:color/holo_orange_dark"
- * app:layout_constraintLeft_toLeftOf="@+id/mapview"
+ * app:layout_constraintStart_toStartOf="@+id/mapview"
  * app:layout_constraintTop_toTopOf="@+id/mapview"
  * app:lineColor="#FFC0C0C0"
  * app:style="graduatedLine" />
