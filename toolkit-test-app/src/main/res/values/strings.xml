@@ -11,5 +11,6 @@
     <string name="compass_message_regular">Regular Layout\nCompass added to GeoView</string>
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
+    <string name="arcgis_sceneview_activity_label">ArcGisSceneView</string>
 
 </resources>

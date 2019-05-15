@@ -53,6 +53,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.android.support:multidex:$droid.multiDex"
+    implementation "com.google.ar.sceneform:core:$droid.arCore"
     implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
