@@ -176,7 +176,7 @@ class NumberExtensionsTest {
 
     /**
      * Tests formatting Double as distance String with 0.0. Expected behaviour would be to return the String
-     * without extra formatting.
+     * with the decimal place removed.
      *
      * @since 100.5.0
      */
