@@ -20,25 +20,8 @@ package com.esri.arcgisruntime.toolkit.scalebar
  * Container for a "multiplier" and the array of segment options appropriate for that multiplier. The multiplier is
  * used when calculating the length of a scalebar or the number of segments in the scalebar.
  *
+ * @property multiplier used when calculating the length of a scalebar or the number of segments in the scalebar
+ * @property segmentOptions the array of segment options appropriate for the multiplier
  * @since 100.5.0
  */
-internal class Multiplier
-/**
- * @constructor
- * @since 100.5.0
- */
-    (
-    /**
-     * Used when calculating the length of a scalebar or the number of segments in the scalebar.
-     *
-     * @since 100.5.0
-     */
-    val multiplier: Double,
-
-    /**
-     * The array of segment options appropriate for that multiplier.
-     *
-     * @since 100.5.0
-     */
-    val segmentOptions: IntArray
-)
+internal class Multiplier(val multiplier: Double, val segmentOptions: IntArray)
