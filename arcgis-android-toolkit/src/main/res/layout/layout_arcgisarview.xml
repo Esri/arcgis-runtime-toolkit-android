@@ -9,7 +9,7 @@
         android:visibility="gone" />
 
     <com.google.ar.sceneform.ArSceneView
-        android:id="@+id/arSceneView"
+        android:id="@+id/_arSceneView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

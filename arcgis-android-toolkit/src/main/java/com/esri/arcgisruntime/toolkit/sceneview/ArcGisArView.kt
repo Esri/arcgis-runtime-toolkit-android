@@ -25,6 +25,8 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
+import com.esri.arcgisruntime.geometry.Point
+import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
@@ -36,7 +38,8 @@ import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
-import kotlinx.android.synthetic.main.layout_arcgisarview.view.arSceneView
+import com.google.ar.sceneform.ArSceneView
+import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 
 
@@ -45,10 +48,15 @@ private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 
 class ArcGisArView : FrameLayout {
 
-    val sceneView: SceneView get() = arcGisSceneView
-
     private var installRequested: Boolean = false
     private var session: Session? = null
+
+    val sceneView: SceneView get() = arcGisSceneView
+    val arSceneView: ArSceneView get() = _arSceneView
+
+    var camera: Camera
+        get() = arcGisSceneView.currentViewpointCamera
+        set(value) = arcGisSceneView.setViewpointCamera(value)
 
     constructor(context: Context) : super(context) {
         initialize()
@@ -65,6 +73,30 @@ class ArcGisArView : FrameLayout {
 
     private fun inflateLayout() {
         inflate(context, R.layout.layout_arcgisarview, this)
+    }
+
+    fun arScreenToLocation(screenPoint: android.graphics.Point): Point {
+        return sceneView.screenToLocationAsync(screenPoint).get()
+    }
+
+    fun resetTracking() {
+        // no-op
+    }
+
+    fun resetUsingLocationServices() {
+        // no-op
+    }
+
+    fun resetUsingSpatialAnchor() {
+        // no-op
+    }
+
+    fun startTracking() {
+        // no-op
+    }
+
+    fun stopTracking() {
+        // no-op
     }
 
     fun resume(activity: Activity) {
@@ -135,7 +167,11 @@ class ArcGisArView : FrameLayout {
         session = null
     }
 
-    /** Check to see we have the necessary permissions for this app.  */
+    /**
+     * Check to see we have the necessary permissions for accessing the camera using the instance of [Activity].
+     *
+     * @since 100.6.0
+     */
     private fun hasCameraPermission(activity: Activity): Boolean {
         return ContextCompat.checkSelfPermission(
             activity,
@@ -143,7 +179,12 @@ class ArcGisArView : FrameLayout {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    /** Check to see we have the necessary permissions for this app, and ask for them if we don't.  */
+    /**
+     * Check to see we have the necessary permissions for the camera using the instance of [Activity], and ask for them
+     * if we don't.
+     *
+     * @since 100.6.0
+     */
     private fun requestCameraPermission(activity: Activity) {
         ActivityCompat.requestPermissions(
             activity, arrayOf(CAMERA_PERMISSION), CAMERA_PERMISSION_CODE
