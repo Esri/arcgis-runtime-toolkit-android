@@ -49,27 +49,41 @@ private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 
 class ArcGisArView : FrameLayout {
 
+    private var renderVideoFeed: Boolean = true
     private var installRequested: Boolean = false
     private var session: Session? = null
 
     val sceneView: SceneView get() = arcGisSceneView
     val arSceneView: ArSceneView get() = _arSceneView
 
-    var camera: Camera
-        get() = arcGisSceneView.currentViewpointCamera
-        set(value) = arcGisSceneView.setViewpointCamera(value)
+    var camera: Camera?
+        get() = arcGisSceneView?.currentViewpointCamera
+        set(value) {
+            arcGisSceneView?.setViewpointCamera(value)
+        }
 
-    constructor(context: Context) : super(context) {
+    constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
+        this.renderVideoFeed = renderVideoFeed
         initialize()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ArcGisArView,
+            0, 0
+        ).apply {
+            try {
+                renderVideoFeed = getBoolean(R.styleable.ArcGisArView_renderVideoFeed, true)
+            } finally {
+                recycle()
+            }
+        }
         initialize()
     }
 
     private fun initialize() {
         inflateLayout()
-        installRequested = false
     }
 
     private fun inflateLayout() {
