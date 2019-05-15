@@ -345,7 +345,7 @@ class Scalebar : View {
      */
     fun addToMapView(mapView: MapView) {
         this.mapView?.let {
-            throw IllegalStateException("Scalebar already has a GeoView")
+            throw IllegalStateException("Scalebar already has a MapView")
         }
         setupMapView(mapView)
         mapView.addView(
