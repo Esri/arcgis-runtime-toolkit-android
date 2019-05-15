@@ -105,6 +105,8 @@ class Scalebar : View {
      * - [Style.GRADUATED_LINE]
      * - [Style.DUAL_UNIT_LINE]
      *
+     * The default Style is Style.ALTERNATING_BAR.
+     *
      * @since 100.5.0
      */
     var style: Style = DEFAULT_STYLE
@@ -119,6 +121,8 @@ class Scalebar : View {
      * - [Alignment.RIGHT]
      * - [Alignment.CENTER]
      *
+     * The default Alignment is Scalebar.Alignment.LEFT.
+     *
      * @since 100.5.0
      */
     var alignment = DEFAULT_ALIGNMENT
@@ -130,6 +134,8 @@ class Scalebar : View {
     /**
      * The resolved color used to fill bar based Scalebars. Used in [Style.BAR] and [Style.ALTERNATING_BAR].
      *
+     * The default fill color is semi-transparent light-gray.
+     *
      * @since 100.5.0
      */
     var fillColor: Int = DEFAULT_FILL_COLOR
@@ -140,6 +146,8 @@ class Scalebar : View {
 
     /**
      * The resolved color used to fill the alternate bars in bar based Scalebars. Used in [Style.ALTERNATING_BAR].
+     *
+     * The default alternate fill color is black.
      *
      * @since 100.5.0
      */
@@ -153,6 +161,8 @@ class Scalebar : View {
      * The resolved color used to draw the lines in line based Scalebars. Used in [Style.LINE], [Style.GRADUATED_LINE] and
      * [Style.DUAL_UNIT_LINE].
      *
+     * The default line color is white.
+     *
      * @since 100.5.0
      */
     var lineColor: Int = DEFAULT_LINE_COLOR
@@ -164,6 +174,8 @@ class Scalebar : View {
     /**
      * The resolved color used to draw shadows around bars and lines.
      *
+     * The default shadow color is semi-transparent black.
+     *
      * @since 100.5.0
      */
     var shadowColor: Int = DEFAULT_SHADOW_COLOR
@@ -174,6 +186,8 @@ class Scalebar : View {
 
     /**
      * The resolved color used to draw text.
+     *
+     * The default text color is black.
      *
      * @since 100.5.0
      */
@@ -187,6 +201,8 @@ class Scalebar : View {
     /**
      * The resolved color used to draw text shadows.
      *
+     * The default text shadow color is white.
+     *
      * @since 100.5.0
      */
     var textShadowColor = DEFAULT_TEXT_SHADOW_COLOR
@@ -199,6 +215,8 @@ class Scalebar : View {
     /**
      * The size of the text displayed in a [Scalebar] in pixels.
      *
+     * The default text size is 16sp.
+     *
      * @since 100.5.0
      */
     var textSize: Int = resources.getDimensionPixelSize(R.dimen.scalebar_default_text_size)
@@ -210,6 +228,8 @@ class Scalebar : View {
 
     /**
      * The [Typeface] used to draw text in a Scalebar.
+     *
+     * The default typeface is Typeface.DEFAULT_BOLD.
      *
      * @since 100.5.0
      */
@@ -224,6 +244,8 @@ class Scalebar : View {
      * The [UnitSystem] used that the Scalebar is representing. One of:
      * - [UnitSystem.IMPERIAL]
      * - [UnitSystem.METRIC]
+     *
+     * The default unit system is UnitSystem.METRIC.
      *
      * @since 100.5.0
      */
