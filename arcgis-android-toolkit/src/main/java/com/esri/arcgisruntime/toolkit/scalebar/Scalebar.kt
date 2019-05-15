@@ -38,6 +38,7 @@ import com.esri.arcgisruntime.toolkit.extension.selectLinearUnit
 import com.esri.arcgisruntime.toolkit.extension.unitSystemFromInt
 import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
+import kotlin.reflect.KProperty
 
 /**
  * Displays a bar or line indicating the current scale of a [MapView]. Two workflows are supported:
@@ -104,13 +105,6 @@ class Scalebar : View {
         context.resources.displayMetrics.density
     }
 
-    private var textPaint: Paint = Paint().apply {
-        color = textColor
-        setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
-        typeface = this@Scalebar.typeface
-        textSize = this@Scalebar.textSize.toFloat()
-    }
-
     private val graphicsPoint = android.graphics.Point()
     private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
     private val cornerRadiusDp = DEFAULT_BAR_HEIGHT_DP / 5
@@ -130,6 +124,24 @@ class Scalebar : View {
             attributionTextHeight = bottom - top
             postInvalidate()
         }
+
+    private val textPaint: Paint by TextPaintDelegate()
+
+    private class TextPaintDelegate {
+        private var _paint: Paint = Paint()
+
+        operator fun getValue(
+            scalebar: com.esri.arcgisruntime.toolkit.scalebar.Scalebar,
+            property: KProperty<*>
+        ): Paint {
+            return _paint.apply {
+                color = scalebar.textColor
+                setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, scalebar.textShadowColor)
+                typeface = scalebar.typeface
+                textSize = scalebar.textSize.toFloat()
+            }
+        }
+    }
 
     /**
      * The [Style] of Scalebar that will be rendered. One of:
