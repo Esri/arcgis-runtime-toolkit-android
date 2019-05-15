@@ -97,6 +97,40 @@ import com.esri.arcgisruntime.toolkit.scalebar.style.Style
  */
 class Scalebar : View {
 
+    private var mapView: MapView? = null
+    private var drawInMapView: Boolean = false
+
+    private val displayDensity: Float by lazy {
+        context.resources.displayMetrics.density
+    }
+
+    private var textPaint: Paint = Paint().apply {
+        color = textColor
+        setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
+        typeface = this@Scalebar.typeface
+        textSize = this@Scalebar.textSize.toFloat()
+    }
+
+    private val graphicsPoint = android.graphics.Point()
+    private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
+    private val cornerRadiusDp = DEFAULT_BAR_HEIGHT_DP / 5
+
+    @Volatile
+    private var attributionTextHeight = 0
+
+    private val viewPointChangedListener = ViewpointChangedListener {
+        // Invalidate the Scalebar view when the MapView viewpoint changes
+        postInvalidate()
+    }
+
+    private val attributionViewLayoutChangeListener =
+        OnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
+            // Recalculate the attribution text height and invalidate the Scalebar view when the bounds of the attribution
+            // view change
+            attributionTextHeight = bottom - top
+            postInvalidate()
+        }
+
     /**
      * The [Style] of Scalebar that will be rendered. One of:
      * - [Style.BAR]
@@ -254,40 +288,6 @@ class Scalebar : View {
     var unitSystem: UnitSystem = DEFAULT_UNIT_SYSTEM
         set(value) {
             field = value
-            postInvalidate()
-        }
-
-    private var mapView: MapView? = null
-    private var drawInMapView: Boolean = false
-
-    private val displayDensity: Float by lazy {
-        context.resources.displayMetrics.density
-    }
-
-    private var textPaint: Paint = Paint().apply {
-        color = textColor
-        setShadowLayer(2f, SHADOW_OFFSET_PIXELS, SHADOW_OFFSET_PIXELS, textShadowColor)
-        typeface = this@Scalebar.typeface
-        textSize = this@Scalebar.textSize.toFloat()
-    }
-
-    private val graphicsPoint = android.graphics.Point()
-    private val lineWidthDp = DEFAULT_BAR_HEIGHT_DP / 4
-    private val cornerRadiusDp = DEFAULT_BAR_HEIGHT_DP / 5
-
-    @Volatile
-    private var attributionTextHeight = 0
-
-    private val viewPointChangedListener = ViewpointChangedListener {
-        // Invalidate the Scalebar view when the MapView viewpoint changes
-        postInvalidate()
-    }
-
-    private val attributionViewLayoutChangeListener =
-        OnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
-            // Recalculate the attribution text height and invalidate the Scalebar view when the bounds of the attribution
-            // view change
-            attributionTextHeight = bottom - top
             postInvalidate()
         }
 
@@ -469,7 +469,8 @@ class Scalebar : View {
                 height.toFloat() - textSize - maxPixelsBelowBaseline
             }
 
-            val top: Float = if(drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else 0.0f
+            val top: Float =
+                if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else 0.0f
 
             // Draw the scalebar
             style.renderer.drawScalebar(
