@@ -116,7 +116,10 @@ class Scalebar : View {
         }
 
     /**
-     * The alignment of the Scalebar when using Workflow 1 (see [Scalebar] and [addToMapView]). One of:
+     * The alignment of the Scalebar when using either Workflow. When using Workflow 1 (see [Scalebar] and [addToMapView]),
+     * this property controls the overall alignment of the Scalebar when added to a [MapView] and controls which end of
+     * the scalebar is fixed and which end shrinks and grows. When using Workflow 2 (see [Scalebar] and [bindTo]), the
+     * property controls which end of the scalebar is fixed and which end shrinks and grows. One of:
      * - [Alignment.LEFT]
      * - [Alignment.RIGHT]
      * - [Alignment.CENTER]
