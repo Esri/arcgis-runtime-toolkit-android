@@ -11,10 +11,10 @@
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
-        android:text="@string/scalebar_title_regular"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="@string/scalebar_message_custom1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.esri.arcgisruntime.mapping.view.MapView
@@ -22,8 +22,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/scalebar_layout_controls"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message" />
 
     <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
@@ -33,7 +33,7 @@
         android:layout_margin="5dp"
         app:alternateFillColor="@android:color/holo_orange_light"
         app:fillColor="@android:color/holo_orange_dark"
-        app:layout_constraintLeft_toLeftOf="@+id/mapview"
+        app:layout_constraintStart_toStartOf="@+id/mapview"
         app:layout_constraintTop_toTopOf="@+id/mapview"
         app:lineColor="#FFC0C0C0"
         app:style="graduatedLine" />

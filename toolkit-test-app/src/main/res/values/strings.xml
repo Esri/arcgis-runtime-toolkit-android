@@ -2,13 +2,10 @@
     <string name="app_name">Toolkit Test App</string>
 
     <!-- Scalebar -->
-    <string name="scalebar_title_regular">Regular</string>
-    <string name="scalebar_title_custom1">Custom 1</string>
-    <string name="scalebar_title_custom2">Custom 2</string>
     <string name="scalebar_message_regular">Regular Layout\nScalebar added to MapView</string>
-    <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlayed on MapView</string>
+    <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlaid on MapView</string>
     <string name="scalebar_message_custom2">Custom Layout 2\nScalebar outside MapView</string>
-    <string name="scalebar_message_all_styles">All Styles Layout\nAll Scalebar styles laid over MapView</string>
+    <string name="scalebar_message_all_styles">All Styles Layout\nAll Scalebar styles overlaid on MapView</string>
     <string name="compass_message_regular">Regular Layout\nCompass added to GeoView</string>
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>

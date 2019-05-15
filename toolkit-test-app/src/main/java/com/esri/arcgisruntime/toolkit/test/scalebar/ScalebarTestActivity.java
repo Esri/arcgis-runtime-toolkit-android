@@ -66,7 +66,7 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
     mMap = new ArcGISMap(Basemap.createStreetsVector());
 
     // Set the content view, find the MapView within it and set the map created above on the MapView
-    changeContentView(R.layout.scalebar_regular, R.string.scalebar_message_regular);
+    changeContentView(R.layout.scalebar_regular);
 
     // Setting the map on the MapView causes the map to be loaded; set a DoneLoading listener
     mMap.addDoneLoadingListener(new Runnable() {
@@ -228,15 +228,10 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
    * Changes the activity content view, finds the MapView in the new content view and binds adds/binds a scalebar to it.
    *
    * @param layoutId        resource ID of the layout to set as the content view
-   * @param messageStringId resource ID of a string to display in the 'message' field
    */
-  private void changeContentView(int layoutId, int messageStringId) {
+  private void changeContentView(int layoutId) {
     // Set the content view
     setContentView(layoutId);
-
-    // Display the given string in the 'message' field
-    TextView message = findViewById(R.id.message);
-    message.setText(messageStringId);
 
     // If we already have a MapView, tell it to release resources
     if (mMapView != null) {
@@ -250,28 +245,28 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
     // Find the buttons used to select different layouts and set listeners on them
     findViewById(R.id.regular_layout_button).setOnClickListener(view -> {
       // In the 'regular' layout a new Scalebar is added to the MapView (Workflow 1)
-      changeContentView(R.layout.scalebar_regular, R.string.scalebar_message_regular);
+      changeContentView(R.layout.scalebar_regular);
       mIsAllStyles = false;
       mScalebar = new Scalebar(mMapView.getContext());
       mScalebar.addToMapView(mMapView);
     });
     findViewById(R.id.custom1_layout_button).setOnClickListener(view -> {
       // In Custom Layout 1 the Scalebar is overlayed on top of the MapView and bound to it using Workflow 2
-      changeContentView(R.layout.scalebar_custom1, R.string.scalebar_message_custom1);
+      changeContentView(R.layout.scalebar_custom1);
       mIsAllStyles = false;
       mScalebar = findViewById(R.id.scalebar);
       mScalebar.bindTo(mMapView);
     });
     findViewById(R.id.custom2_layout_button).setOnClickListener(view -> {
       // In Custom Layout 2 the Scalebar is displayed separate from the MapView and bound to it using Workflow 2
-      changeContentView(R.layout.scalebar_custom2, R.string.scalebar_message_custom2);
+      changeContentView(R.layout.scalebar_custom2);
       mIsAllStyles = false;
       mScalebar = findViewById(R.id.scalebar);
       mScalebar.bindTo(mMapView);
     });
     findViewById(R.id.all_styles_layout_button).setOnClickListener(v -> {
       // In All Styles Layout all the Styles of Scalebar are displayed over the MapView and bound to it using Workflow 2
-      changeContentView(R.layout.scalebar_all_styles, R.string.scalebar_message_all_styles);
+      changeContentView(R.layout.scalebar_all_styles);
       mIsAllStyles = true;
 
       Scalebar scalebarBarStyle = findViewById(R.id.scalebar_bar_style);

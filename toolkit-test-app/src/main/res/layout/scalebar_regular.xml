@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
-        android:text="@string/scalebar_title_regular"
+        android:text="@string/scalebar_message_regular"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
