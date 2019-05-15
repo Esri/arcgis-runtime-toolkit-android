@@ -161,8 +161,7 @@ class Scalebar : View {
         }
 
     /**
-     * The resolved color used to draw the lines in line based Scalebars. Used in [Style.LINE], [Style.GRADUATED_LINE] and
-     * [Style.DUAL_UNIT_LINE].
+     * The resolved color used to draw the lines the Scalebar.
      *
      * The default line color is white.
      *
