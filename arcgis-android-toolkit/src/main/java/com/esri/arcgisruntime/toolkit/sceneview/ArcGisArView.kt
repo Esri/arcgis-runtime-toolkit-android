@@ -41,6 +41,7 @@ import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationExceptio
 import com.google.ar.sceneform.ArSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
+import java.util.concurrent.ExecutionException
 
 
 private const val CAMERA_PERMISSION_CODE = 0
@@ -75,6 +76,7 @@ class ArcGisArView : FrameLayout {
         inflate(context, R.layout.layout_arcgisarview, this)
     }
 
+    @Throws(InterruptedException::class, ExecutionException::class)
     fun arScreenToLocation(screenPoint: android.graphics.Point): Point {
         return sceneView.screenToLocationAsync(screenPoint).get()
     }
@@ -83,12 +85,14 @@ class ArcGisArView : FrameLayout {
         // no-op
     }
 
-    fun resetUsingLocationServices() {
+    fun resetUsingLocationServices(): Boolean {
         // no-op
+        return false
     }
 
-    fun resetUsingSpatialAnchor() {
+    fun resetUsingSpatialAnchor(): Boolean {
         // no-op
+        return false
     }
 
     fun startTracking() {
