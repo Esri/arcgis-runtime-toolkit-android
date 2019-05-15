@@ -246,8 +246,8 @@ abstract class ScalebarRenderer {
         distance.asDistanceString().apply {
             // But if 'distance' is small some of the other labels may use decimals, so allow for each label needing at least
             // 3 characters
-            // Calculate the bounds of the testString to determine its length
             with(if (this.length < 3) "9.9" else this) {
+                // Calculate the bounds of the testString to determine its length
                 textPaint.getTextBounds(this, 0, this.length, rect)
             }
         }
