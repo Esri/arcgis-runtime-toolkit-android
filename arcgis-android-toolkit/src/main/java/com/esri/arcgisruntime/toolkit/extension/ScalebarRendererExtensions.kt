@@ -110,13 +110,17 @@ internal fun selectLinearUnit(distance: Double, unitSystem: UnitSystem): LinearU
             // use MILES if at least half a mile
             if (distance >= HALF_MILE_FEET) {
                 LINEAR_UNIT_MILES
-            } else LINEAR_UNIT_FEET
+            } else {
+                LINEAR_UNIT_FEET
+            }
         }
         UnitSystem.METRIC -> {
             // use KILOMETERS if at least one kilometer
             if (distance >= KILOMETER_METERS) {
                 LINEAR_UNIT_KILOMETERS
-            } else LINEAR_UNIT_METERS
+            } else {
+                LINEAR_UNIT_METERS
+            }
         }
     }
 }
