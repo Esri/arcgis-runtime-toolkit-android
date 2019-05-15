@@ -495,6 +495,11 @@ class Scalebar : View {
         }
     }
 
+    /**
+     * Sets up the [Scalebar] to work with the provided [mapView].
+     *
+     * @since 100.5.0
+     */
     private fun setupMapView(mapView: MapView) {
         // Remove listeners from old MapView
         this.mapView?.let {
@@ -507,6 +512,11 @@ class Scalebar : View {
         mapView.addAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
     }
 
+    /**
+     * Removes the listeners from [mapView].
+     *
+     * @since 100.5.0
+     */
     private fun removeListenersFromMapView() {
         mapView?.removeViewpointChangedListener(viewPointChangedListener)
         mapView?.removeAttributionViewLayoutChangeListener(attributionViewLayoutChangeListener)
@@ -520,7 +530,7 @@ class Scalebar : View {
      */
     private fun calculateLeftPos(alignment: Alignment, scalebarLength: Float, displayUnits: LinearUnit): Float {
         var left = 0
-        var right = width
+        val right = width
         // padding to ensure the lines at the ends fit within the view
         var padding = lineWidthDp.dpToPixels(displayDensity)
         if (drawInMapView) {
