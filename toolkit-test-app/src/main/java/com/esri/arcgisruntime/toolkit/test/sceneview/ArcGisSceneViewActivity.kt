@@ -32,20 +32,7 @@ class ArcGisSceneViewActivity : AppCompatActivity() {
         with(ArcGISScene(Basemap.createLightGrayCanvas())) {
             arcGisArView.sceneView.scene = this
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        arcGisArView.resume(this)
-    }
-
-    override fun onPause() {
-        arcGisArView.pause()
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        arcGisArView.dispose()
-        super.onDestroy()
+        arcGisArView.registerLifecycle(lifecycle)
     }
 }

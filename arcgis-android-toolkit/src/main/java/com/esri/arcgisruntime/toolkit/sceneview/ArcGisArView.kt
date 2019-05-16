@@ -18,6 +18,9 @@ package com.esri.arcgisruntime.toolkit.sceneview
 
 import android.Manifest
 import android.app.Activity
+import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.LifecycleObserver
+import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
@@ -47,7 +50,7 @@ import java.util.concurrent.ExecutionException
 private const val CAMERA_PERMISSION_CODE = 0
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 
-class ArcGisArView : FrameLayout {
+class ArcGisArView : FrameLayout, LifecycleObserver {
 
     private var renderVideoFeed: Boolean = true
     private var installRequested: Boolean = false
@@ -117,25 +120,32 @@ class ArcGisArView : FrameLayout {
         // no-op
     }
 
-    fun resume(activity: Activity) {
+    fun registerLifecycle(lifecycle: Lifecycle) {
+        lifecycle.addObserver(this)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun resume() {
         if (session == null) {
             var exception: Exception? = null
             var message: String? = null
             try {
-                if (ArCoreApk.getInstance().requestInstall(
-                        activity,
-                        !installRequested
-                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-                ) {
-                    installRequested = true
-                    return
-                }
+                (context as? Activity)?.let {
+                    if (ArCoreApk.getInstance().requestInstall(
+                            it,
+                            !installRequested
+                        ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+                    ) {
+                        installRequested = true
+                        return
+                    }
 
-                // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-                // permission on Android M and above, now is a good time to ask the user for it.
-                if (!hasCameraPermission(activity)) {
-                    requestCameraPermission(activity)
-                    return
+                    // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+                    // permission on Android M and above, now is a good time to ask the user for it.
+                    if (!hasCameraPermission(it)) {
+                        requestCameraPermission(it)
+                        return
+                    }
                 }
 
                 // Create the session.
@@ -175,12 +185,14 @@ class ArcGisArView : FrameLayout {
         arcGisSceneView.resume()
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
         arcGisSceneView.pause()
         arSceneView.pause()
     }
 
-    fun dispose() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun destroy() {
         arcGisSceneView.dispose()
         session = null
     }
