@@ -24,7 +24,6 @@ import com.esri.arcgisruntime.UnitSystem
  * @throws IllegalArgumentException if an int that is neither 0 or 1 is supplied.
  * @since 100.5.0
  */
-@Throws(IllegalArgumentException::class)
 internal fun unitSystemFromInt(value: Int): UnitSystem {
     return when (value) {
         0 -> UnitSystem.IMPERIAL
