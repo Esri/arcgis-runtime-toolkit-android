@@ -207,7 +207,7 @@ class Scalebar : View {
         }
 
     /**
-     * The resolved color used to draw the lines the Scalebar.
+     * The resolved color used to draw the lines of the Scalebar.
      *
      * The default line color is white.
      *
