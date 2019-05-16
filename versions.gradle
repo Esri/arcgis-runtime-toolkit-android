@@ -12,6 +12,7 @@ ext {
         arCore = "1.9.0"
     }
     droidX = ext {
+        core = "1.0.2"
         lifecycle = "2.0.0"
     }
     test = ext {
