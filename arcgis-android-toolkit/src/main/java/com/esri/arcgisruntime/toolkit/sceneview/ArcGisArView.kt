@@ -88,6 +88,11 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         initialize()
     }
 
+    /**
+     * Initialize this View.
+     *
+     * @since 100.6.0
+     */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
     }
@@ -119,10 +124,20 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         // no-op
     }
 
+    /**
+     * Register this View as a [LifecycleObserver] to the provided [lifecycle].
+     *
+     * @since 100.6.0
+     */
     fun registerLifecycle(lifecycle: Lifecycle) {
         lifecycle.addObserver(this)
     }
 
+    /**
+     * The function invoked for the [Lifecycle.Event.ON_RESUME] lifecycle event.
+     *
+     * @since 100.6.0
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun resume() {
         if (session == null) {
@@ -186,7 +201,13 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         arcGisSceneView.resume()
     }
 
-    override fun onUpdate(p0: FrameTime?) {
+    /**
+     * Callback that is invoked once per frame immediately before the [Scene] is updated, with the provided [frameTime]
+     * which provides time information for the current frame.
+     *
+     * @since 100.6.0
+     */
+    override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let {
             if (it.trackingState == TrackingState.TRACKING) {
                 // TODO - combine cameras and transform
@@ -194,12 +215,22 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         }
     }
 
+    /**
+     * The function invoked for the [Lifecycle.Event.ON_PAUSE] lifecycle event.
+     *
+     * @since 100.6.0
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
         arcGisSceneView.pause()
         arSceneView.pause()
     }
 
+    /**
+     * The function invoked for the [Lifecycle.Event.ON_DESTROY] lifecycle event.
+     *
+     * @since 100.6.0
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun destroy() {
         arcGisSceneView.dispose()
