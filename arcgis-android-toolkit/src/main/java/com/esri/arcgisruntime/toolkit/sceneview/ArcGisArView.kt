@@ -36,12 +36,15 @@ import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
+import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.UnavailableApkTooOldException
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
 import com.google.ar.sceneform.ArSceneView
+import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.Scene
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 import java.util.concurrent.ExecutionException
@@ -50,7 +53,7 @@ import java.util.concurrent.ExecutionException
 private const val CAMERA_PERMISSION_CODE = 0
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 
-class ArcGisArView : FrameLayout, LifecycleObserver {
+class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     private var renderVideoFeed: Boolean = true
     private var installRequested: Boolean = false
@@ -86,10 +89,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver {
     }
 
     private fun initialize() {
-        inflateLayout()
-    }
-
-    private fun inflateLayout() {
         inflate(context, R.layout.layout_arcgisarview, this)
     }
 
@@ -156,6 +155,8 @@ class ArcGisArView : FrameLayout, LifecycleObserver {
                     arSceneView.setupSession(this)
                 }
 
+                arSceneView.scene.addOnUpdateListener(this)
+
             } catch (e: UnavailableArcoreNotInstalledException) {
                 message = "Please install ARCore"
                 exception = e
@@ -183,6 +184,14 @@ class ArcGisArView : FrameLayout, LifecycleObserver {
         }
         arSceneView.resume()
         arcGisSceneView.resume()
+    }
+
+    override fun onUpdate(p0: FrameTime?) {
+        arSceneView.arFrame?.camera?.let {
+            if (it.trackingState == TrackingState.TRACKING) {
+                // TODO - combine cameras and transform
+            }
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)

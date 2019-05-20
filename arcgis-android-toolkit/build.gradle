@@ -56,7 +56,8 @@ dependencies {
     implementation "com.android.support:multidex:$droid.multiDex"
     implementation "android.arch.lifecycle:runtime:$lifecycle"
     kapt "android.arch.lifecycle:compiler:$lifecycle"
-    implementation "com.google.ar.sceneform:core:$droid.arCore"
+    api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
+    api "com.google.ar.sceneform:core:$droid.arCore"
     api "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
