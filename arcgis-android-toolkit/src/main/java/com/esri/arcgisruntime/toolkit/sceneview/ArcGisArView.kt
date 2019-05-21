@@ -17,12 +17,17 @@
 package com.esri.arcgisruntime.toolkit.sceneview
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -49,18 +54,56 @@ import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 
 
 private const val CAMERA_PERMISSION_CODE = 0
+private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
+private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
 
 class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     private var renderVideoFeed: Boolean = true
     private var installRequested: Boolean = false
     private var session: Session? = null
+    private val locationManager by lazy {
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    }
+    private val locationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location?) {
+            location?.let {
+                originCamera?.let { camera ->
+                    originCamera = Camera(
+                        it.latitude,
+                        it.longitude,
+                        it.altitude,
+                        camera.heading,
+                        camera.pitch,
+                        camera.roll
+                    )
+                }
+            }
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+            Log.d(logTag, "Location - onStatusChanged: provider: $provider, status: $status, extras: $extras")
+        }
+
+        override fun onProviderEnabled(provider: String?) {
+            Log.d(logTag, "Location - onProviderEnabled: provider: $provider")
+        }
+
+        override fun onProviderDisabled(provider: String?) {
+            Log.d(logTag, "Location - onProviderDisabled: provider: $provider")
+        }
+
+    }
 
     val sceneView: SceneView get() = arcGisSceneView
     val arSceneView: ArSceneView get() = _arSceneView
 
-    lateinit var originCamera: Camera
+    var originCamera: Camera? = null
+        set(value) {
+            field = value
+            arcGisSceneView.setViewpointCamera(value)
+        }
     var translationTransformationFactor: Double = 0.0
 
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
@@ -115,8 +158,26 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      *
      * @since 100.6.0
      */
+    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun resume() {
+        (context as? Activity)?.let {
+            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+            // permission on Android M and above, now is a good time to ask the user for it.
+            if (!hasPermission(CAMERA_PERMISSION)) {
+                requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                return
+            }
+
+            if (!hasPermission(LOCATION_PERMISSION)) {
+                requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
+                return
+            }
+        }
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
+
         if (session == null) {
             var exception: Exception? = null
             var message: String? = null
@@ -128,13 +189,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                         ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
                     ) {
                         installRequested = true
-                        return
-                    }
-
-                    // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-                    // permission on Android M and above, now is a good time to ask the user for it.
-                    if (!hasCameraPermission(it)) {
-                        requestCameraPermission(it)
                         return
                     }
                 }
@@ -220,22 +274,17 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      *
      * @since 100.6.0
      */
-    private fun hasCameraPermission(activity: Activity): Boolean {
-        return ContextCompat.checkSelfPermission(
-            activity,
-            CAMERA_PERMISSION
-        ) == PackageManager.PERMISSION_GRANTED
+    private fun hasPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
     }
 
     /**
-     * Check to see we have the necessary permissions for the camera using the instance of [Activity], and ask for them
+     * Check to see we have the necessary permissions for the camera using the instance of [Context], and ask for them
      * if we don't.
      *
      * @since 100.6.0
      */
-    private fun requestCameraPermission(activity: Activity) {
-        ActivityCompat.requestPermissions(
-            activity, arrayOf(CAMERA_PERMISSION), CAMERA_PERMISSION_CODE
-        )
+    private fun requestPermission(activity: Activity, permission: String, permissionCode: Int) {
+        ActivityCompat.requestPermissions(activity, arrayOf(permission), permissionCode)
     }
 }
