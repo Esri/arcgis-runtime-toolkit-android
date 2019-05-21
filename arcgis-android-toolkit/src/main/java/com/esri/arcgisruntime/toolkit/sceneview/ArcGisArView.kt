@@ -150,6 +150,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                 session = Session(context).apply {
                     val config = Config(this)
                     config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                    config.focusMode = Config.FocusMode.AUTO
                     this.configure(config)
                     arSceneView.setupSession(this)
                 }
