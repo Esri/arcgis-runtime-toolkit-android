@@ -62,11 +62,8 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     val sceneView: SceneView get() = arcGisSceneView
     val arSceneView: ArSceneView get() = _arSceneView
 
-    var camera: Camera?
-        get() = arcGisSceneView?.currentViewpointCamera
-        set(value) {
-            arcGisSceneView?.setViewpointCamera(value)
-        }
+    lateinit var originCamera: Camera
+    var translationTransformationFactor: Double = 0.0
 
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
         this.renderVideoFeed = renderVideoFeed
@@ -95,25 +92,12 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
+        originCamera = sceneView.currentViewpointCamera
     }
 
     @Throws(InterruptedException::class, ExecutionException::class)
     fun arScreenToLocation(screenPoint: android.graphics.Point): Point {
         return sceneView.screenToLocationAsync(screenPoint).get()
-    }
-
-    fun resetTracking() {
-        // no-op
-    }
-
-    fun resetUsingLocationServices(): Boolean {
-        // no-op
-        return false
-    }
-
-    fun resetUsingSpatialAnchor(): Boolean {
-        // no-op
-        return false
     }
 
     fun startTracking() {
