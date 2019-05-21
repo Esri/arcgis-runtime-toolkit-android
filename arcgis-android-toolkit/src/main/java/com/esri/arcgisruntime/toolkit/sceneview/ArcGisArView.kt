@@ -28,7 +28,6 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
-import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.toolkit.R
@@ -47,7 +46,6 @@ import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
-import java.util.concurrent.ExecutionException
 
 
 private const val CAMERA_PERMISSION_CODE = 0
@@ -93,11 +91,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
-    }
-
-    @Throws(InterruptedException::class, ExecutionException::class)
-    fun arScreenToLocation(screenPoint: android.graphics.Point): Point {
-        return sceneView.screenToLocationAsync(screenPoint).get()
     }
 
     fun startTracking() {
