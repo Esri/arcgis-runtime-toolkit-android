@@ -12,5 +12,8 @@
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
     <string name="arcgis_sceneview_activity_label">ArcGisSceneView</string>
+    <string name="arcgisarview_error">An error has occurred with ArcGisArView: %s</string>
+    <string name="arcgisarview_permission_required">The following permission is required: %s</string>
+    <string name="arcgisarview_arcore_install_required">ARCore is required to use ArcGisARView</string>
 
 </resources>

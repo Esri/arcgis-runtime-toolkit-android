@@ -1,0 +1,7 @@
+<resources>
+    <string name="arcgisarview_exception_install_ar_core">Please install ARCore</string>
+    <string name="arcgisarview_exception_update_ar_core">Please update ARCore</string>
+    <string name="arcgisarview_exception_update_app">The targeted SDK is too old. Please update this app</string>
+    <string name="arcgisarview_exception_device_support">This device does not support AR</string>
+    <string name="arcgisarview_exception_failed_to_create_ar_session">Failed to create AR session</string>
+</resources>

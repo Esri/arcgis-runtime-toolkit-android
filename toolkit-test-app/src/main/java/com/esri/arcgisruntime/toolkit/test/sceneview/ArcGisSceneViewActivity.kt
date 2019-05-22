@@ -18,12 +18,16 @@ package com.esri.arcgisruntime.toolkit.test.sceneview
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.widget.Toast
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.Basemap
+import com.esri.arcgisruntime.toolkit.extension.logTag
+import com.esri.arcgisruntime.toolkit.sceneview.ArcGisArView
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_arcgisceneview.arcGisArView
 
-class ArcGisSceneViewActivity : AppCompatActivity() {
+class ArcGisSceneViewActivity : AppCompatActivity(), ArcGisArView.OnStateChangedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,5 +38,36 @@ class ArcGisSceneViewActivity : AppCompatActivity() {
         }
 
         arcGisArView.registerLifecycle(lifecycle)
+        arcGisArView.addOnStateChangedListener(this)
+    }
+
+    override fun onStateChanged(state: ArcGisArView.ArcGisArViewState) {
+        when (state) {
+            is ArcGisArView.ArcGisArViewState.Initialized -> {/*no-op */
+            }
+            is ArcGisArView.ArcGisArViewState.InitializationFailure -> {
+                with(getString(R.string.arcgisarview_error, state.exception.message)) {
+                    Log.e(logTag, this)
+                    Toast.makeText(this@ArcGisSceneViewActivity, this, Toast.LENGTH_SHORT).show()
+                }
+            }
+            is ArcGisArView.ArcGisArViewState.PermissionRequired -> {
+                with(getString(R.string.arcgisarview_permission_required, state.permission)) {
+                    Log.d(logTag, this)
+                    Toast.makeText(this@ArcGisSceneViewActivity, this, Toast.LENGTH_SHORT).show()
+                }
+            }
+            is ArcGisArView.ArcGisArViewState.ArCoreInstallationRequired -> {
+                with(getString(R.string.arcgisarview_arcore_install_required)) {
+                    Log.d(logTag, this)
+                    Toast.makeText(this@ArcGisSceneViewActivity, this, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        arcGisArView.removeOnStateChangedListener(this)
+        super.onDestroy()
     }
 }

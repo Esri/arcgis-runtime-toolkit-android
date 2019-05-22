@@ -93,8 +93,8 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         override fun onProviderDisabled(provider: String?) {
             Log.d(logTag, "Location - onProviderDisabled: provider: $provider")
         }
-
     }
+    private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
 
     val sceneView: SceneView get() = arcGisSceneView
     val arSceneView: ArSceneView get() = _arSceneView
@@ -105,6 +105,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             arcGisSceneView.setViewpointCamera(value)
         }
     var translationTransformationFactor: Double = 0.0
+    var error: Exception? = null
 
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
         this.renderVideoFeed = renderVideoFeed
@@ -157,6 +158,14 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         arcGisSceneView.pause()
     }
 
+    fun addOnStateChangedListener(listener: OnStateChangedListener) {
+        onStateChangedListeners.add(listener)
+    }
+
+    fun removeOnStateChangedListener(listener: OnStateChangedListener) {
+        onStateChangedListeners.remove(listener)
+    }
+
     /**
      * Register this View as a [LifecycleObserver] to the provided [lifecycle].
      *
@@ -182,11 +191,17 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
             if (!hasPermission(CAMERA_PERMISSION)) {
+                onStateChangedListeners.forEach { listener ->
+                    listener.onStateChanged(ArcGisArViewState.PermissionRequired(CAMERA_PERMISSION))
+                }
                 requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
                 return
             }
 
             if (!hasPermission(LOCATION_PERMISSION)) {
+                onStateChangedListeners.forEach { listener ->
+                    listener.onStateChanged(ArcGisArViewState.PermissionRequired(LOCATION_PERMISSION))
+                }
                 requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
                 return
             }
@@ -196,8 +211,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         if (session == null) {
-            var exception: Exception? = null
-            var message: String? = null
             try {
                 (context as? Activity)?.let {
                     if (ArCoreApk.getInstance().requestInstall(
@@ -206,6 +219,9 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                         ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
                     ) {
                         installRequested = true
+                        onStateChangedListeners.forEach { listener ->
+                            listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
+                        }
                         return
                     }
                 }
@@ -220,34 +236,33 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                 }
 
                 arSceneView.scene.addOnUpdateListener(this)
-
-            } catch (e: UnavailableArcoreNotInstalledException) {
-                message = "Please install ARCore"
-                exception = e
-            } catch (e: UnavailableUserDeclinedInstallationException) {
-                message = "Please install ARCore"
-                exception = e
-            } catch (e: UnavailableApkTooOldException) {
-                message = "Please update ARCore"
-                exception = e
-            } catch (e: UnavailableSdkTooOldException) {
-                message = "Please update this app"
-                exception = e
-            } catch (e: UnavailableDeviceNotCompatibleException) {
-                message = "This device does not support AR"
-                exception = e
             } catch (e: Exception) {
-                message = "Failed to create AR session"
-                exception = e
+                error = when (e) {
+                    is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGisArViewException(
+                        resources.getString(R.string.arcgisarview_exception_install_ar_core)
+                    )
+                    is UnavailableApkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
+                    is UnavailableSdkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
+                    is UnavailableDeviceNotCompatibleException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
+                    else -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
+                }
             }
 
-            if (message != null) {
-                Log.e(logTag, "Exception creating session", exception)
+            error?.let { error ->
+                Log.e(logTag, error.message)
+                onStateChangedListeners.forEach {
+                    it.onStateChanged(ArcGisArViewState.InitializationFailure(error))
+                }
+                this.error = null
                 return
             }
+
         }
         arSceneView.resume()
         arcGisSceneView.resume()
+        onStateChangedListeners.forEach {
+            it.onStateChanged(ArcGisArViewState.Initialized)
+        }
     }
 
     /**
@@ -304,5 +319,63 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     private fun requestPermission(activity: Activity, permission: String, permissionCode: Int) {
         ActivityCompat.requestPermissions(activity, arrayOf(permission), permissionCode)
+    }
+
+    /**
+     * A class that extends [Exception] to notify users when an error has occurred in [ArcGisArView] using the provided
+     * [message] which should expalin the error.
+     *
+     * @since 100.6.0
+     */
+    class ArcGisArViewException(override val message: String) : Exception(message)
+
+    /**
+     * An interface that allows a user to receive updates of the state of [ArcGisArView].
+     *
+     * @since 100.6.0
+     */
+    interface OnStateChangedListener {
+        /**
+         * Should be called when the state of [ArcGisArView] changes using an appropriate [state] of type [ArcGisArViewState].
+         *
+         * @since 100.6.0
+         */
+        fun onStateChanged(state: ArcGisArViewState)
+    }
+
+    /**
+     * A class representing the available states of [ArcGisArView].
+     *
+     * @since 100.6.0
+     */
+    sealed class ArcGisArViewState {
+        /**
+         * Should be used to indicate that the [ArcGisArView] has initialized correctly, an ARCore [Session] has begun
+         * and the [SceneView] has resumed.
+         *
+         * @since 100.6.0
+         */
+        object Initialized : ArcGisArViewState()
+
+        /**
+         * Should be used to indicate that a permission is required in order to use [ArcGisArView].
+         *
+         * @since 100.6.0
+         */
+        data class PermissionRequired(val permission: String) : ArcGisArViewState()
+
+        /**
+         * Should be used to indicate that an installation of ARCore is required.
+         *
+         * @since 100.6.0
+         */
+        object ArCoreInstallationRequired : ArcGisArViewState()
+
+        /**
+         * Should be used to indicate that an [Exception] has occurred during initialization.
+         *
+         * @since 100.6.0
+         */
+        data class InitializationFailure(val exception: Exception) : ArcGisArViewState()
     }
 }
