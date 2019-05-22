@@ -294,6 +294,8 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * The function invoked for the [Lifecycle.Event.ON_DESTROY] lifecycle event.
+     * [ArSceneView] may have an issue with a leak and an error may appear in the LogCat:
+     * https://github.com/google-ar/sceneform-android-sdk/issues/538
      *
      * @since 100.6.0
      */
