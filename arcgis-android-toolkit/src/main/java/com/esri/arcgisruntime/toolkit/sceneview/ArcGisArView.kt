@@ -136,12 +136,25 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         originCamera = sceneView.currentViewpointCamera
     }
 
+    /**
+     * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
+     * lifecycle of this View is maintained by the LifecycleOwner.
+     *
+     * @since 100.6.0
+     */
     fun startTracking() {
-        // no-op
+        beginSession()
     }
 
+    /**
+     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
+     * lifecycle of this View is maintained by the LifecycleOwner.
+     *
+     * @since 100.6.0
+     */
     fun stopTracking() {
-        // no-op
+        arSceneView.pause()
+        arcGisSceneView.pause()
     }
 
     /**
@@ -158,9 +171,13 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      *
      * @since 100.6.0
      */
-    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun resume() {
+        beginSession()
+    }
+
+    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
+    private fun beginSession() {
         (context as? Activity)?.let {
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
@@ -254,6 +271,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
+        locationManager.removeUpdates(locationListener)
         arcGisSceneView.pause()
         arSceneView.pause()
     }
