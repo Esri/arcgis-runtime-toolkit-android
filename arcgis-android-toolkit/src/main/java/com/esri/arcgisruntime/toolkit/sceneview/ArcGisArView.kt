@@ -156,6 +156,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     fun stopTracking() {
         arSceneView.pause()
         arcGisSceneView.pause()
+        session = null
     }
 
     fun addOnStateChangedListener(listener: OnStateChangedListener) {

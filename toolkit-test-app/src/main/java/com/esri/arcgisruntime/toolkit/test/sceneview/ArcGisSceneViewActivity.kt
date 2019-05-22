@@ -19,6 +19,8 @@ package com.esri.arcgisruntime.toolkit.test.sceneview
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.Basemap
@@ -64,6 +66,25 @@ class ArcGisSceneViewActivity : AppCompatActivity(), ArcGisArView.OnStateChanged
                 }
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.arcgissceneview_activity, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_start_tracking -> {
+                arcGisArView.startTracking()
+                return true
+            }
+            R.id.action_stop_tracking -> {
+                arcGisArView.stopTracking()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {

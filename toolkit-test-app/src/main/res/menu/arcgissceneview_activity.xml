@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_start_tracking"
+        android:title="@string/arcgis_sceneview_activity_start_tracking" />
+    <item
+        android:id="@+id/action_stop_tracking"
+        android:title="@string/arcgis_sceneview_activity_stop_tracking" />
+</menu>

@@ -15,5 +15,7 @@
     <string name="arcgisarview_error">An error has occurred with ArcGisArView: %s</string>
     <string name="arcgisarview_permission_required">The following permission is required: %s</string>
     <string name="arcgisarview_arcore_install_required">ARCore is required to use ArcGisARView</string>
+    <string name="arcgis_sceneview_activity_start_tracking">Start Tracking</string>
+    <string name="arcgis_sceneview_activity_stop_tracking">Stop Tracking</string>
 
 </resources>
