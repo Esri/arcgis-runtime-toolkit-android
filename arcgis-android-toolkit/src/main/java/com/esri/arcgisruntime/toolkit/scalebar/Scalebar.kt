@@ -45,7 +45,7 @@ import kotlin.reflect.KProperty
  *
  * _Workflow 1:_
  *
- * The simplest workflow is for the app to instantiate a Scalebar using using an instance of [Context] and call
+ * The simplest workflow is for the app to instantiate a Scalebar using an instance of [Context] and call
  * [addToMapView] to display it within the MapView. Optionally, setter methods may be called to override
  * some of the default settings. The app has limited control over the position of the scalebar (bottom-left,
  * bottom-right or bottom-centered) and no control over the size (it is sized automatically to fit comfortably within
