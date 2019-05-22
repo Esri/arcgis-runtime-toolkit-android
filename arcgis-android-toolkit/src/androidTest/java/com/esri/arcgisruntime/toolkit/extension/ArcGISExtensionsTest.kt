@@ -23,12 +23,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Instrumented unit tests for ArcGisExtensions
+ * Instrumented unit tests for ArcGISExtensions
  *
  * @since 100.5.0
  */
 @RunWith(AndroidJUnit4::class)
-class ArcGisExtensionsTest {
+class ArcGISExtensionsTest {
 
     /**
      * Tests that the supplied ints map to the correct [UnitSystem].
