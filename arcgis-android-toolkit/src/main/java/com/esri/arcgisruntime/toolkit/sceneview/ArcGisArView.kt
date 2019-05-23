@@ -326,7 +326,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * A class that extends [Exception] to notify users when an error has occurred in [ArcGisArView] using the provided
-     * [message] which should expalin the error.
+     * [message] which should explain the exception.
      *
      * @since 100.6.0
      */
