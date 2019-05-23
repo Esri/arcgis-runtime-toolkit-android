@@ -57,6 +57,7 @@ private const val CAMERA_PERMISSION_CODE = 0
 private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
+private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
@@ -104,7 +105,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             field = value
             arcGisSceneView.setViewpointCamera(value)
         }
-    var translationTransformationFactor: Double = 0.0
+    var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
     var error: Exception? = null
 
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
