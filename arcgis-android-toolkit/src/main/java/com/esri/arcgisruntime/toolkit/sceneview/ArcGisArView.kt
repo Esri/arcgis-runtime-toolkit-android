@@ -307,7 +307,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     }
 
     /**
-     * Check to see we have the necessary permissions for accessing the camera using the instance of [Activity].
+     * Check to see we have the necessary permissions for accessing the camera using the current [Context].
      *
      * @since 100.6.0
      */
@@ -316,7 +316,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     }
 
     /**
-     * Check to see we have the necessary permissions for the camera using the instance of [Context], and ask for them
+     * Check to see we have the necessary permissions for the camera using the instance of [Activity], and ask for them
      * if we don't.
      *
      * @since 100.6.0
