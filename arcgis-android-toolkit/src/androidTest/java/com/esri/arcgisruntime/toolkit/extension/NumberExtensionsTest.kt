@@ -162,4 +162,112 @@ class NumberExtensionsTest {
             // success
         }
     }
+
+    /**
+     * Tests formatting Double as distance String with a negative number. Expected behaviour would be to return the String
+     * without extra formatting.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringMinusZeroPointOne() {
+        assertEquals("-0.1", (-0.1).asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 0.0. Expected behaviour would be to return the String
+     * with the decimal place removed.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringZero() {
+        assertEquals("0", 0.0.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 0.1. Expected behaviour would be to return the String
+     * without extra formatting.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringZeroPointOne() {
+        assertEquals("0.1", 0.1.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 1.0. Expected behaviour would be to return the String
+     * with the decimal place removed.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringOne() {
+        assertEquals("1", 1.0.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 1.234567. Expected behaviour would be that the Double
+     * would be rounded down to 1.23 and no other formatting occurring.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringSixDecimalPlacesIsRounded() {
+        assertEquals("1.23", 1.234567.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 1.001. Expected behaviour would be that the Double
+     * would be rounded down to 1.00, the trailing zeros are removed and no other formatting occurring.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringRoundingToTwoDecimalPlacesAsZerosStripsDecimalZeros() {
+        assertEquals("1", 1.001.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 1.011. Expected behaviour would be that the Double
+     * would be rounded down to 1.01, and no other formatting occurring.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringRoundingToTwoDecimalPlacesAsNonZerosKeepsDecimals() {
+        assertEquals("1.01", 1.011.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 1.101. Expected behaviour would be that the Double
+     * would be rounded down to 1.10 and the trailing zero is removed.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceStringRoundingToTwoDecimalPlacesAsNonZeroFirstDecimalKeepsImportantDecimal() {
+        assertEquals("1.1", 1.101.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 99999.0.
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceLargeDouble() {
+        assertEquals("99999", 99999.0.asDistanceString())
+    }
+
+    /**
+     * Tests formatting Double as distance String with 12000.0
+     *
+     * @since 100.5.0
+     */
+    @Test
+    fun doubleAsDistanceTwelveThousand() {
+        assertEquals("12000", 12000.0.asDistanceString())
+    }
 }

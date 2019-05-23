@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+        android:id="@+id/scalebar"
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_margin="5dp"
+        app:alignment="center"
+        app:alternateFillColor="#FFFF0000"
+        app:barHeight="12dp"
+        app:fillColor="@android:color/black"
+        app:lineColor="#FFC0C0C0"
+        app:shadowColor="@android:color/white"
+        app:style="graduatedLine"
+        app:textColor="#FF00FF00"
+        app:textShadowColor="#FF0000FF"
+        app:textSize="@dimen/scalebar_test_text_size"
+        app:unitSystem="imperial" />
+
+</LinearLayout>
