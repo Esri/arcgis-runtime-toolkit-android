@@ -136,6 +136,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
+        sceneView.setIsBackgroundTransparent(renderVideoFeed)
     }
 
     /**
@@ -210,7 +211,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         }
 
         // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
+        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         if (session == null) {
             try {
