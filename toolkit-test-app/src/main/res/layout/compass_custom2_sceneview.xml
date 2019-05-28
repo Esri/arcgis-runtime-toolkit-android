@@ -11,11 +11,11 @@
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
         android:minHeight="50dp"
         android:text="@string/compass_message_custom2"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.esri.arcgisruntime.toolkit.compass.Compass
@@ -34,8 +34,8 @@
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
         app:layout_constraintBottom_toTopOf="@+id/layout_controls"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message" />
 
     <include

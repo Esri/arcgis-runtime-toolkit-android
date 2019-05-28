@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit.scalebar;
+package com.esri.arcgisruntime.toolkit.java.scalebar;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -615,11 +615,11 @@ public final class Scalebar extends View {
    * Sets the text size of this Scalebar. The default is 15dp.
    *
    * @param textSizeDp the text size to set, in density-independent pixels, must be &gt; 0
-   * @throws IllegalArgumentException if textSizeDp is &lt;= 0
+   * @throws IllegalArgumentException if textSizeSp is &lt;= 0
    * @since 100.2.1
    */
   public void setTextSize(int textSizeDp) {
-    ToolkitUtil.throwIfNotPositive(textSizeDp, "textSizeDp");
+    ToolkitUtil.throwIfNotPositive(textSizeDp, "textSizeSp");
     mTextSizeDp = textSizeDp;
     createTextPaint();
     postInvalidate();

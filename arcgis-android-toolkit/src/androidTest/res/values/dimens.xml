@@ -1,4 +1,5 @@
 <resources>
+    <dimen name="scalebar_test_text_size">20sp</dimen>
     <dimen name="test_int_to_pixel_size_eighty">80dp</dimen>
     <dimen name="test_int_to_pixel_size_zero">0dp</dimen>
 </resources>

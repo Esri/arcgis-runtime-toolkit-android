@@ -14,7 +14,7 @@
         android:layout_marginStart="6dp"
         android:layout_marginTop="6dp"
         android:text="@string/compass_message_regular"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
@@ -22,8 +22,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/layout_controls"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message">
 
         <com.esri.arcgisruntime.mapping.view.MapView
@@ -35,7 +35,7 @@
             android:id="@+id/left_inset"
             android:layout_width="10dp"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:background="#ffff00"
             android:visibility="invisible" />
 
@@ -51,7 +51,7 @@
             android:id="@+id/right_inset"
             android:layout_width="15dp"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:background="#ffff00"
             android:visibility="invisible" />
 
