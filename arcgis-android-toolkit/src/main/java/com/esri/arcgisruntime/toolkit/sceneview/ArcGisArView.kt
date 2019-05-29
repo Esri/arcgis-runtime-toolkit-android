@@ -282,19 +282,22 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      * @since 100.6.0
      */
     override fun onUpdate(frameTime: FrameTime?) {
-        arSceneView.arFrame?.camera?.let {
-            if (it.trackingState == TrackingState.TRACKING) {
-                val arTransMatrix = TransformationMatrix(
-                    it.displayOrientedPose.rotationQuaternion[0].toDouble(),
-                    it.displayOrientedPose.rotationQuaternion[1].toDouble(),
-                    it.displayOrientedPose.rotationQuaternion[2].toDouble(),
-                    it.displayOrientedPose.rotationQuaternion[3].toDouble(),
-                    it.displayOrientedPose.translation[0] * translationTransformationFactor,
-                    it.displayOrientedPose.translation[1] * translationTransformationFactor,
-                    it.displayOrientedPose.translation[2] * translationTransformationFactor
-                )
-                val mergedTransMatrix = initialTransformationMatrix?.addTransformation(arTransMatrix)
-                sceneView.setViewpointCamera(Camera(mergedTransMatrix))
+        arSceneView.arFrame?.camera?.let { arCamera ->
+            if (arCamera.trackingState == TrackingState.TRACKING) {
+                // TODO: refactor to apply translationTransformationFactor when implemented
+                TransformationMatrix(
+                    arCamera.displayOrientedPose.rotationQuaternion[0].toDouble(),
+                    arCamera.displayOrientedPose.rotationQuaternion[1].toDouble(),
+                    arCamera.displayOrientedPose.rotationQuaternion[2].toDouble(),
+                    arCamera.displayOrientedPose.rotationQuaternion[3].toDouble(),
+                    arCamera.displayOrientedPose.translation[0] * translationTransformationFactor,
+                    arCamera.displayOrientedPose.translation[1] * translationTransformationFactor,
+                    arCamera.displayOrientedPose.translation[2] * translationTransformationFactor
+                ).let {
+                    initialTransformationMatrix?.addTransformation(it)
+                }.let {
+                    sceneView.setViewpointCamera(Camera(it))
+                }
             }
         }
     }
