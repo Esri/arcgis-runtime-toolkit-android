@@ -105,7 +105,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     var originCamera: Camera? = null
         set(value) {
             field = value
-            arcGisSceneView.setViewpointCamera(value)
+            sceneView.setViewpointCamera(value)
             initialTransformationMatrix = value?.transformationMatrix
             value?.location?.let {
                 translationTransformationFactor = it.z
@@ -164,7 +164,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     fun stopTracking() {
         arSceneView.pause()
-        arcGisSceneView.pause()
         session = null
     }
 
@@ -269,7 +268,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
         }
         arSceneView.resume()
-        arcGisSceneView.resume()
+        sceneView.resume()
         onStateChangedListeners.forEach {
             it.onStateChanged(ArcGisArViewState.Initialized)
         }
@@ -310,7 +309,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
         locationManager.removeUpdates(locationListener)
-        arcGisSceneView.pause()
+        sceneView.pause()
         arSceneView.pause()
     }
 
@@ -323,7 +322,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun destroy() {
-        arcGisSceneView.dispose()
+        sceneView.dispose()
         session = null
     }
 
