@@ -36,7 +36,7 @@ class ArcGisSceneViewActivity : AppCompatActivity(), ArcGisArView.OnStateChanged
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_arcgisceneview)
 
-        with(ArcGISScene(Basemap.createLightGrayCanvas())) {
+        with(ArcGISScene(Basemap.createImagery())) {
             arcGisArView.sceneView.scene = this
         }
 

@@ -35,6 +35,7 @@ import android.util.Log
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
+import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.google.ar.core.ArCoreApk
@@ -67,6 +68,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     private val locationManager by lazy {
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
+    private var initialTransformationMatrix: TransformationMatrix? = null
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location?) {
             location?.let {
@@ -104,6 +106,10 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         set(value) {
             field = value
             arcGisSceneView.setViewpointCamera(value)
+            initialTransformationMatrix = value?.transformationMatrix
+            value?.location?.let {
+                translationTransformationFactor = it.z
+            }
         }
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
     var error: Exception? = null
@@ -136,6 +142,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
+        initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
         sceneView.setIsBackgroundTransparent(renderVideoFeed)
     }
 
@@ -277,7 +284,17 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let {
             if (it.trackingState == TrackingState.TRACKING) {
-                // TODO - combine cameras and transform
+                val arTransMatrix = TransformationMatrix(
+                    it.displayOrientedPose.rotationQuaternion[0].toDouble(),
+                    it.displayOrientedPose.rotationQuaternion[1].toDouble(),
+                    it.displayOrientedPose.rotationQuaternion[2].toDouble(),
+                    it.displayOrientedPose.rotationQuaternion[3].toDouble(),
+                    it.displayOrientedPose.translation[0] * translationTransformationFactor,
+                    it.displayOrientedPose.translation[1] * translationTransformationFactor,
+                    it.displayOrientedPose.translation[2] * translationTransformationFactor
+                )
+                val mergedTransMatrix = initialTransformationMatrix?.addTransformation(arTransMatrix)
+                sceneView.setViewpointCamera(Camera(mergedTransMatrix))
             }
         }
     }
