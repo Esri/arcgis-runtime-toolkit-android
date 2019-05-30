@@ -64,7 +64,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     private var renderVideoFeed: Boolean = true
     private var installRequested: Boolean = false
-    private var session: Session? = null
     private val locationManager by lazy {
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
@@ -164,7 +163,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     fun stopTracking() {
         arSceneView.pause()
-        session = null
     }
 
     fun addOnStateChangedListener(listener: OnStateChangedListener) {
@@ -219,54 +217,52 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         // Register the listener with the Location Manager to receive location updates
         //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
-        if (session == null) {
-            try {
-                (context as? Activity)?.let {
-                    if (ArCoreApk.getInstance().requestInstall(
-                            it,
-                            !installRequested
-                        ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-                    ) {
-                        installRequested = true
-                        onStateChangedListeners.forEach { listener ->
-                            listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
-                        }
-                        return
+        try {
+            (context as? Activity)?.let {
+                if (ArCoreApk.getInstance().requestInstall(
+                        it,
+                        !installRequested
+                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+                ) {
+                    installRequested = true
+                    onStateChangedListeners.forEach { listener ->
+                        listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
                     }
-                }
-
-                // Create the session.
-                session = Session(context).apply {
-                    val config = Config(this)
-                    config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-                    config.focusMode = Config.FocusMode.AUTO
-                    this.configure(config)
-                    arSceneView.setupSession(this)
-                }
-
-                arSceneView.scene.addOnUpdateListener(this)
-            } catch (e: Exception) {
-                error = when (e) {
-                    is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGisArViewException(
-                        resources.getString(R.string.arcgisarview_exception_install_ar_core)
-                    )
-                    is UnavailableApkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
-                    is UnavailableSdkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
-                    is UnavailableDeviceNotCompatibleException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
-                    else -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
+                    return
                 }
             }
 
-            error?.let { error ->
-                Log.e(logTag, error.message)
-                onStateChangedListeners.forEach {
-                    it.onStateChanged(ArcGisArViewState.InitializationFailure(error))
-                }
-                this.error = null
-                return
+            // Create the session.
+            Session(context).apply {
+                val config = Config(this)
+                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                config.focusMode = Config.FocusMode.AUTO
+                this.configure(config)
+                arSceneView.setupSession(this)
             }
 
+            arSceneView.scene.addOnUpdateListener(this)
+        } catch (e: Exception) {
+            error = when (e) {
+                is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGisArViewException(
+                    resources.getString(R.string.arcgisarview_exception_install_ar_core)
+                )
+                is UnavailableApkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
+                is UnavailableSdkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
+                is UnavailableDeviceNotCompatibleException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
+                else -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
+            }
         }
+
+        error?.let { error ->
+            Log.e(logTag, error.message)
+            onStateChangedListeners.forEach {
+                it.onStateChanged(ArcGisArViewState.InitializationFailure(error))
+            }
+            this.error = null
+            return
+        }
+
         arSceneView.resume()
         sceneView.resume()
         onStateChangedListeners.forEach {
@@ -285,16 +281,15 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             if (arCamera.trackingState == TrackingState.TRACKING) {
                 // TODO: refactor to apply translationTransformationFactor when implemented
                 TransformationMatrix(
-                    arCamera.displayOrientedPose.rotationQuaternion[0].toDouble(),
-                    arCamera.displayOrientedPose.rotationQuaternion[1].toDouble(),
-                    arCamera.displayOrientedPose.rotationQuaternion[2].toDouble(),
-                    arCamera.displayOrientedPose.rotationQuaternion[3].toDouble(),
-                    arCamera.displayOrientedPose.translation[0] * translationTransformationFactor,
-                    arCamera.displayOrientedPose.translation[1] * translationTransformationFactor,
-                    arCamera.displayOrientedPose.translation[2] * translationTransformationFactor
+                    arCamera.displayOrientedPose.rotationQuaternion.map {
+                        it.toDouble()
+                    }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map {
+                        it * translationTransformationFactor
+                    }.toDoubleArray()
                 ).let {
                     initialTransformationMatrix?.addTransformation(it)
-                }.let {
+                }?.let {
                     sceneView.setViewpointCamera(Camera(it))
                 }
             }
@@ -309,8 +304,8 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
         locationManager.removeUpdates(locationListener)
-        sceneView.pause()
         arSceneView.pause()
+        sceneView.pause()
     }
 
     /**
@@ -322,8 +317,8 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun destroy() {
+        arSceneView.destroy()
         sceneView.dispose()
-        session = null
     }
 
     /**
