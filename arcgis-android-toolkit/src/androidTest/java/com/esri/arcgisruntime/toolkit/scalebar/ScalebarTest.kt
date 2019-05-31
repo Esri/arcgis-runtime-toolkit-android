@@ -25,7 +25,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.esri.arcgisruntime.UnitSystem
 import com.esri.arcgisruntime.mapping.view.MapView
-import com.esri.arcgisruntime.toolkit.TestUtil
+import com.esri.arcgisruntime.toolkit.MISSING_ILLEGAL_STATE_EXCEPTION
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import com.esri.arcgisruntime.toolkit.test.R
 import junit.framework.Assert.assertEquals
@@ -151,7 +151,7 @@ class ScalebarTest {
         // Check addToMapView() fails when it's already added to a MapView
         try {
             scalebar.addToMapView(mapView)
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -163,7 +163,7 @@ class ScalebarTest {
         // Check bindTo() fails when it's already added to a MapView
         try {
             scalebar.bindTo(mapView)
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -174,7 +174,7 @@ class ScalebarTest {
         // Call removeFromMapView() again and check it fails because it's not currently added to a MapView
         try {
             scalebar.removeFromMapView()
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -189,7 +189,7 @@ class ScalebarTest {
         // Workflow 2
         try {
             scalebar.removeFromMapView()
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -197,7 +197,7 @@ class ScalebarTest {
         // Check addToMapView() fails when it's bound to a MapView
         try {
             scalebar.addToMapView(mapView)
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
