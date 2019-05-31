@@ -165,10 +165,20 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         arSceneView.pause()
     }
 
+    /**
+     * Add a [listener] to be notified of changes to the [ArcGisArViewState].
+     *
+     * @since 100.6.0
+     */
     fun addOnStateChangedListener(listener: OnStateChangedListener) {
         onStateChangedListeners.add(listener)
     }
 
+    /**
+     * Remove a [listener] that was previously added.
+     *
+     * @since 100.6.0
+     */
     fun removeOnStateChangedListener(listener: OnStateChangedListener) {
         onStateChangedListeners.remove(listener)
     }
@@ -188,7 +198,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      * @since 100.6.0
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun resume() {
+    internal fun resume() {
         beginSession()
     }
 
@@ -302,7 +312,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      * @since 100.6.0
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun pause() {
+    internal fun pause() {
         locationManager.removeUpdates(locationListener)
         arSceneView.pause()
         sceneView.pause()
@@ -316,7 +326,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      * @since 100.6.0
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun destroy() {
+    internal fun destroy() {
         arSceneView.destroy()
         sceneView.dispose()
     }
