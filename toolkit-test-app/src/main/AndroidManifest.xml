@@ -51,7 +51,6 @@
         <activity
             android:name=".sceneview.ArcGisSceneViewActivity"
             android:label="@string/arcgis_sceneview_activity_label"
-            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
 
     </application>
