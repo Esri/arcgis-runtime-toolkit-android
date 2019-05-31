@@ -328,7 +328,9 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     internal fun destroy() {
         arSceneView.destroy()
-        sceneView.dispose()
+        // disposing of SceneView causes the render surface, which is shared with ArSceneView, to become invalid and
+        // rendering of the camera fails.
+        // sceneView.dispose()
     }
 
     /**
