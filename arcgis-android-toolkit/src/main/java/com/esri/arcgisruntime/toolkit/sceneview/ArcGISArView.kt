@@ -55,7 +55,7 @@ private const val CAMERA_PERMISSION_CODE = 0
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
-class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
+class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
@@ -127,7 +127,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      *
      * @since 100.6.0
      */
-    var error: ArcGisArViewException? = null
+    var error: ArcGISArViewException? = null
 
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
         this.renderVideoFeed = renderVideoFeed
@@ -137,11 +137,11 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         context.theme.obtainStyledAttributes(
             attrs,
-            R.styleable.ArcGisArView,
+            R.styleable.ArcGISArView,
             0, 0
         ).apply {
             try {
-                renderVideoFeed = getBoolean(R.styleable.ArcGisArView_renderVideoFeed, true)
+                renderVideoFeed = getBoolean(R.styleable.ArcGISArView_renderVideoFeed, true)
             } finally {
                 recycle()
             }
@@ -182,7 +182,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     }
 
     /**
-     * Add a [listener] to be notified of changes to the [ArcGisArViewState].
+     * Add a [listener] to be notified of changes to the [ArcGISArViewState].
      *
      * @since 100.6.0
      */
@@ -225,7 +225,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             // permission on Android M and above, now is a good time to ask the user for it.
             if (!hasPermission(CAMERA_PERMISSION)) {
                 onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGisArViewState.PermissionRequired(CAMERA_PERMISSION))
+                    listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
                 }
                 requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
                 return
@@ -238,7 +238,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             ) {
                 arCoreInstallRequested = true
                 onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
+                    listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
                 }
                 return
             }
@@ -257,20 +257,20 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
             arSceneView.scene.addOnUpdateListener(this)
         } catch (e: Exception) {
             error = when (e) {
-                is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGisArViewException(
+                is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGISArViewException(
                     resources.getString(R.string.arcgisarview_exception_install_ar_core)
                 )
-                is UnavailableApkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
-                is UnavailableSdkTooOldException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
-                is UnavailableDeviceNotCompatibleException -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
-                else -> ArcGisArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
+                is UnavailableApkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
+                is UnavailableSdkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
+                is UnavailableDeviceNotCompatibleException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
+                else -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
             }
         }
 
         error?.let { error ->
             Log.e(logTag, error.message)
             onStateChangedListeners.forEach {
-                it.onStateChanged(ArcGisArViewState.InitializationFailure(error))
+                it.onStateChanged(ArcGISArViewState.InitializationFailure(error))
             }
             this.error = null
             return
@@ -279,7 +279,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         arSceneView.resume()
         sceneView.resume()
         onStateChangedListeners.forEach {
-            it.onStateChanged(ArcGisArViewState.Initialized)
+            it.onStateChanged(ArcGISArViewState.Initialized)
         }
     }
 
@@ -354,60 +354,60 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     }
 
     /**
-     * A class that extends [Exception] to notify users when an error has occurred in [ArcGisArView] using the provided
+     * A class that extends [Exception] to notify users when an error has occurred in [ArcGISArView] using the provided
      * [message] which should explain the exception.
      *
      * @since 100.6.0
      */
-    class ArcGisArViewException(override val message: String) : Exception(message)
+    class ArcGISArViewException(override val message: String) : Exception(message)
 
     /**
-     * An interface that allows a user to receive updates of the state of [ArcGisArView].
+     * An interface that allows a user to receive updates of the state of [ArcGISArView].
      *
      * @since 100.6.0
      */
     interface OnStateChangedListener {
         /**
-         * Should be called when the state of [ArcGisArView] changes using an appropriate [state] of type [ArcGisArViewState].
+         * Should be called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
          *
          * @since 100.6.0
          */
-        fun onStateChanged(state: ArcGisArViewState)
+        fun onStateChanged(state: ArcGISArViewState)
     }
 
     /**
-     * A class representing the available states of [ArcGisArView].
+     * A class representing the available states of [ArcGISArView].
      *
      * @since 100.6.0
      */
-    sealed class ArcGisArViewState {
+    sealed class ArcGISArViewState {
         /**
-         * Should be used to indicate that the [ArcGisArView] has initialized correctly, an ARCore [Session] has begun
+         * Should be used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
          * and the [SceneView] has resumed.
          *
          * @since 100.6.0
          */
-        object Initialized : ArcGisArViewState()
+        object Initialized : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that a permission is required in order to use [ArcGisArView].
+         * Should be used to indicate that a permission is required in order to use [ArcGISArView].
          *
          * @since 100.6.0
          */
-        data class PermissionRequired(val permission: String) : ArcGisArViewState()
+        data class PermissionRequired(val permission: String) : ArcGISArViewState()
 
         /**
          * Should be used to indicate that an installation of ARCore is required.
          *
          * @since 100.6.0
          */
-        object ArCoreInstallationRequired : ArcGisArViewState()
+        object ArCoreInstallationRequired : ArcGISArViewState()
 
         /**
          * Should be used to indicate that an [Exception] has occurred during initialization.
          *
          * @since 100.6.0
          */
-        data class InitializationFailure(val exception: Exception) : ArcGisArViewState()
+        data class InitializationFailure(val exception: Exception) : ArcGISArViewState()
     }
 }

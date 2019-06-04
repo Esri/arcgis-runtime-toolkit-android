@@ -1,5 +1,5 @@
 <resources>
-    <declare-styleable name="ArcGisArView">
+    <declare-styleable name="ArcGISArView">
         <attr name="renderVideoFeed" format="boolean" />
     </declare-styleable>
     <declare-styleable name="Compass">

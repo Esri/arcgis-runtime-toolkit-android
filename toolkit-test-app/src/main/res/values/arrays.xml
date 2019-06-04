@@ -7,7 +7,7 @@
     <string-array name="activityClassNames">
         <item>com.esri.arcgisruntime.toolkit.test.compass.CompassTestActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity</item>
-        <item>com.esri.arcgisruntime.toolkit.test.sceneview.ArcGisSceneViewActivity</item>
+        <item>com.esri.arcgisruntime.toolkit.test.sceneview.ArcGISSceneViewActivity</item>
     </string-array>
 
     <!-- Compass -->
