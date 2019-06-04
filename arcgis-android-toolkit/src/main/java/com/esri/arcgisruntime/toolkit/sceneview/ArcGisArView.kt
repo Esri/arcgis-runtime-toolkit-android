@@ -24,15 +24,12 @@ import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
+import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
@@ -55,60 +52,57 @@ import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 
 
 private const val CAMERA_PERMISSION_CODE = 0
-private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
-private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
-    private var installRequested: Boolean = false
-    private val locationManager by lazy {
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    }
+    /**
+     * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
+     *
+     * @since 100.6.0
+     */
+    private var arCoreInstallRequested: Boolean = false
+
+    /**
+     * Initial [TransformationMatrix] obtained from the initial [Camera] used by [sceneView].
+     *
+     * @since 100.6.0
+     */
     private var initialTransformationMatrix: TransformationMatrix? = null
-    // LocationListener is not required for ARCore implementation but will be included in a future implementation before 100.6.0 release
-    private val locationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location?) {
-            location?.let {
-                originCamera?.let { camera ->
-                    originCamera = Camera(
-                        it.latitude,
-                        it.longitude,
-                        it.altitude,
-                        camera.heading,
-                        camera.pitch,
-                        camera.roll
-                    )
-                }
-            }
-        }
 
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            Log.d(logTag, "Location - onStatusChanged: provider: $provider, status: $status, extras: $extras")
-        }
-
-        override fun onProviderEnabled(provider: String?) {
-            Log.d(logTag, "Location - onProviderEnabled: provider: $provider")
-        }
-
-        override fun onProviderDisabled(provider: String?) {
-            Log.d(logTag, "Location - onProviderDisabled: provider: $provider")
-        }
-    }
+    /**
+     * A list of [OnStateChangedListener] used to notify when the sate of this view has changed.
+     *
+     * @since 100.6.0
+     */
     private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
 
+    /**
+     * ArcGIS SceneView used to render the data from an [ArcGISScene].
+     *
+     * @since 100.6.0
+     */
     val sceneView: SceneView get() = arcGisSceneView
+
+    /**
+     * A SurfaceView that integrates with ARCore and renders a scene.
+     *
+     * @since 100.6.0
+     */
     val arSceneView: ArSceneView get() = _arSceneView
 
+    /**
+     * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
+     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
+     *
+     * @since 100.6.0
+     */
     var originCamera: Camera? = null
         set(value) {
             field = value
             sceneView.setViewpointCamera(value)
             initialTransformationMatrix = value?.transformationMatrix
-            value?.location?.let {
-                translationTransformationFactor = it.z
-            }
         }
 
     /**
@@ -118,8 +112,22 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      * @since 100.6.0
      */
     private var renderVideoFeed: Boolean = true
+
+    /**
+     * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
+     * TransformationMatrix. Meaning that if the user moves 1 meter in real life, they could be moving faster in the
+     * digital model, dependant on the value used.
+     *
+     * @since 100.6.0
+     */
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
-    var error: Exception? = null
+
+    /**
+     * Exposes an [Exception] should it occur when using this view.
+     *
+     * @since 100.6.0
+     */
+    var error: ArcGisArViewException? = null
 
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
         this.renderVideoFeed = renderVideoFeed
@@ -142,7 +150,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     }
 
     /**
-     * Initialize this View.
+     * Initialize this View by inflating the layout containing the [SceneView] and [ArSceneView].
      *
      * @since 100.6.0
      */
@@ -223,31 +231,18 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                 return
             }
 
-            // This permission will be required for ArSensorView functionality which is to be embedded in future before
-            // 100.6.0 release
-            if (!hasPermission(LOCATION_PERMISSION)) {
-                onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGisArViewState.PermissionRequired(LOCATION_PERMISSION))
-                }
-                requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
-                return
-            }
-
             if (ArCoreApk.getInstance().requestInstall(
                     it,
-                    !installRequested
+                    !arCoreInstallRequested
                 ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
             ) {
-                installRequested = true
+                arCoreInstallRequested = true
                 onStateChangedListeners.forEach { listener ->
                     listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
                 }
                 return
             }
         }
-
-        // Register the listener with the Location Manager to receive location updates
-        //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         try {
             // Create the session.
@@ -321,7 +316,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     internal fun pause() {
-        locationManager.removeUpdates(locationListener)
         arSceneView.pause()
         sceneView.pause()
     }

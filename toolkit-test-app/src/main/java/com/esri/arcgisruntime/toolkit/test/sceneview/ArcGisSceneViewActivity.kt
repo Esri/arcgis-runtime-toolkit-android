@@ -48,6 +48,7 @@ class ArcGisSceneViewActivity : AppCompatActivity(), ArcGisArView.OnStateChanged
         when (state) {
             is ArcGisArView.ArcGisArViewState.Initialized -> {
                 arcGisArView.originCamera = Camera(20.0, 30.0, 25000000.0, 0.0, 0.0, 0.0)
+                arcGisArView.translationTransformationFactor = 25000000.0
             }
             is ArcGisArView.ArcGisArViewState.InitializationFailure -> {
                 with(getString(R.string.arcgisarview_error, state.exception.message)) {
