@@ -21,7 +21,11 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.filters.SdkSuppress
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.toolkit.TestActivity
+import com.esri.arcgisruntime.toolkit.finish
+import com.esri.arcgisruntime.toolkit.launchActivity
+import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
@@ -60,6 +64,7 @@ class ArcGISArViewTest {
                     assertNotNull(it.originCamera)
                 }
             }
+            arcGisArViewTestActivityRule.finish()
         }
     }
 
@@ -76,6 +81,87 @@ class ArcGISArViewTest {
                 assertNotNull(it?.arSceneView)
                 assertNotNull(it?.originCamera)
             }
+            arcGisArViewTestActivityRule.finish()
+        }
+    }
+
+    @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
+    fun testSettingOriginCamera() {
+        val cameraLat = 20.0
+        val cameraLon = 30.0
+        val cameraAlt = 2500.0
+        val cameraHeading = 10.0
+        val cameraPitch = 20.0
+        val cameraRoll = 30.0
+
+        val delta = 0.001
+
+        val camera = Camera(cameraLat, cameraLon, cameraAlt, cameraHeading, cameraPitch, cameraRoll)
+        with(arcGisArViewTestActivityRule) {
+            this.launchActivity()
+            this.activity.arcGISArView.let {
+                it?.originCamera = camera
+
+                val actualCamera = it?.originCamera
+
+                assertEquals(
+                    "Expected camera location latitude: $cameraLat was ${actualCamera?.location?.y}",
+                    cameraLat,
+                    actualCamera?.location?.y!!,
+                    delta
+                )
+                assertEquals(
+                    "Expected camera location longitude: $cameraLon was ${actualCamera.location?.x}",
+                    cameraLon,
+                    actualCamera.location?.x!!,
+                    delta
+                )
+                assertEquals(
+                    "Expected camera location altitude: $cameraAlt was ${actualCamera.location?.z}",
+                    cameraAlt,
+                    actualCamera.location?.z!!,
+                    delta
+                )
+                assertEquals(
+                    "Expected camera heading: $cameraHeading was ${actualCamera.heading}",
+                    cameraHeading,
+                    actualCamera.heading,
+                    delta
+                )
+                assertEquals(
+                    "Expected camera pitch: $cameraPitch was ${actualCamera.pitch}",
+                    cameraPitch,
+                    actualCamera.pitch,
+                    delta
+                )
+                assertEquals(
+                    "Expected camera roll: $cameraRoll was ${actualCamera.roll}",
+                    cameraRoll,
+                    actualCamera.roll,
+                    delta
+                )
+            }
+            this.finish()
+        }
+    }
+
+    @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
+    fun testTranslationTransformationFactor() {
+        val translationTransformationFactor = 99.9
+        with(arcGisArViewTestActivityRule) {
+            this.launchActivity()
+            this.activity.arcGISArView.let {
+                it?.translationTransformationFactor = translationTransformationFactor
+
+                assertEquals(
+                    "Expected translation transformation factor $translationTransformationFactor",
+                    translationTransformationFactor,
+                    it?.translationTransformationFactor
+                )
+            }
+            this.finish()
         }
     }
 
