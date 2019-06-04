@@ -55,6 +55,13 @@ private const val CAMERA_PERMISSION_CODE = 0
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
+/**
+ * This view simplifies the task of configuring a [SceneView] to be used for AR experiences by calculating the optimal
+ * [TransformationMatrix] to be set on the [Camera] of the [SceneView] by using the translation and quaternion factors
+ * provided by the camera used in ArSceneView.
+ *
+ * @since 100.6.0
+ */
 class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     /**
@@ -129,11 +136,21 @@ class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
      */
     var error: ArcGISArViewException? = null
 
+    /**
+     * Constructor used when instantiating this View directly to attach it to another view programmatically.
+     *
+     * @since 100.6.0
+     */
     constructor(context: Context, renderVideoFeed: Boolean) : super(context) {
         this.renderVideoFeed = renderVideoFeed
         initialize()
     }
 
+    /**
+     * Constructor used when defining this view in an XML layout.
+     *
+     * @since 100.6.0
+     */
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         context.theme.obtainStyledAttributes(
             attrs,
@@ -218,6 +235,20 @@ class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         beginSession()
     }
 
+    /**
+     * Checks the following perquisites required for the use of ARCore:
+     * - Checks for permissions required to use ARCore.
+     * - Checks for an installation of ARCore.
+     *
+     * If perquisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
+     * any exceptions related to permissions, ARCore installation or the beginning of an ARCore session, an exception is
+     * caught and listeners are notified. Otherwise, listeners are notified that this view has initialized.
+     *
+     * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
+     * request permissions. This may not always be the case and the handling of permission are under review.
+     *
+     * @since 100.6.0
+     */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
         (context as? Activity)?.let {
