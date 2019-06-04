@@ -62,7 +62,7 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  *
  * @since 100.6.0
  */
-class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
+final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
