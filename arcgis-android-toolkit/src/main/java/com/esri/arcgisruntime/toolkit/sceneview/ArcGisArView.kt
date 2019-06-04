@@ -62,12 +62,12 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
 
-    private var renderVideoFeed: Boolean = true
     private var installRequested: Boolean = false
     private val locationManager by lazy {
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
     private var initialTransformationMatrix: TransformationMatrix? = null
+    // LocationListener is not required for ARCore implementation but will be included in a future implementation before 100.6.0 release
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location?) {
             location?.let {
@@ -110,6 +110,14 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                 translationTransformationFactor = it.z
             }
         }
+
+    /**
+     * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
+     * [ArSceneView] to be visible underneath the SceneView.
+     *
+     * @since 100.6.0
+     */
+    private var renderVideoFeed: Boolean = true
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
     var error: Exception? = null
 
@@ -215,11 +223,25 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
                 return
             }
 
+            // This permission will be required for ArSensorView functionality which is to be embedded in future before
+            // 100.6.0 release
             if (!hasPermission(LOCATION_PERMISSION)) {
                 onStateChangedListeners.forEach { listener ->
                     listener.onStateChanged(ArcGisArViewState.PermissionRequired(LOCATION_PERMISSION))
                 }
                 requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
+                return
+            }
+
+            if (ArCoreApk.getInstance().requestInstall(
+                    it,
+                    !installRequested
+                ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+            ) {
+                installRequested = true
+                onStateChangedListeners.forEach { listener ->
+                    listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
+                }
                 return
             }
         }
@@ -228,20 +250,6 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
         //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
 
         try {
-            (context as? Activity)?.let {
-                if (ArCoreApk.getInstance().requestInstall(
-                        it,
-                        !installRequested
-                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-                ) {
-                    installRequested = true
-                    onStateChangedListeners.forEach { listener ->
-                        listener.onStateChanged(ArcGisArViewState.ArCoreInstallationRequired)
-                    }
-                    return
-                }
-            }
-
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
@@ -343,8 +351,7 @@ class ArcGisArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
     }
 
     /**
-     * Check to see we have the necessary permissions for the camera using the instance of [Activity], and ask for them
-     * if we don't.
+     * Request a [permission] using the provided [activity] and [permissionCode].
      *
      * @since 100.6.0
      */
