@@ -70,6 +70,8 @@ class ArcGISArViewTest {
 
     /**
      * Tests the constructor used when declaring an [ArcGISArView] in XML.
+     *
+     * @since 100.6.0
      */
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
@@ -85,6 +87,11 @@ class ArcGISArViewTest {
         }
     }
 
+    /**
+     * Tests setting the [ArcGISArView.originCamera] property.
+     *
+     * @since 100.6.0
+     */
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     fun testSettingOriginCamera() {
@@ -146,6 +153,11 @@ class ArcGISArViewTest {
         }
     }
 
+    /**
+     * Tests setting the [ArcGISArView.translationTransformationFactor] property.
+     *
+     * @since 100.6.0
+     */
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     fun testTranslationTransformationFactor() {
