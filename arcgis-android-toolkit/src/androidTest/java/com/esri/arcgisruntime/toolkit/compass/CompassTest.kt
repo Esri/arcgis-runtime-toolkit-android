@@ -21,7 +21,8 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.view.LayoutInflater
 import com.esri.arcgisruntime.mapping.view.MapView
-import com.esri.arcgisruntime.toolkit.TestUtil
+import com.esri.arcgisruntime.toolkit.MISSING_ILLEGAL_ARGUMENT_EXCEPTION
+import com.esri.arcgisruntime.toolkit.MISSING_ILLEGAL_STATE_EXCEPTION
 import com.esri.arcgisruntime.toolkit.test.R
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -116,14 +117,14 @@ class CompassTest {
         // Test the setters
         try {
             compass.setHeightDp(0)
-            fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION)
+            fail(MISSING_ILLEGAL_ARGUMENT_EXCEPTION)
         } catch (e: IllegalArgumentException) {
             //success
         }
 
         try {
             compass.setWidthDp(0)
-            fail(TestUtil.MISSING_ILLEGAL_ARGUMENT_EXCEPTION)
+            fail(MISSING_ILLEGAL_ARGUMENT_EXCEPTION)
         } catch (e: IllegalArgumentException) {
             //success
         }
@@ -152,7 +153,7 @@ class CompassTest {
         // Check addToGeoView() fails when it's already added to a GeoView
         try {
             compass.addToGeoView(mapView)
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -164,7 +165,7 @@ class CompassTest {
         // Check bindTo() fails when it's already added to a GeoView
         try {
             compass.bindTo(mapView)
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -175,7 +176,7 @@ class CompassTest {
         // Call removeFromGeoView() again and check it fails because it's not currently added to a GeoView
         try {
             compass.removeFromGeoView()
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -190,7 +191,7 @@ class CompassTest {
         // Workflow 2
         try {
             compass.removeFromGeoView()
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }
@@ -198,7 +199,7 @@ class CompassTest {
         // Check addToGeoView() fails when it's bound to a GeoView
         try {
             compass.addToGeoView(mapView)
-            fail(TestUtil.MISSING_ILLEGAL_STATE_EXCEPTION)
+            fail(MISSING_ILLEGAL_STATE_EXCEPTION)
         } catch (e: IllegalStateException) {
             //success
         }

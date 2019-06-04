@@ -36,7 +36,6 @@ import com.esri.arcgisruntime.toolkit.extension.calculateBestLength
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.extension.selectLinearUnit
 import com.esri.arcgisruntime.toolkit.extension.unitSystemFromInt
-import com.esri.arcgisruntime.toolkit.java.scalebar.Scalebar
 import com.esri.arcgisruntime.toolkit.scalebar.style.Style
 import kotlin.reflect.KProperty
 
@@ -81,7 +80,7 @@ import kotlin.reflect.KProperty
  * app:style="graduatedLine" />
  * ```
  *
- * Here's example Java code to bind the Scalebar to the MapView:
+ * Here's example Kotlin code to bind the Scalebar to the MapView:
  * ```
  * val scalebar = findViewById(R.id.scalebar);
  * scalebar.bindTo(mapView);
