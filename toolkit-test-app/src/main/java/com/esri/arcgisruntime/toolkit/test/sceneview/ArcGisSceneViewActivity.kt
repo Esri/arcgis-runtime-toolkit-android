@@ -28,13 +28,13 @@ import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.sceneview.ArcGisArView
 import com.esri.arcgisruntime.toolkit.test.R
-import kotlinx.android.synthetic.main.activity_arcgisceneview.arcGisArView
+import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
 
 class ArcGisSceneViewActivity : AppCompatActivity(), ArcGisArView.OnStateChangedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_arcgisceneview)
+        setContentView(R.layout.activity_arcgissceneview)
 
         with(ArcGISScene(Basemap.createImagery())) {
             arcGisArView.sceneView.scene = this
