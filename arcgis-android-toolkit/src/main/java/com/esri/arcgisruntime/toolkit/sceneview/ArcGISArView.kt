@@ -19,9 +19,9 @@ package com.esri.arcgisruntime.toolkit.sceneview
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.arch.lifecycle.DefaultLifecycleObserver
 import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
+import android.arch.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
@@ -61,7 +61,7 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  *
  * @since 100.6.0
  */
-final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
+final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
@@ -229,8 +229,8 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      *
      * @since 100.6.0
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    internal fun resume() {
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
         beginSession()
     }
 
@@ -348,10 +348,10 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      *
      * @since 100.6.0
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    internal fun pause() {
+    override fun onPause(owner: LifecycleOwner) {
         arSceneView.pause()
         sceneView.pause()
+        super.onPause(owner)
     }
 
     /**
@@ -361,13 +361,13 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      *
      * @since 100.6.0
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    internal fun destroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         arSceneView.destroy()
         // disposing of SceneView causes the render surface, which is shared with ArSceneView, to become invalid and
         // rendering of the camera fails.
         // TODO https://devtopia.esri.com/runtime/java/issues/1170
         // sceneView.dispose()
+        super.onDestroy(owner)
     }
 
     /**
