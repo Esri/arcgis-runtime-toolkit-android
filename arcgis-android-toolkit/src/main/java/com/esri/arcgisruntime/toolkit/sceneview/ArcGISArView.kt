@@ -366,6 +366,7 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
         arSceneView.destroy()
         // disposing of SceneView causes the render surface, which is shared with ArSceneView, to become invalid and
         // rendering of the camera fails.
+        // TODO https://devtopia.esri.com/runtime/java/issues/1170
         // sceneView.dispose()
     }
 
