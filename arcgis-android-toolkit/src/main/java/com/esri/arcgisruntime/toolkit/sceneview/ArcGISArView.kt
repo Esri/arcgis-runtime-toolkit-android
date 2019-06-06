@@ -50,15 +50,14 @@ import com.google.ar.sceneform.Scene
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 
-
 private const val CAMERA_PERMISSION_CODE = 0
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
- * This view simplifies the task of configuring a [SceneView] to be used for AR experiences by calculating the optimal
- * [TransformationMatrix] to be set on the [Camera] of the [SceneView] by using the translation and quaternion factors
- * provided by the camera used in ArSceneView.
+ * This view simplifies the task of configuring a [SceneView] to be used for Augmented Reality experiences by calculating
+ * the optimal [TransformationMatrix] to be set on the [Camera] of the [SceneView] by using the translation and quaternion
+ * factors provided by the camera used in [ArSceneView].
  *
  * @since 100.6.0
  */
@@ -72,6 +71,14 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
     private var arCoreInstallRequested: Boolean = false
 
     /**
+     * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
+     * [ArSceneView] to be visible underneath the SceneView.
+     *
+     * @since 100.6.0
+     */
+    private var renderVideoFeed: Boolean = true
+
+    /**
      * Initial [TransformationMatrix] obtained from the initial [Camera] used by [sceneView].
      *
      * @since 100.6.0
@@ -79,7 +86,7 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
     private var initialTransformationMatrix: TransformationMatrix? = null
 
     /**
-     * A list of [OnStateChangedListener] used to notify when the sate of this view has changed.
+     * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
      *
      * @since 100.6.0
      */
@@ -113,17 +120,9 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
         }
 
     /**
-     * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
-     * [ArSceneView] to be visible underneath the SceneView.
-     *
-     * @since 100.6.0
-     */
-    private var renderVideoFeed: Boolean = true
-
-    /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
      * TransformationMatrix. Meaning that if the user moves 1 meter in real life, they could be moving faster in the
-     * digital model, dependant on the value used.
+     * digital model, dependant on the value used. The default value is 1.0.
      *
      * @since 100.6.0
      */
@@ -236,11 +235,11 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
     }
 
     /**
-     * Checks the following perquisites required for the use of ARCore:
+     * Checks the following prerequisites required for the use of ARCore:
      * - Checks for permissions required to use ARCore.
      * - Checks for an installation of ARCore.
      *
-     * If perquisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
+     * If prerequisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
      * any exceptions related to permissions, ARCore installation or the beginning of an ARCore session, an exception is
      * caught and listeners are notified. Otherwise, listeners are notified that this view has initialized.
      *
