@@ -251,31 +251,30 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
-        (context as? Activity)?.let {
-            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-            // permission on Android M and above, now is a good time to ask the user for it.
-            if (!hasPermission(CAMERA_PERMISSION)) {
-                onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
-                }
-                requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
-                return
-            }
-
-            if (ArCoreApk.getInstance().requestInstall(
-                    it,
-                    !arCoreInstallRequested
-                ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-            ) {
-                arCoreInstallRequested = true
-                onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
-                }
-                return
-            }
-        }
-
         try {
+            (context as? Activity)?.let {
+                // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+                // permission on Android M and above, now is a good time to ask the user for it.
+                if (!hasPermission(CAMERA_PERMISSION)) {
+                    onStateChangedListeners.forEach { listener ->
+                        listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
+                    }
+                    requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                    return
+                }
+
+                if (ArCoreApk.getInstance().requestInstall(
+                        it,
+                        !arCoreInstallRequested
+                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+                ) {
+                    arCoreInstallRequested = true
+                    onStateChangedListeners.forEach { listener ->
+                        listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
+                    }
+                    return
+                }
+            }
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
@@ -294,7 +293,12 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
                 is UnavailableApkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
                 is UnavailableSdkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
                 is UnavailableDeviceNotCompatibleException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
-                else -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
+                else -> ArcGISArViewException(
+                    resources.getString(
+                        R.string.arcgisarview_exception_failed_to_create_ar_session,
+                        e.message
+                    )
+                )
             }
         }
 
