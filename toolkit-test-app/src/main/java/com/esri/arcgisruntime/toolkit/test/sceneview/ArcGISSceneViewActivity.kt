@@ -30,6 +30,11 @@ import com.esri.arcgisruntime.toolkit.sceneview.ArcGISArView
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
 
+/**
+ * Example Activity to show usage of [ArcGISArView].
+ *
+ * @since 100.6.0
+ */
 class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChangedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
