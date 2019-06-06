@@ -216,7 +216,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
-     * Register this View as a [LifecycleObserver] to the provided [lifecycle].
+     * Register this View as a [DefaultLifecycleObserver] to the provided [lifecycle].
      *
      * @since 100.6.0
      */
@@ -403,7 +403,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     interface OnStateChangedListener {
         /**
-         * Should be called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
+         * Called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
          *
          * @since 100.6.0
          */
@@ -417,7 +417,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     sealed class ArcGISArViewState {
         /**
-         * Should be used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
+         * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
          * and the [SceneView] has resumed.
          *
          * @since 100.6.0
@@ -425,21 +425,21 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         object Initialized : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that a permission is required in order to use [ArcGISArView].
+         * Used to indicate that a permission is required in order to use [ArcGISArView].
          *
          * @since 100.6.0
          */
         data class PermissionRequired(val permission: String) : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that an installation of ARCore is required.
+         * Used to indicate that an installation of ARCore is required.
          *
          * @since 100.6.0
          */
         object ArCoreInstallationRequired : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that an [Exception] has occurred during initialization.
+         * Used to indicate that an [Exception] has occurred during initialization.
          *
          * @since 100.6.0
          */
