@@ -16,6 +16,11 @@
 
 package com.esri.arcgisruntime.toolkit.extension
 
+/**
+ * Extension property that provides a String representing a class name. To be used for Android Logs.
+ *
+ * @since 100.6.0
+ */
 val Any.logTag: String
     get() {
         (this::class.simpleName)?.let {
