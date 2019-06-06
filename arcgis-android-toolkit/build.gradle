@@ -17,6 +17,7 @@ android {
         versionName project.property("versionName")
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        missingDimensionStrategy 'featureScope', 'publicAPI'
     }
     buildTypes {
         release {
@@ -58,7 +59,7 @@ dependencies {
     kapt "android.arch.lifecycle:compiler:$lifecycle"
     api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
     api "com.google.ar.sceneform:core:$droid.arCore"
-    api "com.esri.arcgisruntime:arcgis-android:$arcgis"
+    api project(':arcgis-api')
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'

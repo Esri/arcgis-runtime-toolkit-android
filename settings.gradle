@@ -1,1 +1,2 @@
-include ':arcgis-android-toolkit', ':toolkit-test-app'
+include ':arcgis-android-toolkit', ':toolkit-test-app', ':arcgis-api'
+project(":arcgis-api").projectDir = file("../runtime_java/arcgis-android")
