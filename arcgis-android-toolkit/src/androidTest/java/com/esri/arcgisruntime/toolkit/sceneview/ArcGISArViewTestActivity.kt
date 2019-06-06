@@ -21,6 +21,12 @@ import android.support.test.espresso.core.deps.guava.annotations.VisibleForTesti
 import android.support.v7.app.AppCompatActivity
 import com.esri.arcgisruntime.toolkit.test.R
 
+/**
+ * Activity used by tests to test [ArcGISArView]. An instance of ArcGISArView is inflated from an XML layout and attached
+ * to the Activity.
+ *
+ * @since 100.6.0
+ */
 class ArcGISArViewTestActivity : AppCompatActivity() {
 
     @VisibleForTesting
