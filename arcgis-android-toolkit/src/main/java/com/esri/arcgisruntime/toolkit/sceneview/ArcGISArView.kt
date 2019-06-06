@@ -371,7 +371,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
-     * Check to see we have the necessary permissions for accessing the camera using the current [Context].
+     * Check to see we have been granted the necessary [permission] using the current [Context].
      *
      * @since 100.6.0
      */
