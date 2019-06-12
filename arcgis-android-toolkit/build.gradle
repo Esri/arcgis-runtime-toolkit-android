@@ -34,6 +34,9 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dokka {
@@ -56,7 +59,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.android.support:multidex:$droid.multiDex"
     implementation "android.arch.lifecycle:runtime:$lifecycle"
-    kapt "android.arch.lifecycle:compiler:$lifecycle"
+    api "android.arch.lifecycle:common-java8:$lifecycle"
     api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
     api "com.google.ar.sceneform:core:$droid.arCore"
     api project(':arcgis-api')

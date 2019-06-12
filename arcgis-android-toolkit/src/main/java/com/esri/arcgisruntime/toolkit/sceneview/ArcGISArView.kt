@@ -19,9 +19,9 @@ package com.esri.arcgisruntime.toolkit.sceneview
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.arch.lifecycle.DefaultLifecycleObserver
 import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.OnLifecycleEvent
+import android.arch.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -59,7 +59,6 @@ import com.google.ar.sceneform.Scene
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 
-
 private const val CAMERA_PERMISSION_CODE = 0
 private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
@@ -67,13 +66,13 @@ private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
- * This view simplifies the task of configuring a [SceneView] to be used for AR experiences by calculating the optimal
- * [TransformationMatrix] to be set on the [Camera] of the [SceneView] by using the translation and quaternion factors
- * provided by the camera used in ArSceneView.
+ * This view simplifies the task of configuring a [SceneView] to be used for Augmented Reality experiences by calculating
+ * the optimal [TransformationMatrix] to be set on the [Camera] of the [SceneView] by using the translation and quaternion
+ * factors provided by the camera used in [ArSceneView].
  *
  * @since 100.6.0
  */
-final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListener {
+final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
     var onPointResolvedListener: OnPointResolvedListener? = null
     /**
@@ -85,6 +84,14 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
     private val locationManager by lazy {
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
+
+    /**
+     * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
+     * [ArSceneView] to be visible underneath the SceneView.
+     *
+     * @since 100.6.0
+     */
+    private var renderVideoFeed: Boolean = true
 
     /**
      * Initial [TransformationMatrix] obtained from the initial [Camera] used by [sceneView].
@@ -124,7 +131,7 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
     }
 
     /**
-     * A list of [OnStateChangedListener] used to notify when the sate of this view has changed.
+     * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
      *
      * @since 100.6.0
      */
@@ -158,17 +165,9 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
         }
 
     /**
-     * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
-     * [ArSceneView] to be visible underneath the SceneView.
-     *
-     * @since 100.6.0
-     */
-    private var renderVideoFeed: Boolean = true
-
-    /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
      * TransformationMatrix. Meaning that if the user moves 1 meter in real life, they could be moving faster in the
-     * digital model, dependant on the value used.
+     * digital model, dependant on the value used. The default value is 1.0.
      *
      * @since 100.6.0
      */
@@ -270,7 +269,7 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
     }
 
     /**
-     * Register this View as a [LifecycleObserver] to the provided [lifecycle].
+     * Register this View as a [DefaultLifecycleObserver] to the provided [lifecycle].
      *
      * @since 100.6.0
      */
@@ -283,17 +282,17 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      *
      * @since 100.6.0
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    internal fun resume() {
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
         beginSession()
     }
 
     /**
-     * Checks the following perquisites required for the use of ARCore:
+     * Checks the following prerequisites required for the use of ARCore:
      * - Checks for permissions required to use ARCore.
      * - Checks for an installation of ARCore.
      *
-     * If perquisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
+     * If prerequisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
      * any exceptions related to permissions, ARCore installation or the beginning of an ARCore session, an exception is
      * caught and listeners are notified. Otherwise, listeners are notified that this view has initialized.
      *
@@ -304,7 +303,8 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
-        (context as? Activity)?.let {
+        try {
+            (context as? Activity)?.let {
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
             if (!hasPermission(CAMERA_PERMISSION)) {
@@ -325,20 +325,18 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
                 return
             }
 
-            if (ArCoreApk.getInstance().requestInstall(
-                    it,
-                    !arCoreInstallRequested
-                ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-            ) {
-                arCoreInstallRequested = true
-                onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
+                if (ArCoreApk.getInstance().requestInstall(
+                        it,
+                        !arCoreInstallRequested
+                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+                ) {
+                    arCoreInstallRequested = true
+                    onStateChangedListeners.forEach { listener ->
+                        listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
+                    }
+                    return
                 }
-                return
             }
-        }
-
-        try {
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
@@ -357,7 +355,12 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
                 is UnavailableApkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
                 is UnavailableSdkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
                 is UnavailableDeviceNotCompatibleException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
-                else -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_failed_to_create_ar_session))
+                else -> ArcGISArViewException(
+                    resources.getString(
+                        R.string.arcgisarview_exception_failed_to_create_ar_session,
+                        e.message
+                    )
+                )
             }
         }
 
@@ -434,11 +437,10 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      *
      * @since 100.6.0
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    internal fun pause() {
-        locationManager.removeUpdates(locationListener)
+    override fun onPause(owner: LifecycleOwner) {
         arSceneView.pause()
         sceneView.pause()
+        super.onPause(owner)
     }
 
     /**
@@ -448,16 +450,17 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      *
      * @since 100.6.0
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    internal fun destroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         arSceneView.destroy()
         // disposing of SceneView causes the render surface, which is shared with ArSceneView, to become invalid and
         // rendering of the camera fails.
+        // TODO https://devtopia.esri.com/runtime/java/issues/1170
         // sceneView.dispose()
+        super.onDestroy(owner)
     }
 
     /**
-     * Check to see we have the necessary permissions for accessing the camera using the current [Context].
+     * Check to see we have been granted the necessary [permission] using the current [Context].
      *
      * @since 100.6.0
      */
@@ -489,7 +492,7 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      */
     interface OnStateChangedListener {
         /**
-         * Should be called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
+         * Called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
          *
          * @since 100.6.0
          */
@@ -503,7 +506,7 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
      */
     sealed class ArcGISArViewState {
         /**
-         * Should be used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
+         * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
          * and the [SceneView] has resumed.
          *
          * @since 100.6.0
@@ -511,21 +514,21 @@ final class ArcGISArView : FrameLayout, LifecycleObserver, Scene.OnUpdateListene
         object Initialized : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that a permission is required in order to use [ArcGISArView].
+         * Used to indicate that a permission is required in order to use [ArcGISArView].
          *
          * @since 100.6.0
          */
         data class PermissionRequired(val permission: String) : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that an installation of ARCore is required.
+         * Used to indicate that an installation of ARCore is required.
          *
          * @since 100.6.0
          */
         object ArCoreInstallationRequired : ArcGISArViewState()
 
         /**
-         * Should be used to indicate that an [Exception] has occurred during initialization.
+         * Used to indicate that an [Exception] has occurred during initialization.
          *
          * @since 100.6.0
          */
