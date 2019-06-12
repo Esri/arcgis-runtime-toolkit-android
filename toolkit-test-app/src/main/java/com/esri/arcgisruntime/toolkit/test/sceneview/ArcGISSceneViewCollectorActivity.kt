@@ -137,8 +137,7 @@ class ArcGISSceneViewCollectorActivity : AppCompatActivity(), ArcGISArView.OnSta
     override fun onStateChanged(state: ArcGISArView.ArcGISArViewState) {
         when (state) {
             is ArcGISArView.ArcGISArViewState.Initialized -> {
-                arcGisArView.originCamera = Camera(20.0, 30.0, 25000000.0, 0.0, 0.0, 0.0)
-                arcGisArView.translationTransformationFactor = 25000000.0
+                arcGisArView.originCamera = Camera(55.953251, -3.188267, 1.0, 0.0, 90.0, 0.0)
                 arcGisArView.onPointResolvedListener = onPointResolvedListener
             }
             is ArcGISArView.ArcGISArViewState.InitializationFailure -> {

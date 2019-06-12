@@ -104,16 +104,14 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location?) {
             location?.let {
-                originCamera?.let { camera ->
-                    originCamera = Camera(
-                        it.latitude,
-                        it.longitude,
-                        it.altitude,
-                        camera.heading,
-                        camera.pitch,
-                        camera.roll
-                    )
-                }
+                originCamera = Camera(
+                    it.latitude,
+                    it.longitude,
+                    1.0,
+                    sceneView.currentViewpointCamera.heading,
+                    originCamera?.pitch ?: sceneView.currentViewpointCamera.pitch,
+                    originCamera?.roll ?: sceneView.currentViewpointCamera.roll
+                )
             }
         }
 
@@ -217,8 +215,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
-        originCamera = sceneView.currentViewpointCamera
-        initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
         sceneView.setIsBackgroundTransparent(renderVideoFeed)
         sceneView.atmosphereEffect = if (renderVideoFeed) AtmosphereEffect.NONE else sceneView.atmosphereEffect
 
@@ -305,25 +301,25 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private fun beginSession() {
         try {
             (context as? Activity)?.let {
-            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-            // permission on Android M and above, now is a good time to ask the user for it.
-            if (!hasPermission(CAMERA_PERMISSION)) {
-                onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
+                // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+                // permission on Android M and above, now is a good time to ask the user for it.
+                if (!hasPermission(CAMERA_PERMISSION)) {
+                    onStateChangedListeners.forEach { listener ->
+                        listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
+                    }
+                    requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                    return
                 }
-                requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
-                return
-            }
 
-            // This permission will be required for ArSensorView functionality which is to be embedded in future before
-            // 100.6.0 release
-            if (!hasPermission(LOCATION_PERMISSION)) {
-                onStateChangedListeners.forEach { listener ->
-                    listener.onStateChanged(ArcGISArViewState.PermissionRequired(LOCATION_PERMISSION))
+                // This permission will be required for ArSensorView functionality which is to be embedded in future before
+                // 100.6.0 release
+                if (!hasPermission(LOCATION_PERMISSION)) {
+                    onStateChangedListeners.forEach { listener ->
+                        listener.onStateChanged(ArcGISArViewState.PermissionRequired(LOCATION_PERMISSION))
+                    }
+                    requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
+                    return
                 }
-                requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
-                return
-            }
 
                 if (ArCoreApk.getInstance().requestInstall(
                         it,
@@ -421,7 +417,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                             it.toDouble()
                         }.toDoubleArray())
                         val geoPointTransMatrix =
-                            initialTransformationMatrix?.subtractTransformation(hitResultTransMatrix)
+                            sceneView.currentViewpointCamera.transformationMatrix?.addTransformation(
+                                hitResultTransMatrix
+                            )
                         onPointResolvedListener?.onPointResolved(
                             Camera(geoPointTransMatrix).location,
                             hitResult.createAnchor()
