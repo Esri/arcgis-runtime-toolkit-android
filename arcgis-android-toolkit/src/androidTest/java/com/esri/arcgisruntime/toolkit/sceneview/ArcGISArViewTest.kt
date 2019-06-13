@@ -55,16 +55,16 @@ class ArcGISArViewTest {
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     fun testSimpleConstructorDefaultValues() {
-        with(testActivityRule.activity) {
+        with(testActivityRule) {
             this.runOnUiThread {
-                ArcGISArView(InstrumentationRegistry.getContext(), true).let {
+                ArcGISArView(this.activity, true).let {
                     assertNotNull(it)
                     assertNotNull(it.sceneView)
                     assertNotNull(it.arSceneView)
                     assertNotNull(it.originCamera)
                 }
             }
-            arcGisArViewTestActivityRule.finish()
+            this.finish()
         }
     }
 
