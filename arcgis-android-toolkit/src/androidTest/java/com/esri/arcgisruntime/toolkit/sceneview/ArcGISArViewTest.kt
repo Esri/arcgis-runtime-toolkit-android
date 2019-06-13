@@ -17,7 +17,6 @@
 package com.esri.arcgisruntime.toolkit.sceneview
 
 import android.os.Build
-import android.support.test.InstrumentationRegistry
 import android.support.test.filters.SdkSuppress
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -76,14 +75,14 @@ class ArcGISArViewTest {
     @Test
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     fun testXmlConstructor() {
-        with(arcGisArViewTestActivityRule.activity) {
-            this.arcGISArView.let {
+        with(arcGisArViewTestActivityRule) {
+            this.activity.arcGISArView.let {
                 assertNotNull(it)
                 assertNotNull(it?.sceneView)
                 assertNotNull(it?.arSceneView)
                 assertNotNull(it?.originCamera)
             }
-            arcGisArViewTestActivityRule.finish()
+            this.finish()
         }
     }
 
