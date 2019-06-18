@@ -258,6 +258,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             (context as? Activity)?.let {
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
+                // when the permission is requested and the user responds to the request from the OS this is executed again
+                // during onResume()
                 if (!hasPermission(CAMERA_PERMISSION)) {
                     requestPermission(
                         it,
@@ -267,6 +269,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     return
                 }
 
+                // when the installation is requested and the user responds to the request from the OS this is executed again
+                // during onResume()
                 if (ArCoreApk.getInstance().requestInstall(
                         it,
                         !arCoreInstallRequested
