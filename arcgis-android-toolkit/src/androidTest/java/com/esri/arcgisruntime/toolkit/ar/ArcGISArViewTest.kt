@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.sceneview
+package com.esri.arcgisruntime.toolkit.ar
 
 import android.os.Build
 import android.support.test.filters.SdkSuppress

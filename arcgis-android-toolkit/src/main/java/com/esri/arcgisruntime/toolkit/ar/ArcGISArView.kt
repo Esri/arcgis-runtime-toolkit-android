@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.sceneview
+package com.esri.arcgisruntime.toolkit.ar
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -126,7 +126,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
+    var translationTransformationFactor: Double =
+        DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
 
     /**
      * Exposes an [Exception] should it occur when using this view.
@@ -259,7 +260,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
                 if (!hasPermission(CAMERA_PERMISSION)) {
-                    requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                    requestPermission(it,
+                        CAMERA_PERMISSION,
+                        CAMERA_PERMISSION_CODE
+                    )
                     return
                 }
 

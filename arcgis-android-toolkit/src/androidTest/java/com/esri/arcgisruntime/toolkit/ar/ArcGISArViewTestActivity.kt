@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.sceneview
+package com.esri.arcgisruntime.toolkit.ar
 
 import android.os.Bundle
 import android.support.test.espresso.core.deps.guava.annotations.VisibleForTesting
 import android.support.v7.app.AppCompatActivity
+import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.test.R
 
 /**

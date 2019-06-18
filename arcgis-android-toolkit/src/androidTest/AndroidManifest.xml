@@ -22,7 +22,7 @@
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".sceneview.ArcGISArViewTestActivity"
+            android:name=".ar.ArcGISArViewTestActivity"
             android:exported="false"
             android:theme="@style/AppTheme" />
     </application>

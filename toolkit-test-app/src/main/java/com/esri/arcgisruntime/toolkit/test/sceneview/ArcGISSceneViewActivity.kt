@@ -26,7 +26,7 @@ import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.toolkit.extension.logTag
-import com.esri.arcgisruntime.toolkit.sceneview.ArcGISArView
+import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
 
@@ -58,18 +58,6 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
             is ArcGISArView.ArcGISArViewState.InitializationFailure -> {
                 with(getString(R.string.arcgisarview_error, state.exception.message)) {
                     Log.e(logTag, this)
-                    Toast.makeText(this@ArcGISSceneViewActivity, this, Toast.LENGTH_LONG).show()
-                }
-            }
-            is ArcGISArView.ArcGISArViewState.PermissionRequired -> {
-                with(getString(R.string.arcgisarview_permission_required, state.permission)) {
-                    Log.d(logTag, this)
-                    Toast.makeText(this@ArcGISSceneViewActivity, this, Toast.LENGTH_LONG).show()
-                }
-            }
-            is ArcGISArView.ArcGISArViewState.ArCoreInstallationRequired -> {
-                with(getString(R.string.arcgisarview_arcore_install_required)) {
-                    Log.d(logTag, this)
                     Toast.makeText(this@ArcGISSceneViewActivity, this, Toast.LENGTH_LONG).show()
                 }
             }
