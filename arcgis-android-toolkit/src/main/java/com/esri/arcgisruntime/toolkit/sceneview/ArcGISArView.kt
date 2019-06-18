@@ -133,7 +133,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    var error: ArcGISArViewException? = null
+    var error: Exception? = null
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
@@ -250,14 +250,15 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
+        onStateChangedListeners.forEach { listener ->
+            listener.onStateChanged(ArcGISArViewState.Initializing)
+        }
+
         try {
             (context as? Activity)?.let {
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
                 if (!hasPermission(CAMERA_PERMISSION)) {
-                    onStateChangedListeners.forEach { listener ->
-                        listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
-                    }
                     requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
                     return
                 }
@@ -268,12 +269,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
                 ) {
                     arCoreInstallRequested = true
-                    onStateChangedListeners.forEach { listener ->
-                        listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
-                    }
                     return
                 }
             }
+
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
@@ -285,35 +284,31 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
             arSceneView.scene.addOnUpdateListener(this)
         } catch (e: Exception) {
-            error = when (e) {
-                is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGISArViewException(
-                    resources.getString(R.string.arcgisarview_exception_install_ar_core)
-                )
-                is UnavailableApkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
-                is UnavailableSdkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
-                is UnavailableDeviceNotCompatibleException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
-                else -> ArcGISArViewException(
-                    resources.getString(
+            error = Exception(
+                when (e) {
+                    is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> resources.getString(
+                        R.string.arcgisarview_exception_install_ar_core
+                    )
+                    is UnavailableApkTooOldException -> resources.getString(R.string.arcgisarview_exception_update_ar_core)
+                    is UnavailableSdkTooOldException -> resources.getString(R.string.arcgisarview_exception_update_app)
+                    is UnavailableDeviceNotCompatibleException -> resources.getString(R.string.arcgisarview_exception_device_support)
+                    else -> resources.getString(
                         R.string.arcgisarview_exception_failed_to_create_ar_session,
                         e.message
                     )
-                )
-            }
+                }
+            )
         }
 
-        error?.let { error ->
-            Log.e(logTag, error.message)
-            onStateChangedListeners.forEach {
-                it.onStateChanged(ArcGISArViewState.InitializationFailure(error))
-            }
-            this.error = null
+        if (error != null) {
+            Log.e(logTag, error!!.message)
             return
-        }
-
-        arSceneView.resume()
-        sceneView.resume()
-        onStateChangedListeners.forEach {
-            it.onStateChanged(ArcGISArViewState.Initialized)
+        } else {
+            arSceneView.resume()
+            sceneView.resume()
+            onStateChangedListeners.forEach {
+                it.onStateChanged(ArcGISArViewState.Initialized)
+            }
         }
     }
 
@@ -389,14 +384,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
-     * A class that extends [Exception] to notify users when an error has occurred in [ArcGISArView] using the provided
-     * [message] which should explain the exception.
-     *
-     * @since 100.6.0
-     */
-    class ArcGISArViewException(override val message: String) : Exception(message)
-
-    /**
      * An interface that allows a user to receive updates of the state of [ArcGISArView].
      *
      * @since 100.6.0
@@ -417,26 +404,17 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     sealed class ArcGISArViewState {
         /**
+         * Used to indicate that the [ArcGISArView] is initializing.
+         */
+        object Initializing : ArcGISArViewState()
+
+        /**
          * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
          * and the [SceneView] has resumed.
          *
          * @since 100.6.0
          */
         object Initialized : ArcGISArViewState()
-
-        /**
-         * Used to indicate that a permission is required in order to use [ArcGISArView].
-         *
-         * @since 100.6.0
-         */
-        data class PermissionRequired(val permission: String) : ArcGISArViewState()
-
-        /**
-         * Used to indicate that an installation of ARCore is required.
-         *
-         * @since 100.6.0
-         */
-        object ArCoreInstallationRequired : ArcGISArViewState()
 
         /**
          * Used to indicate that an [Exception] has occurred during initialization.
