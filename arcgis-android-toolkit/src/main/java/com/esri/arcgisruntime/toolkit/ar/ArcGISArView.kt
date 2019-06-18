@@ -126,8 +126,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    var translationTransformationFactor: Double =
-        DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
+    var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
 
     /**
      * Exposes an [Exception] should it occur when using this view.
@@ -252,7 +251,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
         onStateChangedListeners.forEach { listener ->
-            listener.onStateChanged(ArcGISArViewState.Initializing)
+            listener.onStateChanged(ArcGISArViewState.INITIALIZING)
         }
 
         try {
@@ -260,7 +259,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
                 if (!hasPermission(CAMERA_PERMISSION)) {
-                    requestPermission(it,
+                    requestPermission(
+                        it,
                         CAMERA_PERMISSION,
                         CAMERA_PERMISSION_CODE
                     )
@@ -306,12 +306,15 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
         if (error != null) {
             Log.e(logTag, error!!.message)
+            onStateChangedListeners.forEach {
+                it.onStateChanged(ArcGISArViewState.INITIALIZATION_FAILURE)
+            }
             return
         } else {
             arSceneView.resume()
             sceneView.resume()
             onStateChangedListeners.forEach {
-                it.onStateChanged(ArcGISArViewState.Initialized)
+                it.onStateChanged(ArcGISArViewState.INITIALIZED)
             }
         }
     }
@@ -406,11 +409,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    sealed class ArcGISArViewState {
+    enum class ArcGISArViewState {
         /**
          * Used to indicate that the [ArcGISArView] is initializing.
+         *
+         * @since 100.6.0
          */
-        object Initializing : ArcGISArViewState()
+        INITIALIZING,
 
         /**
          * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
@@ -418,13 +423,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
          *
          * @since 100.6.0
          */
-        object Initialized : ArcGISArViewState()
+        INITIALIZED,
 
         /**
          * Used to indicate that an [Exception] has occurred during initialization.
          *
          * @since 100.6.0
          */
-        data class InitializationFailure(val exception: Exception) : ArcGISArViewState()
+        INITIALIZATION_FAILURE
     }
 }
