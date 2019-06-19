@@ -124,6 +124,20 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
 
     /**
+     * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
+     * added to this View.
+     *
+     * @since 100.6.0
+     */
+    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
+        private set(value) {
+            field = value
+            onStateChangedListeners.forEach {
+                it.onStateChanged(value)
+            }
+        }
+
+    /**
      * Exposes an [Exception] should it occur when using this view.
      *
      * @since 100.6.0
@@ -246,9 +260,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
-        onStateChangedListeners.forEach { listener ->
-            listener.onStateChanged(ArcGISArViewState.INITIALIZING)
-        }
+        initializationStatus = ArcGISArViewState.INITIALIZING
 
         try {
             (context as? Activity)?.let {
@@ -293,15 +305,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
         if (error != null) {
             Log.e(logTag, error!!.message)
-            onStateChangedListeners.forEach {
-                it.onStateChanged(ArcGISArViewState.INITIALIZATION_FAILURE)
-            }
+            initializationStatus = ArcGISArViewState.INITIALIZATION_FAILURE
         } else {
             arSceneView.resume()
             sceneView.resume()
-            onStateChangedListeners.forEach {
-                it.onStateChanged(ArcGISArViewState.INITIALIZED)
-            }
+            initializationStatus = ArcGISArViewState.INITIALIZED
         }
     }
 
@@ -396,6 +404,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     enum class ArcGISArViewState {
+        /**
+         * Used to indicate that the [ArcGISArView] has not yet begun initializing.
+         *
+         * @since 100.6.0
+         */
+        NOT_INITIALIZED,
+
         /**
          * Used to indicate that the [ArcGISArView] is initializing.
          *

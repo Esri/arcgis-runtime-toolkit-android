@@ -51,6 +51,12 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
 
     override fun onStateChanged(state: ArcGISArView.ArcGISArViewState) {
         when (state) {
+            ArcGISArView.ArcGISArViewState.NOT_INITIALIZED -> {
+                //no-op
+            }
+            ArcGISArView.ArcGISArViewState.INITIALIZING -> {
+                // no-op
+            }
             ArcGISArView.ArcGISArViewState.INITIALIZED -> {
                 arcGisArView.originCamera = Camera(20.0, 30.0, 25000000.0, 0.0, 0.0, 0.0)
                 arcGisArView.translationTransformationFactor = 25000000.0
