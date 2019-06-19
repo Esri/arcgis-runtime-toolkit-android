@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android-extensions'
     id 'kotlin-android'
+    id 'kotlin-kapt'
     id 'org.jetbrains.dokka-android'
 }
 
@@ -32,6 +33,9 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dokka {
@@ -53,7 +57,11 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.android.support:multidex:$droid.multiDex"
-    implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
+    implementation "android.arch.lifecycle:runtime:$droid.lifecycle"
+    api "android.arch.lifecycle:common-java8:$droid.lifecycle"
+    api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
+    api "com.google.ar.sceneform:core:$droid.arCore"
+    api "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'
