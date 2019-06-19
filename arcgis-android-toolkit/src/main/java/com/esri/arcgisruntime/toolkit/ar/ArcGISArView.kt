@@ -39,11 +39,6 @@ import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
 import com.google.ar.core.TrackingState
-import com.google.ar.core.exceptions.UnavailableApkTooOldException
-import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
-import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
-import com.google.ar.core.exceptions.UnavailableSdkTooOldException
-import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
@@ -241,7 +236,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * If prerequisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
      * any exceptions related to permissions, ARCore installation or the beginning of an ARCore session, an exception is
-     * caught and listeners are notified. Otherwise, listeners are notified that this view has initialized.
+     * caught, the [error] property set and the listeners are notified of an initialization failure. Otherwise,
+     * listeners are notified that this view has initialized.
      *
      * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
      * request permissions. This may not always be the case and the handling of permission are under review.
@@ -292,20 +288,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
             arSceneView.scene.addOnUpdateListener(this)
         } catch (e: Exception) {
-            error = Exception(
-                when (e) {
-                    is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> resources.getString(
-                        R.string.arcgisarview_exception_install_ar_core
-                    )
-                    is UnavailableApkTooOldException -> resources.getString(R.string.arcgisarview_exception_update_ar_core)
-                    is UnavailableSdkTooOldException -> resources.getString(R.string.arcgisarview_exception_update_app)
-                    is UnavailableDeviceNotCompatibleException -> resources.getString(R.string.arcgisarview_exception_device_support)
-                    else -> resources.getString(
-                        R.string.arcgisarview_exception_failed_to_create_ar_session,
-                        e.message
-                    )
-                }
-            )
+            error = e
         }
 
         if (error != null) {
@@ -313,7 +296,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             onStateChangedListeners.forEach {
                 it.onStateChanged(ArcGISArViewState.INITIALIZATION_FAILURE)
             }
-            return
         } else {
             arSceneView.resume()
             sceneView.resume()
