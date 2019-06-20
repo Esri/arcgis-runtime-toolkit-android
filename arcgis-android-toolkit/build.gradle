@@ -21,7 +21,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -58,10 +58,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$droid.support"
     implementation "com.android.support:multidex:$droid.multiDex"
-    implementation "android.arch.lifecycle:runtime:$lifecycle"
-    api "android.arch.lifecycle:common-java8:$lifecycle"
+    implementation "android.arch.lifecycle:runtime:$droid.lifecycle"
+    api "android.arch.lifecycle:common-java8:$droid.lifecycle"
     api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
     api "com.google.ar.sceneform:core:$droid.arCore"
+    // fixing failing D8 https://github.com/google-ar/sceneform-android-sdk/issues/575
+    implementation "com.google.ar.sceneform:animation:$droid.arCore"
     api project(':arcgis-api')
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {

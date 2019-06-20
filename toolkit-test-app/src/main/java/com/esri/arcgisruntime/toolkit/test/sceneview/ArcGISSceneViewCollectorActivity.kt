@@ -36,8 +36,8 @@ import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.security.AuthenticationManager
 import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler
+import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
-import com.esri.arcgisruntime.toolkit.sceneview.ArcGISArView
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.dialog.EditTextDialogFragment
 import com.google.ar.core.Anchor
@@ -136,26 +136,20 @@ class ArcGISSceneViewCollectorActivity : AppCompatActivity(), ArcGISArView.OnSta
 
     override fun onStateChanged(state: ArcGISArView.ArcGISArViewState) {
         when (state) {
-            is ArcGISArView.ArcGISArViewState.Initialized -> {
+            ArcGISArView.ArcGISArViewState.NOT_INITIALIZED -> {
+                //no-op
+            }
+            ArcGISArView.ArcGISArViewState.INITIALIZING -> {
+                // no-op
+            }
+            ArcGISArView.ArcGISArViewState.INITIALIZED -> {
                 arcGisArView.originCamera = Camera(55.953251, -3.188267, 1.0, 0.0, 90.0, 0.0)
                 arcGisArView.onPointResolvedListener = onPointResolvedListener
             }
-            is ArcGISArView.ArcGISArViewState.InitializationFailure -> {
-                with(getString(R.string.arcgisarview_error, state.exception.message)) {
+            ArcGISArView.ArcGISArViewState.INITIALIZATION_FAILURE -> {
+                with(getString(R.string.arcgisarview_error, arcGisArView.error?.message)) {
                     Log.e(logTag, this)
-                    Toast.makeText(this@ArcGISSceneViewCollectorActivity, this, Toast.LENGTH_SHORT).show()
-                }
-            }
-            is ArcGISArView.ArcGISArViewState.PermissionRequired -> {
-                with(getString(R.string.arcgisarview_permission_required, state.permission)) {
-                    Log.d(logTag, this)
-                    Toast.makeText(this@ArcGISSceneViewCollectorActivity, this, Toast.LENGTH_SHORT).show()
-                }
-            }
-            is ArcGISArView.ArcGISArViewState.ArCoreInstallationRequired -> {
-                with(getString(R.string.arcgisarview_arcore_install_required)) {
-                    Log.d(logTag, this)
-                    Toast.makeText(this@ArcGISSceneViewCollectorActivity, this, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ArcGISSceneViewCollectorActivity, this, Toast.LENGTH_LONG).show()
                 }
             }
         }

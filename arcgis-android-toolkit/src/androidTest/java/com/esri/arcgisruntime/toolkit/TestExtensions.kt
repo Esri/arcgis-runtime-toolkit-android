@@ -19,14 +19,30 @@ package com.esri.arcgisruntime.toolkit
 import android.app.Activity
 import android.support.test.rule.ActivityTestRule
 
+/**
+ * Extension method to invoke finish on the Activity belonging to the ActivityTestRule.
+ *
+ * @since 100.6.0
+ */
 fun <T : Activity> ActivityTestRule<out T?>.finish() {
     this.activity?.finish()
 }
 
-fun <T: Activity> ActivityTestRule<out T?>.launchActivity() {
+/**
+ * Extension method to launch the Activity belonging to the ActivityTestRule using the Intent that will be used to start
+ * the Activity under test.
+ *
+ * @since 100.6.0
+ */
+fun <T : Activity> ActivityTestRule<out T?>.launchActivity() {
     this.launchActivity(activity?.intent)
 }
 
+/**
+ * Extension method to relaunch the Activity belonging to the ActivityTestRule by finishing it and launching it again.
+ *
+ * @since 100.6.0
+ */
 fun <T : Activity> ActivityTestRule<out T?>.relaunchActivity() {
     this.finish()
     this.launchActivity()

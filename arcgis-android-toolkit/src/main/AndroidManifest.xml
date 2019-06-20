@@ -1,12 +1,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.esri.arcgisruntime.toolkit">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- setting required to false to ensure that we don't enforce this feature on the users of the toolkit. Users can
+     override by defining this as required in their own manifest. -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
 
     <uses-feature
         android:glEsVersion="0x00030000"
-        android:required="true" />
+        android:required="false" />
 
     <application>
         <!-- Indicates that app supports, but does not require ARCore ("AR Optional").

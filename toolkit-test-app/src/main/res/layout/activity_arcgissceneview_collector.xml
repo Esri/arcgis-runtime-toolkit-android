@@ -1,4 +1,4 @@
-<com.esri.arcgisruntime.toolkit.sceneview.ArcGISArView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.esri.arcgisruntime.toolkit.ar.ArcGISArView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/arcGisArView"
     android:layout_width="match_parent"

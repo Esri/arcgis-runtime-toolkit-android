@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.sceneview
+package com.esri.arcgisruntime.toolkit.ar
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -24,21 +24,14 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.mapping.ArcGISScene
-import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
-import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.toolkit.R
@@ -48,11 +41,6 @@ import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
 import com.google.ar.core.TrackingState
-import com.google.ar.core.exceptions.UnavailableApkTooOldException
-import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException
-import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
-import com.google.ar.core.exceptions.UnavailableSdkTooOldException
-import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
@@ -60,9 +48,7 @@ import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 
 private const val CAMERA_PERMISSION_CODE = 0
-private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
-private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
@@ -74,16 +60,14 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  */
 final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
-    var onPointResolvedListener: OnPointResolvedListener? = null
+    var onPointResolvedListener: ArcGISArView.OnPointResolvedListener? = null
+
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
      *
      * @since 100.6.0
      */
     private var arCoreInstallRequested: Boolean = false
-    private val locationManager by lazy {
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    }
 
     /**
      * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
@@ -99,34 +83,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private var initialTransformationMatrix: TransformationMatrix? = null
-
-    // LocationListener is not required for ARCore implementation but will be included in a future implementation before 100.6.0 release
-    private val locationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location?) {
-            location?.let {
-                originCamera = Camera(
-                    it.latitude,
-                    it.longitude,
-                    1.0,
-                    sceneView.currentViewpointCamera.heading,
-                    originCamera?.pitch ?: sceneView.currentViewpointCamera.pitch,
-                    originCamera?.roll ?: sceneView.currentViewpointCamera.roll
-                )
-            }
-        }
-
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            Log.d(logTag, "Location - onStatusChanged: provider: $provider, status: $status, extras: $extras")
-        }
-
-        override fun onProviderEnabled(provider: String?) {
-            Log.d(logTag, "Location - onProviderEnabled: provider: $provider")
-        }
-
-        override fun onProviderDisabled(provider: String?) {
-            Log.d(logTag, "Location - onProviderDisabled: provider: $provider")
-        }
-    }
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -172,11 +128,25 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
 
     /**
+     * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
+     * added to this View.
+     *
+     * @since 100.6.0
+     */
+    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
+        private set(value) {
+            field = value
+            onStateChangedListeners.forEach {
+                it.onStateChanged(value)
+            }
+        }
+
+    /**
      * Exposes an [Exception] should it occur when using this view.
      *
      * @since 100.6.0
      */
-    var error: ArcGISArViewException? = null
+    var error: Exception? = null
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
@@ -215,15 +185,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
+        originCamera = sceneView.currentViewpointCamera
+        initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
         sceneView.setIsBackgroundTransparent(renderVideoFeed)
-        sceneView.atmosphereEffect = if (renderVideoFeed) AtmosphereEffect.NONE else sceneView.atmosphereEffect
-
-        sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(sceneView) {
-            override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
-                onSingleTap(motionEvent)
-                return super.onSingleTapConfirmed(motionEvent)
-            }
-        })
     }
 
     /**
@@ -290,7 +254,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * If prerequisites are met, the ARCore session is created and started, provided there are no exceptions. If there are
      * any exceptions related to permissions, ARCore installation or the beginning of an ARCore session, an exception is
-     * caught and listeners are notified. Otherwise, listeners are notified that this view has initialized.
+     * caught, the [error] property set and the listeners are notified of an initialization failure. Otherwise,
+     * listeners are notified that this view has initialized.
      *
      * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
      * request permissions. This may not always be the case and the handling of permission are under review.
@@ -299,40 +264,35 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     private fun beginSession() {
+        initializationStatus = ArcGISArViewState.INITIALIZING
+
         try {
             (context as? Activity)?.let {
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
+                // when the permission is requested and the user responds to the request from the OS this is executed again
+                // during onResume()
                 if (!hasPermission(CAMERA_PERMISSION)) {
-                    onStateChangedListeners.forEach { listener ->
-                        listener.onStateChanged(ArcGISArViewState.PermissionRequired(CAMERA_PERMISSION))
-                    }
-                    requestPermission(it, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                    requestPermission(
+                        it,
+                        CAMERA_PERMISSION,
+                        CAMERA_PERMISSION_CODE
+                    )
                     return
                 }
 
-                // This permission will be required for ArSensorView functionality which is to be embedded in future before
-                // 100.6.0 release
-                if (!hasPermission(LOCATION_PERMISSION)) {
-                    onStateChangedListeners.forEach { listener ->
-                        listener.onStateChanged(ArcGISArViewState.PermissionRequired(LOCATION_PERMISSION))
-                    }
-                    requestPermission(it, LOCATION_PERMISSION, LOCATION_PERMISSION_CODE)
-                    return
-                }
-
+                // when the installation is requested and the user responds to the request from the OS this is executed again
+                // during onResume()
                 if (ArCoreApk.getInstance().requestInstall(
                         it,
                         !arCoreInstallRequested
                     ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
                 ) {
                     arCoreInstallRequested = true
-                    onStateChangedListeners.forEach { listener ->
-                        listener.onStateChanged(ArcGISArViewState.ArCoreInstallationRequired)
-                    }
                     return
                 }
             }
+
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
@@ -344,37 +304,16 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
             arSceneView.scene.addOnUpdateListener(this)
         } catch (e: Exception) {
-            error = when (e) {
-                is UnavailableArcoreNotInstalledException, is UnavailableUserDeclinedInstallationException -> ArcGISArViewException(
-                    resources.getString(R.string.arcgisarview_exception_install_ar_core)
-                )
-                is UnavailableApkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_ar_core))
-                is UnavailableSdkTooOldException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_update_app))
-                is UnavailableDeviceNotCompatibleException -> ArcGISArViewException(resources.getString(R.string.arcgisarview_exception_device_support))
-                else -> ArcGISArViewException(
-                    resources.getString(
-                        R.string.arcgisarview_exception_failed_to_create_ar_session,
-                        e.message
-                    )
-                )
-            }
+            error = e
         }
 
-        error?.let { error ->
-            Log.e(logTag, error.message)
-            onStateChangedListeners.forEach {
-                it.onStateChanged(ArcGISArViewState.InitializationFailure(error))
-            }
-            this.error = null
-            return
-        }
-
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
-        arSceneView.resume()
-        sceneView.resume()
-        onStateChangedListeners.forEach {
-            it.onStateChanged(ArcGISArViewState.Initialized)
+        if (error != null) {
+            Log.e(logTag, error!!.message)
+            initializationStatus = ArcGISArViewState.INITIALIZATION_FAILURE
+        } else {
+            arSceneView.resume()
+            sceneView.resume()
+            initializationStatus = ArcGISArViewState.INITIALIZED
         }
     }
 
@@ -399,32 +338,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     initialTransformationMatrix?.addTransformation(it)
                 }?.let {
                     sceneView.setViewpointCamera(Camera(it))
-                }
-            }
-        }
-    }
-
-    private fun onSingleTap(motionEvent: MotionEvent?) {
-        val frame = arSceneView.arFrame
-
-        if (frame != null) {
-            if (motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
-                frame.hitTest(motionEvent).getOrNull(0).let { hitResult ->
-                    hitResult?.let { theHitResult ->
-                        val hitResultTransMatrix = TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
-                            it.toDouble()
-                        }.toDoubleArray(), theHitResult.hitPose.translation.map {
-                            it.toDouble()
-                        }.toDoubleArray())
-                        val geoPointTransMatrix =
-                            sceneView.currentViewpointCamera.transformationMatrix?.addTransformation(
-                                hitResultTransMatrix
-                            )
-                        onPointResolvedListener?.onPointResolved(
-                            Camera(geoPointTransMatrix).location,
-                            hitResult.createAnchor()
-                        )
-                    }
                 }
             }
         }
@@ -476,14 +389,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
-     * A class that extends [Exception] to notify users when an error has occurred in [ArcGISArView] using the provided
-     * [message] which should explain the exception.
-     *
-     * @since 100.6.0
-     */
-    class ArcGISArViewException(override val message: String) : Exception(message)
-
-    /**
      * An interface that allows a user to receive updates of the state of [ArcGISArView].
      *
      * @since 100.6.0
@@ -502,35 +407,35 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    sealed class ArcGISArViewState {
+    enum class ArcGISArViewState {
+        /**
+         * Used to indicate that the [ArcGISArView] has not yet begun initializing.
+         *
+         * @since 100.6.0
+         */
+        NOT_INITIALIZED,
+
+        /**
+         * Used to indicate that the [ArcGISArView] is initializing.
+         *
+         * @since 100.6.0
+         */
+        INITIALIZING,
+
         /**
          * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
          * and the [SceneView] has resumed.
          *
          * @since 100.6.0
          */
-        object Initialized : ArcGISArViewState()
-
-        /**
-         * Used to indicate that a permission is required in order to use [ArcGISArView].
-         *
-         * @since 100.6.0
-         */
-        data class PermissionRequired(val permission: String) : ArcGISArViewState()
-
-        /**
-         * Used to indicate that an installation of ARCore is required.
-         *
-         * @since 100.6.0
-         */
-        object ArCoreInstallationRequired : ArcGISArViewState()
+        INITIALIZED,
 
         /**
          * Used to indicate that an [Exception] has occurred during initialization.
          *
          * @since 100.6.0
          */
-        data class InitializationFailure(val exception: Exception) : ArcGISArViewState()
+        INITIALIZATION_FAILURE
     }
 
     interface OnPointResolvedListener {
