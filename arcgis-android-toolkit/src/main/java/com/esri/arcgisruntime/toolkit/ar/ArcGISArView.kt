@@ -28,10 +28,12 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.toolkit.R
@@ -188,6 +190,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         originCamera = sceneView.currentViewpointCamera
         initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
         sceneView.setIsBackgroundTransparent(renderVideoFeed)
+
+        sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(sceneView) {
+            override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
+                onSingleTap(motionEvent)
+                return super.onSingleTapConfirmed(motionEvent)
+            }
+        })
     }
 
     /**
@@ -338,6 +347,32 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     initialTransformationMatrix?.addTransformation(it)
                 }?.let {
                     sceneView.setViewpointCamera(Camera(it))
+                }
+            }
+        }
+    }
+
+    private fun onSingleTap(motionEvent: MotionEvent?) {
+        val frame = arSceneView.arFrame
+
+        if (frame != null) {
+            if (motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
+                frame.hitTest(motionEvent).getOrNull(0).let { hitResult ->
+                    hitResult?.let { theHitResult ->
+                        val hitResultTransMatrix = TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
+                            it.toDouble()
+                        }.toDoubleArray(), theHitResult.hitPose.translation.map {
+                            it.toDouble()
+                        }.toDoubleArray())
+                        val geoPointTransMatrix =
+                            sceneView.currentViewpointCamera.transformationMatrix?.addTransformation(
+                                hitResultTransMatrix
+                            )
+                        onPointResolvedListener?.onPointResolved(
+                            Camera(geoPointTransMatrix).location,
+                            hitResult.createAnchor()
+                        )
+                    }
                 }
             }
         }
