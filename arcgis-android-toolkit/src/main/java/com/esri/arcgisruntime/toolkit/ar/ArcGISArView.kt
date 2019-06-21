@@ -32,6 +32,7 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.mapping.ArcGISScene
+import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.SceneView
@@ -190,6 +191,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         originCamera = sceneView.currentViewpointCamera
         initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
         sceneView.setIsBackgroundTransparent(renderVideoFeed)
+        sceneView.atmosphereEffect = AtmosphereEffect.NONE
 
         sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
