@@ -4,6 +4,7 @@
 Please read the toolkit components usage guide on our [wiki](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki)
 
 - [Scalebar](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Scalebar)
+- [Compass](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Compass)
 
 ## Usage
 
