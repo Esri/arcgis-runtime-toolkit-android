@@ -340,9 +340,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     sceneView.setViewpointCamera(Camera(it))
                 }
             }
-        }
-        if (sceneView.isManualRenderingEnabled) {
-            sceneView.post {
+            if (sceneView.isManualRenderingEnabled) {
                 sceneView.renderFrame()
             }
         }
