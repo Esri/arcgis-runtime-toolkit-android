@@ -58,6 +58,11 @@
             android:label="@string/arcgis_sceneview_activity_label"
             android:theme="@style/AppTheme" />
 
+        <activity
+            android:name=".sceneview.ArcGISSceneViewTableTopActivity"
+            android:label="@string/arcgis_sceneview_activity_label"
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

@@ -85,7 +85,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    private var initialTransformationMatrix: TransformationMatrix? = null
+    var initialTransformationMatrix: TransformationMatrix = TransformationMatrix(0.0,0.0,0.0,1.0,0.0,0.0,0.0)
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -118,7 +118,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         set(value) {
             field = value
             sceneView.setViewpointCamera(value)
-            initialTransformationMatrix = value?.transformationMatrix
         }
 
     /**
@@ -189,7 +188,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
-        initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
+        initialTransformationMatrix = TransformationMatrix(0.0,0.0,0.0,1.0,0.0,0.0,0.0)
         sceneView.setIsBackgroundTransparent(renderVideoFeed)
         sceneView.atmosphereEffect = AtmosphereEffect.NONE
 
@@ -346,7 +345,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                         it * translationTransformationFactor
                     }.toDoubleArray()
                 ).let {
-                    initialTransformationMatrix?.addTransformation(it)
+                    val factoredMatrix = TransformationMatrix(initialTransformationMatrix.quaternionX, initialTransformationMatrix.quaternionY, initialTransformationMatrix.quaternionZ, initialTransformationMatrix.quaternionW, initialTransformationMatrix.translationX * translationTransformationFactor, initialTransformationMatrix.translationY * translationTransformationFactor, initialTransformationMatrix.translationZ * translationTransformationFactor)
+                    originCamera?.transformationMatrix?.addTransformation(factoredMatrix)?.addTransformation(it)
                 }?.let {
                     sceneView.setViewpointCamera(Camera(it))
                 }
@@ -355,6 +355,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     private fun onSingleTap(motionEvent: MotionEvent?) {
+        PlaceOriginOnRealWorldSurface(motionEvent)
+    }
+
+    private fun hitTest(motionEvent: MotionEvent?): TransformationMatrix {
         val frame = arSceneView.arFrame
 
         if (frame != null) {
@@ -366,18 +370,36 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                         }.toDoubleArray(), theHitResult.hitPose.translation.map {
                             it.toDouble()
                         }.toDoubleArray())
-                        val geoPointTransMatrix =
-                            sceneView.currentViewpointCamera.transformationMatrix?.addTransformation(
-                                hitResultTransMatrix
-                            )
-                        onPointResolvedListener?.onPointResolved(
-                            Camera(geoPointTransMatrix).location,
-                            hitResult.createAnchor()
-                        )
+                        return hitResultTransMatrix
+
                     }
                 }
             }
         }
+        return TransformationMatrix(0.0,0.0,0.0,1.0,0.0,0.0,0.0)
+    }
+
+    /**
+     * The function invoked for ARScreenToLocation.
+     *
+     * @since 100.6.0
+     */
+    fun ARScreenToLocation(motionEvent: MotionEvent?) : Point? {
+        val geoPointTransMatrix =
+                sceneView.currentViewpointCamera.transformationMatrix?.addTransformation(
+                        hitTest(motionEvent)
+                )
+        return Camera(geoPointTransMatrix).location
+    }
+
+    /**
+     * The function invoked for ARScreenToLocation.
+     *
+     * @since 100.6.0
+     */
+    fun PlaceOriginOnRealWorldSurface(motionEvent: MotionEvent?) {
+        var indentity = TransformationMatrix(0.0,0.0,0.0,1.0,0.0,0.0,0.0)
+        initialTransformationMatrix = indentity.subtractTransformation(hitTest(motionEvent))
     }
 
     /**
