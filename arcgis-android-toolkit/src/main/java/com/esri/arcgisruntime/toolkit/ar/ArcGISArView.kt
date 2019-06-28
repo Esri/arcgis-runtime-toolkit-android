@@ -124,6 +124,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
+        set(value) {
+            field = value
+            cameraController.translationFactor = translationTransformationFactor
+        }
 
     /**
      * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
@@ -325,17 +329,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let { arCamera ->
             if (arCamera.trackingState == TrackingState.TRACKING) {
-                // TODO: refactor to apply translationTransformationFactor when implemented
                 TransformationMatrix(
-                    arCamera.displayOrientedPose.rotationQuaternion.map {
-                        it.toDouble()
-                    }.toDoubleArray(),
-                    arCamera.displayOrientedPose.translation.map {
-                        it * translationTransformationFactor
-                    }.toDoubleArray()
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
                 ).let {
-                    cameraController.originCamera.transformationMatrix.addTransformation(it)
-                }?.let {
                     cameraController.transformationMatrix = it
                 }
             }
