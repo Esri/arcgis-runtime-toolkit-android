@@ -30,9 +30,12 @@ import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.ArcGISScene
+import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
+import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
+import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.google.ar.core.ArCoreApk
@@ -74,11 +77,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private var renderVideoFeed: Boolean = true
 
     /**
-     * Initial [TransformationMatrix] obtained from the initial [Camera] used by [sceneView].
+     * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
      */
-    private var initialTransformationMatrix: TransformationMatrix? = null
+    private var cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -110,8 +113,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     var originCamera: Camera? = null
         set(value) {
             field = value
-            sceneView.setViewpointCamera(value)
-            initialTransformationMatrix = value?.transformationMatrix
+            cameraController.originCamera = value
         }
 
     /**
@@ -182,8 +184,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
-        initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
-        sceneView.setIsBackgroundTransparent(renderVideoFeed)
+        sceneView.cameraController = cameraController
+        sceneView.spaceEffect = SpaceEffect.TRANSPARENT
+        sceneView.atmosphereEffect = AtmosphereEffect.NONE
     }
 
     /**
@@ -331,9 +334,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                         it * translationTransformationFactor
                     }.toDoubleArray()
                 ).let {
-                    initialTransformationMatrix?.addTransformation(it)
+                    cameraController.originCamera.transformationMatrix.addTransformation(it)
                 }?.let {
-                    sceneView.setViewpointCamera(Camera(it))
+                    cameraController.transformationMatrix = it
                 }
             }
         }
