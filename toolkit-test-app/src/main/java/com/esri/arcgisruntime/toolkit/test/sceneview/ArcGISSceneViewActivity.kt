@@ -93,6 +93,11 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Toggle manual rendering of SceneView.
+     *
+     * @since 100.6.0
+     */
     private fun toggleManualRendering() {
         arcGisArView.sceneView.isManualRenderingEnabled = !arcGisArView.sceneView.isManualRenderingEnabled
         Toast.makeText(
