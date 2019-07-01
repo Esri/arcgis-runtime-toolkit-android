@@ -85,7 +85,7 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
                 arcGisArView.stopTracking()
                 return true
             }
-            R.id.toggle_manual_rendering -> {
+            R.id.action_toggle_manual_rendering -> {
                 toggleManualRendering()
                 return true
             }
