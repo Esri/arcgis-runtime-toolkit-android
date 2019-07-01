@@ -186,8 +186,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         originCamera = sceneView.currentViewpointCamera
         initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
         sceneView.isManualRenderingEnabled = true
-        sceneView.spaceEffect = SpaceEffect.TRANSPARENT
-        sceneView.atmosphereEffect = AtmosphereEffect.NONE
+        if (renderVideoFeed) {
+            sceneView.spaceEffect = SpaceEffect.TRANSPARENT
+            sceneView.atmosphereEffect = AtmosphereEffect.NONE
+        }
     }
 
     /**
