@@ -189,8 +189,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
         sceneView.cameraController = cameraController
-        sceneView.spaceEffect = SpaceEffect.TRANSPARENT
-        sceneView.atmosphereEffect = AtmosphereEffect.NONE
+        sceneView.isManualRenderingEnabled = true
+        if (renderVideoFeed) {
+            sceneView.spaceEffect = SpaceEffect.TRANSPARENT
+            sceneView.atmosphereEffect = AtmosphereEffect.NONE
+        }
     }
 
     /**
@@ -335,6 +338,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 ).let {
                     cameraController.transformationMatrix = it
                 }
+            }
+            if (sceneView.isManualRenderingEnabled) {
+                sceneView.renderFrame()
             }
         }
     }
