@@ -85,8 +85,29 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
                 arcGisArView.stopTracking()
                 return true
             }
+            R.id.action_toggle_manual_rendering -> {
+                toggleManualRendering()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Toggle manual rendering of SceneView.
+     *
+     * @since 100.6.0
+     */
+    private fun toggleManualRendering() {
+        arcGisArView.sceneView.isManualRenderingEnabled = !arcGisArView.sceneView.isManualRenderingEnabled
+        Toast.makeText(
+            this,
+            getString(
+                R.string.arcgis_sceneview_activity_manual_rendering_enabled,
+                arcGisArView.sceneView.isManualRenderingEnabled
+            ),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun onDestroy() {

@@ -30,8 +30,10 @@ import android.util.AttributeSet
 import android.util.Log
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.ArcGISScene
+import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
+import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
@@ -183,7 +185,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
         initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
-        sceneView.setIsBackgroundTransparent(renderVideoFeed)
+        sceneView.isManualRenderingEnabled = true
+        if (renderVideoFeed) {
+            sceneView.spaceEffect = SpaceEffect.TRANSPARENT
+            sceneView.atmosphereEffect = AtmosphereEffect.NONE
+        }
     }
 
     /**
@@ -335,6 +341,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 }?.let {
                     sceneView.setViewpointCamera(Camera(it))
                 }
+            }
+            if (sceneView.isManualRenderingEnabled) {
+                sceneView.renderFrame()
             }
         }
     }
