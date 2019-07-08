@@ -81,7 +81,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    private var cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
+    private val cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -126,7 +126,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
         set(value) {
             field = value
-            cameraController.translationFactor = translationTransformationFactor
+            cameraController.translationFactor = value
         }
 
     /**
