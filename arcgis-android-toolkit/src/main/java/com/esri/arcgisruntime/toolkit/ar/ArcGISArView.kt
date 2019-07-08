@@ -35,6 +35,7 @@ import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
+import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.google.ar.core.ArCoreApk
@@ -76,11 +77,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private var renderVideoFeed: Boolean = true
 
     /**
-     * Initial [TransformationMatrix] obtained from the initial [Camera] used by [sceneView].
+     * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
      */
-    private var initialTransformationMatrix: TransformationMatrix? = null
+    private val cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -112,8 +113,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     var originCamera: Camera? = null
         set(value) {
             field = value
-            sceneView.setViewpointCamera(value)
-            initialTransformationMatrix = value?.transformationMatrix
+            cameraController.originCamera = value
         }
 
     /**
@@ -124,6 +124,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
+        set(value) {
+            field = value
+            cameraController.translationFactor = value
+        }
 
     /**
      * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
@@ -184,7 +188,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
-        initialTransformationMatrix = sceneView.currentViewpointCamera.transformationMatrix
+        sceneView.cameraController = cameraController
         sceneView.isManualRenderingEnabled = true
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
@@ -328,18 +332,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let { arCamera ->
             if (arCamera.trackingState == TrackingState.TRACKING) {
-                // TODO: refactor to apply translationTransformationFactor when implemented
                 TransformationMatrix(
-                    arCamera.displayOrientedPose.rotationQuaternion.map {
-                        it.toDouble()
-                    }.toDoubleArray(),
-                    arCamera.displayOrientedPose.translation.map {
-                        it * translationTransformationFactor
-                    }.toDoubleArray()
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
                 ).let {
-                    initialTransformationMatrix?.addTransformation(it)
-                }?.let {
-                    sceneView.setViewpointCamera(Camera(it))
+                    cameraController.transformationMatrix = it
                 }
             }
             if (sceneView.isManualRenderingEnabled) {
