@@ -47,6 +47,7 @@ import com.google.ar.sceneform.ux.FootprintSelectionVisualizer
 import com.google.ar.sceneform.ux.TransformableNode
 import com.google.ar.sceneform.ux.TransformationSystem
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
+import java.net.URI
 import java.util.HashMap
 import java.util.concurrent.ExecutionException
 
@@ -67,7 +68,8 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
             surface.navigationConstraint = NavigationConstraint.NONE
             surface.opacity = 0f
             scene.baseSurface = surface
-            val pointCloud = PointCloudLayer("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
+            val encodedString = URI.create("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
+            val pointCloud = PointCloudLayer(encodedString.toASCIIString())
             scene.operationalLayers.add(pointCloud)
         }
 

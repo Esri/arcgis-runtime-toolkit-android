@@ -36,6 +36,7 @@ import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.SceneView
+import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
@@ -189,7 +190,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         inflate(context, R.layout.layout_arcgisarview, this)
         originCamera = sceneView.currentViewpointCamera
         initialTransformationMatrix = TransformationMatrix(0.0,0.0,0.0,1.0,0.0,0.0,0.0)
-        sceneView.setIsBackgroundTransparent(renderVideoFeed)
+        sceneView.spaceEffect = if(renderVideoFeed) SpaceEffect.TRANSPARENT else SpaceEffect.STARS
         sceneView.atmosphereEffect = AtmosphereEffect.NONE
 
         sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(sceneView) {
