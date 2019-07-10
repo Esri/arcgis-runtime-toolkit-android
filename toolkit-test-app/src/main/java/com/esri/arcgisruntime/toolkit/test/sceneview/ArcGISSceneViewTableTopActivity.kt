@@ -16,40 +16,23 @@
 
 package com.esri.arcgisruntime.toolkit.test.sceneview
 
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageView
 import android.widget.Toast
-import com.esri.arcgisruntime.data.ServiceFeatureTable
-import com.esri.arcgisruntime.geometry.Point
-import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
-import com.esri.arcgisruntime.loadable.LoadStatus
-import com.esri.arcgisruntime.mapping.*
+import com.esri.arcgisruntime.mapping.ArcGISScene
+import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
+import com.esri.arcgisruntime.mapping.NavigationConstraint
+import com.esri.arcgisruntime.mapping.Surface
 import com.esri.arcgisruntime.mapping.view.Camera
-import com.esri.arcgisruntime.security.AuthenticationManager
-import com.esri.arcgisruntime.security.DefaultAuthenticationChallengeHandler
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
-import com.esri.arcgisruntime.toolkit.test.dialog.EditTextDialogFragment
-import com.google.ar.core.Anchor
-import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.rendering.ViewRenderable
-import com.google.ar.sceneform.ux.FootprintSelectionVisualizer
-import com.google.ar.sceneform.ux.TransformableNode
-import com.google.ar.sceneform.ux.TransformationSystem
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
 import java.net.URI
-import java.util.HashMap
-import java.util.concurrent.ExecutionException
 
 class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStateChangedListener {
 
@@ -63,12 +46,14 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
             //scene = ArcGISScene(Basemap.createImagery())
             scene = ArcGISScene()
             val surface = Surface()
-            val elevSource = ArcGISTiledElevationSource("http://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
+            val elevSource =
+                ArcGISTiledElevationSource("http://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
             surface.elevationSources.add(elevSource)
             surface.navigationConstraint = NavigationConstraint.NONE
             surface.opacity = 0f
             scene.baseSurface = surface
-            val encodedString = URI.create("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
+            val encodedString =
+                URI.create("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
             val pointCloud = PointCloudLayer(encodedString.toASCIIString())
             scene.operationalLayers.add(pointCloud)
         }
@@ -90,7 +75,7 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
             ArcGISArView.ArcGISArViewState.INITIALIZED -> {
                 //https://www.arcgis.com/home/webscene/viewer.html?webscene=f55040b5d81f40e291c9739477fdb7b7&viewpoint=cam:6.96472093,50.94334724,44.412;267.371,0.434
                 //arcGisArView.originCamera = Camera(34.05610, -117.18374, 412.44,  0.0, 90.0, 0.0)
-                arcGisArView.originCamera = Camera(50.94334724, 6.96472093, 44.412,  267.0, 90.0, 0.0)
+                arcGisArView.originCamera = Camera(50.94334724, 6.96472093, 44.412, 267.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 4000.0
             }
             ArcGISArView.ArcGISArViewState.INITIALIZATION_FAILURE -> {

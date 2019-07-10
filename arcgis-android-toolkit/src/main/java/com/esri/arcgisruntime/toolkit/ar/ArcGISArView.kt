@@ -65,7 +65,7 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  */
 final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
-    var onPointResolvedListener: ArcGISArView.OnPointResolvedListener? = null
+    var onPointResolvedListener: OnPointResolvedListener? = null
 
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
@@ -82,7 +82,19 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private var renderVideoFeed: Boolean = true
 
-    var cameraController = TransformationMatrixCameraController()
+    /**
+     * Initial [TransformationMatrix] used by [cameraController].
+     *
+     * @since 100.6.0
+     */
+    private var initialTransformationMatrix = TransformationMatrix()
+
+    /**
+     * The camera controller used to control the camera that is used in [arcGisSceneView].
+     *
+     * @since 100.6.0
+     */
+    private var cameraController = TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -125,10 +137,10 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
-    set(value){
-        field = value
-        cameraController.translationFactor = value
-    }
+        set(value) {
+            field = value
+            cameraController.translationFactor = value
+        }
 
     /**
      * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
@@ -136,7 +148,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
+    private var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
         private set(value) {
             field = value
             onStateChangedListeners.forEach {
@@ -188,6 +200,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
+        sceneView.isManualRenderingEnabled = true
         sceneView.cameraController = cameraController
         originCamera = sceneView.currentViewpointCamera
         sceneView.spaceEffect = if (renderVideoFeed) SpaceEffect.TRANSPARENT else SpaceEffect.STARS
@@ -345,14 +358,18 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                         it.toDouble()
                     }.toDoubleArray()
                 ).let { arCoreTransMatrix ->
-                    cameraController.transformationMatrix = arCoreTransMatrix
+                    cameraController.transformationMatrix =
+                        initialTransformationMatrix.addTransformation(arCoreTransMatrix)
                 }
+            }
+            if (sceneView.isManualRenderingEnabled) {
+                sceneView.renderFrame()
             }
         }
     }
 
     private fun onSingleTap(motionEvent: MotionEvent?) {
-        PlaceOriginOnRealWorldSurface(motionEvent)
+        placeOriginOnRealWorldSurface(motionEvent)
     }
 
     private fun hitTest(motionEvent: MotionEvent?): TransformationMatrix {
@@ -362,18 +379,17 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             if (motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
                 frame.hitTest(motionEvent).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
-                        val hitResultTransMatrix = TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
+                        return TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
                             it.toDouble()
                         }.toDoubleArray(), theHitResult.hitPose.translation.map {
                             it.toDouble()
                         }.toDoubleArray())
-                        return hitResultTransMatrix
 
                     }
                 }
             }
         }
-        return TransformationMatrix(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)
+        return TransformationMatrix()
     }
 
     /**
@@ -394,9 +410,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    fun PlaceOriginOnRealWorldSurface(motionEvent: MotionEvent?) {
-        var indentity = TransformationMatrix(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0)
-        cameraController.originCamera = Camera(indentity.subtractTransformation(hitTest(motionEvent)))
+    private fun placeOriginOnRealWorldSurface(motionEvent: MotionEvent?) {
+        initialTransformationMatrix = TransformationMatrix().subtractTransformation(hitTest(motionEvent))
     }
 
     /**
