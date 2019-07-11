@@ -17,12 +17,17 @@
 package com.esri.arcgisruntime.toolkit.test.sceneview
 
 import android.os.Bundle
+import android.support.annotation.StringRes
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.esri.arcgisruntime.geometry.Point
+import com.esri.arcgisruntime.layers.Layer
 import com.esri.arcgisruntime.layers.PointCloudLayer
+import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
 import com.esri.arcgisruntime.mapping.NavigationConstraint
@@ -31,37 +36,28 @@ import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
+import com.google.ar.core.Anchor
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
 import java.net.URI
 
 class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStateChangedListener {
 
+    private var _scene: ArcGISScene? = null
+    private var pointCloudLayer: Layer? = null
+
+    private val onPointResolvedListener = object : ArcGISArView.OnPointResolvedListener {
+        override fun onPointResolved(point: Point, tapAnchor: Anchor) {
+            if (_scene != null && pointCloudLayer != null && !_scene!!.operationalLayers.contains(pointCloudLayer)) {
+                _scene!!.operationalLayers.add(pointCloudLayer)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_arcgissceneview_tabletop)
-
-
-        with(arcGisArView.sceneView) {
-            //scene = ArcGISScene(Basemap.createImagery())
-            scene = ArcGISScene()
-            val surface = Surface()
-            val elevSource =
-                ArcGISTiledElevationSource("http://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
-            surface.elevationSources.add(elevSource)
-            surface.navigationConstraint = NavigationConstraint.NONE
-            surface.opacity = 0f
-            scene.baseSurface = surface
-            val encodedString =
-                URI.create("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
-            val pointCloud = PointCloudLayer(encodedString.toASCIIString())
-            scene.operationalLayers.add(pointCloud)
-        }
-
-
         arcGisArView.registerLifecycle(lifecycle)
         arcGisArView.addOnStateChangedListener(this)
-
     }
 
     override fun onStateChanged(state: ArcGISArView.ArcGISArViewState) {
@@ -73,10 +69,41 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
                 // no-op
             }
             ArcGISArView.ArcGISArViewState.INITIALIZED -> {
-                //https://www.arcgis.com/home/webscene/viewer.html?webscene=f55040b5d81f40e291c9739477fdb7b7&viewpoint=cam:6.96472093,50.94334724,44.412;267.371,0.434
-                //arcGisArView.originCamera = Camera(34.05610, -117.18374, 412.44,  0.0, 90.0, 0.0)
                 arcGisArView.originCamera = Camera(50.94334724, 6.96472093, 44.412, 267.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 4000.0
+                arcGisArView.onPointResolvedListener = onPointResolvedListener
+
+                with(arcGisArView.sceneView) {
+                    _scene = ArcGISScene()
+                    scene = _scene
+                    val surface = Surface()
+                    ArcGISTiledElevationSource("http://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer").let {
+                        surface.elevationSources.add(it)
+                    }
+                    surface.navigationConstraint = NavigationConstraint.NONE
+                    surface.opacity = 0f
+                    scene.baseSurface = surface
+                    val encodedString =
+                        URI.create("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
+                    pointCloudLayer = PointCloudLayer(encodedString.toASCIIString()).also {
+                        it.addLoadStatusChangedListener { loadStatusChangedEvent ->
+                            if (loadStatusChangedEvent.newLoadStatus == LoadStatus.LOADED) {
+                                showSnackbar(R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_complete)
+                            } else if (loadStatusChangedEvent.newLoadStatus == LoadStatus.FAILED_TO_LOAD) {
+                                Toast.makeText(
+                                    this@ArcGISSceneViewTableTopActivity,
+                                    getString(
+                                        R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_failed,
+                                        "${it.loadError.message} - ${it.loadError.cause}"
+                                    ),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                        it.loadAsync()
+                        showSnackbar(R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer)
+                    }
+                }
             }
             ArcGISArView.ArcGISArViewState.INITIALIZATION_FAILURE -> {
                 with(getString(R.string.arcgisarview_error, arcGisArView.error?.message)) {
@@ -85,6 +112,10 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
                 }
             }
         }
+    }
+
+    private fun showSnackbar(@StringRes stringRes: Int) {
+        Snackbar.make(arcGisArView, stringRes, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -379,12 +379,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             if (motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
                 frame.hitTest(motionEvent).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
-                        return TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
+                        val transMatrix = TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
                             it.toDouble()
                         }.toDoubleArray(), theHitResult.hitPose.translation.map {
                             it.toDouble()
                         }.toDoubleArray())
-
+                        onPointResolvedListener?.onPointResolved(Camera(transMatrix).location, theHitResult.createAnchor())
+                        return transMatrix
                     }
                 }
             }
