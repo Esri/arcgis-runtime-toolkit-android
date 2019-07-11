@@ -32,6 +32,7 @@ import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.mapping.view.DeviceOrientation
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
@@ -341,6 +342,17 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 }?.let {
                     sceneView.setViewpointCamera(Camera(it))
                 }
+            }
+            arCamera.imageIntrinsics.let {
+                sceneView.setFieldOfViewFromLensIntrinsics(
+                    it.focalLength[0],
+                    it.focalLength[1],
+                    it.principalPoint[0],
+                    it.principalPoint[1],
+                    it.imageDimensions[0].toFloat(),
+                    it.imageDimensions[1].toFloat(),
+                    DeviceOrientation.PORTRAIT
+                )
             }
             if (sceneView.isManualRenderingEnabled) {
                 sceneView.renderFrame()
