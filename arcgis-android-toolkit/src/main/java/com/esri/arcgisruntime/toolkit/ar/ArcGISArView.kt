@@ -24,10 +24,13 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.SensorManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
+import android.view.OrientationEventListener
+import android.view.WindowManager
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
@@ -97,6 +100,57 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
+
+    /**
+     * Device Orientation to be used when setting Field of View.
+     *
+     * @since 100.6.0
+     */
+    private var deviceOrientation: DeviceOrientation? = null
+
+    /**
+     * Instance of WindowManager used to determine device orientation. Lazy delegated to prevent multiple calls to
+     * [Context.getSystemService].
+     *
+     * @since 100.6.0
+     */
+    private val windowManager: WindowManager? by lazy {
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    }
+
+    /**
+     * Convenience value used to retrieve device rotation from WindowManager.
+     *
+     * @since 100.6.0
+     */
+    private val windowOrientation: Int?
+        get() {
+            return windowManager?.defaultDisplay?.rotation
+        }
+
+    /**
+     * Event listener to listen for orientation changes. We are ignoring the orientation value supplied by it as it doesn't
+     * reflect the orientation of the Window at all times. Instead we are making a call to the WindowManager to retrieve
+     * the orientation it reports.
+     *
+     * @since 100.6.0
+     */
+    private val orientationEventListener by lazy {
+        object : OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
+            override fun onOrientationChanged(orientation: Int) {
+                this@ArcGISArView.deviceOrientation = when (windowOrientation) {
+                    0 -> DeviceOrientation.PORTRAIT
+                    1 -> DeviceOrientation.LANDSCAPE_RIGHT
+                    2 -> DeviceOrientation.REVERSE_PORTRAIT
+                    3 -> DeviceOrientation.LANDSCAPE_LEFT
+                    else -> throw IllegalStateException("Unknown DeviceOrientation")
+                }
+                Log.d(
+                    logTag, "FOV Display Rotation: $deviceOrientation"
+                )
+            }
+        }
+    }
 
     /**
      * ArcGIS SceneView used to render the data from an [ArcGISScene].
@@ -202,6 +256,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
         }
+        orientationEventListener.enable()
     }
 
     /**
@@ -360,7 +415,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     it.principalPoint[1],
                     it.imageDimensions[0].toFloat(),
                     it.imageDimensions[1].toFloat(),
-                    DeviceOrientation.PORTRAIT
+                    if (deviceOrientation != null) deviceOrientation else DeviceOrientation.PORTRAIT
                 )
             }
             if (sceneView.isManualRenderingEnabled) {
