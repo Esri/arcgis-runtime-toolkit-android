@@ -168,7 +168,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
+     * sets the origin camera of the [TransformationMatrixCameraController].
      *
      * @since 100.6.0
      */
