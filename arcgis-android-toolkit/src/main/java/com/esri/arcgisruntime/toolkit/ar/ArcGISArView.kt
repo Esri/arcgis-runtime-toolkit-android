@@ -332,10 +332,21 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let { arCamera ->
             if (arCamera.trackingState == TrackingState.TRACKING) {
-                TransformationMatrix(
+                // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                Pair(
                     arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
                     arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
                 ).let {
+                    TransformationMatrix.createWithQuaternionAndTranslation(
+                        it.first[0],
+                        it.first[1],
+                        it.first[2],
+                        it.first[3],
+                        it.second[0],
+                        it.second[1],
+                        it.second[2]
+                    )
+                }.let {
                     cameraController.transformationMatrix = it
                 }
             }
