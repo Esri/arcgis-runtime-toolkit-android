@@ -81,18 +81,19 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private var renderVideoFeed: Boolean = true
 
     /**
+     * The camera controller used to control the camera that is used in [arcGisSceneView].
      * Initial [TransformationMatrix] used by [cameraController].
      *
      * @since 100.6.0
      */
-    private val initialTransformationMatrix = TransformationMatrix()
+    private val initialTransformationMatrix = TransformationMatrix.createIdentityMatrix()
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
      */
-    private var cameraController = TransformationMatrixCameraController()
+    private val cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -392,16 +393,22 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let { arCamera ->
             if (arCamera.trackingState == TrackingState.TRACKING) {
-                TransformationMatrix(
-                    arCamera.displayOrientedPose.rotationQuaternion.map {
-                        it.toDouble()
-                    }.toDoubleArray(),
-                    arCamera.displayOrientedPose.translation.map {
-                        it.toDouble()
-                    }.toDoubleArray()
-                ).let { arCoreTransMatrix ->
-                    cameraController.transformationMatrix =
-                        initialTransformationMatrix.addTransformation(arCoreTransMatrix)
+                // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                Pair(
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                ).let {
+                    TransformationMatrix.createWithQuaternionAndTranslation(
+                        it.first[0],
+                        it.first[1],
+                        it.first[2],
+                        it.first[3],
+                        it.second[0],
+                        it.second[1],
+                        it.second[2]
+                    )
+                }.let {
+                    cameraController.transformationMatrix = it
                 }
             }
             arCamera.imageIntrinsics.let {
