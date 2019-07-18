@@ -85,7 +85,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    private var initialTransformationMatrix = TransformationMatrix()
+    private val initialTransformationMatrix = TransformationMatrix()
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -145,9 +145,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     3 -> DeviceOrientation.LANDSCAPE_LEFT
                     else -> throw IllegalStateException("Unknown DeviceOrientation")
                 }
-                Log.d(
-                    logTag, "FOV Display Rotation: $deviceOrientation"
-                )
             }
         }
     }
