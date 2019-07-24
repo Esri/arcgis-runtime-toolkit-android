@@ -30,6 +30,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
 import android.view.OrientationEventListener
+import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.ArcGISScene
@@ -107,7 +108,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    private var deviceOrientation: DeviceOrientation? = null
+    private var deviceOrientation: DeviceOrientation = DeviceOrientation.PORTRAIT
 
     /**
      * Instance of WindowManager used to determine device orientation. Lazy delegated to prevent multiple calls to
@@ -140,11 +141,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         object : OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
             override fun onOrientationChanged(orientation: Int) {
                 this@ArcGISArView.deviceOrientation = when (windowOrientation) {
-                    0 -> DeviceOrientation.PORTRAIT
-                    1 -> DeviceOrientation.LANDSCAPE_RIGHT
-                    2 -> DeviceOrientation.REVERSE_PORTRAIT
-                    3 -> DeviceOrientation.LANDSCAPE_LEFT
-                    else -> throw IllegalStateException("Unknown DeviceOrientation")
+                    Surface.ROTATION_0 -> DeviceOrientation.PORTRAIT
+                    Surface.ROTATION_90 -> DeviceOrientation.LANDSCAPE_RIGHT
+                    Surface.ROTATION_180 -> DeviceOrientation.REVERSE_PORTRAIT
+                    Surface.ROTATION_270 -> DeviceOrientation.LANDSCAPE_LEFT
+                    else -> DeviceOrientation.PORTRAIT
                 }
             }
         }
@@ -249,7 +250,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         inflate(context, R.layout.layout_arcgisarview, this)
         sceneView.isManualRenderingEnabled = true
         sceneView.cameraController = cameraController
-        originCamera = sceneView.currentViewpointCamera
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
@@ -419,7 +419,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                     it.principalPoint[1],
                     it.imageDimensions[0].toFloat(),
                     it.imageDimensions[1].toFloat(),
-                    if (deviceOrientation != null) deviceOrientation else DeviceOrientation.PORTRAIT
+                    deviceOrientation
                 )
             }
             if (sceneView.isManualRenderingEnabled) {
