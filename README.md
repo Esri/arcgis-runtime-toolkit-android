@@ -4,6 +4,7 @@
 Please read the toolkit components usage guide on our [wiki](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki)
 
 - [Scalebar](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Scalebar)
+- [Compass](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Compass)
 
 ## Usage
 
@@ -11,12 +12,12 @@ Please read the toolkit components usage guide on our [wiki](https://github.com/
 repositories {
     jcenter()
     // Our internal artifactory repository
-    maven { url 'http://android:8080/artifactory/arcgis' }
+    maven { url 'https://esri.bintray.com/arcgis' }
 }
 
 dependencies {
     // use compile for pre Android 3.0
-    implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.1.0-SNAPSHOT"
+    implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.5.0"
 }
 ```
 
