@@ -104,7 +104,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
 
     /**
-     * Device Orientation to be used when setting Field of View.
+     * Device Orientation to be used when setting Field of View. Default is [DeviceOrientation.PORTRAIT].
      *
      * @since 100.6.0
      */
