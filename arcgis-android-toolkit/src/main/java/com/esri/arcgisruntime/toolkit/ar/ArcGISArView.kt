@@ -83,18 +83,19 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     private var renderVideoFeed: Boolean = true
 
     /**
+     * The camera controller used to control the camera that is used in [arcGisSceneView].
      * Initial [TransformationMatrix] used by [cameraController].
      *
      * @since 100.6.0
      */
-    private var initialTransformationMatrix = TransformationMatrix()
+    private var initialTransformationMatrix = TransformationMatrix.createIdentityMatrix()
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
      */
-    private var cameraController = TransformationMatrixCameraController()
+    private val cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -350,14 +351,21 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView.arFrame?.camera?.let { arCamera ->
             if (arCamera.trackingState == TrackingState.TRACKING) {
-                TransformationMatrix(
-                    arCamera.displayOrientedPose.rotationQuaternion.map {
-                        it.toDouble()
-                    }.toDoubleArray(),
-                    arCamera.displayOrientedPose.translation.map {
-                        it.toDouble()
-                    }.toDoubleArray()
-                ).let { arCoreTransMatrix ->
+                // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                Pair(
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                ).let {
+                    TransformationMatrix.createWithQuaternionAndTranslation(
+                        it.first[0],
+                        it.first[1],
+                        it.first[2],
+                        it.first[3],
+                        it.second[0],
+                        it.second[1],
+                        it.second[2]
+                    )
+                }.let { arCoreTransMatrix ->
                     cameraController.transformationMatrix =
                         initialTransformationMatrix.addTransformation(arCoreTransMatrix)
                 }
@@ -379,31 +387,29 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             if (motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
                 frame.hitTest(motionEvent).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
-                        val transMatrix = TransformationMatrix(theHitResult.hitPose.rotationQuaternion.map {
-                            it.toDouble()
-                        }.toDoubleArray(), theHitResult.hitPose.translation.map {
-                            it.toDouble()
-                        }.toDoubleArray())
-                        onPointResolvedListener?.onPointResolved(Camera(transMatrix).location, theHitResult.createAnchor())
-                        return transMatrix
+                        // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                        Pair(
+                            theHitResult.hitPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                            theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray()
+                        ).let {
+                            TransformationMatrix.createWithQuaternionAndTranslation(
+                                it.first[0],
+                                it.first[1],
+                                it.first[2],
+                                it.first[3],
+                                it.second[0],
+                                it.second[1],
+                                it.second[2]
+                            )
+                        }.let {
+                            onPointResolvedListener?.onPointResolved(Camera(it).location, theHitResult.createAnchor())
+                            return it
+                        }
                     }
                 }
             }
         }
-        return TransformationMatrix()
-    }
-
-    /**
-     * The function invoked for ARScreenToLocation.
-     *
-     * @since 100.6.0
-     */
-    fun ARScreenToLocation(motionEvent: MotionEvent?): Point? {
-        val geoPointTransMatrix =
-            sceneView.currentViewpointCamera.transformationMatrix?.addTransformation(
-                hitTest(motionEvent)
-            )
-        return Camera(geoPointTransMatrix).location
+        return TransformationMatrix.createIdentityMatrix()
     }
 
     /**
@@ -412,7 +418,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private fun placeOriginOnRealWorldSurface(motionEvent: MotionEvent?) {
-        initialTransformationMatrix = TransformationMatrix().subtractTransformation(hitTest(motionEvent))
+        initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(hitTest(motionEvent))
     }
 
     /**
