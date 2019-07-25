@@ -5,4 +5,7 @@
     <item
         android:id="@+id/action_stop_tracking"
         android:title="@string/arcgis_sceneview_activity_stop_tracking" />
+    <item
+        android:id="@+id/action_toggle_manual_rendering"
+        android:title="@string/arcgis_sceneview_activity_toggle_manual_rendering" />
 </menu>
