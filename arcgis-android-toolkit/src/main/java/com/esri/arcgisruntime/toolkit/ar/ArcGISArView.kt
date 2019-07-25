@@ -24,14 +24,19 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.SensorManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.Log
+import android.view.OrientationEventListener
+import android.view.Surface
+import android.view.WindowManager
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.mapping.view.DeviceOrientation
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
@@ -78,6 +83,14 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
+     * Initial [TransformationMatrix] used by [cameraController].
+     *
+     * @since 100.6.0
+     */
+    private val initialTransformationMatrix = TransformationMatrix.createIdentityMatrix()
+
+    /**
+     * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
      */
@@ -89,6 +102,54 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
+
+    /**
+     * Device Orientation to be used when setting Field of View. Default is [DeviceOrientation.PORTRAIT].
+     *
+     * @since 100.6.0
+     */
+    private var deviceOrientation: DeviceOrientation = DeviceOrientation.PORTRAIT
+
+    /**
+     * Instance of WindowManager used to determine device orientation. Lazy delegated to prevent multiple calls to
+     * [Context.getSystemService].
+     *
+     * @since 100.6.0
+     */
+    private val windowManager: WindowManager? by lazy {
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    }
+
+    /**
+     * Convenience value used to retrieve device rotation from WindowManager.
+     *
+     * @since 100.6.0
+     */
+    private val windowOrientation: Int?
+        get() {
+            return windowManager?.defaultDisplay?.rotation
+        }
+
+    /**
+     * Event listener to listen for orientation changes. We are ignoring the orientation value supplied by it as it doesn't
+     * reflect the orientation of the Window at all times. Instead we are making a call to the WindowManager to retrieve
+     * the orientation it reports.
+     *
+     * @since 100.6.0
+     */
+    private val orientationEventListener by lazy {
+        object : OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) {
+            override fun onOrientationChanged(orientation: Int) {
+                this@ArcGISArView.deviceOrientation = when (windowOrientation) {
+                    Surface.ROTATION_0 -> DeviceOrientation.PORTRAIT
+                    Surface.ROTATION_90 -> DeviceOrientation.LANDSCAPE_RIGHT
+                    Surface.ROTATION_180 -> DeviceOrientation.REVERSE_PORTRAIT
+                    Surface.ROTATION_270 -> DeviceOrientation.LANDSCAPE_LEFT
+                    else -> DeviceOrientation.PORTRAIT
+                }
+            }
+        }
+    }
 
     /**
      * ArcGIS SceneView used to render the data from an [ArcGISScene].
@@ -106,7 +167,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
+     * sets the origin camera of the [TransformationMatrixCameraController].
      *
      * @since 100.6.0
      */
@@ -187,13 +248,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
-        originCamera = sceneView.currentViewpointCamera
-        sceneView.cameraController = cameraController
         sceneView.isManualRenderingEnabled = true
+        sceneView.cameraController = cameraController
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
         }
+        orientationEventListener.enable()
     }
 
     /**
@@ -349,6 +410,17 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 }.let {
                     cameraController.transformationMatrix = it
                 }
+            }
+            arCamera.imageIntrinsics.let {
+                sceneView.setFieldOfViewFromLensIntrinsics(
+                    it.focalLength[0],
+                    it.focalLength[1],
+                    it.principalPoint[0],
+                    it.principalPoint[1],
+                    it.imageDimensions[0].toFloat(),
+                    it.imageDimensions[1].toFloat(),
+                    deviceOrientation
+                )
             }
             if (sceneView.isManualRenderingEnabled) {
                 sceneView.renderFrame()
