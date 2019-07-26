@@ -3,8 +3,8 @@
 ## Components
 Please read the toolkit components usage guide on our [wiki](../../wiki)
 
-- [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
 - [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
+- [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
 
 ## Instructions
 Add the following to your buildscript
@@ -27,27 +27,33 @@ dependencies {
 $ ./gradlew clean assembleDebug --info
 ```
 
-## Publish the Toollkit AAR
+## Requirements
 
-```groovy
-$ ./gradlew clean artifactoryPublish --info
-```
+The toolkit requires the ArcGIS Runtime SDK for Android. Refer to the Instructions section above if you are using Gradle.
+See [this guide](https://developers.arcgis.com/android/latest/guide/install-and-set-up.htm) for complete instructions and
+other options for installing the SDK.
+
+The following table shows which versions of the SDK are compatible with the toolkit:
+
+|  SDK Version  |  Toolkit Version  |
+| --- | --- |
+| 100.5.0 | 100.5.0 |
+
+## Resources
+
+* [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/)
+* [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
+* [twitter@esri](http://twitter.com/esri)
 
 ## Issues
 Find a bug or want to request a new feature enhancement?  Please let us know by submitting an issue.
 
 ## Contributing
-Anyone and everyone is welcome to [contribute](.github/CONTRIBUTING.md). We do accept pull requests.
 
-1. Get Involved
-2. Report Issues
-3. Contribute Code
-4. Improve Documentation
-
-Please see our [guidelines for contributing doc](https://github.com/Esri/contributing/blob/master/README.md)
+Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing
-Copyright 2017 Esri
+Copyright 2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
