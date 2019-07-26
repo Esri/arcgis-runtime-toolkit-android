@@ -6,7 +6,8 @@ Please read the toolkit components usage guide on our [wiki](../../wiki)
 - [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
 - [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 
-## Usage
+## Instructions
+Add the following to your buildscript
 
 ```groovy
 repositories {
@@ -16,7 +17,6 @@ repositories {
 }
 
 dependencies {
-    // use compile for pre Android 3.0
     implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.5.0"
 }
 ```
