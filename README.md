@@ -3,8 +3,8 @@
 ## Components
 Please read the toolkit components usage guide on our [wiki](../../wiki)
 
-- [Scalebar](../../wiki/Scalebar)
-- [Compass](../../wiki/Compass)
+- [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
+- [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 
 ## Usage
 
