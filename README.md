@@ -1,10 +1,10 @@
 # ArcGIS Runtime Toolkit Android
 
 ## Components
-Please read the toolkit components usage guide on our [wiki](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki)
+Please read the toolkit components usage guide on our [wiki](../../wiki)
 
-- [Scalebar](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Scalebar)
-- [Compass](https://github.com/ArcGIS/arcgis-runtime-toolkit-android/wiki/Compass)
+- [Scalebar](../../wiki/Scalebar)
+- [Compass](../../wiki/Compass)
 
 ## Usage
 
