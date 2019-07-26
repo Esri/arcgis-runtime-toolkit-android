@@ -260,6 +260,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
         }
+        orientationEventListener.enable()
 
         sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
