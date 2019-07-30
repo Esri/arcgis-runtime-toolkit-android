@@ -16,6 +16,7 @@
 
 package com.esri.arcgisruntime.toolkit.extension
 
+import java.util.Locale
 import kotlin.math.roundToInt
 
 /**
@@ -46,4 +47,24 @@ fun Int.pixelsToDp(displayDensity: Float): Int = (this / displayDensity).roundTo
  */
 fun Int.throwIfNotPositive(parameterName: String) {
     if (this <= 0) throw IllegalArgumentException("Parameter $parameterName must be > 0")
+}
+
+/**
+ * Formats a Double as a String to display as a distance.
+ *
+ * @since 100.5.0
+ */
+fun Double.asDistanceString(): String {
+    // Format with 2 decimal places
+    return String.format(Locale.ROOT, "%.2f", this).let {
+        // Strip off both decimal places if they're 0s
+        if (it.endsWith(".00") || it.endsWith(",00")) {
+            it.substring(0, it.length - 3)
+            // Otherwise, strip off last decimal place if it's 0
+        } else if (it != "0" && it.endsWith("0")) {
+            it.substring(0, it.length - 1)
+        } else {
+            it
+        }
+    }
 }

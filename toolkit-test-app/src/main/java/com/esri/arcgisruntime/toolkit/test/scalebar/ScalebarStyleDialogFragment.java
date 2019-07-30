@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style;
 import com.esri.arcgisruntime.toolkit.test.R;
 
 /**
@@ -38,7 +38,7 @@ public final class ScalebarStyleDialogFragment extends DialogFragment {
      *
      * @param style the selected style
      */
-    void onScalebarStyleSpecified(Scalebar.Style style);
+    void onScalebarStyleSpecified(Style style);
   }
 
   private Listener mListener;
@@ -71,19 +71,19 @@ public final class ScalebarStyleDialogFragment extends DialogFragment {
             // Make callback with the selected item
             switch (which) {
               case 0:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.BAR);
+                mListener.onScalebarStyleSpecified(Style.BAR);
                 break;
               case 1:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.ALTERNATING_BAR);
+                mListener.onScalebarStyleSpecified(Style.ALTERNATING_BAR);
                 break;
               case 2:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.LINE);
+                mListener.onScalebarStyleSpecified(Style.LINE);
                 break;
               case 3:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.GRADUATED_LINE);
+                mListener.onScalebarStyleSpecified(Style.GRADUATED_LINE);
                 break;
               case 4:
-                mListener.onScalebarStyleSpecified(Scalebar.Style.DUAL_UNIT_LINE);
+                mListener.onScalebarStyleSpecified(Style.DUAL_UNIT_LINE);
                 break;
             }
           }

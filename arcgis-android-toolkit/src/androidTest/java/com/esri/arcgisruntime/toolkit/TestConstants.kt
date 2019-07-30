@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.esri.arcgisruntime.toolkit;
 
-/**
- * Contains utility methods useful in unit tests.
- *
- * @since 100.2.1
- */
-public final class TestUtil {
+package com.esri.arcgisruntime.toolkit
 
-  public static final String MISSING_ILLEGAL_ARGUMENT_EXCEPTION = "IllegalArgumentException should have been thrown";
+internal const val MISSING_ILLEGAL_ARGUMENT_EXCEPTION = "IllegalArgumentException should have been thrown"
 
-  public static final String MISSING_ILLEGAL_STATE_EXCEPTION = "IllegalStateException should have been thrown";
-
-}
+internal const val MISSING_ILLEGAL_STATE_EXCEPTION = "IllegalStateException should have been thrown"

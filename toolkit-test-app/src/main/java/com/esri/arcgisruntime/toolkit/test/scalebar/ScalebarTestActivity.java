@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
@@ -32,6 +32,7 @@ import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
+import com.esri.arcgisruntime.toolkit.scalebar.style.Style;
 import com.esri.arcgisruntime.toolkit.test.NumberDialogFragment;
 import com.esri.arcgisruntime.toolkit.test.R;
 
@@ -51,6 +52,8 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
 
   private ArcGISMap mMap;
 
+  private boolean mIsAllStyles;
+
   private Scalebar mScalebar;
 
   private int mMenuItemId;
@@ -63,7 +66,7 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
     mMap = new ArcGISMap(Basemap.createStreetsVector());
 
     // Set the content view, find the MapView within it and set the map created above on the MapView
-    changeContentView(R.layout.scalebar_regular, R.string.scalebar_message_regular);
+    changeContentView(R.layout.scalebar_regular);
 
     // Setting the map on the MapView causes the map to be loaded; set a DoneLoading listener
     mMap.addDoneLoadingListener(new Runnable() {
@@ -107,9 +110,10 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the scalebar_options menu; this adds items to the action bar
+    // Inflate the scalebar_options menu; this adds items to the action bar if the current layout is not the layout that
+    // shows all styles of Scalebar
     getMenuInflater().inflate(R.menu.scalebar_options, menu);
-    return true;
+    return !mIsAllStyles;
   }
 
   @Override
@@ -139,11 +143,8 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
           return true;
         case R.id.action_text_size:
           NumberDialogFragment.newInstance(
-              "Text Size in DP", mScalebar.getTextSize()).show(getSupportFragmentManager(), "NumberDialog");
-          return true;
-        case R.id.action_bar_height:
-          NumberDialogFragment.newInstance(
-              "Bar Height in DP", mScalebar.getBarHeight()).show(getSupportFragmentManager(), "NumberDialog");
+              "Text Size in SP", (int) (mScalebar.getTextSize() / getResources().getDisplayMetrics().scaledDensity))
+              .show(getSupportFragmentManager(), "NumberDialog");
           return true;
         case R.id.action_add_insets:
           addInsetsToMapView();
@@ -164,7 +165,7 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   // The following methods are callbacks from the dialog fragments that are invoked above
 
   @Override
-  public void onScalebarStyleSpecified(Scalebar.Style style) {
+  public void onScalebarStyleSpecified(Style style) {
     mScalebar.setStyle(style);
   }
 
@@ -211,10 +212,8 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
   public void onNumberSpecified(int number) {
     switch (mMenuItemId) {
       case R.id.action_text_size:
-        mScalebar.setTextSize(number);
-        break;
-      case R.id.action_bar_height:
-        mScalebar.setBarHeight(number);
+        mScalebar.setTextSize(
+            (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, number, getResources().getDisplayMetrics()));
         break;
     }
   }
@@ -229,15 +228,10 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
    * Changes the activity content view, finds the MapView in the new content view and binds adds/binds a scalebar to it.
    *
    * @param layoutId        resource ID of the layout to set as the content view
-   * @param messageStringId resource ID of a string to display in the 'message' field
    */
-  private void changeContentView(int layoutId, int messageStringId) {
+  private void changeContentView(int layoutId) {
     // Set the content view
     setContentView(layoutId);
-
-    // Display the given string in the 'message' field
-    TextView message = findViewById(R.id.message);
-    message.setText(messageStringId);
 
     // If we already have a MapView, tell it to release resources
     if (mMapView != null) {
@@ -249,33 +243,45 @@ public final class ScalebarTestActivity extends AppCompatActivity implements Sca
     mMapView.setMap(mMap);
 
     // Find the buttons used to select different layouts and set listeners on them
-    Button button = findViewById(R.id.regular_layout_button);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        // In the 'regular' layout a new Scalebar is added to the MapView (Workflow 1)
-        changeContentView(R.layout.scalebar_regular, R.string.scalebar_message_regular);
-        mScalebar = new Scalebar(mMapView.getContext());
-        mScalebar.addToMapView(mMapView);
-      }
+    findViewById(R.id.regular_layout_button).setOnClickListener(view -> {
+      // In the 'regular' layout a new Scalebar is added to the MapView (Workflow 1)
+      changeContentView(R.layout.scalebar_regular);
+      mIsAllStyles = false;
+      mScalebar = new Scalebar(mMapView.getContext());
+      mScalebar.addToMapView(mMapView);
     });
-    button = findViewById(R.id.custom1_layout_button);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        // In Custom Layout 1 the Scalebar is overlayed on top of the MapView and bound to it using Workflow 2
-        changeContentView(R.layout.scalebar_custom1, R.string.scalebar_message_custom1);
-        mScalebar = findViewById(R.id.scalebar);
-        mScalebar.bindTo(mMapView);
-      }
+    findViewById(R.id.custom1_layout_button).setOnClickListener(view -> {
+      // In Custom Layout 1 the Scalebar is overlayed on top of the MapView and bound to it using Workflow 2
+      changeContentView(R.layout.scalebar_custom1);
+      mIsAllStyles = false;
+      mScalebar = findViewById(R.id.scalebar);
+      mScalebar.bindTo(mMapView);
     });
-    button = findViewById(R.id.custom2_layout_button);
-    button.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        // In Custom Layout 2 the Scalebar is displayed separate from the MapView and bound to it using Workflow 2
-        changeContentView(R.layout.scalebar_custom2, R.string.scalebar_message_custom2);
-        mScalebar = findViewById(R.id.scalebar);
-        mScalebar.bindTo(mMapView);
-      }
+    findViewById(R.id.custom2_layout_button).setOnClickListener(view -> {
+      // In Custom Layout 2 the Scalebar is displayed separate from the MapView and bound to it using Workflow 2
+      changeContentView(R.layout.scalebar_custom2);
+      mIsAllStyles = false;
+      mScalebar = findViewById(R.id.scalebar);
+      mScalebar.bindTo(mMapView);
     });
+    findViewById(R.id.all_styles_layout_button).setOnClickListener(v -> {
+      // In All Styles Layout all the Styles of Scalebar are displayed over the MapView and bound to it using Workflow 2
+      changeContentView(R.layout.scalebar_all_styles);
+      mIsAllStyles = true;
+
+      Scalebar scalebarBarStyle = findViewById(R.id.scalebar_bar_style);
+      Scalebar scalebarAlternatingBarStyle = findViewById(R.id.scalebar_alternating_bar_style);
+      Scalebar scalebarLineStyle = findViewById(R.id.scalebar_line_style);
+      Scalebar scalebarGraduatedLineStyle = findViewById(R.id.scalebar_graduated_line_style);
+      Scalebar scalebarDualUnitLineStyle = findViewById(R.id.scalebar_dual_unit_line_style);
+
+      scalebarBarStyle.bindTo(mMapView);
+      scalebarAlternatingBarStyle.bindTo(mMapView);
+      scalebarLineStyle.bindTo(mMapView);
+      scalebarGraduatedLineStyle.bindTo(mMapView);
+      scalebarDualUnitLineStyle.bindTo(mMapView);
+    });
+    supportInvalidateOptionsMenu();
   }
 
   /**

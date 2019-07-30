@@ -1,0 +1,130 @@
+<!--
+  ~ Copyright 2019 Esri
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity">
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="6dp"
+        android:text="@string/scalebar_message_all_styles"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/mapview_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/land_scalebar_layout_controls"
+        app:layout_constraintStart_toEndOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.esri.arcgisruntime.mapping.view.MapView
+            android:id="@+id/mapview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+            android:id="@+id/scalebar_bar_style"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/scalebar_alternating_bar_style"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mapview"
+            app:style="bar" />
+
+        <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+            android:id="@+id/scalebar_alternating_bar_style"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/scalebar_line_style"
+            app:layout_constraintEnd_toEndOf="@id/scalebar_bar_style"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/scalebar_bar_style"
+            app:layout_constraintTop_toBottomOf="@+id/scalebar_bar_style"
+            app:style="alternatingBar" />
+
+        <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+            android:id="@+id/scalebar_line_style"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/scalebar_graduated_line_style"
+            app:layout_constraintEnd_toEndOf="@id/scalebar_alternating_bar_style"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/scalebar_alternating_bar_style"
+            app:layout_constraintTop_toBottomOf="@+id/scalebar_alternating_bar_style"
+            app:style="line" />
+
+        <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+            android:id="@+id/scalebar_graduated_line_style"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/scalebar_dual_unit_line_style"
+            app:layout_constraintEnd_toEndOf="@id/scalebar_line_style"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/scalebar_line_style"
+            app:layout_constraintTop_toBottomOf="@+id/scalebar_line_style"
+            app:style="graduatedLine" />
+
+        <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+            android:id="@+id/scalebar_dual_unit_line_style"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/mapview"
+            app:layout_constraintEnd_toEndOf="@id/scalebar_graduated_line_style"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/scalebar_graduated_line_style"
+            app:layout_constraintTop_toBottomOf="@+id/scalebar_graduated_line_style"
+            app:style="dualUnitLine"
+            app:textSize="12sp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <include
+        android:id="@+id/land_scalebar_layout_controls"
+        layout="@layout/scalebar_layout_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

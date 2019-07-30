@@ -1,13 +1,27 @@
+<!--
+  ~ Copyright 2019 Esri
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <resources>
     <string name="app_name">Toolkit Test App</string>
 
     <!-- Scalebar -->
-    <string name="scalebar_title_regular">Regular</string>
-    <string name="scalebar_title_custom1">Custom 1</string>
-    <string name="scalebar_title_custom2">Custom 2</string>
     <string name="scalebar_message_regular">Regular Layout\nScalebar added to MapView</string>
-    <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlayed on MapView</string>
+    <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlaid on MapView</string>
     <string name="scalebar_message_custom2">Custom Layout 2\nScalebar outside MapView</string>
+    <string name="scalebar_message_all_styles">All Styles Layout\nAll Scalebar styles overlaid on MapView</string>
     <string name="compass_message_regular">Regular Layout\nCompass added to GeoView</string>
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
