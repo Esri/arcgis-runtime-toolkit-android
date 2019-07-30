@@ -16,6 +16,7 @@
 
 package com.esri.arcgisruntime.toolkit.test.sceneview
 
+import android.graphics.Point
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
@@ -23,8 +24,8 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.widget.Toast
-import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.layers.Layer
 import com.esri.arcgisruntime.layers.PointCloudLayer
 import com.esri.arcgisruntime.loadable.LoadStatus
@@ -33,10 +34,10 @@ import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
 import com.esri.arcgisruntime.mapping.NavigationConstraint
 import com.esri.arcgisruntime.mapping.Surface
 import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
-import com.google.ar.core.Anchor
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
 import java.net.URI
 
@@ -45,19 +46,28 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
     private var _scene: ArcGISScene? = null
     private var pointCloudLayer: Layer? = null
 
-    private val onPointResolvedListener = object : ArcGISArView.OnPointResolvedListener {
-        override fun onPointResolved(point: Point, tapAnchor: Anchor) {
-            if (_scene != null && pointCloudLayer != null && !_scene!!.operationalLayers.contains(pointCloudLayer)) {
-                _scene!!.operationalLayers.add(pointCloudLayer)
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_arcgissceneview_tabletop)
         arcGisArView.registerLifecycle(lifecycle)
         arcGisArView.addOnStateChangedListener(this)
+
+        arcGisArView.sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
+            override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
+                motionEvent?.let {
+                    if (_scene != null && pointCloudLayer != null && !_scene!!.operationalLayers.contains(
+                            pointCloudLayer
+                        )
+                    ) {
+                        _scene!!.operationalLayers.add(pointCloudLayer)
+                    }
+                    with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
+                        arcGisArView.setInitialTransformationMatrix(this)
+                    }
+                }
+                return false
+            }
+        })
     }
 
     override fun onStateChanged(state: ArcGISArView.ArcGISArViewState) {
@@ -71,7 +81,6 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
             ArcGISArView.ArcGISArViewState.INITIALIZED -> {
                 arcGisArView.originCamera = Camera(50.94334724, 6.96472093, 44.412, 267.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 4000.0
-                arcGisArView.onPointResolvedListener = onPointResolvedListener
 
                 with(arcGisArView.sceneView) {
                     _scene = ArcGISScene()

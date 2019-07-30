@@ -32,21 +32,17 @@ import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
-import android.view.MotionEvent
 import android.widget.FrameLayout
-import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DeviceOrientation
-import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.SceneView
 import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
-import com.google.ar.core.Anchor
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
@@ -70,8 +66,6 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  */
 final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
-    var onPointResolvedListener: OnPointResolvedListener? = null
-
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
      *
@@ -93,7 +87,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    private var initialTransformationMatrix = TransformationMatrix.createIdentityMatrix()
+    var initialTransformationMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -173,7 +167,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the origin camera of the [TransformationMatrixCameraController].
+     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
      *
      * @since 100.6.0
      */
@@ -202,7 +196,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
+    private var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
         private set(value) {
             field = value
             onStateChangedListeners.forEach {
@@ -261,13 +255,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
         }
         orientationEventListener.enable()
-
-        sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(sceneView) {
-            override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
-                onSingleTap(motionEvent)
-                return super.onSingleTapConfirmed(motionEvent)
-            }
-        })
     }
 
     /**
@@ -420,8 +407,9 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                         it.second[1],
                         it.second[2]
                     )
-                }.let {arCoreTransMatrix ->
-                    cameraController.transformationMatrix = initialTransformationMatrix.addTransformation(arCoreTransMatrix)
+                }.let { arCoreTransMatrix ->
+                    cameraController.transformationMatrix =
+                        initialTransformationMatrix.addTransformation(arCoreTransMatrix)
                 }
             }
             arCamera.imageIntrinsics.let {
@@ -441,23 +429,39 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         }
     }
 
-    private fun onSingleTap(motionEvent: MotionEvent?) {
-        placeOriginOnRealWorldSurface(motionEvent)
+    /**
+     * Sets [initialTransformationMatrix] by using the provided [screenPoint] to perform a ray cast from the user's device
+     * in the direction of the given location to determine if an intersection with scene geometry has occurred. If no
+     * intersection has occurred, the [initialTransformationMatrix] is not set.
+     *
+     * @since 100.6.0
+     */
+    fun setInitialTransformationMatrix(screenPoint: android.graphics.Point) {
+        hitTest(screenPoint)?.let {
+            initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+        }
     }
 
-    private fun hitTest(motionEvent: MotionEvent?): TransformationMatrix {
+    /**
+     * If the [TrackingState] of the camera is equal to [TrackingState.TRACKING] this function performs a ray cast from
+     * the user's device in the direction of the given location in the camera view. If any intersections are returned the
+     * first is used to create a new [TransformationMatrix] by applying the quaternion and translation factors.
+     *
+     * @since 100.6.0
+     */
+    private fun hitTest(point: android.graphics.Point): TransformationMatrix? {
         val frame = arSceneView.arFrame
 
         if (frame != null) {
-            if (motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
-                frame.hitTest(motionEvent).getOrNull(0).let { hitResult ->
+            if (frame.camera.trackingState == TrackingState.TRACKING) {
+                frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
                         // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
                         Pair(
                             theHitResult.hitPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
                             theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray()
                         ).let {
-                            TransformationMatrix.createWithQuaternionAndTranslation(
+                            return TransformationMatrix.createWithQuaternionAndTranslation(
                                 it.first[0],
                                 it.first[1],
                                 it.first[2],
@@ -466,24 +470,12 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                                 it.second[1],
                                 it.second[2]
                             )
-                        }.let {
-                            onPointResolvedListener?.onPointResolved(Camera(it).location, theHitResult.createAnchor())
-                            return it
                         }
                     }
                 }
             }
         }
-        return TransformationMatrix.createIdentityMatrix()
-    }
-
-    /**
-     * The function invoked for ARScreenToLocation.
-     *
-     * @since 100.6.0
-     */
-    private fun placeOriginOnRealWorldSurface(motionEvent: MotionEvent?) {
-        initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(hitTest(motionEvent))
+        return null
     }
 
     /**
@@ -579,9 +571,5 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
          * @since 100.6.0
          */
         INITIALIZATION_FAILURE
-    }
-
-    interface OnPointResolvedListener {
-        fun onPointResolved(point: Point, tapAnchor: Anchor)
     }
 }

@@ -58,14 +58,14 @@ class ArcGISSceneViewCollectorActivity : AppCompatActivity(), ArcGISArView.OnSta
     private var lastTapPoint: Point? = null
     private var lastTapAnchor: Anchor? = null
 
-    private val onPointResolvedListener = object : ArcGISArView.OnPointResolvedListener {
+/*    private val onPointResolvedListener = object : ArcGISArView.OnPointResolvedListener {
         override fun onPointResolved(point: Point, tapAnchor: Anchor) {
             lastTapPoint = point
             lastTapAnchor = tapAnchor
             Log.d(logTag, "Lat=${point.y} Lon=${point.x}")
             EditTextDialogFragment.newInstance("Feature Name", "Save", "Cancel").show(supportFragmentManager, "dialog")
         }
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,7 +144,7 @@ class ArcGISSceneViewCollectorActivity : AppCompatActivity(), ArcGISArView.OnSta
             }
             ArcGISArView.ArcGISArViewState.INITIALIZED -> {
                 arcGisArView.originCamera = Camera(55.953251, -3.188267, 1.0, 0.0, 90.0, 0.0)
-                arcGisArView.onPointResolvedListener = onPointResolvedListener
+                // arcGisArView.onPointResolvedListener = onPointResolvedListener
             }
             ArcGISArView.ArcGISArViewState.INITIALIZATION_FAILURE -> {
                 with(getString(R.string.arcgisarview_error, arcGisArView.error?.message)) {
