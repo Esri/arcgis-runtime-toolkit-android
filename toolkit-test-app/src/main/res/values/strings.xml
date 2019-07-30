@@ -22,9 +22,13 @@
     <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlaid on MapView</string>
     <string name="scalebar_message_custom2">Custom Layout 2\nScalebar outside MapView</string>
     <string name="scalebar_message_all_styles">All Styles Layout\nAll Scalebar styles overlaid on MapView</string>
+
+    <!-- Compass -->
     <string name="compass_message_regular">Regular Layout\nCompass added to GeoView</string>
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
+
+    <!-- ArcGISSceneView -->
     <string name="arcgis_sceneview_activity_label">ArcGISSceneView</string>
     <string name="arcgis_sceneview_collector_activity_label">ArcGISSceneView Collector</string>
     <string name="arcgis_sceneview_tabletop_activity_label">ArcGISSceneView Table Top</string>
