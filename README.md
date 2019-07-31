@@ -6,6 +6,10 @@ Please read the toolkit components usage guide on our [wiki](../../wiki)
 - [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 - [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
 
+<!-- 
+
+Hiding instructions as AAR is not yet published to Bintray and will not be published to Bintray when 100.6.0 is released.
+
 ## Instructions
 Add the following to your buildscript
 
@@ -20,6 +24,7 @@ dependencies {
     implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.5.0"
 }
 ```
+-->
 
 ## Build the Toolkit AAR
 
