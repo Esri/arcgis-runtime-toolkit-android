@@ -33,6 +33,8 @@ import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
+import com.esri.arcgisruntime.geometry.Point
+import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
@@ -50,11 +52,17 @@ import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
+import com.google.ar.sceneform.math.Quaternion
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 private const val CAMERA_PERMISSION_CODE = 0
+private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
+private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
@@ -64,7 +72,7 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  *
  * @since 100.6.0
  */
-final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
+class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
@@ -88,6 +96,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private val initialTransformationMatrix = TransformationMatrix.createIdentityMatrix()
+
+    private val compensationQuaternion: Quaternion =
+        Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
+
+    private var initialLocation: Point? = null
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -163,11 +176,11 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    val arSceneView: ArSceneView get() = _arSceneView
+    val arSceneView: ArSceneView? get() = _arSceneView
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the origin camera of the [TransformationMatrixCameraController].
+     * sets the origin camera of the [cameraController].
      *
      * @since 100.6.0
      */
@@ -175,6 +188,57 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         set(value) {
             field = value
             cameraController.originCamera = value
+            if (isTracking) {
+                resetTracking()
+            }
+        }
+
+    private val locationChangedListener: LocationDataSource.LocationChangedListener =
+        LocationDataSource.LocationChangedListener {
+            it.location.position?.let { location ->
+                if (initialLocation == null) {
+                    initialLocation = location
+                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
+                } else if (!isUsingARKit) {
+                    val camera = sceneView.currentViewpointCamera.moveTo(location)
+                    sceneView.setViewpointCamera(camera)
+                }
+            }
+        }
+
+    private val headingChangedListener: LocationDataSource.HeadingChangedListener =
+        LocationDataSource.HeadingChangedListener {
+            if (!isUsingARKit) {
+                // Not using ARKit, so update heading on the camera directly; otherwise, let ARKit handle heading changes.
+                val currentCamera = sceneView.currentViewpointCamera
+                val camera = currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
+                sceneView.setViewpointCamera(camera)
+            }
+        }
+
+    /**
+     * The data source used to get device location.  Used either in conjunction with ARKit data or when ARKit is not
+     * present or not being used.
+     *
+     * @since 100.6.0
+     */
+    var locationDataSource: LocationDataSource? = null
+        set(value) {
+            if (field != value) {
+                field = value
+                field?.addLocationChangedListener(locationChangedListener)
+                field?.addHeadingChangedListener(headingChangedListener)
+            }
+        }
+
+    var isTracking: Boolean = false
+        private set(value) {
+            field = value
+        }
+
+    var isUsingARKit: Boolean = true
+        private set(value) {
+            field = value
         }
 
     /**
@@ -248,33 +312,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
-        sceneView.isManualRenderingEnabled = true
+        sceneView.isManualRenderingEnabled = isUsingARKit
         sceneView.cameraController = cameraController
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
         }
         orientationEventListener.enable()
-    }
-
-    /**
-     * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
-     * lifecycle of this View is maintained by the LifecycleOwner.
-     *
-     * @since 100.6.0
-     */
-    fun startTracking() {
-        beginSession()
-    }
-
-    /**
-     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
-     * lifecycle of this View is maintained by the LifecycleOwner.
-     *
-     * @since 100.6.0
-     */
-    fun stopTracking() {
-        arSceneView.pause()
     }
 
     /**
@@ -311,10 +355,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        beginSession()
+        startTracking()
     }
 
     /**
+     * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
+     * lifecycle of this View is maintained by the LifecycleOwner.
+     *
      * Checks the following prerequisites required for the use of ARCore:
      * - Checks for permissions required to use ARCore.
      * - Checks for an installation of ARCore.
@@ -330,28 +377,40 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    private fun beginSession() {
+    fun startTracking() {
         initializationStatus = ArcGISArViewState.INITIALIZING
 
         try {
-            (context as? Activity)?.let {
+            (context as? Activity)?.let { activity ->
                 // ARCore requires camera permissions to operate. If we did not yet obtain runtime
                 // permission on Android M and above, now is a good time to ask the user for it.
                 // when the permission is requested and the user responds to the request from the OS this is executed again
                 // during onResume()
                 if (!hasPermission(CAMERA_PERMISSION)) {
                     requestPermission(
-                        it,
+                        activity,
                         CAMERA_PERMISSION,
                         CAMERA_PERMISSION_CODE
                     )
                     return
                 }
 
+                // Request location permission if user has provided a LocationDataSource
+                locationDataSource?.let {
+                    if (!hasPermission(LOCATION_PERMISSION)) {
+                        requestPermission(
+                            activity,
+                            LOCATION_PERMISSION,
+                            LOCATION_PERMISSION_CODE
+                        )
+                        return@startTracking
+                    }
+                }
+
                 // when the installation is requested and the user responds to the request from the OS this is executed again
                 // during onResume()
                 if (ArCoreApk.getInstance().requestInstall(
-                        it,
+                        activity,
                         !arCoreInstallRequested
                     ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
                 ) {
@@ -360,28 +419,56 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
                 }
             }
 
-            // Create the session.
-            Session(context).apply {
-                val config = Config(this)
-                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-                config.focusMode = Config.FocusMode.AUTO
-                this.configure(config)
-                arSceneView.setupSession(this)
+            if (isUsingARKit) {
+                // Create the session.
+                Session(context).apply {
+                    val config = Config(this)
+                    config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                    config.focusMode = Config.FocusMode.AUTO
+                    this.configure(config)
+                    arSceneView?.setupSession(this)
+                }
+                arSceneView?.scene?.addOnUpdateListener(this)
             }
-
-            arSceneView.scene.addOnUpdateListener(this)
         } catch (e: Exception) {
             error = e
         }
+
+        locationDataSource?.startAsync()
 
         if (error != null) {
             Log.e(logTag, error!!.message)
             initializationStatus = ArcGISArViewState.INITIALIZATION_FAILURE
         } else {
-            arSceneView.resume()
+            arSceneView?.resume()
             sceneView.resume()
+            isUsingARKit = true
+            isTracking = true
             initializationStatus = ArcGISArViewState.INITIALIZED
         }
+    }
+
+    /**
+     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
+     * lifecycle of this View is maintained by the LifecycleOwner.
+     *
+     * @since 100.6.0
+     */
+    fun stopTracking() {
+        arSceneView?.pause()
+        sceneView.pause()
+        locationDataSource?.stop()
+        isTracking = false
+    }
+
+    /**
+     * Resets the [initialLocation] and starts tracking.
+     *
+     * @since 100.6.0
+     */
+    fun resetTracking() {
+        initialLocation = null
+        startTracking()
     }
 
     /**
@@ -391,24 +478,34 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     override fun onUpdate(frameTime: FrameTime?) {
-        arSceneView.arFrame?.camera?.let { arCamera ->
-            if (arCamera.trackingState == TrackingState.TRACKING) {
+        arSceneView?.arFrame?.camera?.let { arCamera ->
+            isTracking = arCamera.trackingState == TrackingState.TRACKING
+            if (isTracking) {
+                val finalQuaternion = Quaternion.multiply(
+                    compensationQuaternion, Quaternion(
+                        arCamera.displayOrientedPose.rotationQuaternion[0],
+                        arCamera.displayOrientedPose.rotationQuaternion[1],
+                        arCamera.displayOrientedPose.rotationQuaternion[2],
+                        arCamera.displayOrientedPose.rotationQuaternion[3]
+                    )
+                )
                 // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
                 Pair(
-                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    finalQuaternion,
                     arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
                 ).let {
                     TransformationMatrix.createWithQuaternionAndTranslation(
-                        it.first[0],
-                        it.first[1],
-                        it.first[2],
-                        it.first[3],
+                        it.first.x.toDouble(),
+                        it.first.y.toDouble(),
+                        it.first.z.toDouble(),
+                        it.first.w.toDouble(),
                         it.second[0],
                         it.second[1],
                         it.second[2]
                     )
-                }.let {
-                    cameraController.transformationMatrix = it
+                }.let { arCoreTransMatrix ->
+                    cameraController.transformationMatrix =
+                        initialTransformationMatrix.addTransformation(arCoreTransMatrix)
                 }
             }
             arCamera.imageIntrinsics.let {
@@ -434,8 +531,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     override fun onPause(owner: LifecycleOwner) {
-        arSceneView.pause()
-        sceneView.pause()
+        stopTracking()
         super.onPause(owner)
     }
 
@@ -447,7 +543,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     override fun onDestroy(owner: LifecycleOwner) {
-        arSceneView.destroy()
+        arSceneView?.destroy()
         // disposing of SceneView causes the render surface, which is shared with ArSceneView, to become invalid and
         // rendering of the camera fails.
         // TODO https://devtopia.esri.com/runtime/java/issues/1170

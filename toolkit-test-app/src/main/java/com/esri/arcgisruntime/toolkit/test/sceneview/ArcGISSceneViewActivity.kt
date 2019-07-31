@@ -16,12 +16,14 @@
 
 package com.esri.arcgisruntime.toolkit.test.sceneview
 
+import android.location.LocationManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.esri.arcgisruntime.location.AndroidLocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.view.Camera
@@ -47,6 +49,7 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
 
         arcGisArView.registerLifecycle(lifecycle)
         arcGisArView.addOnStateChangedListener(this)
+        arcGisArView.locationDataSource = AndroidLocationDataSource(this, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
     }
 
     override fun onStateChanged(state: ArcGISArView.ArcGISArViewState) {
@@ -58,8 +61,8 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
                 // no-op
             }
             ArcGISArView.ArcGISArViewState.INITIALIZED -> {
-                arcGisArView.originCamera = Camera(20.0, 30.0, 25000000.0, 0.0, 0.0, 0.0)
-                arcGisArView.translationTransformationFactor = 25000000.0
+                /*arcGisArView.originCamera = Camera(20.0, 30.0, 25000000.0, 0.0, 0.0, 0.0)
+                arcGisArView.translationTransformationFactor = 25000000.0*/
             }
             ArcGISArView.ArcGISArViewState.INITIALIZATION_FAILURE -> {
                 with(getString(R.string.arcgisarview_error, arcGisArView.error?.message)) {
