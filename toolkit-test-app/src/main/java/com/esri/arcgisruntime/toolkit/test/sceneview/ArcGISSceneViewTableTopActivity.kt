@@ -55,14 +55,21 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
         arcGisArView.sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
-                    if (_scene != null && pointCloudLayer != null && !_scene!!.operationalLayers.contains(
-                            pointCloudLayer
-                        )
-                    ) {
-                        _scene!!.operationalLayers.add(pointCloudLayer)
-                    }
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
-                        arcGisArView.setInitialTransformationMatrix(this)
+                        if (arcGisArView.setInitialTransformationMatrix(this)) {
+                            if (_scene != null && pointCloudLayer != null && !_scene!!.operationalLayers.contains(
+                                    pointCloudLayer
+                                )
+                            ) {
+                                _scene!!.operationalLayers.add(pointCloudLayer)
+                            }
+
+                            Toast.makeText(
+                                this@ArcGISSceneViewTableTopActivity,
+                                R.string.arcgis_sceneview_tabletop_initial_tmm_set,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
                 return false

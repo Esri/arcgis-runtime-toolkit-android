@@ -434,12 +434,15 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * in the direction of the given location to determine if an intersection with scene geometry has occurred. If no
      * intersection has occurred, the [initialTransformationMatrix] is not set.
      *
+     * @return true if a new initial TransformationMatrix was set, false otherwise
      * @since 100.6.0
      */
-    fun setInitialTransformationMatrix(screenPoint: android.graphics.Point) {
+    fun setInitialTransformationMatrix(screenPoint: android.graphics.Point): Boolean {
         hitTest(screenPoint)?.let {
             initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+            return true
         }
+        return false
     }
 
     /**

@@ -44,5 +44,6 @@
     <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer">Loading Point Cloud Layer..</string>
     <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_complete">Loading Point Cloud Layer Complete</string>
     <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_failed">Loading Point Cloud Layer Failed: %s</string>
+    <string name="arcgis_sceneview_tabletop_initial_tmm_set">Initial TransformationMatrix set</string>
 
 </resources>
