@@ -62,12 +62,6 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
                             ) {
                                 _scene!!.operationalLayers.add(pointCloudLayer)
                             }
-
-                            Toast.makeText(
-                                this@ArcGISSceneViewTableTopActivity,
-                                R.string.arcgis_sceneview_tabletop_initial_tmm_set,
-                                Toast.LENGTH_LONG
-                            ).show()
                         }
                     }
                 }
