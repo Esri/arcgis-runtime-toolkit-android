@@ -16,35 +16,65 @@
 
 package com.esri.arcgisruntime.toolkit.test.ar
 
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.esri.arcgisruntime.layers.PointCloudLayer
 import com.esri.arcgisruntime.location.AndroidLocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Surface
+import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.portal.Portal
+import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 
 class ArcGISSceneViewActivity : AppCompatActivity() {
 
+    private val streetsScene: ArcGISScene by lazy {
+        ArcGISScene(Basemap.createStreets()).apply {
+            addElevationSource(this)
+
+            arcGisArView.locationDataSource =
+                AndroidLocationDataSource(this@ArcGISSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+        }
+    }
+
+    private val pointCloudScene: ArcGISScene by lazy {
+        ArcGISScene().apply {
+            val portal = Portal("http://www.arcgis.com")
+            val portalItem = PortalItem(portal, "fc3f4a4919394808830cd11df4631a54")
+            val layer = PointCloudLayer(portalItem)
+            addElevationSource(this)
+            this.operationalLayers.add(layer)
+
+            layer.addDoneLoadingListener {
+                layer.loadError?.let {
+                    return@addDoneLoadingListener
+                }
+
+                layer.fullExtent?.let {
+                    val center = it.center
+
+                    val camera = Camera(center, 0.0, 0.0, 0.0)
+                    arcGisArView.originCamera = camera
+                    arcGisArView.translationTransformationFactor = 2000.0
+                }
+            }
+
+            arcGisArView.locationDataSource = null
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ar_arcgissceneview)
         arcGisArView.registerLifecycle(lifecycle)
-        arcGisArView.sceneView.scene = streetsScene
+        arcGisArView.sceneView.scene = pointCloudScene
     }
-
-    private val streetsScene: ArcGISScene
-        get() {
-            val scene = ArcGISScene(Basemap.createStreets())
-            addElevationSource(scene)
-
-            arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
-            return scene
-        }
 }
 
 private fun addElevationSource(scene: ArcGISScene) {
@@ -54,5 +84,7 @@ private fun addElevationSource(scene: ArcGISScene) {
     surface.elevationSources.add(elevationSource)
     surface.name = "baseSurface"
     surface.isEnabled = true
+    surface.backgroundGrid.color = Color.TRANSPARENT
+    surface.backgroundGrid.gridLineColor = Color.TRANSPARENT
     scene.baseSurface = surface
 }
