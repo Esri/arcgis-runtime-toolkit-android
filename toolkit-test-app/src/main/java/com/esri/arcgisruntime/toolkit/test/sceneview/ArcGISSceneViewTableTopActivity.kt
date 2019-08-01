@@ -39,7 +39,6 @@ import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_arcgissceneview.arcGisArView
-import java.net.URI
 
 class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStateChangedListener {
 
@@ -99,26 +98,25 @@ class ArcGISSceneViewTableTopActivity : AppCompatActivity(), ArcGISArView.OnStat
                     surface.navigationConstraint = NavigationConstraint.NONE
                     surface.opacity = 0f
                     scene.baseSurface = surface
-                    val encodedString =
-                        URI.create("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0")
-                    pointCloudLayer = PointCloudLayer(encodedString.toASCIIString()).also {
-                        it.addLoadStatusChangedListener { loadStatusChangedEvent ->
-                            if (loadStatusChangedEvent.newLoadStatus == LoadStatus.LOADED) {
-                                showSnackbar(R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_complete)
-                            } else if (loadStatusChangedEvent.newLoadStatus == LoadStatus.FAILED_TO_LOAD) {
-                                Toast.makeText(
-                                    this@ArcGISSceneViewTableTopActivity,
-                                    getString(
-                                        R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_failed,
-                                        "${it.loadError.message} - ${it.loadError.cause}"
-                                    ),
-                                    Toast.LENGTH_LONG
-                                ).show()
+                    pointCloudLayer =
+                        PointCloudLayer("https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/3D_Punktwolke_Dome_Köln/SceneServer/layers/0").also {
+                            it.addLoadStatusChangedListener { loadStatusChangedEvent ->
+                                if (loadStatusChangedEvent.newLoadStatus == LoadStatus.LOADED) {
+                                    showSnackbar(R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_complete)
+                                } else if (loadStatusChangedEvent.newLoadStatus == LoadStatus.FAILED_TO_LOAD) {
+                                    Toast.makeText(
+                                        this@ArcGISSceneViewTableTopActivity,
+                                        getString(
+                                            R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_failed,
+                                            "${it.loadError.message} - ${it.loadError.cause}"
+                                        ),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                             }
+                            it.loadAsync()
+                            showSnackbar(R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer)
                         }
-                        it.loadAsync()
-                        showSnackbar(R.string.arcgis_sceneview_tabletop_activity_loading_point_cloud_layer)
-                    }
                 }
             }
             ArcGISArView.ArcGISArViewState.INITIALIZATION_FAILURE -> {
