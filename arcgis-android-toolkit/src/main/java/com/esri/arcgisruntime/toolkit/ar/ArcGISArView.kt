@@ -196,7 +196,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    private var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
+    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
         private set(value) {
             field = value
             onStateChangedListeners.forEach {
