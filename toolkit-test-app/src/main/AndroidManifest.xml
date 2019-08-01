@@ -46,26 +46,20 @@
         <activity
             android:name="com.esri.arcgisruntime.toolkit.test.compass.CompassTestActivity"
             android:label="Compass Test"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme"/>
 
-                <category android:name="android.intent.category.TEST" />
-            </intent-filter>
-        </activity>
         <activity
             android:name="com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity"
             android:label="Scalebar Test"
-            android:theme="@style/AppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.TEST" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme"/>
 
         <activity
             android:name=".sceneview.ArcGISSceneViewActivity"
+            android:label="@string/arcgis_sceneview_activity_label"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".sceneview.ArcGISSceneViewTableTopActivity"
             android:label="@string/arcgis_sceneview_activity_label"
             android:theme="@style/AppTheme" />
 
