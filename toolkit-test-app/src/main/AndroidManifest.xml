@@ -55,12 +55,12 @@
 
         <activity
             android:name=".sceneview.ArcGISSceneViewActivity"
-            android:label="@string/arcgis_sceneview_activity_label"
+            android:label="@string/arcgis_ar_view_activity_label"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".ar.ArcGISArSceneViewActivity"
-            android:label="@string/arcgis_sceneview_activity_label" />
+            android:name=".ar.ArcGISArViewActivity"
+            android:label="@string/arcgis_ar_view_activity_label" />
 
 
     </application>

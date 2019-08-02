@@ -26,7 +26,6 @@ import android.widget.Toast
 import com.esri.arcgisruntime.location.AndroidLocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.Basemap
-import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
@@ -106,7 +105,7 @@ class ArcGISSceneViewActivity : AppCompatActivity(), ArcGISArView.OnStateChanged
         Toast.makeText(
             this,
             getString(
-                R.string.arcgis_sceneview_activity_manual_rendering_enabled,
+                R.string.arcgis_ar_view_activity_manual_rendering_enabled,
                 arcGisArView.sceneView.isManualRenderingEnabled
             ),
             Toast.LENGTH_LONG

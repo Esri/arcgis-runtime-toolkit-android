@@ -21,6 +21,8 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
@@ -41,7 +43,7 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
  *
  * @since 100.6.0
  */
-class ArcGISArSceneViewActivity : AppCompatActivity() {
+class ArcGISArViewActivity : AppCompatActivity() {
 
     /**
      * AR Mode: Full-Scale AR
@@ -54,7 +56,7 @@ class ArcGISArSceneViewActivity : AppCompatActivity() {
             addElevationSource(this)
 
             arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this@ArcGISArSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+                AndroidLocationDataSource(this@ArcGISArViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
         }
     }
 
@@ -224,17 +226,50 @@ class ArcGISArSceneViewActivity : AppCompatActivity() {
             addElevationSource(this)
 
             arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this@ArcGISArSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+                AndroidLocationDataSource(this@ArcGISArViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
             arcGisArView.originCamera = null
             arcGisArView.translationTransformationFactor = 1.0
         }
     }
 
+    private val scenes: Array<SceneInfo> by lazy {
+        arrayOf(
+            SceneInfo(streetsScene, getString(R.string.arcgis_ar_view_scene_streets)),
+            SceneInfo(pointCloudScene, getString(R.string.arcgis_ar_view_scene_point_cloud)),
+            SceneInfo(yosemiteScene, getString(R.string.arcgis_ar_view_scene_yosemite)),
+            SceneInfo(borderScene, getString(R.string.arcgis_ar_view_scene_border)),
+            SceneInfo(emptyScene, getString(R.string.arcgis_ar_view_scene_empty))
+        )
+    }
+
+    private var currentScene: SceneInfo? = null
+        set(value) {
+            field = value
+            arcGisArView.sceneView.scene = null
+            arcGisArView.sceneView.scene = value?.scene
+            title = value?.name
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ar_arcgissceneview)
         arcGisArView.registerLifecycle(lifecycle)
-        arcGisArView.sceneView.scene = emptyScene
+        currentScene = scenes[0]
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        scenes.forEachIndexed { index, sceneInfo ->
+            menu?.add(Menu.NONE, index, Menu.NONE, sceneInfo.name)
+        }
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        item?.itemId?.let {
+            currentScene = scenes[it]
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     /**
@@ -264,3 +299,5 @@ private fun addElevationSource(scene: ArcGISScene) {
     surface.backgroundGrid.gridLineColor = Color.TRANSPARENT
     scene.baseSurface = surface
 }
+
+private data class SceneInfo(val scene: ArcGISScene, val name: String)
