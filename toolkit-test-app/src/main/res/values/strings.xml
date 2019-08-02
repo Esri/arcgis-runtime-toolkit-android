@@ -22,10 +22,16 @@
     <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlaid on MapView</string>
     <string name="scalebar_message_custom2">Custom Layout 2\nScalebar outside MapView</string>
     <string name="scalebar_message_all_styles">All Styles Layout\nAll Scalebar styles overlaid on MapView</string>
+
+    <!-- Compass -->
     <string name="compass_message_regular">Regular Layout\nCompass added to GeoView</string>
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
+
+    <!-- ArcGISSceneView -->
     <string name="arcgis_sceneview_activity_label">ArcGISSceneView</string>
+    <string name="arcgis_sceneview_collector_activity_label">ArcGISSceneView Collector</string>
+    <string name="arcgis_sceneview_tabletop_activity_label">ArcGISSceneView Table Top</string>
     <string name="arcgisarview_error">An error has occurred with ArcGISArView: %s</string>
     <string name="arcgisarview_permission_required">The following permission is required: %s</string>
     <string name="arcgisarview_arcore_install_required">ARCore is required to use ArcGISARView</string>
@@ -33,5 +39,10 @@
     <string name="arcgis_sceneview_activity_stop_tracking">Stop Tracking</string>
     <string name="arcgis_sceneview_activity_toggle_manual_rendering">Toggle Manual Rendering</string>
     <string name="arcgis_sceneview_activity_manual_rendering_enabled">Manual Rendering Enabled: %b</string>
+    <string name="arcgis_sceneview_tabletop_activity_start_tracking">Start Tracking</string>
+    <string name="arcgis_sceneview_tabletop_activity_stop_tracking">Stop Tracking</string>
+    <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer">Loading Point Cloud Layer..</string>
+    <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_complete">Loading Point Cloud Layer Complete</string>
+    <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_failed">Loading Point Cloud Layer Failed: %s</string>
 
 </resources>

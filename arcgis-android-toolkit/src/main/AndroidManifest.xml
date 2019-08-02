@@ -20,7 +20,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!-- setting to false to ensure that we don't enforce this feature on the users of the toolkit. Users can
+    <!-- setting required to false to ensure that we don't enforce this feature on the users of the toolkit. Users can
      override by defining this as required in their own manifest. -->
     <uses-feature
         android:name="android.hardware.camera"

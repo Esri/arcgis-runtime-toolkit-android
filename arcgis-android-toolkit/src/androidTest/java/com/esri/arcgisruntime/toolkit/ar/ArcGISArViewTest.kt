@@ -60,7 +60,6 @@ class ArcGISArViewTest {
                     assertNotNull(it)
                     assertNotNull(it.sceneView)
                     assertNotNull(it.arSceneView)
-                    assertNotNull(it.originCamera)
                 }
             }
             this.finish()
@@ -80,7 +79,6 @@ class ArcGISArViewTest {
                 assertNotNull(it)
                 assertNotNull(it?.sceneView)
                 assertNotNull(it?.arSceneView)
-                assertNotNull(it?.originCamera)
             }
             this.finish()
         }

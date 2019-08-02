@@ -95,7 +95,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    private val initialTransformationMatrix = TransformationMatrix.createIdentityMatrix()
+    var initialTransformationMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
 
     private val compensationQuaternion: Quaternion =
         Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
@@ -180,7 +180,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the origin camera of the [cameraController].
+     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
      *
      * @since 100.6.0
      */
@@ -188,9 +188,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         set(value) {
             field = value
             cameraController.originCamera = value
-            if (isTracking) {
-                resetTracking()
-            }
         }
 
     private val locationChangedListener: LocationDataSource.LocationChangedListener =
@@ -479,21 +476,23 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView?.arFrame?.camera?.let { arCamera ->
-            isTracking = arCamera.trackingState == TrackingState.TRACKING
+            isTracking = (arCamera.trackingState == TrackingState.TRACKING).or(locationDataSource != null)
             if (isTracking) {
-                val finalQuaternion = Quaternion.multiply(
-                    compensationQuaternion, Quaternion(
+                Quaternion.multiply(
+                    compensationQuaternion,
+                    Quaternion(
                         arCamera.displayOrientedPose.rotationQuaternion[0],
                         arCamera.displayOrientedPose.rotationQuaternion[1],
                         arCamera.displayOrientedPose.rotationQuaternion[2],
                         arCamera.displayOrientedPose.rotationQuaternion[3]
                     )
-                )
-                // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                Pair(
-                    finalQuaternion,
-                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
-                ).let {
+                ).let { compensatedQuaternion ->
+                    // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                    Pair(
+                        compensatedQuaternion,
+                        arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                    )
+                }.let {
                     TransformationMatrix.createWithQuaternionAndTranslation(
                         it.first.x.toDouble(),
                         it.first.y.toDouble(),
@@ -507,22 +506,73 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                     cameraController.transformationMatrix =
                         initialTransformationMatrix.addTransformation(arCoreTransMatrix)
                 }
-            }
-            arCamera.imageIntrinsics.let {
-                sceneView.setFieldOfViewFromLensIntrinsics(
-                    it.focalLength[0],
-                    it.focalLength[1],
-                    it.principalPoint[0],
-                    it.principalPoint[1],
-                    it.imageDimensions[0].toFloat(),
-                    it.imageDimensions[1].toFloat(),
-                    deviceOrientation
-                )
-            }
-            if (sceneView.isManualRenderingEnabled) {
-                sceneView.renderFrame()
+
+                arCamera.imageIntrinsics.let {
+                    sceneView.setFieldOfViewFromLensIntrinsics(
+                        it.focalLength[0],
+                        it.focalLength[1],
+                        it.principalPoint[0],
+                        it.principalPoint[1],
+                        it.imageDimensions[0].toFloat(),
+                        it.imageDimensions[1].toFloat(),
+                        deviceOrientation
+                    )
+                }
+                if (sceneView.isManualRenderingEnabled) {
+                    sceneView.renderFrame()
+                }
             }
         }
+    }
+
+    /**
+     * Sets [initialTransformationMatrix] by using the provided [screenPoint] to perform a ray cast from the user's device
+     * in the direction of the given location to determine if an intersection with scene geometry has occurred. If no
+     * intersection has occurred, the [initialTransformationMatrix] is not set.
+     *
+     * @return true if a new initial TransformationMatrix was set, false otherwise
+     * @since 100.6.0
+     */
+    fun setInitialTransformationMatrix(screenPoint: android.graphics.Point): Boolean {
+        hitTest(screenPoint)?.let {
+            initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * If the [TrackingState] of the camera is equal to [TrackingState.TRACKING] this function performs a ray cast from
+     * the user's device in the direction of the given location in the camera view. If any intersections are returned the
+     * first is used to create a new [TransformationMatrix] by applying the quaternion and translation factors.
+     *
+     * @since 100.6.0
+     */
+    private fun hitTest(point: android.graphics.Point): TransformationMatrix? {
+        arSceneView?.arFrame?.let { frame ->
+            if (frame.camera.trackingState == TrackingState.TRACKING) {
+                frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
+                    hitResult?.let { theHitResult ->
+                        // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                        Pair(
+                            theHitResult.hitPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                            theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray()
+                        ).let {
+                            return TransformationMatrix.createWithQuaternionAndTranslation(
+                                it.first[0],
+                                it.first[1],
+                                it.first[2],
+                                it.first[3],
+                                it.second[0],
+                                it.second[1],
+                                it.second[2]
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        return null
     }
 
     /**
