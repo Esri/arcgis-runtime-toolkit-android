@@ -196,7 +196,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 if (initialLocation == null) {
                     initialLocation = location
                     cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
-                } else if (!isUsingARKit) {
+                } else if (!isUsingARCore) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
                     sceneView.setViewpointCamera(camera)
                 }
@@ -205,7 +205,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
     private val headingChangedListener: LocationDataSource.HeadingChangedListener =
         LocationDataSource.HeadingChangedListener {
-            if (!isUsingARKit) {
+            if (!isUsingARCore) {
                 // Not using ARKit, so update heading on the camera directly; otherwise, let ARKit handle heading changes.
                 val currentCamera = sceneView.currentViewpointCamera
                 val camera = currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
@@ -233,7 +233,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             field = value
         }
 
-    var isUsingARKit: Boolean = true
+    var isUsingARCore: Boolean = true
         private set(value) {
             field = value
         }
@@ -309,7 +309,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
-        sceneView.isManualRenderingEnabled = isUsingARKit
+        sceneView.isManualRenderingEnabled = isUsingARCore
         sceneView.cameraController = cameraController
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
@@ -416,7 +416,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 }
             }
 
-            if (isUsingARKit) {
+            if (isUsingARCore) {
                 // Create the session.
                 Session(context).apply {
                     val config = Config(this)
@@ -439,7 +439,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         } else {
             arSceneView?.resume()
             sceneView.resume()
-            isUsingARKit = true
+            isUsingARCore = true
             isTracking = true
             initializationStatus = ArcGISArViewState.INITIALIZED
         }
