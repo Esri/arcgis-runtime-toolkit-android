@@ -563,19 +563,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             if (frame.camera.trackingState == TrackingState.TRACKING) {
                 frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
-                        // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                        Pair(
-                            theHitResult.hitPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
-                            theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray()
-                        ).let {
+                        theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray().let {
                             return TransformationMatrix.createWithQuaternionAndTranslation(
-                                it.first[0],
-                                it.first[1],
-                                it.first[2],
-                                it.first[3],
-                                it.second[0],
-                                it.second[1],
-                                it.second[2]
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0,
+                                it[0],
+                                -it[2],
+                                it[1]
                             )
                         }
                     }

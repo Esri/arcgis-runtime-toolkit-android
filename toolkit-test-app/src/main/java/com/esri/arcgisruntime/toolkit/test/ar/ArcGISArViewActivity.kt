@@ -17,12 +17,14 @@
 package com.esri.arcgisruntime.toolkit.test.ar
 
 import android.graphics.Color
+import android.graphics.Point
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.widget.Toast
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
@@ -33,6 +35,7 @@ import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Surface
 import com.esri.arcgisruntime.mapping.view.Camera
+import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.toolkit.extension.logTag
@@ -270,6 +273,22 @@ class ArcGISArViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_ar_arcgissceneview)
         arcGisArView.registerLifecycle(lifecycle)
         currentScene = scenes[0]
+
+        arcGisArView.sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
+            override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
+                motionEvent?.let {
+                    with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
+                        if (arcGisArView.locationDataSource != null) {
+                            // TODO
+                        } else {
+                            arcGisArView.setInitialTransformationMatrix(this)
+                        }
+                    }
+                }
+                return false
+            }
+        })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
