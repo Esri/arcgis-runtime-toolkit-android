@@ -189,6 +189,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             field = value
             value?.let {
                 cameraController.originCamera = it
+                if (isTracking) {
+                    resetTracking()
+                }
             }
         }
 
@@ -223,11 +226,16 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     var locationDataSource: LocationDataSource? = null
         set(value) {
-            if (field != value) {
-                field = value
-                field?.addLocationChangedListener(locationChangedListener)
-                field?.addHeadingChangedListener(headingChangedListener)
+            if (value == null) {
+                field?.stop()
+                field?.removeLocationChangedListener(locationChangedListener)
+                field?.removeHeadingChangedListener(headingChangedListener)
             }
+
+            field = value
+
+            value?.addLocationChangedListener(locationChangedListener)
+            value?.addHeadingChangedListener(headingChangedListener)
         }
 
     var isTracking: Boolean = false
@@ -455,7 +463,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     fun stopTracking() {
         arSceneView?.pause()
-        sceneView.pause()
         locationDataSource?.stop()
         isTracking = false
     }

@@ -27,6 +27,7 @@ import android.widget.Toast
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
 import com.esri.arcgisruntime.location.AndroidLocationDataSource
+import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
 import com.esri.arcgisruntime.mapping.Basemap
@@ -45,18 +46,24 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
  */
 class ArcGISArViewActivity : AppCompatActivity() {
 
+    private val androidLocationDataSource: LocationDataSource by lazy {
+        AndroidLocationDataSource(this, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+    }
+
     /**
      * AR Mode: Full-Scale AR
      * Scene that uses a Streets Basemap.
      *
      * @since 100.6.0
      */
-    private val streetsScene: ArcGISScene by lazy {
-        ArcGISScene(Basemap.createStreets()).apply {
-            addElevationSource(this)
+    private fun streetsScene(): () -> ArcGISScene {
+        return {
+            ArcGISScene(Basemap.createStreets()).apply {
+                addElevationSource(this)
 
-            arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this@ArcGISArViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.translationTransformationFactor = 1.0
+            }
         }
     }
 
@@ -66,31 +73,33 @@ class ArcGISArViewActivity : AppCompatActivity() {
      *
      * @since 100.6.0
      */
-    private val pointCloudScene: ArcGISScene by lazy {
-        ArcGISScene().apply {
-            val portal = Portal("http://www.arcgis.com")
-            val portalItem = PortalItem(portal, "fc3f4a4919394808830cd11df4631a54")
-            val layer = PointCloudLayer(portalItem)
-            addElevationSource(this)
-            this.operationalLayers.add(layer)
+    private fun pointCloudScene(): () -> ArcGISScene {
+        return {
+            ArcGISScene().apply {
+                val portal = Portal("http://www.arcgis.com")
+                val portalItem = PortalItem(portal, "fc3f4a4919394808830cd11df4631a54")
+                val layer = PointCloudLayer(portalItem)
+                addElevationSource(this)
+                this.operationalLayers.add(layer)
 
-            layer.addDoneLoadingListener {
-                layer.loadError?.let {
-                    it.message?.let { errorMessage ->
-                        displayErrorMessage(errorMessage)
+                layer.addDoneLoadingListener {
+                    layer.loadError?.let {
+                        it.message?.let { errorMessage ->
+                            displayErrorMessage(errorMessage)
+                        }
+
                     }
 
+                    layer.fullExtent?.let {
+                        val center = it.center
+                        val camera = Camera(center, 0.0, 0.0, 0.0)
+                        arcGisArView.originCamera = camera
+                        arcGisArView.translationTransformationFactor = 2000.0
+                    }
                 }
 
-                layer.fullExtent?.let {
-                    val center = it.center
-                    val camera = Camera(center, 0.0, 0.0, 0.0)
-                    arcGisArView.originCamera = camera
-                    arcGisArView.translationTransformationFactor = 2000.0
-                }
+                arcGisArView.locationDataSource = null
             }
-
-            arcGisArView.locationDataSource = null
         }
     }
 
@@ -100,58 +109,60 @@ class ArcGISArViewActivity : AppCompatActivity() {
      *
      * @since 100.6.0
      */
-    private val yosemiteScene: ArcGISScene by lazy {
-        ArcGISScene().apply {
-            addElevationSource(this)
+    private fun yosemiteScene(): () -> ArcGISScene {
+        return {
+            ArcGISScene().apply {
+                addElevationSource(this)
 
-            val layer =
-                IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_Yosemite_Sample_Integrated_Mesh_scene_layer/SceneServer")
-            this.operationalLayers.add(layer)
-            layer.addDoneLoadingListener {
-                layer.loadError?.let {
-                    it.message?.let { errorMessage ->
-                        displayErrorMessage(errorMessage)
-                        return@addDoneLoadingListener
+                val layer =
+                    IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_Yosemite_Sample_Integrated_Mesh_scene_layer/SceneServer")
+                this.operationalLayers.add(layer)
+                layer.addDoneLoadingListener {
+                    layer.loadError?.let {
+                        it.message?.let { errorMessage ->
+                            displayErrorMessage(errorMessage)
+                            return@addDoneLoadingListener
+                        }
                     }
-                }
 
-                layer.fullExtent?.center?.let { center ->
-                    with(baseSurface.elevationSources.first()) {
-                        addDoneLoadingListener {
-                            loadError?.let {
-                                it.message?.let { errorMessage ->
-                                    displayErrorMessage(errorMessage)
-                                }
-                            }
-
-                            with(this@apply.baseSurface.getElevationAsync(center)) {
-                                // when the elevation has loaded
-                                this.addDoneListener {
-                                    loadError?.let {
-                                        it.message?.let { errorMessage ->
-                                            displayErrorMessage(errorMessage)
-                                        }
+                    layer.fullExtent?.center?.let { center ->
+                        with(baseSurface.elevationSources.first()) {
+                            addDoneLoadingListener {
+                                loadError?.let {
+                                    it.message?.let { errorMessage ->
+                                        displayErrorMessage(errorMessage)
                                     }
+                                }
 
-                                    this.get()?.let { elevation ->
-                                        val camera = Camera(
-                                            center.y,
-                                            center.x,
-                                            elevation,
-                                            0.0,
-                                            0.0,
-                                            0.0
-                                        )
-                                        arcGisArView.originCamera = camera
-                                        arcGisArView.translationTransformationFactor = 1000.0
+                                with(this@apply.baseSurface.getElevationAsync(center)) {
+                                    // when the elevation has loaded
+                                    this.addDoneListener {
+                                        loadError?.let {
+                                            it.message?.let { errorMessage ->
+                                                displayErrorMessage(errorMessage)
+                                            }
+                                        }
+
+                                        this.get()?.let { elevation ->
+                                            val camera = Camera(
+                                                center.y,
+                                                center.x,
+                                                elevation,
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            )
+                                            arcGisArView.originCamera = camera
+                                            arcGisArView.translationTransformationFactor = 1000.0
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                arcGisArView.locationDataSource = null
             }
-            arcGisArView.locationDataSource = null
         }
     }
 
@@ -161,56 +172,59 @@ class ArcGISArViewActivity : AppCompatActivity() {
      *
      * @since 100.6.0
      */
-    private val borderScene: ArcGISScene by lazy {
-        ArcGISScene().apply {
-            addElevationSource(this)
+    private fun borderScene(): () -> ArcGISScene {
+        return {
+            ArcGISScene().apply {
+                addElevationSource(this)
 
-            val layer =
-                IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_SW_US_Sample_Integrated_Mesh_scene_layer/SceneServer")
-            this.operationalLayers.add(layer)
-            this.addDoneLoadingListener {
-                this.loadError?.let {
-                    it.message?.let { errorMessage ->
-                        displayErrorMessage(errorMessage)
-                        return@addDoneLoadingListener
+                val layer =
+                    IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_SW_US_Sample_Integrated_Mesh_scene_layer/SceneServer")
+                this.operationalLayers.add(layer)
+                this.addDoneLoadingListener {
+                    this.loadError?.let {
+                        it.message?.let { errorMessage ->
+                            displayErrorMessage(errorMessage)
+                            return@addDoneLoadingListener
+                        }
                     }
-                }
 
-                layer.fullExtent?.center?.let { center ->
-                    with(baseSurface.elevationSources.first()) {
-                        addDoneLoadingListener {
-                            loadError?.let {
-                                it.message?.let { errorMessage ->
-                                    displayErrorMessage(errorMessage)
-                                }
-                            }
-
-                            with(this@apply.baseSurface.getElevationAsync(center)) {
-                                // when the elevation has loaded
-                                this.addDoneListener {
-                                    loadError?.let {
-                                        it.message?.let { errorMessage ->
-                                            displayErrorMessage(errorMessage)
-                                        }
+                    layer.fullExtent?.center?.let { center ->
+                        with(baseSurface.elevationSources.first()) {
+                            addDoneLoadingListener {
+                                loadError?.let {
+                                    it.message?.let { errorMessage ->
+                                        displayErrorMessage(errorMessage)
                                     }
+                                }
 
-                                    this.get()?.let { elevation ->
-                                        val camera = Camera(
-                                            center.y,
-                                            center.x,
-                                            elevation,
-                                            0.0,
-                                            0.0,
-                                            0.0
-                                        )
-                                        arcGisArView.originCamera = camera
-                                        arcGisArView.translationTransformationFactor = 1000.0
+                                with(this@apply.baseSurface.getElevationAsync(center)) {
+                                    // when the elevation has loaded
+                                    this.addDoneListener {
+                                        loadError?.let {
+                                            it.message?.let { errorMessage ->
+                                                displayErrorMessage(errorMessage)
+                                            }
+                                        }
+
+                                        this.get()?.let { elevation ->
+                                            val camera = Camera(
+                                                center.y,
+                                                center.x,
+                                                elevation,
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            )
+                                            arcGisArView.originCamera = camera
+                                            arcGisArView.translationTransformationFactor = 1000.0
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                arcGisArView.locationDataSource = null
             }
         }
     }
@@ -221,24 +235,25 @@ class ArcGISArViewActivity : AppCompatActivity() {
      *
      * @since 100.6.0
      */
-    private val emptyScene: ArcGISScene by lazy {
-        ArcGISScene().apply {
-            addElevationSource(this)
+    private fun emptyScene(): () -> ArcGISScene {
+        return {
+            ArcGISScene().apply {
+                addElevationSource(this)
 
-            arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this@ArcGISArViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
-            arcGisArView.originCamera = null
-            arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.originCamera = null
+                arcGisArView.translationTransformationFactor = 1.0
+            }
         }
     }
 
     private val scenes: Array<SceneInfo> by lazy {
         arrayOf(
-            SceneInfo(streetsScene, getString(R.string.arcgis_ar_view_scene_streets)),
-            SceneInfo(pointCloudScene, getString(R.string.arcgis_ar_view_scene_point_cloud)),
-            SceneInfo(yosemiteScene, getString(R.string.arcgis_ar_view_scene_yosemite)),
-            SceneInfo(borderScene, getString(R.string.arcgis_ar_view_scene_border)),
-            SceneInfo(emptyScene, getString(R.string.arcgis_ar_view_scene_empty))
+            SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets)),
+            SceneInfo(pointCloudScene(), getString(R.string.arcgis_ar_view_scene_point_cloud)),
+            SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite)),
+            SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border)),
+            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty))
         )
     }
 
@@ -246,7 +261,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
         set(value) {
             field = value
             arcGisArView.sceneView.scene = null
-            arcGisArView.sceneView.scene = value?.scene
+            arcGisArView.sceneView.scene = value?.scene?.invoke()
             title = value?.name
         }
 
@@ -300,4 +315,4 @@ private fun addElevationSource(scene: ArcGISScene) {
     scene.baseSurface = surface
 }
 
-private data class SceneInfo(val scene: ArcGISScene, val name: String)
+private data class SceneInfo(val scene: () -> ArcGISScene, val name: String)
