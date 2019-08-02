@@ -36,17 +36,34 @@ import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 
-class ArcGISSceneViewActivity : AppCompatActivity() {
+/**
+ * Activity so show usages of [ArcGISArView].
+ *
+ * @since 100.6.0
+ */
+class ArcGISArSceneViewActivity : AppCompatActivity() {
 
+    /**
+     * AR Mode: Full-Scale AR
+     * Scene that uses a Streets Basemap.
+     *
+     * @since 100.6.0
+     */
     private val streetsScene: ArcGISScene by lazy {
         ArcGISScene(Basemap.createStreets()).apply {
             addElevationSource(this)
 
             arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this@ArcGISSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+                AndroidLocationDataSource(this@ArcGISArSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
         }
     }
 
+    /**
+     * AR Mode: Tabletop AR
+     * Scene that shows a Point Cloud Layer.
+     *
+     * @since 100.6.0
+     */
     private val pointCloudScene: ArcGISScene by lazy {
         ArcGISScene().apply {
             val portal = Portal("http://www.arcgis.com")
@@ -75,6 +92,12 @@ class ArcGISSceneViewActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * AR Mode: Tabletop AR
+     * Scene that is centered on Yosemite National Park.
+     *
+     * @since 100.6.0
+     */
     private val yosemiteScene: ArcGISScene by lazy {
         ArcGISScene().apply {
             addElevationSource(this)
@@ -130,6 +153,12 @@ class ArcGISSceneViewActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * AR Mode: Tabletop AR
+     * Scene that is centered on the US-Mexico border.
+     *
+     * @since 100.6.0
+     */
     private val borderScene: ArcGISScene by lazy {
         ArcGISScene().apply {
             addElevationSource(this)
@@ -184,12 +213,18 @@ class ArcGISSceneViewActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * AR Mode: Full-Scale AR.
+     * Scene that is empty with an elevation source.
+     *
+     * @since 100.6.0
+     */
     private val emptyScene: ArcGISScene by lazy {
         ArcGISScene().apply {
             addElevationSource(this)
 
             arcGisArView.locationDataSource =
-                AndroidLocationDataSource(this@ArcGISSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
+                AndroidLocationDataSource(this@ArcGISArSceneViewActivity, LocationManager.NETWORK_PROVIDER, 100, 0.0f)
             arcGisArView.originCamera = null
             arcGisArView.translationTransformationFactor = 1.0
         }
@@ -202,12 +237,22 @@ class ArcGISSceneViewActivity : AppCompatActivity() {
         arcGisArView.sceneView.scene = emptyScene
     }
 
+    /**
+     * Displays an error message in LogCat and as a Toast.
+     *
+     * @since 100.6.0
+     */
     private fun displayErrorMessage(error: String) {
         Log.e(logTag, error)
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
 }
 
+/**
+ * Adds an elevation source to the provided [scene].
+ *
+ * @since 100.6.0
+ */
 private fun addElevationSource(scene: ArcGISScene) {
     val elevationSource =
         ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer")
