@@ -24,7 +24,6 @@
         <item>com.esri.arcgisruntime.toolkit.test.compass.CompassTestActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.sceneview.ArcGISSceneViewActivity</item>
-        <item>com.esri.arcgisruntime.toolkit.test.sceneview.ArcGISSceneViewTableTopActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.ar.ArcGISSceneViewActivity</item>
     </string-array>
 
