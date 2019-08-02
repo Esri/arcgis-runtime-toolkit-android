@@ -236,6 +236,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
             value?.addLocationChangedListener(locationChangedListener)
             value?.addHeadingChangedListener(headingChangedListener)
+            resetTracking()
         }
 
     var isTracking: Boolean = false
@@ -508,8 +509,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         it.first.z.toDouble(),
                         it.first.w.toDouble(),
                         it.second[0],
-                        it.second[1],
-                        it.second[2]
+                        -it.second[2],
+                        it.second[1]
                     )
                 }.let { arCoreTransMatrix ->
                     cameraController.transformationMatrix =
