@@ -187,7 +187,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     var originCamera: Camera? = null
         set(value) {
             field = value
-            cameraController.originCamera = value
+            value?.let {
+                cameraController.originCamera = it
+            }
         }
 
     private val locationChangedListener: LocationDataSource.LocationChangedListener =
