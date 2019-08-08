@@ -279,7 +279,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
                         if (arcGisArView.locationDataSource != null) {
-                            // TODO
+                            // TODO implement creation of point when implementing screenToLocation
                         } else {
                             arcGisArView.setInitialTransformationMatrix(this)
                         }
