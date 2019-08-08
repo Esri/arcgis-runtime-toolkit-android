@@ -250,11 +250,21 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             resetTracking()
         }
 
+    /**
+     * Denotes whether tracking location and angles has started.
+     *
+     * @since 100.6.0
+     */
     var isTracking: Boolean = false
         private set(value) {
             field = value
         }
 
+    /**
+     * Denotes whether ARCore is being used to track location and angles.
+     *
+     * @since 100.6.0
+     */
     var isUsingARCore: Boolean = true
         private set(value) {
             field = value
@@ -461,7 +471,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         } else {
             arSceneView?.resume()
             sceneView.resume()
-            isUsingARCore = true
             isTracking = true
             initializationStatus = ArcGISArViewState.INITIALIZED
         }
