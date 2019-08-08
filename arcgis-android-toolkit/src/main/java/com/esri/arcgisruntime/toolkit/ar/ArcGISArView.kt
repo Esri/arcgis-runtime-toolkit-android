@@ -97,9 +97,20 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     var initialTransformationMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
 
+    /**
+     * A quaternion used to compensate for the pitch being 90 degrees on ARCore; used to calculate the current device
+     * transformation for each frame.
+     *
+     * @since 100.6.0
+     */
     private val compensationQuaternion: Quaternion =
         Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
 
+    /**
+     * Initial location from [locationDataSource].
+     *
+     * @since 100.6.0
+     */
     private var initialLocation: Point? = null
 
     /**
@@ -211,7 +222,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private val headingChangedListener: LocationDataSource.HeadingChangedListener =
         LocationDataSource.HeadingChangedListener {
             if (!isUsingARCore) {
-                // Not using ARKit, so update heading on the camera directly; otherwise, let ARKit handle heading changes.
+                // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
                 val currentCamera = sceneView.currentViewpointCamera
                 val camera = currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
                 sceneView.setViewpointCamera(camera)
@@ -219,7 +230,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
     /**
-     * The data source used to get device location.  Used either in conjunction with ARKit data or when ARKit is not
+     * The data source used to get device location.  Used either in conjunction with ARCore data or when ARCore is not
      * present or not being used.
      *
      * @since 100.6.0
