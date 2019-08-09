@@ -85,6 +85,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private var arCoreInstallRequested: Boolean = false
 
+    /**
+     * a background task used to poll ArCoreApk to set the value of ARCore availability for the current device.
+     *
+     * The ArCoreApk.getInstance().checkAvailability() function may inititate a query to a remote service to determine compatibility, in which case
+     * it immediately returns ArCoreApk.Availability.UNKNOWN_CHECKING. This leaves us unable to determine if the device
+     * is compatible with ARCore until the value is retrieved. See: https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk#checkAvailability(android.content.Context)
+     *
+     * We should not be calling ArCoreApk.getInstance().requestInstall() until we've received one of the SUPPORTED_...
+     * values so this job allows us to do this. See: https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk#requestInstall(android.app.Activity,%20boolean)
+     *
+     * @since 100.6.0
+     */
     private val checkArCoreJob: Job by lazy {
         GlobalScope.launch {
             while (ArCoreApk.getInstance().checkAvailability(context) == ArCoreApk.Availability.UNKNOWN_CHECKING) {
@@ -94,6 +106,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
     }
 
+    /**
+     * This property calls the observable function set on it during the the setting of the value. If necessary, the
+     * observable is used in tandem with [checkArCoreJob] due to the synchronous nature of the
+     * ArCoreApk.getInstance().checkAvailability() function. If we know that the device is compatible with ARCore but
+     * ARCore isn't currently installed, or the version is older than the version used in this library, we request an
+     * installation of ARCore using the current context. If ARCore is already installed, we set [isUsingARCore] to true.
+     *
+     * @since 100.6.0
+     */
     private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.SUPPORTED_INSTALLED) { _, _, newValue ->
         (context as? Activity)?.let { activity ->
             when (newValue) {
