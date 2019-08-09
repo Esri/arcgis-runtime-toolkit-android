@@ -55,9 +55,13 @@ import com.google.ar.sceneform.Scene
 import com.google.ar.sceneform.math.Quaternion
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.properties.Delegates
 
 private const val CAMERA_PERMISSION_CODE = 0
 private const val LOCATION_PERMISSION_CODE = 1
@@ -80,6 +84,31 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     private var arCoreInstallRequested: Boolean = false
+
+    private val checkArCoreJob: Job by lazy {
+        GlobalScope.launch {
+            while (ArCoreApk.getInstance().checkAvailability(context) == ArCoreApk.Availability.UNKNOWN_CHECKING) {
+                Thread.sleep(100)
+            }
+            arCoreAvailability = ArCoreApk.getInstance().checkAvailability(context)
+        }
+    }
+
+    private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.SUPPORTED_INSTALLED) { _, _, newValue ->
+        (context as? Activity)?.let { activity ->
+            when (newValue) {
+                ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = true
+                ArCoreApk.Availability.SUPPORTED_NOT_INSTALLED -> requestArCoreInstall(activity)
+                ArCoreApk.Availability.SUPPORTED_APK_TOO_OLD -> requestArCoreInstall(activity)
+                ArCoreApk.Availability.UNKNOWN_CHECKING -> {
+                    if (!checkArCoreJob.isActive) {
+                        checkArCoreJob.start()
+                    }
+                }
+                else -> isUsingARCore = false
+            }
+        }
+    }
 
     /**
      * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
@@ -187,7 +216,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    val arSceneView: ArSceneView? get() = _arSceneView
+    var arSceneView: ArSceneView? = null
+        get() = _arSceneView
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
@@ -221,7 +251,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
     private val headingChangedListener: LocationDataSource.HeadingChangedListener =
         LocationDataSource.HeadingChangedListener {
-            if (!isUsingARCore) {
+            if (!isUsingARCore && !it.heading.isNaN()) {
                 // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
                 val currentCamera = sceneView.currentViewpointCamera
                 val camera = currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
@@ -265,10 +295,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var isUsingARCore: Boolean = true
-        private set(value) {
-            field = value
-        }
+    var isUsingARCore: Boolean = false
 
     /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
@@ -340,6 +367,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     private fun initialize() {
+        checkArCoreAvailability()
         inflate(context, R.layout.layout_arcgisarview, this)
         sceneView.isManualRenderingEnabled = isUsingARCore
         sceneView.cameraController = cameraController
@@ -409,71 +437,56 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun startTracking() {
         initializationStatus = ArcGISArViewState.INITIALIZING
 
-        try {
-            (context as? Activity)?.let { activity ->
-                // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-                // permission on Android M and above, now is a good time to ask the user for it.
-                // when the permission is requested and the user responds to the request from the OS this is executed again
-                // during onResume()
-                if (!hasPermission(CAMERA_PERMISSION)) {
+        checkArCoreAvailability()
+
+        (context as? Activity)?.let { activity ->
+            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+            // permission on Android M and above, now is a good time to ask the user for it.
+            // when the permission is requested and the user responds to the request from the OS this is executed again
+            // during onResume()
+            if (isUsingARCore && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
+                requestPermission(
+                    activity,
+                    CAMERA_PERMISSION,
+                    CAMERA_PERMISSION_CODE
+                )
+                return
+            }
+
+            // Request location permission if user has provided a LocationDataSource
+            locationDataSource?.let {
+                if (!hasPermission(LOCATION_PERMISSION)) {
                     requestPermission(
                         activity,
-                        CAMERA_PERMISSION,
-                        CAMERA_PERMISSION_CODE
+                        LOCATION_PERMISSION,
+                        LOCATION_PERMISSION_CODE
                     )
-                    return
-                }
-
-                // Request location permission if user has provided a LocationDataSource
-                locationDataSource?.let {
-                    if (!hasPermission(LOCATION_PERMISSION)) {
-                        requestPermission(
-                            activity,
-                            LOCATION_PERMISSION,
-                            LOCATION_PERMISSION_CODE
-                        )
-                        return@startTracking
-                    }
-                }
-
-                // when the installation is requested and the user responds to the request from the OS this is executed again
-                // during onResume()
-                if (ArCoreApk.getInstance().requestInstall(
-                        activity,
-                        !arCoreInstallRequested
-                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-                ) {
-                    arCoreInstallRequested = true
-                    return
+                    return@startTracking
                 }
             }
-
-            if (isUsingARCore) {
-                // Create the session.
-                Session(context).apply {
-                    val config = Config(this)
-                    config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-                    config.focusMode = Config.FocusMode.AUTO
-                    this.configure(config)
-                    arSceneView?.setupSession(this)
-                }
-                arSceneView?.scene?.addOnUpdateListener(this)
-            }
-        } catch (e: Exception) {
-            error = e
         }
 
-        locationDataSource?.startAsync()
-
-        if (error != null) {
-            Log.e(logTag, error!!.message)
-            initializationStatus = ArcGISArViewState.INITIALIZATION_FAILURE
-        } else {
+        if (isUsingARCore) {
+            // Create the session.
+            Session(context).apply {
+                val config = Config(this)
+                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                config.focusMode = Config.FocusMode.AUTO
+                this.configure(config)
+                arSceneView?.setupSession(this)
+            }
+            arSceneView?.scene?.addOnUpdateListener(this)
             arSceneView?.resume()
-            sceneView.resume()
-            isTracking = true
-            initializationStatus = ArcGISArViewState.INITIALIZED
+            sceneView.isManualRenderingEnabled = true
+        } else {
+            removeView(arSceneView)
+            arSceneView = null
         }
+
+        sceneView.resume()
+        locationDataSource?.startAsync()
+        isTracking = isUsingARCore && locationDataSource != null
+        initializationStatus = ArcGISArViewState.INITIALIZED
     }
 
     /**
@@ -549,7 +562,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         deviceOrientation
                     )
                 }
-                if (sceneView.isManualRenderingEnabled) {
+                if (isUsingARCore && sceneView.isManualRenderingEnabled) {
                     sceneView.renderFrame()
                 }
             }
@@ -627,6 +640,28 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // TODO https://devtopia.esri.com/runtime/java/issues/1170
         // sceneView.dispose()
         super.onDestroy(owner)
+    }
+
+    private fun checkArCoreAvailability() {
+        arCoreAvailability = ArCoreApk.getInstance().checkAvailability(context)
+    }
+
+    private fun requestArCoreInstall(activity: Activity) {
+        try {
+            // when the installation is requested and the user responds to the request from the OS this is executed again
+            // during onResume()
+            if (ArCoreApk.getInstance().requestInstall(
+                    activity,
+                    !arCoreInstallRequested
+                ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+            ) {
+                arCoreInstallRequested = true
+                return
+            }
+        } catch (e: Exception) {
+            error = e
+            Log.e(logTag, "ARCore install error", error)
+        }
     }
 
     /**
