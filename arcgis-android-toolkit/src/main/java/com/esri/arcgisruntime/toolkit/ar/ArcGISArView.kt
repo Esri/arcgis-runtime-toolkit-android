@@ -259,6 +259,13 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
         }
 
+    private val locationDataSourceStatusChangedListener: LocationDataSource.StatusChangedListener =
+        LocationDataSource.StatusChangedListener {
+            if (it.status == LocationDataSource.Status.FAILURE) {
+                error = Exception(locationDataSource?.error)
+            }
+        }
+
     /**
      * The data source used to get device location.  Used either in conjunction with ARCore data or when ARCore is not
      * present or not being used.
@@ -271,12 +278,14 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 field?.stop()
                 field?.removeLocationChangedListener(locationChangedListener)
                 field?.removeHeadingChangedListener(headingChangedListener)
+                field?.removeStatusChangedListener(locationDataSourceStatusChangedListener)
             }
 
             field = value
 
             value?.addLocationChangedListener(locationChangedListener)
             value?.addHeadingChangedListener(headingChangedListener)
+            value?.addStatusChangedListener(locationDataSourceStatusChangedListener)
             resetTracking()
         }
 
