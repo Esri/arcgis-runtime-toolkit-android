@@ -257,6 +257,16 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
         }
 
+    /**
+     * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
+     * location updates.
+     *
+     * Upon receiving an updated location, if we don't previously have an [initialLocation] we use that property to
+     * create a [Camera] and set that as the origin camera of the [cameraController]. On every other location update, if we
+     * are not using ARCore we set the current viewpoint camera of [sceneView] to a new Camera created from that location.
+     *
+     * @since 100.6.0
+     */
     private val locationChangedListener: LocationDataSource.LocationChangedListener =
         LocationDataSource.LocationChangedListener {
             it.location.position?.let { location ->
@@ -270,6 +280,16 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
         }
 
+    /**
+     * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
+     * heading updates.
+     *
+     * Upon receiving an updated heading, if we're not using ARCore we create a [Camera] using the updated heading value
+     * and the pitch and roll of the current Camera from [sceneView]. We then set the current Camera of the [SceneView]
+     * to be the newly created Camera.
+     *
+     * @since 100.6.0
+     */
     private val headingChangedListener: LocationDataSource.HeadingChangedListener =
         LocationDataSource.HeadingChangedListener {
             if (!isUsingARCore && !it.heading.isNaN()) {
@@ -280,6 +300,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
         }
 
+    /**
+     * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
+     * LocationDataSource status updates.
+     *
+     * Upon receiving the status of the LocationDataSource, we check if the status indicates a failure. If so, we set the
+     * [error] property to an Exception that indicates the current error of the LocationDataSource.
+     *
+     * @since 100.6.0
+     */
     private val locationDataSourceStatusChangedListener: LocationDataSource.StatusChangedListener =
         LocationDataSource.StatusChangedListener {
             if (it.status == LocationDataSource.Status.FAILURE) {
