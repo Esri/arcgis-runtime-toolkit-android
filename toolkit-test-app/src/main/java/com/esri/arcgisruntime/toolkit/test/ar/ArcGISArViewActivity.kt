@@ -18,7 +18,6 @@ package com.esri.arcgisruntime.toolkit.test.ar
 
 import android.graphics.Color
 import android.graphics.Point
-import android.location.LocationManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -26,6 +25,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.Toast
+import com.esri.arcgisruntime.data.ServiceFeatureTable
+import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
 import com.esri.arcgisruntime.location.AndroidLocationDataSource
@@ -250,13 +251,38 @@ class ArcGISArViewActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * AR Mode: Full-Scale AR.
+     * Scene that loads a FeatureLayer containing fire hydrant locations.
+     *
+     * @since 100.6.0
+     */
+    private fun redlandsFireHydrantsScene(): () -> ArcGISScene {
+        return {
+            ArcGISScene(Basemap.createTerrainWithLabels()).apply {
+                addElevationSource(this)
+
+                val serviceFeatureTable =
+                    ServiceFeatureTable("https://services5.arcgis.com/N82JbI5EYtAkuUKU/ArcGIS/rest/services/Fire_Hydrants_AR_Demo/FeatureServer/0")
+                val featureLayer = FeatureLayer(serviceFeatureTable)
+
+                this.operationalLayers.add(featureLayer)
+
+                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.originCamera = null
+                arcGisArView.translationTransformationFactor = 1.0
+            }
+        }
+    }
+
     private val scenes: Array<SceneInfo> by lazy {
         arrayOf(
             SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets)),
             SceneInfo(pointCloudScene(), getString(R.string.arcgis_ar_view_scene_point_cloud)),
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite)),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border)),
-            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty))
+            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty)),
+            SceneInfo(redlandsFireHydrantsScene(), getString(R.string.arcgis_ar_view_redlands_fire_hydrants))
         )
     }
 
