@@ -193,7 +193,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Convenience value used to retrieve device rotation from WindowManager.
+     * Convenience property used to retrieve device rotation from WindowManager.
      *
      * @since 100.6.0
      */
