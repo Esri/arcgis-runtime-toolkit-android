@@ -28,7 +28,6 @@ import android.hardware.SensorManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
@@ -44,7 +43,6 @@ import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.toolkit.R
-import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
@@ -701,14 +699,24 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         super.onDestroy(owner)
     }
 
+    /**
+     * This function sets the [arCoreAvailability] property by calling the ArCoreApk class and requesting the ArCore
+     * availability using the provided function.
+     *
+     * @since 100.6.0
+     */
     private fun checkArCoreAvailability() {
         arCoreAvailability = ArCoreApk.getInstance().checkAvailability(context)
     }
 
+    /**
+     * Requests installation of ARCore using ArCoreApk. Should only be called once we know the device is suopported by
+     * ARCore.
+     *
+     * @since 100.6.0
+     */
     private fun requestArCoreInstall(activity: Activity) {
         try {
-            // when the installation is requested and the user responds to the request from the OS this is executed again
-            // during onResume()
             if (ArCoreApk.getInstance().requestInstall(
                     activity,
                     !arCoreInstallRequested
@@ -719,7 +727,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
         } catch (e: Exception) {
             error = e
-            Log.e(logTag, "ARCore install error", error)
         }
     }
 
