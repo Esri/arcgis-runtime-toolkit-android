@@ -311,6 +311,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         LocationDataSource.StatusChangedListener {
             if (it.status == LocationDataSource.Status.FAILURE) {
                 error = Exception(locationDataSource?.error)
+                isTracking = isUsingARCore
             }
         }
 
@@ -335,7 +336,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             value?.addHeadingChangedListener(headingChangedListener)
             value?.addStatusChangedListener(locationDataSourceStatusChangedListener)
 
-            if(isTracking) {
+            if (isTracking) {
                 resetTracking()
             }
         }
@@ -545,7 +546,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
         sceneView.resume()
         locationDataSource?.startAsync()
-        isTracking = isUsingARCore && locationDataSource != null
+        isTracking = isUsingARCore.or(locationDataSource != null)
         initializationStatus = ArcGISArViewState.INITIALIZED
     }
 
@@ -579,7 +580,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView?.arFrame?.camera?.let { arCamera ->
-            isTracking = (arCamera.trackingState == TrackingState.TRACKING).or(locationDataSource != null)
             if (isTracking) {
                 Quaternion.multiply(
                     compensationQuaternion,
