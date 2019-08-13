@@ -334,7 +334,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             value?.addLocationChangedListener(locationChangedListener)
             value?.addHeadingChangedListener(headingChangedListener)
             value?.addStatusChangedListener(locationDataSourceStatusChangedListener)
-            resetTracking()
+
+            if(isTracking) {
+                resetTracking()
+            }
         }
 
     /**
