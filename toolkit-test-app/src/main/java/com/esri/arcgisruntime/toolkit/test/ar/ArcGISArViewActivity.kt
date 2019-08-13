@@ -25,8 +25,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.Toast
-import com.esri.arcgisruntime.data.ServiceFeatureTable
-import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
 import com.esri.arcgisruntime.location.AndroidLocationDataSource
@@ -259,15 +257,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
      */
     private fun redlandsFireHydrantsScene(): () -> ArcGISScene {
         return {
-            ArcGISScene(Basemap.createTerrainWithLabels()).apply {
-                addElevationSource(this)
-
-                val serviceFeatureTable =
-                    ServiceFeatureTable("https://services5.arcgis.com/N82JbI5EYtAkuUKU/ArcGIS/rest/services/Fire_Hydrants_AR_Demo/FeatureServer/0")
-                val featureLayer = FeatureLayer(serviceFeatureTable)
-
-                this.operationalLayers.add(featureLayer)
-
+            ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
                 arcGisArView.locationDataSource = androidLocationDataSource
                 arcGisArView.originCamera = null
                 arcGisArView.translationTransformationFactor = 1.0
