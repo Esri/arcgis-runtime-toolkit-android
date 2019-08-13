@@ -331,18 +331,20 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     var locationDataSource: LocationDataSource? = null
         set(value) {
-            if (value == null) {
+            isTracking = if (value == null) {
                 field?.stop()
                 field?.removeLocationChangedListener(locationChangedListener)
                 field?.removeHeadingChangedListener(headingChangedListener)
                 field?.removeStatusChangedListener(locationDataSourceStatusChangedListener)
+                isUsingARCore
+            } else {
+                value.addLocationChangedListener(locationChangedListener)
+                value.addHeadingChangedListener(headingChangedListener)
+                value.addStatusChangedListener(locationDataSourceStatusChangedListener)
+                true
             }
 
             field = value
-
-            value?.addLocationChangedListener(locationChangedListener)
-            value?.addHeadingChangedListener(headingChangedListener)
-            value?.addStatusChangedListener(locationDataSourceStatusChangedListener)
 
             if (isTracking) {
                 resetTracking()
