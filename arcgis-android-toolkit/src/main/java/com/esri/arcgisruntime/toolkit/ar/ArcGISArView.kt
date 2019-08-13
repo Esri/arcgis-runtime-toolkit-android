@@ -124,7 +124,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         checkArCoreJob.start()
                     }
                 }
-                else -> isUsingARCore = false
+                else -> {
+                    isUsingARCore = false
+                    error = Exception(
+                        resources.getString(
+                            R.string.arcgis_ar_view_ar_core_unsupported_error,
+                            newValue.toString()
+                        )
+                    )
+                }
             }
         }
     }
