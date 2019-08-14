@@ -312,18 +312,39 @@ class ArcGISArViewActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.arcgisarview_menu, menu)
         scenes.forEachIndexed { index, sceneInfo ->
-            menu?.add(Menu.NONE, index, Menu.NONE, sceneInfo.name)
+            menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)
         }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        item?.itemId?.let {
-            currentScene = scenes[it]
-            return true
+        when (item?.groupId) {
+            R.id.arcgisArViewMenuActionGroup -> {
+                handleMenuAction(item.itemId)
+                return true
+            }
+            R.id.arcgisArViewMenuSceneGroup -> {
+                selectScene(item.itemId)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun handleMenuAction(itemId: Int) {
+        if (itemId == R.id.actionToggleCalibration) {
+            toggleCalibration()
+        }
+    }
+
+    private fun selectScene(itemId: Int) {
+        currentScene = scenes[itemId]
+    }
+
+    private fun toggleCalibration() {
+        // TODO
     }
 
     /**
