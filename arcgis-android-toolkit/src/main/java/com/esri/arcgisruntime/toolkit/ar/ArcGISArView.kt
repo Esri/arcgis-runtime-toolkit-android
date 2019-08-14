@@ -693,6 +693,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onPause(owner: LifecycleOwner) {
         stopTracking()
+        sceneView.pause()
         super.onPause(owner)
     }
 
