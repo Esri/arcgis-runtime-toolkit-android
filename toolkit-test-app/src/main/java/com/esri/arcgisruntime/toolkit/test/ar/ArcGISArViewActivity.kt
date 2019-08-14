@@ -243,7 +243,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 addElevationSource(this)
 
                 arcGisArView.locationDataSource = androidLocationDataSource
-                arcGisArView.originCamera = null
+                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
         }
@@ -259,7 +259,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
         return {
             ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
                 arcGisArView.locationDataSource = androidLocationDataSource
-                arcGisArView.originCamera = null
+                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
         }
