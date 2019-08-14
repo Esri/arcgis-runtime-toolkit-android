@@ -365,6 +365,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var isUsingARCore: ARCoreUsage = ARCoreUsage.UNKNOWN
+        set(value) {
+            field = value
+            sceneView.isManualRenderingEnabled = value == ARCoreUsage.YES
+        }
 
     /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
@@ -436,9 +440,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     private fun initialize() {
-        checkArCoreAvailability()
         inflate(context, R.layout.layout_arcgisarview, this)
-        sceneView.isManualRenderingEnabled = isUsingARCore == ARCoreUsage.YES
+        checkArCoreAvailability()
         sceneView.cameraController = cameraController
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
@@ -546,7 +549,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
             arSceneView?.scene?.addOnUpdateListener(this)
             arSceneView?.resume()
-            sceneView.isManualRenderingEnabled = true
         } else {
             removeView(arSceneView)
             arSceneView = null
