@@ -116,7 +116,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.SUPPORTED_INSTALLED) { _, _, newValue ->
         (context as? Activity)?.let { activity ->
             when (newValue) {
-                ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = true
+                ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = ARCoreUsage.YES
                 ArCoreApk.Availability.SUPPORTED_NOT_INSTALLED -> requestArCoreInstall(activity)
                 ArCoreApk.Availability.SUPPORTED_APK_TOO_OLD -> requestArCoreInstall(activity)
                 ArCoreApk.Availability.UNKNOWN_CHECKING -> {
@@ -125,7 +125,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                     }
                 }
                 else -> {
-                    isUsingARCore = false
+                    isUsingARCore = ARCoreUsage.NO
                     error = Exception(
                         resources.getString(
                             R.string.arcgis_ar_view_ar_core_unsupported_error,
@@ -278,7 +278,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 if (initialLocation == null) {
                     initialLocation = location
                     cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
-                } else if (!isUsingARCore) {
+                } else if (isUsingARCore != ARCoreUsage.YES) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
                     sceneView.setViewpointCamera(camera)
                 }
@@ -297,7 +297,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private val headingChangedListener: LocationDataSource.HeadingChangedListener =
         LocationDataSource.HeadingChangedListener {
-            if (!isUsingARCore && !it.heading.isNaN()) {
+            if (isUsingARCore != ARCoreUsage.YES && !it.heading.isNaN()) {
                 // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
                 val currentCamera = sceneView.currentViewpointCamera
                 val camera = currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
@@ -318,7 +318,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         LocationDataSource.StatusChangedListener {
             if (it.status == LocationDataSource.Status.FAILED_TO_START) {
                 error = Exception(locationDataSource?.error)
-                isTracking = isUsingARCore
+                isTracking = isUsingARCore == ARCoreUsage.YES
             }
         }
 
@@ -334,7 +334,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 field?.removeLocationChangedListener(locationChangedListener)
                 field?.removeHeadingChangedListener(headingChangedListener)
                 field?.removeStatusChangedListener(locationDataSourceStatusChangedListener)
-                isUsingARCore
+                isUsingARCore == ARCoreUsage.YES
             } else {
                 value.addLocationChangedListener(locationChangedListener)
                 value.addHeadingChangedListener(headingChangedListener)
@@ -364,7 +364,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var isUsingARCore: Boolean = false
+    var isUsingARCore: ARCoreUsage = ARCoreUsage.UNKNOWN
 
     /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
@@ -438,7 +438,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private fun initialize() {
         checkArCoreAvailability()
         inflate(context, R.layout.layout_arcgisarview, this)
-        sceneView.isManualRenderingEnabled = isUsingARCore
+        sceneView.isManualRenderingEnabled = isUsingARCore == ARCoreUsage.YES
         sceneView.cameraController = cameraController
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
@@ -513,7 +513,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             // permission on Android M and above, now is a good time to ask the user for it.
             // when the permission is requested and the user responds to the request from the OS this is executed again
             // during onResume()
-            if (isUsingARCore && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
+            if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
                 requestPermission(
                     activity,
                     CAMERA_PERMISSION,
@@ -535,7 +535,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             }
         }
 
-        if (isUsingARCore) {
+        if (isUsingARCore == ARCoreUsage.YES) {
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
@@ -554,7 +554,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
         sceneView.resume()
         locationDataSource?.startAsync()
-        isTracking = isUsingARCore.or(locationDataSource != null)
+        isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
         initializationStatus = ArcGISArViewState.INITIALIZED
     }
 
@@ -630,7 +630,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         deviceOrientation
                     )
                 }
-                if (isUsingARCore && sceneView.isManualRenderingEnabled) {
+                if (isUsingARCore == ARCoreUsage.YES && sceneView.isManualRenderingEnabled) {
                     sceneView.renderFrame()
                 }
             }
@@ -771,6 +771,34 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
          * @since 100.6.0
          */
         fun onStateChanged(state: ArcGISArViewState)
+    }
+
+    /**
+     * A class representing the usage of ARCore.
+     *
+     * @since 100.6.0
+     */
+    enum class ARCoreUsage {
+        /**
+         * Usage is unknown.
+         *
+         * @since 100.6.0
+         */
+        UNKNOWN,
+
+        /**
+         * Usage is known and ARCore is currently being used.
+         *
+         * @since 100.6.0
+         */
+        YES,
+
+        /**
+         * Usage is known and ARCore is not currently being used.
+         *
+         * @since 100.6.0
+         */
+        NO
     }
 
     /**
