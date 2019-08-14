@@ -533,7 +533,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         LOCATION_PERMISSION,
                         LOCATION_PERMISSION_CODE
                     )
-                    return@startTracking
+                    return
                 }
             }
         }
