@@ -37,6 +37,7 @@ import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
+import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
@@ -49,7 +50,7 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 class ArcGISArViewActivity : AppCompatActivity() {
 
     private val androidLocationDataSource: LocationDataSource by lazy {
-        AndroidLocationDataSource(this)
+        ArLocationDataSource(this)
     }
 
     /**
