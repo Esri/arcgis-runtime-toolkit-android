@@ -42,7 +42,7 @@ import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 
 /**
- * Activity so show usages of [ArcGISArView].
+ * Activity to show usages of [ArcGISArView].
  *
  * @since 100.6.0
  */
@@ -89,7 +89,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
                         }
-
+                        return@addDoneLoadingListener
                     }
 
                     layer.fullExtent?.let {
@@ -134,6 +134,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                     it.message?.let { errorMessage ->
                                         displayErrorMessage(errorMessage)
                                     }
+                                    return@addDoneLoadingListener
                                 }
 
                                 with(this@apply.baseSurface.getElevationAsync(center)) {
@@ -143,6 +144,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                             it.message?.let { errorMessage ->
                                                 displayErrorMessage(errorMessage)
                                             }
+                                            return@addDoneListener
                                         }
 
                                         this.get()?.let { elevation ->
@@ -197,6 +199,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                     it.message?.let { errorMessage ->
                                         displayErrorMessage(errorMessage)
                                     }
+                                    return@addDoneLoadingListener
                                 }
 
                                 with(this@apply.baseSurface.getElevationAsync(center)) {
@@ -206,6 +209,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                             it.message?.let { errorMessage ->
                                                 displayErrorMessage(errorMessage)
                                             }
+                                            return@addDoneListener
                                         }
 
                                         this.get()?.let { elevation ->
