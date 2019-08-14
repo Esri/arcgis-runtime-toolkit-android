@@ -316,7 +316,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private val locationDataSourceStatusChangedListener: LocationDataSource.StatusChangedListener =
         LocationDataSource.StatusChangedListener {
-            if (it.status == LocationDataSource.Status.FAILURE) {
+            if (it.status == LocationDataSource.Status.FAILED_TO_START) {
                 error = Exception(locationDataSource?.error)
                 isTracking = isUsingARCore
             }
