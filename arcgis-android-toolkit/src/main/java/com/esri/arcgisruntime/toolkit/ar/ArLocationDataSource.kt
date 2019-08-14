@@ -31,7 +31,6 @@ import android.os.Bundle
 import android.os.Handler
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.geometry.SpatialReference
-import com.esri.arcgisruntime.internal.jni.CoreLocationDataSource
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
 import com.esri.arcgisruntime.mapping.view.LocationDisplay.AutoPanMode
@@ -41,30 +40,25 @@ import java.util.Calendar
 import java.util.GregorianCalendar
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.math.PI
 
 /**
- * A type of LocationDataSource that requests location updates from the Android platforms location API.
- *
+ * A type of LocationDataSource that requests location updates from the Android platforms location API. To be used in
+ * conjunction with [ArcGISArView] when ARCore is unavailable.
  *
  * The Android framework's `android.location.LocationManager` is used to select one or more
  * `android.location.LocationProvider`s based on the parameters passed to the constructor. If both the GPS and the
  * network location providers are disabled, then the AndroidLocationDataSource will fail to start and an
  * IllegalStateException will be returned from [.getError].
  *
- *
  * To use this class, the app must be granted Location permissions in the Android platform settings.
  *
+ * @see ArcGISArView
  *
- * This class also implements the [AutoPanModeChangedListener] to listen to AutoPanMode change events. When the
- * AutoPanMode is changed to [AutoPanMode.COMPASS_NAVIGATION] mode, the update of heading information is enabled. Heading
- * information is not retrieved by this data source if a different AutoPanMode is set.
- *
- * @see LocationDisplay
- *
- * @since 100.0.0
+ * @since 100.6.0
  */
 
-// the factor used to filter out the less accuracy positions to reduce unnecessary update.
+// the factor used to filter out the less accurate positions to reduce unnecessary updates.
 private const val ACCURACY_THRESHOLD_FACTOR = 2.0
 private const val EXCEPTION_MSG = "No location provider found on the device" // NO I18N
 private const val NO_STARTED_MSG = "The location data source is not started yet" // NO I18N
@@ -79,16 +73,20 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     private var minimumUpdateTime: Long = 100 // 0.1 second
 
     // android location manager
-    private lateinit var locationManager: LocationManager
+    private val locationManager: LocationManager? by lazy {
+        context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager?
+    }
+
+    // Sensor manager to detect the device orientation for compass mode.
+    private val sensorManager: SensorManager? by lazy {
+        context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager?
+    }
 
     // store the current selected location provider;
     private val selectedLocationProviders = ArrayList<String>()
 
     // internal android location listener implementation.
     private var internalLocationListener: InternalLocationListener? = null
-
-    // Sensor manager to detect the device orientation for compass mode.
-    private var sensorManager: SensorManager? = null
 
     // internal listener to update the heading for compass mode.
     private var internalHeadingListener: InternalHeadingListener? = null
@@ -104,23 +102,18 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
     // The current AutoPanMode setting; volatile because it may be set and read by different threads
     @Volatile
-    private var mAutoPanMode: AutoPanMode? = null
+    private var autoPanMode: AutoPanMode? = null
 
     /**
-     * Creates a new instance of AndroidLocationDataSource based on the given provider Criteria, with the given minimum
-     * update frequency and minimum location distance change.
+     * Creates a new instance of ArLocationDataSource using the provided [context] and based on the given provider
+     * [criteria], with the given [minTime] update frequency and [minDistance] location distance change.
      *
-     * Not all location providers can return all types of location information. Use the
-     * `criteria` parameter to specify what kind of information or properties are required
-     * for this AndroidLocationDataSource; for example one that has low power usage, avoids network usage, or that
-     * includes bearing or altitude information.
+     * Not all location providers can return all types of location information. Use the criteria parameter to specify
+     * what kind of information or properties are required for this ArLocationDataSource; for example one that has low
+     * power usage, avoids network usage, or that includes bearing or altitude information.
      *
-     * @param context the Context that the MapView of the associated LocationDisplay is running in
-     * @param criteria the set of requirements that the selected location provider must satisfy
-     * @param minTime the minimum time interval at which location updates should be received, in milliseconds
-     * @param minDistance the minimum distance between which location updates should be received, in meters
-     * @throws IllegalArgumentException if minTime or minDistance is negative
-     * @since 100.0.0
+     * @throws IllegalArgumentException if [minTime] or [minDistance] is negative
+     * @since 100.6.0
      */
     constructor(context: Context, criteria: Criteria, minTime: Long, minDistance: Float) : this(context) {
         this.criteria = criteria
@@ -128,17 +121,13 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * Creates a new instance of AndroidLocationDataSource based on the given provider name, with the given minimum update
-     * frequency and minimum location distance change.
+     * Creates a new instance of ArLocationDataSource using the provided [context] and based on the given [provider] name,
+     * with the given [minTime] update frequency and [minDistance] location distance change.
      *
      * Provider names are defined as constants of the `android.location.LocationManager` class.
      *
-     * @param context the Context that the MapView of the associated LocationDisplay is running in
-     * @param provider the name of the underlying Android platform location provider to use, for example 'gps'
-     * @param minTime the minimum time interval at which location updates should be received, in milliseconds
-     * @param minDistance the minimum distance between which location updates should be received, in meters
      * @throws IllegalArgumentException if minTime or minDistance is negative
-     * @since 100.0.0
+     * @since 100.6.0
      */
     constructor(context: Context, provider: String, minTime: Long, minDistance: Float) : this(context) {
         this.provider = provider
@@ -146,16 +135,13 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * Changes the location update parameters to use the given provider Criteria, minimum update frequency, and minimum
-     * location distance change. Applies only when [.isStarted] is true.
+     * Changes the location update parameters to use the given provider [criteria], [minTime] update frequency, and
+     * [minDistance] location distance change. Applies only when [isStarted] is true.
      *
-     * @param criteria the set of requirements that the selected location provider must satisfy
-     * @param minTime the minimum time interval at which location updates should be received, in milliseconds
-     * @param minDistance the minimum distance between which location updates should be received, in meters
-     * @throws IllegalArgumentException if minTime or minDistance is negative, or criteria is null,or no location provider
-     * matches the criteria
-     * @throws IllegalStateException if no location provider is selected by the criteria, or data source is not started
-     * @since 100.0.0
+     * @throws IllegalArgumentException if [minTime] or [minDistance] is negative, or no location provider matches the
+     * [criteria]
+     * @throws IllegalStateException if no location provider is selected by the [criteria], or data source is not started
+     * @since 100.6.0
      */
     fun requestLocationUpdates(criteria: Criteria, minTime: Long, minDistance: Float) {
         if (!isStarted) {
@@ -174,16 +160,13 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * Changes the location update parameters to use the given provider name, minimum update frequency, and minimum
-     * location distance change. Applies only when [.isStarted] is true.
+     * Changes the location update parameters to use the given [provider] name, [minTime] update frequency, and
+     * [minDistance] location distance change. Applies only when [isStarted] is true.
      *
-     * @param provider the name of the underlying Android platform location provider to use, for example 'gps'
-     * @param minTime the minimum time interval at which location updates should be received, in milliseconds
-     * @param minDistance the minimum distance of location change at which location updates should be received, in meters
-     * @throws IllegalArgumentException if minTime or minDistance is negative, or criteria is null
-     * @throws IllegalStateException the specified location provider is not found in the location manager, or data source
+     * @throws IllegalArgumentException if [minTime] or [minDistance] is negative
+     * @throws IllegalStateException the specified location [provider] is not found in the location manager, or data source
      * is not started
-     * @since 100.0.0
+     * @since 100.6.0
      */
     fun requestLocationUpdates(provider: String, minTime: Long, minDistance: Float) {
         if (!isStarted) {
@@ -206,7 +189,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * This method requests that location updates are received from the underlying Android platform location providers;
      * if there is an error starting the location providers, it will be passed to [.onStartCompleted].
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     override fun onStart() {
         //LocationManager.requestLocationUpdates() must be called from a looper thread.
@@ -215,9 +198,6 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
         handler.post {
             var throwable: Throwable? = null
             try {
-                // Initializes the location manager;
-                initializeLocationManager()
-
                 // Selects the location provider
                 when {
                     criteria != null -> selectProviderByCriteria(criteria!!)
@@ -245,11 +225,11 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * This is because LocationManager.requestLocationUpdates(), which is called by startLocationProviders(),
      * must be called from a Looper thread.
      *
-     * @since 100.2.0
+     * @since 100.6.0
      */
     @SuppressLint("MissingPermission")
     private fun registerListeners() {
-        val lastKnownLocation = locationManager.getLastKnownLocation(selectedLocationProviders[0])
+        val lastKnownLocation = locationManager?.getLastKnownLocation(selectedLocationProviders[0])
         if (lastKnownLocation != null) {
             // reset the last known location'speed and bearing, original data no meaning anymore.
             lastKnownLocation.speed = 0f
@@ -268,10 +248,10 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * This method requests that location updates stop being received from the underlying Android platform location
      * providers.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     override fun onStop() {
-        locationManager.removeUpdates(internalLocationListener)
+        locationManager?.removeUpdates(internalLocationListener)
         internalLocationListener = null
 
         // stop update heading if it is started.
@@ -279,20 +259,9 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * Initialize the AndroidLocationDataSource.
+     * Validates [minTime] and [minDistance].
      *
-     * @since 100.0.0
-     */
-    private fun initializeLocationManager() {
-        locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    }
-
-    /**
-     * Validates the time and distance
-     *
-     * @param minTime no negative value
-     * @param minDistance no negative value
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun checkTimeDistanceParameters(minTime: Long, minDistance: Float) {
         minimumUpdateTime = minTime
@@ -302,7 +271,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     /**
      * Select the default location providers, network will be used first if it is available.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun selectProvidersByDefault() {
         // Check if the network location service enabled
@@ -318,13 +287,13 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
     /**
      * Called when the AutoPanMode is changed on the associated LocationDisplay, this method populates the heading
-     * ([LocationDisplay.getHeading]) on the associated LocationDisplay if the AutoPanMode is changed to
+     * [LocationDisplay.getHeading] on the associated LocationDisplay if the AutoPanMode is changed to
      * [AutoPanMode.COMPASS_NAVIGATION].
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     override fun onAutoPanModeChanged(autoPanModeEvent: LocationDisplay.AutoPanModeChangedEvent) {
-        mAutoPanMode = autoPanModeEvent.autoPanMode
+        autoPanMode = autoPanModeEvent.autoPanMode
         if (!isStarted) {
             return
         }
@@ -333,7 +302,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     /**
      * Starts the location provider.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     @SuppressLint("MissingPermission")
     private fun startLocationProviders() {
@@ -350,14 +319,12 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * this is to update the core [CoreLocationDataSource.updateLocation]
+     * Updates the CoreLocationDataSource location with the provided [location], indicating if the provided location is
+     * the [lastKnown] location.
      *
-     * @param location android Location object
-     * @param lastKnown indicating if the location is last one
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun updateCoreLocation(location: android.location.Location?, lastKnown: Boolean) {
-
         if (location != null) {
 
             // if new location accuracy is two times less than previous one, it will be ignored.
@@ -374,41 +341,35 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * Selects the [LocationProvider] based on the criteria
+     * Selects the [LocationProvider] based on the provided [criteria].
      *
-     * @param criteria Android Criteria object
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun selectProviderByCriteria(criteria: Criteria) {
         // Select the best provider based on the criteria
-        val provider = locationManager.getBestProvider(criteria, true /* only enabled returns */)
-        selectedLocationProviders.add(provider)
+        locationManager?.getBestProvider(criteria, true /* only enabled returns */)?.let {
+            selectedLocationProviders.add(it)
+        }
     }
 
     /**
-     * Selects the Location Provider based user defined.
+     * Selects the Location Provider based on the [userProvider].
      *
-     * @param userProvider the service name of the location provider
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun selectProviderByUserDefined(userProvider: String) {
         // use the user supplied location provider if it is defined, otherwise ignore it.
-        if (locationManager.allProviders.contains(userProvider)) {
+        if (locationManager != null && locationManager!!.allProviders.contains(userProvider)) {
             selectedLocationProviders.add(userProvider)
         }
     }
 
     /**
-     * Update the heading direction, it calls [CoreLocationDataSource.updateHeading] method.
+     * Start updating the heading direction.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun startUpdateHeading() {
-        if (sensorManager == null) {
-            // initialize your android device sensor capabilities
-            sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        }
-
         if (internalHeadingListener == null) {
             internalHeadingListener = InternalHeadingListener()
         }
@@ -427,11 +388,11 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     /**
      * Stops the sensor manager if it is started.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private fun stopUpdateHeading() {
-        if (sensorManager != null && internalHeadingListener != null) {
-            sensorManager!!.unregisterListener(internalHeadingListener)
+        sensorManager?.unregisterListener(internalHeadingListener)
+        if (internalHeadingListener != null) {
             internalHeadingListener = null
         }
         //reset the heading to NaN when the heading is not available.
@@ -441,16 +402,16 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     /**
      * The internal implementation [LocationListener] to listen the changes of Location.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private inner class InternalLocationListener : LocationListener {
 
-        private var mInnerAndroidLocation: android.location.Location? = null
+        private var innerAndroidLocation: android.location.Location? = null
 
         override fun onLocationChanged(location: android.location.Location) {
             // update the core location
             updateCoreLocation(location, false)
-            mInnerAndroidLocation = location
+            innerAndroidLocation = location
         }
 
         override fun onProviderEnabled(provider: String) {
@@ -463,7 +424,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
         override fun onProviderDisabled(provider: String) {
             // if only one provider is disabled, the last known location is display in the gray symbol.
             if (selectedLocationProviders.contains(provider) && selectedLocationProviders.size == 1) {
-                updateCoreLocation(mInnerAndroidLocation, true)
+                updateCoreLocation(innerAndroidLocation, true)
             }
         }
 
@@ -473,17 +434,16 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
                     startLocationProviders()
                 } else {
                     // out of service or temporarily unavailable.
-                    updateCoreLocation(mInnerAndroidLocation, true)
+                    updateCoreLocation(innerAndroidLocation, true)
                 }
             }
         }
     }
 
     /**
-     * Internal implementation for [SensorEventListener] to listen to changes in orientation of the device when in
-     * compass mode.
+     * Internal implementation for [SensorEventListener] to listen to changes in orientation of the device.
      *
-     * @since 100.0.0
+     * @since 100.6.0
      */
     private inner class InternalHeadingListener : SensorEventListener {
         private var gravity = FloatArray(3)
@@ -498,8 +458,6 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
         private var heading: Float = 0.toFloat()
 
-        private val rad2Deg = (180.0f / Math.PI).toFloat()
-
         override fun onSensorChanged(event: SensorEvent) {
             val type = event.sensor.type
 
@@ -512,7 +470,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
             val success = SensorManager.getRotationMatrix(rotationMatrixR, rotationMatrixI, gravity, geomagnetic)
             if (success) {
                 SensorManager.getOrientation(rotationMatrixR, orientation)
-                this.heading = orientation[0] * rad2Deg
+                this.heading = orientation[0].toDegrees()
                 if (this.heading < 0)
                     heading += 360f
 
@@ -573,3 +531,12 @@ fun android.location.Location.toEsriLocation(lastKnown: Boolean): LocationDataSo
         timeStamp
     )
 }
+
+/**
+ * Converts an angle measured in radians to an approximately
+ * equivalent angle measured in degrees.  The conversion from
+ * radians to degrees is generally inexact.
+ *
+ * @since 100.6.0
+ */
+fun Float.toDegrees(): Float = this * 180.0f / PI.toFloat()
