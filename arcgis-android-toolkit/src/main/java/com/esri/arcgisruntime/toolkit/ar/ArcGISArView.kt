@@ -84,7 +84,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private var arCoreInstallRequested: Boolean = false
 
     /**
-     * a background task used to poll ArCoreApk to set the value of ARCore availability for the current device.
+     * A background task used to poll ArCoreApk to set the value of ARCore availability for the current device.
      *
      * The ArCoreApk.getInstance().checkAvailability() function may inititate a query to a remote service to determine compatibility, in which case
      * it immediately returns ArCoreApk.Availability.UNKNOWN_CHECKING. This leaves us unable to determine if the device
@@ -105,7 +105,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * This property calls the observable function set on it during the the setting of the value. If necessary, the
+     * This property calls the observable function set on it during the setting of the value. If necessary, the
      * observable is used in tandem with [checkArCoreJob] due to the synchronous nature of the
      * ArCoreApk.getInstance().checkAvailability() function. If we know that the device is compatible with ARCore but
      * ARCore isn't currently installed, or the version is older than the version used in this library, we request an
@@ -248,7 +248,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
+     * sets the origin camera of the [TransformationMatrixCameraController] used in this view and resets the tracking if
+     * [isTracking] is true.
      *
      * @since 100.6.0
      */
