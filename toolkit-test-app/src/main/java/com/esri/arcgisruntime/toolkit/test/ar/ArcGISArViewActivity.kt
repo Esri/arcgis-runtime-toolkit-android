@@ -35,11 +35,12 @@ import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Surface
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
+import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
-import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnSurface
 
 /**
  * Activity to show usages of [ArcGISArView].
@@ -309,6 +310,26 @@ class ArcGISArViewActivity : AppCompatActivity() {
             }
         })
 
+        calibBtnSurface.setOnClickListener {
+            val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
+            val camera = tmcc.originCamera
+            val point = camera.location
+            val elevationFuture = arcGisArView.sceneView.scene.baseSurface.getElevationAsync(point)
+
+            // when the elevation has loaded
+            elevationFuture.addDoneListener {
+                val elevation = elevationFuture.get()
+                val surfacePoint =
+                    com.esri.arcgisruntime.geometry.Point(point.x, point.y, elevation + 1.8, point.spatialReference)
+                val surfaceCamera = Camera(
+                    surfacePoint,
+                    camera.heading,
+                    camera.pitch,
+                    camera.roll
+                )
+                tmcc.originCamera = surfaceCamera
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -353,7 +374,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
      * @since 100.6.0
      */
     private fun displayErrorMessage(error: String) {
-        Log.e(logTag, error)
+        Log.e("LOG", error)
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
 }

@@ -24,4 +24,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="TextView" />
+
+    <style name="TextView.CalibrationButton" parent="TextView">
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
+    </style>
+
 </resources>
