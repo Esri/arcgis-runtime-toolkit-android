@@ -319,6 +319,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             if (it.status == LocationDataSource.Status.FAILED_TO_START) {
                 error = Exception(locationDataSource?.error)
                 isTracking = isUsingARCore == ARCoreUsage.YES
+            } else if (it.status == LocationDataSource.Status.STARTED) {
+                isTracking = true
             }
         }
 
