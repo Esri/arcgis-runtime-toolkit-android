@@ -319,6 +319,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             if (it.status == LocationDataSource.Status.FAILED_TO_START) {
                 error = Exception(locationDataSource?.error)
                 isTracking = isUsingARCore == ARCoreUsage.YES
+            } else if (it.status == LocationDataSource.Status.STARTED) {
+                isTracking = true
             }
         }
 
@@ -606,7 +608,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
                     )
                 }.let {
-                    // we must flip the y and z co-ordinates due to the compensation quaternion
+                    // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                     TransformationMatrix.createWithQuaternionAndTranslation(
                         it.first.x.toDouble(),
                         it.first.y.toDouble(),
@@ -668,7 +670,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
                         theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray().let {
-                            // we must flip the y and z co-ordinates due to the compensation quaternion
+                            // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                             return TransformationMatrix.createWithQuaternionAndTranslation(
                                 0.0,
                                 0.0,
