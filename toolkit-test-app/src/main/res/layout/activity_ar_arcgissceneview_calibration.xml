@@ -28,7 +28,64 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/arcgis_ar_view_calibration_surface"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/calibBtnBigIncAlt"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/calibBtnBigIncAlt"
+        style="@style/TextView.CalibrationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/arcgis_ar_view_calibration_big_inc_alt"
+        app:layout_constraintEnd_toStartOf="@+id/calibBtnIncAlt"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/calibBtnSurface"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/calibBtnIncAlt"
+        style="@style/TextView.CalibrationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/arcgis_ar_view_calibration_inc_alt"
+        app:layout_constraintEnd_toStartOf="@id/calibBtnRotLft"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/calibBtnBigIncAlt"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/calibBtnRotLft"
+        style="@style/TextView.CalibrationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/arcgis_ar_view_calibration_rot_lft"
+        app:layout_constraintEnd_toStartOf="@id/calibBtnRotRht"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/calibBtnIncAlt"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/calibBtnRotRht"
+        style="@style/TextView.CalibrationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/arcgis_ar_view_calibration_rot_rht"
+        app:layout_constraintEnd_toStartOf="@id/calibBtnDecAlt"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/calibBtnRotLft"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/calibBtnDecAlt"
+        style="@style/TextView.CalibrationButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/arcgis_ar_view_calibration_dec_alt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/calibBtnRotRht"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

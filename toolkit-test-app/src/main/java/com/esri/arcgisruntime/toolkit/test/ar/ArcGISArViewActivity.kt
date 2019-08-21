@@ -311,24 +311,33 @@ class ArcGISArViewActivity : AppCompatActivity() {
         })
 
         calibBtnSurface.setOnClickListener {
-            val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
-            val camera = tmcc.originCamera
-            val point = camera.location
-            val elevationFuture = arcGisArView.sceneView.scene.baseSurface.getElevationAsync(point)
+            setElevationToSurface()
+        }
+    }
 
-            // when the elevation has loaded
-            elevationFuture.addDoneListener {
-                val elevation = elevationFuture.get()
-                val surfacePoint =
-                    com.esri.arcgisruntime.geometry.Point(point.x, point.y, elevation + 1.8, point.spatialReference)
-                val surfaceCamera = Camera(
-                    surfacePoint,
-                    camera.heading,
-                    camera.pitch,
-                    camera.roll
+    private fun setElevationToSurface() {
+        val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
+        val camera = tmcc.originCamera
+        val point = camera.location
+        val elevationFuture = arcGisArView.sceneView.scene.baseSurface.getElevationAsync(point)
+
+        // when the elevation has loaded
+        elevationFuture.addDoneListener {
+            val elevation = elevationFuture.get()
+            val surfacePoint =
+                com.esri.arcgisruntime.geometry.Point(
+                    point.x,
+                    point.y,
+                    elevation + 1.8,
+                    point.spatialReference
                 )
-                tmcc.originCamera = surfaceCamera
-            }
+            val surfaceCamera = Camera(
+                surfacePoint,
+                camera.heading,
+                camera.pitch,
+                camera.roll
+            )
+            tmcc.originCamera = surfaceCamera
         }
     }
 
