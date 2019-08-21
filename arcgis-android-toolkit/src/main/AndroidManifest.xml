@@ -18,6 +18,7 @@
     package="com.esri.arcgisruntime.toolkit">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- setting required to false to ensure that we don't enforce this feature on the users of the toolkit. Users can
      override by defining this as required in their own manifest. -->

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2019 Esri
   ~
@@ -14,11 +15,6 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/action_start_tracking"
-        android:title="@string/arcgis_sceneview_tabletop_activity_start_tracking" />
-    <item
-        android:id="@+id/action_stop_tracking"
-        android:title="@string/arcgis_sceneview_tabletop_activity_stop_tracking" />
-</menu>
+<resources>
+    <string name="arcgis_ar_view_ar_core_unsupported_error">ARCore is unsupported: %s</string>
+</resources>

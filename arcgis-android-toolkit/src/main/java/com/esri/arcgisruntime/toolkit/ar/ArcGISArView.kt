@@ -28,11 +28,12 @@ import android.hardware.SensorManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
+import com.esri.arcgisruntime.geometry.Point
+import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
 import com.esri.arcgisruntime.mapping.view.Camera
@@ -42,7 +43,6 @@ import com.esri.arcgisruntime.mapping.view.SpaceEffect
 import com.esri.arcgisruntime.mapping.view.TransformationMatrix
 import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.toolkit.R
-import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
@@ -50,11 +50,22 @@ import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
+import com.google.ar.sceneform.math.Quaternion
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 private const val CAMERA_PERMISSION_CODE = 0
+private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
+private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
 private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
@@ -64,7 +75,7 @@ private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
  *
  * @since 100.6.0
  */
-final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
+class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListener {
 
     /**
      * A Boolean defining whether a request for ARCore has been made. Used when requesting installation of ARCore.
@@ -72,6 +83,60 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private var arCoreInstallRequested: Boolean = false
+
+    /**
+     * A background task used to poll ArCoreApk to set the value of ARCore availability for the current device.
+     *
+     * The ArCoreApk.getInstance().checkAvailability() function may inititate a query to a remote service to determine compatibility, in which case
+     * it immediately returns ArCoreApk.Availability.UNKNOWN_CHECKING. This leaves us unable to determine if the device
+     * is compatible with ARCore until the value is retrieved. See: https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk#checkAvailability(android.content.Context)
+     *
+     * We should not be calling ArCoreApk.getInstance().requestInstall() until we've received one of the SUPPORTED_...
+     * values so this job allows us to do this. See: https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk#requestInstall(android.app.Activity,%20boolean)
+     *
+     * @since 100.6.0
+     */
+    private val checkArCoreJob: Job by lazy {
+        GlobalScope.launch {
+            while (ArCoreApk.getInstance().checkAvailability(context) == ArCoreApk.Availability.UNKNOWN_CHECKING) {
+                Thread.sleep(100)
+            }
+            arCoreAvailability = ArCoreApk.getInstance().checkAvailability(context)
+        }
+    }
+
+    /**
+     * This property calls the observable function set on it during the setting of the value. If necessary, the
+     * observable is used in tandem with [checkArCoreJob] due to the synchronous nature of the
+     * ArCoreApk.getInstance().checkAvailability() function. If we know that the device is compatible with ARCore but
+     * ARCore isn't currently installed, or the version is older than the version used in this library, we request an
+     * installation of ARCore using the current context. If ARCore is already installed, we set [isUsingARCore] to true.
+     *
+     * @since 100.6.0
+     */
+    private var arCoreAvailability: ArCoreApk.Availability? by Delegates.observable(null) { _: KProperty<*>, _: ArCoreApk.Availability?, newValue: ArCoreApk.Availability? ->
+        (context as? Activity)?.let { activity ->
+            when (newValue) {
+                ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = ARCoreUsage.YES
+                ArCoreApk.Availability.SUPPORTED_NOT_INSTALLED -> requestArCoreInstall(activity)
+                ArCoreApk.Availability.SUPPORTED_APK_TOO_OLD -> requestArCoreInstall(activity)
+                ArCoreApk.Availability.UNKNOWN_CHECKING -> {
+                    if (!checkArCoreJob.isActive) {
+                        checkArCoreJob.start()
+                    }
+                }
+                else -> {
+                    isUsingARCore = ARCoreUsage.NO
+                    error = Exception(
+                        resources.getString(
+                            R.string.arcgis_ar_view_ar_core_unsupported_error,
+                            newValue.toString()
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     /**
      * Defines whether the background of the [SceneView] is transparent or not. Enabling transparency allows for the
@@ -87,21 +152,32 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    var initialTransformationMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
+    var initialTransformationMatrix: TransformationMatrix =
+        TransformationMatrix.createIdentityMatrix()
+
+    /**
+     * A quaternion used to compensate for the pitch being 90 degrees on ARCore; used to calculate the current device
+     * transformation for each frame.
+     *
+     * @since 100.6.0
+     */
+    private val compensationQuaternion: Quaternion =
+        Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
+
+    /**
+     * Initial location from [locationDataSource].
+     *
+     * @since 100.6.0
+     */
+    private var initialLocation: Point? = null
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
      */
-    private val cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
-
-    /**
-     * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
-     *
-     * @since 100.6.0
-     */
-    private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
+    private val cameraController: TransformationMatrixCameraController =
+        TransformationMatrixCameraController()
 
     /**
      * Device Orientation to be used when setting Field of View. Default is [DeviceOrientation.PORTRAIT].
@@ -121,7 +197,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
-     * Convenience value used to retrieve device rotation from WindowManager.
+     * Convenience property used to retrieve device rotation from WindowManager.
      *
      * @since 100.6.0
      */
@@ -163,18 +239,133 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      *
      * @since 100.6.0
      */
-    val arSceneView: ArSceneView get() = _arSceneView
+    var arSceneView: ArSceneView? = null
+        get() = _arSceneView
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property
-     * sets the current viewpoint of the [SceneView] and the initial [TransformationMatrix] used in this view.
+     * sets the origin camera of the [TransformationMatrixCameraController] used in this view and resets the tracking if
+     * [isTracking] is true.
      *
      * @since 100.6.0
      */
-    var originCamera: Camera? = null
+    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         set(value) {
             field = value
             cameraController.originCamera = value
+            if (isTracking) {
+                resetTracking()
+            }
+        }
+
+    /**
+     * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
+     * location updates.
+     *
+     * Upon receiving an updated location, if we don't previously have an [initialLocation] we use that property to
+     * create a [Camera] and set that as the origin camera of the [cameraController]. On every other location update, if we
+     * are not using ARCore we set the current viewpoint camera of [sceneView] to a new Camera created from that location.
+     *
+     * @since 100.6.0
+     */
+    private val locationChangedListener: LocationDataSource.LocationChangedListener =
+        LocationDataSource.LocationChangedListener {
+            it.location.position?.let { location ->
+                if (initialLocation == null) {
+                    initialLocation = location
+                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
+                } else if (isUsingARCore != ARCoreUsage.YES) {
+                    val camera = sceneView.currentViewpointCamera.moveTo(location)
+                    sceneView.setViewpointCamera(camera)
+                }
+            }
+        }
+
+    /**
+     * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
+     * heading updates.
+     *
+     * Upon receiving an updated heading, if we're not using ARCore we create a [Camera] using the updated heading value
+     * and the pitch and roll of the current Camera from [sceneView]. We then set the current Camera of the [SceneView]
+     * to be the newly created Camera.
+     *
+     * @since 100.6.0
+     */
+    private val headingChangedListener: LocationDataSource.HeadingChangedListener =
+        LocationDataSource.HeadingChangedListener {
+            if (isUsingARCore != ARCoreUsage.YES && !it.heading.isNaN()) {
+                // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
+                val currentCamera = sceneView.currentViewpointCamera
+                val camera =
+                    currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
+                sceneView.setViewpointCamera(camera)
+            }
+        }
+
+    /**
+     * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
+     * LocationDataSource status updates.
+     *
+     * Upon receiving the status of the LocationDataSource, we check if the status indicates a failure. If so, we set the
+     * [error] property to an Exception that indicates the current error of the LocationDataSource.
+     *
+     * @since 100.6.0
+     */
+    private val locationDataSourceStatusChangedListener: LocationDataSource.StatusChangedListener =
+        LocationDataSource.StatusChangedListener {
+            if (it.status == LocationDataSource.Status.FAILED_TO_START) {
+                error = Exception(locationDataSource?.error)
+                isTracking = isUsingARCore == ARCoreUsage.YES
+            } else if (it.status == LocationDataSource.Status.STARTED) {
+                isTracking = true
+            }
+        }
+
+    /**
+     * The data source used to get device location.  Used either in conjunction with ARCore data or when ARCore is not
+     * present or not being used.
+     *
+     * @since 100.6.0
+     */
+    var locationDataSource: LocationDataSource? = null
+        set(value) {
+
+            field?.removeLocationChangedListener(locationChangedListener)
+            field?.removeHeadingChangedListener(headingChangedListener)
+            field?.removeStatusChangedListener(locationDataSourceStatusChangedListener)
+
+            value?.addLocationChangedListener(locationChangedListener)
+            value?.addHeadingChangedListener(headingChangedListener)
+            value?.addStatusChangedListener(locationDataSourceStatusChangedListener)
+
+            isTracking = (value != null).or(isUsingARCore == ARCoreUsage.YES)
+
+            field = value
+
+            if (isTracking) {
+                resetTracking()
+            }
+        }
+
+    /**
+     * Denotes whether tracking location and angles has started.
+     *
+     * @since 100.6.0
+     */
+    var isTracking: Boolean = false
+        private set(value) {
+            field = value
+        }
+
+    /**
+     * Denotes whether ARCore is being used to track location and angles.
+     *
+     * @since 100.6.0
+     */
+    var isUsingARCore: ARCoreUsage = ARCoreUsage.UNKNOWN
+        set(value) {
+            field = value
+            sceneView.isManualRenderingEnabled = value == ARCoreUsage.YES
         }
 
     /**
@@ -188,20 +379,6 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
         set(value) {
             field = value
             cameraController.translationFactor = value
-        }
-
-    /**
-     * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
-     * added to this View.
-     *
-     * @since 100.6.0
-     */
-    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
-        private set(value) {
-            field = value
-            onStateChangedListeners.forEach {
-                it.onStateChanged(value)
-            }
         }
 
     /**
@@ -248,51 +425,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     private fun initialize() {
         inflate(context, R.layout.layout_arcgisarview, this)
-        sceneView.isManualRenderingEnabled = true
+        checkArCoreAvailability()
         sceneView.cameraController = cameraController
         if (renderVideoFeed) {
             sceneView.spaceEffect = SpaceEffect.TRANSPARENT
             sceneView.atmosphereEffect = AtmosphereEffect.NONE
         }
         orientationEventListener.enable()
-    }
-
-    /**
-     * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
-     * lifecycle of this View is maintained by the LifecycleOwner.
-     *
-     * @since 100.6.0
-     */
-    fun startTracking() {
-        beginSession()
-    }
-
-    /**
-     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
-     * lifecycle of this View is maintained by the LifecycleOwner.
-     *
-     * @since 100.6.0
-     */
-    fun stopTracking() {
-        arSceneView.pause()
-    }
-
-    /**
-     * Add a [listener] to be notified of changes to the [ArcGISArViewState].
-     *
-     * @since 100.6.0
-     */
-    fun addOnStateChangedListener(listener: OnStateChangedListener) {
-        onStateChangedListeners.add(listener)
-    }
-
-    /**
-     * Remove a [listener] that was previously added.
-     *
-     * @since 100.6.0
-     */
-    fun removeOnStateChangedListener(listener: OnStateChangedListener) {
-        onStateChangedListeners.remove(listener)
     }
 
     /**
@@ -311,10 +450,13 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        beginSession()
+        startTracking()
     }
 
     /**
+     * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
+     * lifecycle of this View is maintained by the LifecycleOwner.
+     *
      * Checks the following prerequisites required for the use of ARCore:
      * - Checks for permissions required to use ARCore.
      * - Checks for an installation of ARCore.
@@ -330,58 +472,78 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    private fun beginSession() {
-        initializationStatus = ArcGISArViewState.INITIALIZING
+    fun startTracking() {
+        (context as? Activity)?.let { activity ->
+            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+            // permission on Android M and above, now is a good time to ask the user for it.
+            // when the permission is requested and the user responds to the request from the OS this is executed again
+            // during onResume()
+            if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(
+                    CAMERA_PERMISSION
+                )
+            ) {
+                requestPermission(
+                    activity,
+                    CAMERA_PERMISSION,
+                    CAMERA_PERMISSION_CODE
+                )
+                return
+            }
 
-        try {
-            (context as? Activity)?.let {
-                // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-                // permission on Android M and above, now is a good time to ask the user for it.
-                // when the permission is requested and the user responds to the request from the OS this is executed again
-                // during onResume()
-                if (!hasPermission(CAMERA_PERMISSION)) {
+            // Request location permission if user has provided a LocationDataSource
+            locationDataSource?.let {
+                if (!hasPermission(LOCATION_PERMISSION)) {
                     requestPermission(
-                        it,
-                        CAMERA_PERMISSION,
-                        CAMERA_PERMISSION_CODE
+                        activity,
+                        LOCATION_PERMISSION,
+                        LOCATION_PERMISSION_CODE
                     )
                     return
                 }
-
-                // when the installation is requested and the user responds to the request from the OS this is executed again
-                // during onResume()
-                if (ArCoreApk.getInstance().requestInstall(
-                        it,
-                        !arCoreInstallRequested
-                    ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
-                ) {
-                    arCoreInstallRequested = true
-                    return
-                }
             }
+        }
 
+        if (isUsingARCore == ARCoreUsage.YES) {
             // Create the session.
             Session(context).apply {
                 val config = Config(this)
                 config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
                 config.focusMode = Config.FocusMode.AUTO
                 this.configure(config)
-                arSceneView.setupSession(this)
+                arSceneView?.setupSession(this)
             }
-
-            arSceneView.scene.addOnUpdateListener(this)
-        } catch (e: Exception) {
-            error = e
-        }
-
-        if (error != null) {
-            Log.e(logTag, error!!.message)
-            initializationStatus = ArcGISArViewState.INITIALIZATION_FAILURE
+            arSceneView?.scene?.addOnUpdateListener(this)
+            arSceneView?.resume()
         } else {
-            arSceneView.resume()
-            sceneView.resume()
-            initializationStatus = ArcGISArViewState.INITIALIZED
+            removeView(arSceneView)
+            arSceneView = null
         }
+
+        sceneView.resume()
+        locationDataSource?.startAsync()
+        isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
+    }
+
+    /**
+     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
+     * lifecycle of this View is maintained by the LifecycleOwner.
+     *
+     * @since 100.6.0
+     */
+    fun stopTracking() {
+        arSceneView?.pause()
+        locationDataSource?.stop()
+        isTracking = false
+    }
+
+    /**
+     * Resets the [initialLocation] and starts tracking.
+     *
+     * @since 100.6.0
+     */
+    fun resetTracking() {
+        initialLocation = null
+        startTracking()
     }
 
     /**
@@ -391,40 +553,52 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     override fun onUpdate(frameTime: FrameTime?) {
-        arSceneView.arFrame?.camera?.let { arCamera ->
-            if (arCamera.trackingState == TrackingState.TRACKING) {
-                // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                Pair(
-                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
-                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
-                ).let {
+        arSceneView?.arFrame?.camera?.let { arCamera ->
+            if (isTracking) {
+                Quaternion.multiply(
+                    compensationQuaternion,
+                    Quaternion(
+                        arCamera.displayOrientedPose.rotationQuaternion[0],
+                        arCamera.displayOrientedPose.rotationQuaternion[1],
+                        arCamera.displayOrientedPose.rotationQuaternion[2],
+                        arCamera.displayOrientedPose.rotationQuaternion[3]
+                    )
+                ).let { compensatedQuaternion ->
+                    // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
+                    Pair(
+                        compensatedQuaternion,
+                        arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                    )
+                }.let {
+                    // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                     TransformationMatrix.createWithQuaternionAndTranslation(
-                        it.first[0],
-                        it.first[1],
-                        it.first[2],
-                        it.first[3],
+                        it.first.x.toDouble(),
+                        it.first.y.toDouble(),
+                        it.first.z.toDouble(),
+                        it.first.w.toDouble(),
                         it.second[0],
-                        it.second[1],
-                        it.second[2]
+                        -it.second[2],
+                        it.second[1]
                     )
                 }.let { arCoreTransMatrix ->
                     cameraController.transformationMatrix =
                         initialTransformationMatrix.addTransformation(arCoreTransMatrix)
                 }
-            }
-            arCamera.imageIntrinsics.let {
-                sceneView.setFieldOfViewFromLensIntrinsics(
-                    it.focalLength[0],
-                    it.focalLength[1],
-                    it.principalPoint[0],
-                    it.principalPoint[1],
-                    it.imageDimensions[0].toFloat(),
-                    it.imageDimensions[1].toFloat(),
-                    deviceOrientation
-                )
-            }
-            if (sceneView.isManualRenderingEnabled) {
-                sceneView.renderFrame()
+
+                arCamera.imageIntrinsics.let {
+                    sceneView.setFieldOfViewFromLensIntrinsics(
+                        it.focalLength[0],
+                        it.focalLength[1],
+                        it.principalPoint[0],
+                        it.principalPoint[1],
+                        it.imageDimensions[0].toFloat(),
+                        it.imageDimensions[1].toFloat(),
+                        deviceOrientation
+                    )
+                }
+                if (isUsingARCore == ARCoreUsage.YES && sceneView.isManualRenderingEnabled) {
+                    sceneView.renderFrame()
+                }
             }
         }
     }
@@ -439,7 +613,8 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      */
     fun setInitialTransformationMatrix(screenPoint: android.graphics.Point): Boolean {
         hitTest(screenPoint)?.let {
-            initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+            initialTransformationMatrix =
+                TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
             return true
         }
         return false
@@ -453,25 +628,20 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     private fun hitTest(point: android.graphics.Point): TransformationMatrix? {
-        val frame = arSceneView.arFrame
-
-        if (frame != null) {
+        arSceneView?.arFrame?.let { frame ->
             if (frame.camera.trackingState == TrackingState.TRACKING) {
                 frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
-                        // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                        Pair(
-                            theHitResult.hitPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
-                            theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray()
-                        ).let {
+                        theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray().let {
+                            // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                             return TransformationMatrix.createWithQuaternionAndTranslation(
-                                it.first[0],
-                                it.first[1],
-                                it.first[2],
-                                it.first[3],
-                                it.second[0],
-                                it.second[1],
-                                it.second[2]
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0,
+                                it[0],
+                                -it[2],
+                                it[1]
                             )
                         }
                     }
@@ -487,7 +657,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     override fun onPause(owner: LifecycleOwner) {
-        arSceneView.pause()
+        stopTracking()
         sceneView.pause()
         super.onPause(owner)
     }
@@ -500,7 +670,7 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
      * @since 100.6.0
      */
     override fun onDestroy(owner: LifecycleOwner) {
-        arSceneView.destroy()
+        arSceneView?.destroy()
         // disposing of SceneView causes the render surface, which is shared with ArSceneView, to become invalid and
         // rendering of the camera fails.
         // TODO https://devtopia.esri.com/runtime/java/issues/1170
@@ -509,12 +679,46 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
+     * This function sets the [arCoreAvailability] property by calling the ArCoreApk class and requesting the ArCore
+     * availability using the provided function.
+     *
+     * @since 100.6.0
+     */
+    private fun checkArCoreAvailability() {
+        arCoreAvailability = ArCoreApk.getInstance().checkAvailability(context)
+    }
+
+    /**
+     * Requests installation of ARCore using ArCoreApk. Should only be called once we know the device is suopported by
+     * ARCore.
+     *
+     * @since 100.6.0
+     */
+    private fun requestArCoreInstall(activity: Activity) {
+        try {
+            if (ArCoreApk.getInstance().requestInstall(
+                    activity,
+                    !arCoreInstallRequested
+                ) == ArCoreApk.InstallStatus.INSTALL_REQUESTED
+            ) {
+                arCoreInstallRequested = true
+                return
+            }
+        } catch (e: Exception) {
+            error = e
+        }
+    }
+
+    /**
      * Check to see we have been granted the necessary [permission] using the current [Context].
      *
      * @since 100.6.0
      */
     private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     /**
@@ -527,52 +731,30 @@ final class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdate
     }
 
     /**
-     * An interface that allows a user to receive updates of the state of [ArcGISArView].
+     * A class representing the usage of ARCore.
      *
      * @since 100.6.0
      */
-    interface OnStateChangedListener {
+    enum class ARCoreUsage {
         /**
-         * Called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
+         * Usage is unknown.
          *
          * @since 100.6.0
          */
-        fun onStateChanged(state: ArcGISArViewState)
-    }
-
-    /**
-     * A class representing the available states of [ArcGISArView].
-     *
-     * @since 100.6.0
-     */
-    enum class ArcGISArViewState {
-        /**
-         * Used to indicate that the [ArcGISArView] has not yet begun initializing.
-         *
-         * @since 100.6.0
-         */
-        NOT_INITIALIZED,
+        UNKNOWN,
 
         /**
-         * Used to indicate that the [ArcGISArView] is initializing.
+         * Usage is known and ARCore is currently being used.
          *
          * @since 100.6.0
          */
-        INITIALIZING,
+        YES,
 
         /**
-         * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
-         * and the [SceneView] has resumed.
+         * Usage is known and ARCore is not currently being used.
          *
          * @since 100.6.0
          */
-        INITIALIZED,
-
-        /**
-         * Used to indicate that an [Exception] has occurred during initialization.
-         *
-         * @since 100.6.0
-         */
-        INITIALIZATION_FAILURE
+        NO
     }
 }

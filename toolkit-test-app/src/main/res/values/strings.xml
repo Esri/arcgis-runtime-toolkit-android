@@ -28,21 +28,13 @@
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
 
-    <!-- ArcGISSceneView -->
-    <string name="arcgis_sceneview_activity_label">ArcGISSceneView</string>
-    <string name="arcgis_sceneview_collector_activity_label">ArcGISSceneView Collector</string>
-    <string name="arcgis_sceneview_tabletop_activity_label">ArcGISSceneView Table Top</string>
-    <string name="arcgisarview_error">An error has occurred with ArcGISArView: %s</string>
-    <string name="arcgisarview_permission_required">The following permission is required: %s</string>
-    <string name="arcgisarview_arcore_install_required">ARCore is required to use ArcGISARView</string>
-    <string name="arcgis_sceneview_activity_start_tracking">Start Tracking</string>
-    <string name="arcgis_sceneview_activity_stop_tracking">Stop Tracking</string>
-    <string name="arcgis_sceneview_activity_toggle_manual_rendering">Toggle Manual Rendering</string>
-    <string name="arcgis_sceneview_activity_manual_rendering_enabled">Manual Rendering Enabled: %b</string>
-    <string name="arcgis_sceneview_tabletop_activity_start_tracking">Start Tracking</string>
-    <string name="arcgis_sceneview_tabletop_activity_stop_tracking">Stop Tracking</string>
-    <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer">Loading Point Cloud Layer..</string>
-    <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_complete">Loading Point Cloud Layer Complete</string>
-    <string name="arcgis_sceneview_tabletop_activity_loading_point_cloud_layer_failed">Loading Point Cloud Layer Failed: %s</string>
+    <!-- ArcGISArSceneView -->
+    <string name="arcgis_ar_view_activity_label">ArcGISArView</string>
+    <string name="arcgis_ar_view_scene_streets">Streets - Full Scale</string>
+    <string name="arcgis_ar_view_scene_point_cloud">Point Cloud - Tabletop</string>
+    <string name="arcgis_ar_view_scene_yosemite">Yosemite - Tabletop</string>
+    <string name="arcgis_ar_view_scene_border">US - Mexico Border - Tabletop</string>
+    <string name="arcgis_ar_view_scene_empty">Empty - Full Scale</string>
+    <string name="arcgis_ar_view_redlands_fire_hydrants">Redlands Fire Hydrants - Full Scale</string>
 
 </resources>
