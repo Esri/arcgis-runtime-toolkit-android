@@ -56,8 +56,9 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.ca
  */
 class ArcGISArViewActivity : AppCompatActivity() {
 
-    private val androidLocationDataSource: LocationDataSource by lazy {
-        AndroidLocationDataSource(this)
+    private val androidLocationDataSource: LocationDataSource
+    get() {
+        return AndroidLocationDataSource(this)
     }
 
     /**
