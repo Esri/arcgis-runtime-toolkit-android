@@ -56,10 +56,7 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.ca
  */
 class ArcGISArViewActivity : AppCompatActivity() {
 
-    private val androidLocationDataSource: LocationDataSource
-    get() {
-        return AndroidLocationDataSource(this)
-    }
+    private val androidLocationDataSource: LocationDataSource get() = AndroidLocationDataSource(this)
 
     /**
      * AR Mode: Full-Scale AR
@@ -93,12 +90,12 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 addElevationSource(this)
                 this.operationalLayers.add(layer)
 
-                layer.addDoneLoadingListener {
+                layer.addDoneLoadingListener doneLoadingLayer@{
                     layer.loadError?.let {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
                         }
-                        return@addDoneLoadingListener
+                        return@doneLoadingLayer
                     }
 
                     val extent = layer.fullExtent
@@ -131,11 +128,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
                     IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_Yosemite_Sample_Integrated_Mesh_scene_layer/SceneServer")
                 this.operationalLayers.add(layer)
 
-                layer.addDoneLoadingListener {
+                layer.addDoneLoadingListener doneLoadingLayer@{
                     layer.loadError?.let {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
-                            return@addDoneLoadingListener
+                            return@doneLoadingLayer
                         }
                     }
 
@@ -144,23 +141,23 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                     val elevationSource = baseSurface.elevationSources.first()
 
-                    elevationSource.addDoneLoadingListener {
+                    elevationSource.addDoneLoadingListener doneLoadingElevationSource@{
                         loadError?.let {
                             it.message?.let { errorMessage ->
                                 displayErrorMessage(errorMessage)
                             }
-                            return@addDoneLoadingListener
+                            return@doneLoadingElevationSource
                         }
 
                         val elevationFuture = this.baseSurface.getElevationAsync(center)
 
                         // when the elevation has loaded
-                        elevationFuture.addDoneListener {
+                        elevationFuture.addDoneListener doneLoadingElevation@{
                             loadError?.let {
                                 it.message?.let { errorMessage ->
                                     displayErrorMessage(errorMessage)
                                 }
-                                return@addDoneListener
+                                return@doneLoadingElevation
                             }
 
                             val elevation = elevationFuture.get()
@@ -196,11 +193,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 val layer =
                     IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_SW_US_Sample_Integrated_Mesh_scene_layer/SceneServer")
                 this.operationalLayers.add(layer)
-                this.addDoneLoadingListener {
+                this.addDoneLoadingListener doneLoadingScene@{
                     this.loadError?.let {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
-                            return@addDoneLoadingListener
+                            return@doneLoadingScene
                         }
                     }
 
@@ -208,22 +205,22 @@ class ArcGISArViewActivity : AppCompatActivity() {
                     val center = extent.center
 
                     val elevationSource = baseSurface.elevationSources.first()
-                    elevationSource.addDoneLoadingListener {
+                    elevationSource.addDoneLoadingListener doneLoadingElevationSource@{
                         loadError?.let {
                             it.message?.let { errorMessage ->
                                 displayErrorMessage(errorMessage)
                             }
-                            return@addDoneLoadingListener
+                            return@doneLoadingElevationSource
                         }
 
                         val elevationFuture = this.baseSurface.getElevationAsync(center)
                         // when the elevation has loaded
-                        elevationFuture.addDoneListener {
+                        elevationFuture.addDoneListener doneLoadingElevation@{
                             loadError?.let {
                                 it.message?.let { errorMessage ->
                                     displayErrorMessage(errorMessage)
                                 }
-                                return@addDoneListener
+                                return@doneLoadingElevation
                             }
 
                             val elevation = elevationFuture.get()
