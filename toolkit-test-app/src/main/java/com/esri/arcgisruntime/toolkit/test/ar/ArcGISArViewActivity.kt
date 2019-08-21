@@ -49,8 +49,9 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
  */
 class ArcGISArViewActivity : AppCompatActivity() {
 
-    private val androidLocationDataSource: LocationDataSource by lazy {
-        ArLocationDataSource(this)
+    private val androidLocationDataSource: LocationDataSource
+    get() {
+        return ArLocationDataSource(this)
     }
 
     /**
