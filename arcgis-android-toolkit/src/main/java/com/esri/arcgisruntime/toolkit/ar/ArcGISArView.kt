@@ -180,13 +180,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         TransformationMatrixCameraController()
 
     /**
-     * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
-     *
-     * @since 100.6.0
-     */
-    private val onStateChangedListeners: MutableList<OnStateChangedListener> = ArrayList()
-
-    /**
      * Device Orientation to be used when setting Field of View. Default is [DeviceOrientation.PORTRAIT].
      *
      * @since 100.6.0
@@ -389,20 +382,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
     /**
-     * Represents the current status of this View. When this property set, notifies any [OnStateChangedListener] currently
-     * added to this View.
-     *
-     * @since 100.6.0
-     */
-    var initializationStatus: ArcGISArViewState = ArcGISArViewState.NOT_INITIALIZED
-        private set(value) {
-            field = value
-            onStateChangedListeners.forEach {
-                it.onStateChanged(value)
-            }
-        }
-
-    /**
      * Exposes an [Exception] should it occur when using this view.
      *
      * @since 100.6.0
@@ -456,24 +435,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Add a [listener] to be notified of changes to the [ArcGISArViewState].
-     *
-     * @since 100.6.0
-     */
-    fun addOnStateChangedListener(listener: OnStateChangedListener) {
-        onStateChangedListeners.add(listener)
-    }
-
-    /**
-     * Remove a [listener] that was previously added.
-     *
-     * @since 100.6.0
-     */
-    fun removeOnStateChangedListener(listener: OnStateChangedListener) {
-        onStateChangedListeners.remove(listener)
-    }
-
-    /**
      * Register this View as a [DefaultLifecycleObserver] to the provided [lifecycle].
      *
      * @since 100.6.0
@@ -512,8 +473,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     fun startTracking() {
-        initializationStatus = ArcGISArViewState.INITIALIZING
-
         (context as? Activity)?.let { activity ->
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
@@ -563,7 +522,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         sceneView.resume()
         locationDataSource?.startAsync()
         isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
-        initializationStatus = ArcGISArViewState.INITIALIZED
     }
 
     /**
@@ -773,20 +731,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * An interface that allows a user to receive updates of the state of [ArcGISArView].
-     *
-     * @since 100.6.0
-     */
-    interface OnStateChangedListener {
-        /**
-         * Called when the state of [ArcGISArView] changes using an appropriate [state] of type [ArcGISArViewState].
-         *
-         * @since 100.6.0
-         */
-        fun onStateChanged(state: ArcGISArViewState)
-    }
-
-    /**
      * A class representing the usage of ARCore.
      *
      * @since 100.6.0
@@ -812,41 +756,5 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
          * @since 100.6.0
          */
         NO
-    }
-
-    /**
-     * A class representing the available states of [ArcGISArView].
-     *
-     * @since 100.6.0
-     */
-    enum class ArcGISArViewState {
-        /**
-         * Used to indicate that the [ArcGISArView] has not yet begun initializing.
-         *
-         * @since 100.6.0
-         */
-        NOT_INITIALIZED,
-
-        /**
-         * Used to indicate that the [ArcGISArView] is initializing.
-         *
-         * @since 100.6.0
-         */
-        INITIALIZING,
-
-        /**
-         * Used to indicate that the [ArcGISArView] has initialized correctly, an ARCore [Session] has begun
-         * and the [SceneView] has resumed.
-         *
-         * @since 100.6.0
-         */
-        INITIALIZED,
-
-        /**
-         * Used to indicate that an [Exception] has occurred during initialization.
-         *
-         * @since 100.6.0
-         */
-        INITIALIZATION_FAILURE
     }
 }
