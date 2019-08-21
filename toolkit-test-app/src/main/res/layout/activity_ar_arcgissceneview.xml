@@ -16,14 +16,16 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#55FFFF">
+    android:layout_height="match_parent">
 
     <com.esri.arcgisruntime.toolkit.ar.ArcGISArView
         android:id="@+id/arcGisArView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include layout="@layout/activity_ar_arcgissceneview_calibration" />
+    <include
+        android:id="@+id/calibrationLayout"
+        layout="@layout/activity_ar_arcgissceneview_calibration"
+        android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>

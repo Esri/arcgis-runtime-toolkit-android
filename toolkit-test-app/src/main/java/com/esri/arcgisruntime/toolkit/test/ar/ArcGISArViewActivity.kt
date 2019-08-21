@@ -24,6 +24,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.widget.Toast
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
@@ -40,6 +41,12 @@ import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.calibrationLayout
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnBigIncAlt
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnDecAlt
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnIncAlt
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnRotLft
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnRotRht
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnSurface
 
 /**
@@ -278,7 +285,10 @@ class ArcGISArViewActivity : AppCompatActivity() {
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite)),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border)),
             SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty)),
-            SceneInfo(redlandsFireHydrantsScene(), getString(R.string.arcgis_ar_view_redlands_fire_hydrants))
+            SceneInfo(
+                redlandsFireHydrantsScene(),
+                getString(R.string.arcgis_ar_view_redlands_fire_hydrants)
+            )
         )
     }
 
@@ -295,7 +305,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
         arcGisArView.registerLifecycle(lifecycle)
         currentScene = scenes[0]
 
-        arcGisArView.sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
+        arcGisArView.sceneView.setOnTouchListener(object :
+            DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
@@ -312,6 +323,26 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
         calibBtnSurface.setOnClickListener {
             setElevationToSurface()
+        }
+
+        calibBtnBigIncAlt.setOnClickListener {
+            changeCameraAltitude(10.0)
+        }
+
+        calibBtnIncAlt.setOnClickListener {
+            changeCameraAltitude(0.1)
+        }
+
+        calibBtnRotLft.setOnClickListener {
+            rotateCamera(-1.0)
+        }
+
+        calibBtnRotRht.setOnClickListener {
+            rotateCamera(1.0)
+        }
+
+        calibBtnDecAlt.setOnClickListener {
+            changeCameraAltitude(-1.0)
         }
     }
 
@@ -339,6 +370,19 @@ class ArcGISArViewActivity : AppCompatActivity() {
             )
             tmcc.originCamera = surfaceCamera
         }
+    }
+
+    private fun changeCameraAltitude(deltaAltitude: Double) {
+        val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
+        val camera = tmcc.originCamera
+        tmcc.originCamera = camera.elevate(deltaAltitude)
+    }
+
+    private fun rotateCamera(rotationDelta: Double) {
+        val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
+        val camera = tmcc.originCamera
+        tmcc.originCamera =
+            camera.rotateTo(camera.heading + rotationDelta, camera.pitch, camera.roll)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -374,7 +418,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
     }
 
     private fun toggleCalibration() {
-        // TODO
+        calibrationLayout.visibility =
+            if (calibrationLayout.visibility == View.GONE) View.VISIBLE else View.GONE
     }
 
     /**
