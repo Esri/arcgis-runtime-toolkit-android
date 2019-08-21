@@ -48,8 +48,8 @@ import kotlin.math.PI
  *
  * The Android framework's `android.location.LocationManager` is used to select one or more
  * `android.location.LocationProvider`s based on the parameters passed to the constructor. If both the GPS and the
- * network location providers are disabled, then the AndroidLocationDataSource will fail to start and an
- * IllegalStateException will be returned from [.getError].
+ * network location providers are disabled, then the ArLocationDataSource will fail to start and an
+ * IllegalStateException will be returned from [LocationDataSource.getError].
  *
  * To use this class, the app must be granted Location permissions in the Android platform settings.
  *
@@ -60,9 +60,10 @@ import kotlin.math.PI
 
 // the factor used to filter out the less accurate positions to reduce unnecessary updates.
 private const val ACCURACY_THRESHOLD_FACTOR = 2.0
-private const val EXCEPTION_MSG = "No location provider found on the device" // NO I18N
-private const val NO_STARTED_MSG = "The location data source is not started yet" // NO I18N
-private const val NO_PROVIDER_MSG = "No provider found for the given name : %s" // NO I18N;
+private const val EXCEPTION_MSG = "No location provider found on the device"
+private const val NO_STARTED_MSG = "The location data source is not started yet"
+private const val NO_PROVIDER_MSG = "No provider found for the given name : %s"
+private const val PARAMETER_OUT_OF_BOUNDS_MSG = "Parameter %s is out of bounds"
 
 class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     AutoPanModeChangedListener {
@@ -274,7 +275,19 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * @since 100.6.0
      */
     private fun checkTimeDistanceParameters(minTime: Long, minDistance: Float) {
+        if (minTime < 0) {
+            throw IllegalArgumentException(String.format(PARAMETER_OUT_OF_BOUNDS_MSG, "minTime"))
+        }
         minimumUpdateTime = minTime
+
+        if (minDistance < 0) {
+            throw IllegalArgumentException(
+                String.format(
+                    PARAMETER_OUT_OF_BOUNDS_MSG,
+                    "minDistance"
+                )
+            )
+        }
         minimumUpdateDistance = minDistance
     }
 
@@ -524,9 +537,14 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 }
 
-fun createCalendarFromTimeInMillis(milliseconds: Long): Calendar {
+/**
+ * Creates a Calendar with standard TimeZone and Locale from a [timeInMillis].
+ *
+ * @since 100.6.0
+ */
+fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
     val ret = GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.ENGLISH)
-    ret.timeInMillis = milliseconds
+    ret.timeInMillis = timeInMillis
     return ret
 }
 
