@@ -113,7 +113,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.SUPPORTED_INSTALLED) { _, _, newValue ->
+    private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.UNKNOWN_CHECKING) { _, _, newValue ->
         (context as? Activity)?.let { activity ->
             when (newValue) {
                 ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = ARCoreUsage.YES
