@@ -64,7 +64,8 @@ private const val EXCEPTION_MSG = "No location provider found on the device" // 
 private const val NO_STARTED_MSG = "The location data source is not started yet" // NO I18N
 private const val NO_PROVIDER_MSG = "No provider found for the given name : %s" // NO I18N;
 
-class ArLocationDataSource(private val context: Context) : LocationDataSource(), AutoPanModeChangedListener {
+class ArLocationDataSource(private val context: Context) : LocationDataSource(),
+    AutoPanModeChangedListener {
 
     // The minimum distance to change updates in meters
     private var minimumUpdateDistance = 0f // meters
@@ -115,7 +116,9 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * @throws IllegalArgumentException if [minTime] or [minDistance] is negative
      * @since 100.6.0
      */
-    constructor(context: Context, criteria: Criteria, minTime: Long, minDistance: Float) : this(context) {
+    constructor(context: Context, criteria: Criteria, minTime: Long, minDistance: Float) : this(
+        context
+    ) {
         this.criteria = criteria
         checkTimeDistanceParameters(minTime, minDistance)
     }
@@ -129,7 +132,9 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * @throws IllegalArgumentException if minTime or minDistance is negative
      * @since 100.6.0
      */
-    constructor(context: Context, provider: String, minTime: Long, minDistance: Float) : this(context) {
+    constructor(context: Context, provider: String, minTime: Long, minDistance: Float) : this(
+        context
+    ) {
         this.provider = provider
         checkTimeDistanceParameters(minTime, minDistance)
     }
@@ -207,7 +212,12 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
                 // if no location providers are available or enabled, the starting process fails;
                 if (selectedLocationProviders.isEmpty()) {
-                    throw IllegalStateException(String.format(NO_PROVIDER_MSG, "selectedLocationProviders"))
+                    throw IllegalStateException(
+                        String.format(
+                            NO_PROVIDER_MSG,
+                            "selectedLocationProviders"
+                        )
+                    )
                 }
 
                 //the LocationListeners need the caller thread having a Looper.
@@ -274,14 +284,16 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
      * @since 100.6.0
      */
     private fun selectProvidersByDefault() {
-        // Check if the network location service enabled
-        if (locationManager!!.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            selectedLocationProviders.add(LocationManager.NETWORK_PROVIDER)
-        }
+        locationManager?.let {
+            // Check if the network location service enabled
+            if (it.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                selectedLocationProviders.add(LocationManager.NETWORK_PROVIDER)
+            }
 
-        // check if the GPS location service enabled,if true, use it too.
-        if (locationManager!!.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            selectedLocationProviders.add(LocationManager.GPS_PROVIDER)
+            // check if the GPS location service enabled,if true, use it too.
+            if (it.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                selectedLocationProviders.add(LocationManager.GPS_PROVIDER)
+            }
         }
     }
 
@@ -311,8 +323,10 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
         }
 
         for (provider in selectedLocationProviders) {
-            locationManager!!.requestLocationUpdates(
-                provider, minimumUpdateTime, minimumUpdateDistance,
+            locationManager?.requestLocationUpdates(
+                provider,
+                minimumUpdateTime,
+                minimumUpdateDistance,
                 internalLocationListener
             )
         }
@@ -329,7 +343,8 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
             // if new location accuracy is two times less than previous one, it will be ignored.
             if (lastLocation != null) {
-                val accuracyThreshold = lastLocation!!.horizontalAccuracy * ACCURACY_THRESHOLD_FACTOR
+                val accuracyThreshold =
+                    lastLocation!!.horizontalAccuracy * ACCURACY_THRESHOLD_FACTOR
                 if (location.accuracy > accuracyThreshold)
                     return
             }
@@ -374,15 +389,19 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
             internalHeadingListener = InternalHeadingListener()
         }
 
-        // most of device has one or both hardware-sensors.
-        sensorManager!!.registerListener(
-            internalHeadingListener,
-            sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI
-        )
-        sensorManager!!.registerListener(
-            internalHeadingListener,
-            sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_UI
-        )
+        sensorManager?.let {
+            // most of device has one or both hardware-sensors.
+            it.registerListener(
+                internalHeadingListener,
+                it.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_UI
+            )
+            it.registerListener(
+                internalHeadingListener,
+                it.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
     }
 
     /**
@@ -467,7 +486,12 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
                 geomagnetic = lowPassFilter(event.values.clone(), geomagnetic)
             }
 
-            val success = SensorManager.getRotationMatrix(rotationMatrixR, rotationMatrixI, gravity, geomagnetic)
+            val success = SensorManager.getRotationMatrix(
+                rotationMatrixR,
+                rotationMatrixI,
+                gravity,
+                geomagnetic
+            )
             if (success) {
                 SensorManager.getOrientation(rotationMatrixR, orientation)
                 this.heading = orientation[0].toDegrees()
