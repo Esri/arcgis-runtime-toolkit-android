@@ -256,7 +256,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
+    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         set(value) {
             field = value
             cameraController.originCamera = value
@@ -280,7 +280,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             it.location.position?.let { location ->
                 if (initialLocation == null) {
                     initialLocation = location
-                    cameraController.originCamera = Camera(location, 0.0, 90.0, 0.0)
+                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
                 } else if (isUsingARCore != ARCoreUsage.YES) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
                     sceneView.setViewpointCamera(camera)
