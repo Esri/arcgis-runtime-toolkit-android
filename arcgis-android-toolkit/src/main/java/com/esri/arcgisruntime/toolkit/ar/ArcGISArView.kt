@@ -113,7 +113,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.SUPPORTED_INSTALLED) { _, _, newValue ->
+    private var arCoreAvailability: ArCoreApk.Availability by Delegates.observable(ArCoreApk.Availability.UNKNOWN_CHECKING) { _, _, newValue ->
         (context as? Activity)?.let { activity ->
             when (newValue) {
                 ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = ARCoreUsage.YES
@@ -151,7 +151,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var initialTransformationMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
+    var initialTransformationMatrix: TransformationMatrix =
+        TransformationMatrix.createIdentityMatrix()
 
     /**
      * A quaternion used to compensate for the pitch being 90 degrees on ARCore; used to calculate the current device
@@ -174,7 +175,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    private val cameraController: TransformationMatrixCameraController = TransformationMatrixCameraController()
+    private val cameraController: TransformationMatrixCameraController =
+        TransformationMatrixCameraController()
 
     /**
      * A list of [OnStateChangedListener] used to notify when the state of this view has changed.
@@ -300,7 +302,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             if (isUsingARCore != ARCoreUsage.YES && !it.heading.isNaN()) {
                 // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
                 val currentCamera = sceneView.currentViewpointCamera
-                val camera = currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
+                val camera =
+                    currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
                 sceneView.setViewpointCamera(camera)
             }
         }
@@ -319,6 +322,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             if (it.status == LocationDataSource.Status.FAILED_TO_START) {
                 error = Exception(locationDataSource?.error)
                 isTracking = isUsingARCore == ARCoreUsage.YES
+            } else if (it.status == LocationDataSource.Status.STARTED) {
+                isTracking = true
             }
         }
 
@@ -330,17 +335,16 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     var locationDataSource: LocationDataSource? = null
         set(value) {
-            isTracking = if (value == null) {
-                field?.removeLocationChangedListener(locationChangedListener)
-                field?.removeHeadingChangedListener(headingChangedListener)
-                field?.removeStatusChangedListener(locationDataSourceStatusChangedListener)
-                isUsingARCore == ARCoreUsage.YES
-            } else {
-                value.addLocationChangedListener(locationChangedListener)
-                value.addHeadingChangedListener(headingChangedListener)
-                value.addStatusChangedListener(locationDataSourceStatusChangedListener)
-                true
-            }
+
+            field?.removeLocationChangedListener(locationChangedListener)
+            field?.removeHeadingChangedListener(headingChangedListener)
+            field?.removeStatusChangedListener(locationDataSourceStatusChangedListener)
+
+            value?.addLocationChangedListener(locationChangedListener)
+            value?.addHeadingChangedListener(headingChangedListener)
+            value?.addStatusChangedListener(locationDataSourceStatusChangedListener)
+
+            isTracking = (value != null).or(isUsingARCore == ARCoreUsage.YES)
 
             field = value
 
@@ -516,7 +520,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             // permission on Android M and above, now is a good time to ask the user for it.
             // when the permission is requested and the user responds to the request from the OS this is executed again
             // during onResume()
-            if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
+            if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(
+                    CAMERA_PERMISSION
+                )
+            ) {
                 requestPermission(
                     activity,
                     CAMERA_PERMISSION,
@@ -606,7 +613,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
                     )
                 }.let {
-                    // we must flip the y and z co-ordinates due to the compensation quaternion
+                    // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                     TransformationMatrix.createWithQuaternionAndTranslation(
                         it.first.x.toDouble(),
                         it.first.y.toDouble(),
@@ -649,7 +656,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     fun setInitialTransformationMatrix(screenPoint: android.graphics.Point): Boolean {
         hitTest(screenPoint)?.let {
-            initialTransformationMatrix = TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+            initialTransformationMatrix =
+                TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
             return true
         }
         return false
@@ -668,7 +676,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
                         theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray().let {
-                            // we must flip the y and z co-ordinates due to the compensation quaternion
+                            // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                             return TransformationMatrix.createWithQuaternionAndTranslation(
                                 0.0,
                                 0.0,
@@ -750,7 +758,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(
+            context,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     /**
