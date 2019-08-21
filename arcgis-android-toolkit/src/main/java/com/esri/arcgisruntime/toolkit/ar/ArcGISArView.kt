@@ -60,6 +60,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 private const val CAMERA_PERMISSION_CODE = 0
 private const val LOCATION_PERMISSION_CODE = 1
@@ -113,7 +114,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    private var arCoreAvailability: ArCoreApk.Availability? by Delegates.observable(null) { _, _, newValue ->
+    private var arCoreAvailability: ArCoreApk.Availability? by Delegates.observable(null) { _: KProperty<*>, _: ArCoreApk.Availability?, newValue: ArCoreApk.Availability? ->
         (context as? Activity)?.let { activity ->
             when (newValue) {
                 ArCoreApk.Availability.SUPPORTED_INSTALLED -> isUsingARCore = ARCoreUsage.YES
@@ -255,7 +256,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
         set(value) {
             field = value
             cameraController.originCamera = value
@@ -279,7 +280,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             it.location.position?.let { location ->
                 if (initialLocation == null) {
                     initialLocation = location
-                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
+                    cameraController.originCamera = Camera(location, 0.0, 90.0, 0.0)
                 } else if (isUsingARCore != ARCoreUsage.YES) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
                     sceneView.setViewpointCamera(camera)
@@ -512,8 +513,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     fun startTracking() {
         initializationStatus = ArcGISArViewState.INITIALIZING
-
-        checkArCoreAvailability()
 
         (context as? Activity)?.let { activity ->
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
