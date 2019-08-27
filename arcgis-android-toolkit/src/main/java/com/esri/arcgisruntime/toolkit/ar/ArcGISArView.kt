@@ -32,7 +32,6 @@ import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
-import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
@@ -165,13 +164,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
 
     /**
-     * Initial location from [locationDataSource].
-     *
-     * @since 100.6.0
-     */
-    private var initialLocation: Point? = null
-
-    /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
      *
      * @since 100.6.0
@@ -252,17 +244,19 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    var originCamera: Camera? = null
         set(value) {
             field = value
-            cameraController.originCamera = value
+            if (value != null) {
+                cameraController.originCamera = value
+            }
         }
 
     /**
      * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
      * location updates.
      *
-     * Upon receiving an updated location, if we don't previously have an [initialLocation] we use that property to
+     * Upon receiving an updated location, if we don't previously have an [originCamera] we use the new location to
      * create a [Camera] and set that as the origin camera of the [cameraController]. On every other location update, if we
      * are not using ARCore we set the current viewpoint camera of [sceneView] to a new Camera created from that location.
      *
@@ -271,8 +265,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private val locationChangedListener: LocationDataSource.LocationChangedListener =
         LocationDataSource.LocationChangedListener {
             it.location.position?.let { location ->
-                if (initialLocation == null) {
-                    initialLocation = location
+                if (originCamera == null) {
                     cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
                 } else if (isUsingARCore != ARCoreUsage.YES) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
@@ -537,12 +530,12 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Resets the [initialLocation] and starts tracking.
+     * Resets the [originCamera] and starts tracking.
      *
      * @since 100.6.0
      */
     fun resetTracking() {
-        initialLocation = null
+        originCamera = null
         startTracking()
     }
 
