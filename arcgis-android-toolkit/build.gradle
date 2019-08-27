@@ -73,6 +73,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
     implementation "com.android.support:appcompat-v7:$droid.support"
+    implementation "com.android.support.constraint:constraint-layout:$droid.constraintLayout"
     implementation "com.android.support:multidex:$droid.multiDex"
     implementation "android.arch.lifecycle:runtime:$droid.lifecycle"
     api "android.arch.lifecycle:common-java8:$droid.lifecycle"

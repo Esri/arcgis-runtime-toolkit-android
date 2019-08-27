@@ -40,14 +40,8 @@ import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.toolkit.test.R
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arCalibrationView
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.calibrationLayout
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnBigIncAlt
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnDecAlt
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnIncAlt
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnRotLft
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnRotRht
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview_calibration.calibBtnSurface
 
 /**
  * Activity to show usages of [ArcGISArView].
@@ -318,30 +312,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 return false
             }
         })
-
-        calibBtnSurface.setOnClickListener {
-            setElevationToSurface()
-        }
-
-        calibBtnBigIncAlt.setOnClickListener {
-            changeCameraAltitude(10.0)
-        }
-
-        calibBtnIncAlt.setOnClickListener {
-            changeCameraAltitude(0.1)
-        }
-
-        calibBtnRotLft.setOnClickListener {
-            rotateCamera(-1.0)
-        }
-
-        calibBtnRotRht.setOnClickListener {
-            rotateCamera(1.0)
-        }
-
-        calibBtnDecAlt.setOnClickListener {
-            changeCameraAltitude(-1.0)
-        }
     }
 
     private fun setElevationToSurface() {
@@ -416,8 +386,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
     }
 
     private fun toggleCalibration() {
-        calibrationLayout.visibility =
-            if (calibrationLayout.visibility == View.GONE) View.VISIBLE else View.GONE
+        arCalibrationView.visibility =
+            if (arCalibrationView.visibility == View.GONE) View.VISIBLE else View.GONE
     }
 
     /**
