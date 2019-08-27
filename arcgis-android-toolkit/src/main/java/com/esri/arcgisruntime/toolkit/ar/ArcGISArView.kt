@@ -49,15 +49,11 @@ import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
-import com.google.ar.sceneform.math.Quaternion
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
@@ -153,15 +149,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     var initialTransformationMatrix: TransformationMatrix =
         TransformationMatrix.createIdentityMatrix()
-
-    /**
-     * A quaternion used to compensate for the pitch being 90 degrees on ARCore; used to calculate the current device
-     * transformation for each frame.
-     *
-     * @since 100.6.0
-     */
-    private val compensationQuaternion: Quaternion =
-        Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -266,7 +253,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         LocationDataSource.LocationChangedListener {
             it.location.position?.let { location ->
                 if (originCamera == null) {
-                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
+                    cameraController.originCamera = Camera(location, 0.0, 90.0, 0.0)
                 } else if (isUsingARCore != ARCoreUsage.YES) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
                     sceneView.setViewpointCamera(camera)
@@ -548,30 +535,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView?.arFrame?.camera?.let { arCamera ->
             if (isTracking) {
-                Quaternion.multiply(
-                    compensationQuaternion,
-                    Quaternion(
-                        arCamera.displayOrientedPose.rotationQuaternion[0],
-                        arCamera.displayOrientedPose.rotationQuaternion[1],
-                        arCamera.displayOrientedPose.rotationQuaternion[2],
-                        arCamera.displayOrientedPose.rotationQuaternion[3]
-                    )
-                ).let { compensatedQuaternion ->
-                    // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                    Pair(
-                        compensatedQuaternion,
-                        arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
-                    )
-                }.let {
-                    // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
+                Pair(
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                ).let {
                     TransformationMatrix.createWithQuaternionAndTranslation(
-                        it.first.x.toDouble(),
-                        it.first.y.toDouble(),
-                        it.first.z.toDouble(),
-                        it.first.w.toDouble(),
+                        it.first[0],
+                        it.first[1],
+                        it.first[2],
+                        it.first[3],
                         it.second[0],
-                        -it.second[2],
-                        it.second[1]
+                        it.second[1],
+                        it.second[2]
                     )
                 }.let { arCoreTransMatrix ->
                     cameraController.transformationMatrix =
@@ -626,15 +601,14 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
                         theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray().let {
-                            // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                             return TransformationMatrix.createWithQuaternionAndTranslation(
                                 0.0,
                                 0.0,
                                 0.0,
                                 1.0,
                                 it[0],
-                                -it[2],
-                                it[1]
+                                it[1],
+                                it[2]
                             )
                         }
                     }

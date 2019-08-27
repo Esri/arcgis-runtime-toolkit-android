@@ -49,9 +49,9 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 class ArcGISArViewActivity : AppCompatActivity() {
 
     private val androidLocationDataSource: LocationDataSource
-    get() {
-        return AndroidLocationDataSource(this)
-    }
+        get() {
+            return AndroidLocationDataSource(this)
+        }
 
     /**
      * AR Mode: Full-Scale AR
@@ -97,7 +97,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                     if (extent != null) {
                         val center = extent.center
-                        val camera = Camera(center, 0.0, 0.0, 0.0)
+                        val camera = Camera(center, 0.0, 90.0, 0.0)
                         arcGisArView.originCamera = camera
                         arcGisArView.translationTransformationFactor = 2000.0
                     }
@@ -161,7 +161,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 center.x,
                                 elevation,
                                 0.0,
-                                0.0,
+                                90.0,
                                 0.0
                             )
                             arcGisArView.originCamera = camera
@@ -224,7 +224,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 center.x,
                                 elevation,
                                 0.0,
-                                0.0,
+                                90.0,
                                 0.0
                             )
                             arcGisArView.originCamera = camera
@@ -249,7 +249,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 addElevationSource(this)
 
                 arcGisArView.locationDataSource = androidLocationDataSource
-                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
         }
@@ -265,7 +265,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
         return {
             ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
                 arcGisArView.locationDataSource = androidLocationDataSource
-                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
         }
@@ -278,7 +278,10 @@ class ArcGISArViewActivity : AppCompatActivity() {
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite)),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border)),
             SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty)),
-            SceneInfo(redlandsFireHydrantsScene(), getString(R.string.arcgis_ar_view_redlands_fire_hydrants))
+            SceneInfo(
+                redlandsFireHydrantsScene(),
+                getString(R.string.arcgis_ar_view_redlands_fire_hydrants)
+            )
         )
     }
 
@@ -295,7 +298,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
         arcGisArView.registerLifecycle(lifecycle)
         currentScene = scenes[0]
 
-        arcGisArView.sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
+        arcGisArView.sceneView.setOnTouchListener(object :
+            DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
