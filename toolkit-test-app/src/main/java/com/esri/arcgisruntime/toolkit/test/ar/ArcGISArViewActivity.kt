@@ -49,9 +49,9 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 class ArcGISArViewActivity : AppCompatActivity() {
 
     private val locationDataSource: LocationDataSource
-    get() {
-        return ArLocationDataSource(this)
-    }
+        get() {
+            return ArLocationDataSource(this)
+        }
 
     /**
      * AR Mode: Full-Scale AR
@@ -278,7 +278,10 @@ class ArcGISArViewActivity : AppCompatActivity() {
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite)),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border)),
             SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty)),
-            SceneInfo(redlandsFireHydrantsScene(), getString(R.string.arcgis_ar_view_redlands_fire_hydrants))
+            SceneInfo(
+                redlandsFireHydrantsScene(),
+                getString(R.string.arcgis_ar_view_redlands_fire_hydrants)
+            )
         )
     }
 
@@ -295,7 +298,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
         arcGisArView.registerLifecycle(lifecycle)
         currentScene = scenes[0]
 
-        arcGisArView.sceneView.setOnTouchListener(object : DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
+        arcGisArView.sceneView.setOnTouchListener(object :
+            DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
