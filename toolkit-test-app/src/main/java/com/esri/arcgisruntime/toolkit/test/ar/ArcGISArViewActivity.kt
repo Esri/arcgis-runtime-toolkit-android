@@ -36,7 +36,6 @@ import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Surface
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
-import com.esri.arcgisruntime.mapping.view.TransformationMatrixCameraController
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.toolkit.test.R
