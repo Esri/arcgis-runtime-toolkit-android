@@ -542,7 +542,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
  *
  * @since 100.6.0
  */
-fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
+private fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
     val ret = GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.ENGLISH)
     ret.timeInMillis = timeInMillis
     return ret
@@ -554,7 +554,7 @@ fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
  * @param lastKnown true if the location is last one, otherwise it should be false
  * @since 100.6.0
  */
-fun android.location.Location.toEsriLocation(lastKnown: Boolean): LocationDataSource.Location {
+private fun android.location.Location.toEsriLocation(lastKnown: Boolean): LocationDataSource.Location {
     val position = Point(longitude, latitude, SpatialReference.create(4326))
     var verticalAccuracy = java.lang.Double.NaN
     val timeStamp = createCalendarFromTimeInMillis(time)
@@ -581,4 +581,4 @@ fun android.location.Location.toEsriLocation(lastKnown: Boolean): LocationDataSo
  *
  * @since 100.6.0
  */
-fun Float.toDegrees(): Float = this * 180.0f / PI.toFloat()
+private fun Float.toDegrees(): Float = this * 180.0f / PI.toFloat()
