@@ -33,8 +33,6 @@ import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
-import com.esri.arcgisruntime.mapping.view.LocationDisplay.AutoPanMode
-import com.esri.arcgisruntime.mapping.view.LocationDisplay.AutoPanModeChangedListener
 import java.util.ArrayList
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -65,8 +63,7 @@ private const val NO_STARTED_MSG = "The location data source is not started yet"
 private const val NO_PROVIDER_MSG = "No provider found for the given name : %s"
 private const val PARAMETER_OUT_OF_BOUNDS_MSG = "Parameter %s is out of bounds"
 
-class ArLocationDataSource(private val context: Context) : LocationDataSource(),
-    AutoPanModeChangedListener {
+class ArLocationDataSource(private val context: Context) : LocationDataSource() {
 
     // The minimum distance to change updates in meters
     private var minimumUpdateDistance = 0f // meters
@@ -101,10 +98,6 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
     // last update location;
     private var lastLocation: Location? = null
-
-    // The current AutoPanMode setting; volatile because it may be set and read by different threads
-    @Volatile
-    private var autoPanMode: AutoPanMode? = null
 
     /**
      * Creates a new instance of ArLocationDataSource using the provided [context] and based on the given provider
@@ -307,20 +300,6 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
             if (it.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 selectedLocationProviders.add(LocationManager.GPS_PROVIDER)
             }
-        }
-    }
-
-    /**
-     * Called when the AutoPanMode is changed on the associated LocationDisplay, this method populates the heading
-     * [LocationDisplay.getHeading] on the associated LocationDisplay if the AutoPanMode is changed to
-     * [AutoPanMode.COMPASS_NAVIGATION].
-     *
-     * @since 100.6.0
-     */
-    override fun onAutoPanModeChanged(autoPanModeEvent: LocationDisplay.AutoPanModeChangedEvent) {
-        autoPanMode = autoPanModeEvent.autoPanMode
-        if (!isStarted) {
-            return
         }
     }
 
