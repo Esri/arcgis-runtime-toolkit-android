@@ -253,9 +253,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         set(value) {
             field = value
             cameraController.originCamera = value
-            if (isTracking) {
-                resetTracking()
-            }
         }
 
     /**
