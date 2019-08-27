@@ -315,45 +315,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
         })
     }
 
-    private fun setElevationToSurface() {
-        val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
-        val camera = tmcc.originCamera
-        val point = camera.location
-        val elevationFuture = arcGisArView.sceneView.scene.baseSurface.getElevationAsync(point)
-
-        // when the elevation has loaded
-        elevationFuture.addDoneListener {
-            val elevation = elevationFuture.get()
-            val surfacePoint =
-                com.esri.arcgisruntime.geometry.Point(
-                    point.x,
-                    point.y,
-                    elevation + 1.8,
-                    point.spatialReference
-                )
-            val surfaceCamera = Camera(
-                surfacePoint,
-                camera.heading,
-                camera.pitch,
-                camera.roll
-            )
-            tmcc.originCamera = surfaceCamera
-        }
-    }
-
-    private fun changeCameraAltitude(deltaAltitude: Double) {
-        val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
-        val camera = tmcc.originCamera
-        tmcc.originCamera = camera.elevate(deltaAltitude)
-    }
-
-    private fun rotateCamera(rotationDelta: Double) {
-        val tmcc = arcGisArView.sceneView.cameraController as TransformationMatrixCameraController
-        val camera = tmcc.originCamera
-        tmcc.originCamera =
-            camera.rotateTo(camera.heading + rotationDelta, camera.pitch, camera.roll)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.arcgisarview_menu, menu)
         scenes.forEachIndexed { index, sceneInfo ->

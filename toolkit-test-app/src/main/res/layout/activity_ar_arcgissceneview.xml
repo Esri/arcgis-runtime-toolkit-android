@@ -26,6 +26,7 @@
     <com.esri.arcgisruntime.toolkit.ar.ArCalibrationView
         android:id="@+id/arCalibrationView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>

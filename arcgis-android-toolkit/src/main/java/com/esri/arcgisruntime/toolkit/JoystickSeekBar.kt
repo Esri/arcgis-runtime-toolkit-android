@@ -19,9 +19,7 @@ package com.esri.arcgisruntime.toolkit
 import android.content.Context
 import android.support.v7.widget.AppCompatSeekBar
 import android.util.AttributeSet
-import android.util.Log
 import android.widget.SeekBar
-import com.esri.arcgisruntime.toolkit.extension.logTag
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.pow
@@ -34,7 +32,7 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
 
     private var _min: Float = DEFAULT_MIN
     private var _max: Float = DEFAULT_MAX
-    val offsetProgress: Float
+    private val offsetProgress: Float
         get() {
             return if ((_min != DEFAULT_MIN).or(_max != DEFAULT_MAX)) {
                 _min + ((_max - _min) * (progress * 0.01f))
@@ -83,7 +81,6 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         deltaProgress = offsetProgress.pow(2) / 10.0f * (if (offsetProgress < 0) -1.0f else 1.0f)
-        Log.d(logTag, "Delta Progress: $deltaProgress")
     }
 
     override fun onStartTrackingTouch(seekBar: SeekBar?) {
