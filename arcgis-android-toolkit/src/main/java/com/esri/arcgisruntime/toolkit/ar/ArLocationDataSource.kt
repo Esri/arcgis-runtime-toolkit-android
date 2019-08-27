@@ -346,12 +346,12 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
     }
 
     /**
-     * Updates the CoreLocationDataSource location with the provided [location], indicating if the provided location is
-     * the [lastKnown] location.
+     * Updates the LocationDataSource location with the provided [location], indicating if the
+     * provided location is the [lastKnown] location.
      *
      * @since 100.6.0
      */
-    private fun updateCoreLocation(location: android.location.Location?, lastKnown: Boolean) {
+    private fun updateEsriLocation(location: android.location.Location?, lastKnown: Boolean) {
         if (location != null) {
 
             // if new location accuracy is two times less than previous one, it will be ignored.
@@ -442,7 +442,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
 
         override fun onLocationChanged(location: android.location.Location) {
             // update the core location
-            updateCoreLocation(location, false)
+            updateEsriLocation(location, false)
             innerAndroidLocation = location
         }
 
@@ -456,7 +456,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
         override fun onProviderDisabled(provider: String) {
             // if only one provider is disabled, the last known location is display in the gray symbol.
             if (selectedLocationProviders.contains(provider) && selectedLocationProviders.size == 1) {
-                updateCoreLocation(innerAndroidLocation, true)
+                updateEsriLocation(innerAndroidLocation, true)
             }
         }
 
@@ -466,7 +466,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource(),
                     startLocationProviders()
                 } else {
                     // out of service or temporarily unavailable.
-                    updateCoreLocation(innerAndroidLocation, true)
+                    updateEsriLocation(innerAndroidLocation, true)
                 }
             }
         }
