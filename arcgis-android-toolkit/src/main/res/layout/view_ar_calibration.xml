@@ -22,24 +22,6 @@
     android:paddingEnd="@dimen/ar_calibration_view_padding_horz"
     android:paddingBottom="@dimen/ar_calibration_view_padding_bottom">
 
-    <SeekBar
-        android:id="@+id/elevationControl"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:progress="@integer/ar_calibration_view_default_progress"
-        app:layout_constraintBottom_toBottomOf="@id/elevationLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/elevationLabel" />
-
-    <SeekBar
-        android:id="@+id/headingControl"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:progress="@integer/ar_calibration_view_default_progress"
-        app:layout_constraintBottom_toBottomOf="@id/headingLabel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/headingLabel" />
-
     <TextView
         android:id="@+id/elevationLabel"
         android:layout_width="wrap_content"
@@ -56,5 +38,27 @@
         android:text="@string/ar_calibration_view_heading_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.esri.arcgisruntime.toolkit.JoystickSeekBar
+        android:id="@+id/elevationControl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:progress="@integer/ar_calibration_view_default_progress"
+        app:jsb_max="50.0"
+        app:jsb_min="-50.0"
+        app:layout_constraintBottom_toBottomOf="@id/elevationLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/elevationLabel" />
+
+    <com.esri.arcgisruntime.toolkit.JoystickSeekBar
+        android:id="@+id/headingControl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:jsb_max="10.0"
+        app:jsb_min="-10.0"
+        android:progress="@integer/ar_calibration_view_default_progress"
+        app:layout_constraintBottom_toBottomOf="@id/headingLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/headingLabel" />
 
 </android.support.constraint.ConstraintLayout>

@@ -295,6 +295,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ar_arcgissceneview)
         arcGisArView.registerLifecycle(lifecycle)
+        arCalibrationView.bindArcGISArView(arcGisArView)
         currentScene = scenes[0]
 
         arcGisArView.sceneView.setOnTouchListener(object :
