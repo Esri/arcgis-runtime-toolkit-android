@@ -360,9 +360,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var isTracking: Boolean = false
-        private set(value) {
-            field = value
-        }
 
     /**
      * Denotes whether ARCore is being used to track location and angles.
@@ -457,14 +454,46 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        startTracking()
+        internalStartTracking(true)
     }
 
     /**
      * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
      * lifecycle of this View is maintained by the LifecycleOwner.
      *
-     * Checks the following prerequisites required for the use of ARCore:
+     * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
+     * request permissions. This may not always be the case and the handling of permission are under review.
+     *
+     * Use [useLocationDataSourceOnce] to only use the first location provided by the LocationDataSource.
+     *
+     * @since 100.6.0
+     */
+    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
+    fun startTracking(useLocationDataSourceOnce: Boolean) {
+        this.useLocationDataSourceOnce = useLocationDataSourceOnce
+        internalStartTracking(true)
+    }
+
+    /**
+     * Internal function to begin ARCore Session and start LocationDataSource if provided. Use [restartLocationDataSource]
+     * to restart LocationDataSource if necessary.
+     *
+     * @since 100.6.0
+     */
+    private fun internalStartTracking(restartLocationDataSource: Boolean) {
+        startArCoreSession()
+        if (restartLocationDataSource) {
+            startLocationDataSource()
+        }
+
+        sceneView.resume()
+        isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
+    }
+
+    /**
+     * Starts the ARCore Session.
+     *
+     * * Checks the following prerequisites required for the use of ARCore:
      * - Checks for permissions required to use ARCore.
      * - Checks for an installation of ARCore.
      *
@@ -476,62 +505,29 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
      * request permissions. This may not always be the case and the handling of permission are under review.
      *
+     * @throws [IllegalStateException] if the Context is not an instance of Activity
      * @since 100.6.0
      */
-    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    fun startTracking(useLocationDataSourceOnce: Boolean) {
-        this.useLocationDataSourceOnce = useLocationDataSourceOnce
-        internalStartTracking(true)
-    }
-
-    private fun internalStartTracking(restartLocationDataSource: Boolean = true) {
-        (context as? Activity)?.let { activity ->
-            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-            // permission on Android M and above, now is a good time to ask the user for it.
-            // when the permission is requested and the user responds to the request from the OS this is executed again
-            // during onResume()
-            if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(
-                    CAMERA_PERMISSION
-                )
-            ) {
-                requestPermission(
-                    activity,
-                    CAMERA_PERMISSION,
-                    CAMERA_PERMISSION_CODE
-                )
-                return
-            }
-
-            // Request location permission if user has provided a LocationDataSource
-            locationDataSource?.let {
-                if (!hasPermission(LOCATION_PERMISSION)) {
-                    requestPermission(
-                        activity,
-                        LOCATION_PERMISSION,
-                        LOCATION_PERMISSION_CODE
-                    )
-                    return
-                }
-            }
-        }
-
-        if (isUsingARCore == ARCoreUsage.YES) {
-            startArCoreSession()
-            arSceneView?.scene?.addOnUpdateListener(this)
-            arSceneView?.resume()
-        } else {
-            removeView(arSceneView)
-            arSceneView = null
-        }
-
-        sceneView.resume()
-        if (restartLocationDataSource) {
-            locationDataSource?.startAsync()
-        }
-        isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
-    }
-
     private fun startArCoreSession() {
+        // Throw exception if Context is not an instance of Activity as it's required for permission request
+        check(context is Activity) { "Context must be an instance of Activity" }
+
+        // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+        // permission on Android M and above, now is a good time to ask the user for it.
+        // when the permission is requested and the user responds to the request from the OS this is executed again
+        // during onResume()
+        if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(
+                CAMERA_PERMISSION
+            )
+        ) {
+            requestPermission(
+                context as Activity,
+                CAMERA_PERMISSION,
+                CAMERA_PERMISSION_CODE
+            )
+            return
+        }
+
         // Create the session.
         Session(context).apply {
             val config = Config(this)
@@ -540,6 +536,46 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             this.configure(config)
             arSceneView?.setupSession(this)
         }
+
+        if (isUsingARCore == ARCoreUsage.YES) {
+            arSceneView?.scene?.addOnUpdateListener(this)
+            try {
+                arSceneView?.resume()
+            } catch (e: Exception) {
+                error = e
+            }
+        } else {
+            removeView(arSceneView)
+            arSceneView = null
+        }
+    }
+
+    /**
+     * Starts [locationDataSource] if it is not currently null and requests permissions if required.
+     *
+     * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
+     * request permissions. This may not always be the case and the handling of permission are under review.
+     *
+     * @throws [IllegalStateException] if the Context is not an instance of Activity
+     * @since 100.6.0
+     */
+    private fun startLocationDataSource() {
+        // Throw exception if Context is not an instance of Activity as it's required for permission request
+        check(context is Activity) { "Context must be an instance of Activity" }
+
+        // Request location permission if user has provided a LocationDataSource
+        locationDataSource?.let {
+            if (!hasPermission(LOCATION_PERMISSION)) {
+                requestPermission(
+                    context as Activity,
+                    LOCATION_PERMISSION,
+                    LOCATION_PERMISSION_CODE
+                )
+                return
+            }
+        }
+
+        locationDataSource?.startAsync()
     }
 
     /**
@@ -562,7 +598,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun resetTracking() {
         originCamera = null
         initialTransformationMatrix = identityMatrix
-        internalStartTracking(false)
+        startArCoreSession()
         cameraController.transformationMatrix = identityMatrix
     }
 
