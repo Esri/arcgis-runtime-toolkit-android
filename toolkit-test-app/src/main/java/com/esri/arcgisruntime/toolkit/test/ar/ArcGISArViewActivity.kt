@@ -50,6 +50,7 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 class ArcGISArViewActivity : AppCompatActivity() {
 
     private val androidLocationDataSource: LocationDataSource get() = AndroidLocationDataSource(this)
+    private var calibrating: Boolean = false
 
     /**
      * AR Mode: Full-Scale AR
@@ -294,7 +295,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ar_arcgissceneview)
         arcGisArView.registerLifecycle(lifecycle)
-        arCalibrationView.bindArcGISArView(arcGisArView)
         currentScene = scenes[0]
 
         arcGisArView.sceneView.setOnTouchListener(object :
@@ -347,8 +347,14 @@ class ArcGISArViewActivity : AppCompatActivity() {
     }
 
     private fun toggleCalibration() {
-        arCalibrationView.visibility =
-            if (arCalibrationView.visibility == View.GONE) View.VISIBLE else View.GONE
+        calibrating = calibrating.not()
+        if (calibrating) {
+            arCalibrationView.bindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.VISIBLE
+        } else {
+            arCalibrationView.unbindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.GONE
+        }
     }
 
     /**

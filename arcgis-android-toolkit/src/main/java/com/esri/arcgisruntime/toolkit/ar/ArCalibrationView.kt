@@ -26,6 +26,10 @@ import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 
 class ArCalibrationView : FrameLayout {
 
+    companion object {
+        private const val SCENEVIEW_CALIBRATING_OPACITY = 0.65f
+    }
+
     private var arcGISArView: ArcGISArView? = null
     private val _elevationControl: JoystickSeekBar by lazy {
         elevationControl
@@ -82,6 +86,9 @@ class ArCalibrationView : FrameLayout {
 
     fun bindArcGISArView(arcGISArView: ArcGISArView) {
         this.arcGISArView = arcGISArView
+        this.arcGISArView?.sceneView?.scene?.let {
+            it.baseSurface?.opacity = SCENEVIEW_CALIBRATING_OPACITY
+        }
     }
 
     fun unbindArcGISArView(arcGISArView: ArcGISArView) {
