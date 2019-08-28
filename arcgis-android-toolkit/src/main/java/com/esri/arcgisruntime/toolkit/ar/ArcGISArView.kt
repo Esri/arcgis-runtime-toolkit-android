@@ -526,7 +526,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Resets the [originCamera] and starts tracking.
+     * Resets the device tracking and related properties.
      *
      * @since 100.6.0
      */
