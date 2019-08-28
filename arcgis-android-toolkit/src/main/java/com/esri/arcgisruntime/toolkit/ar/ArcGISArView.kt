@@ -265,13 +265,11 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 // Always set the origin camera; then reset ARCore
                 val oldCamera = cameraController.originCamera
 
-                // Create a new camera based on our location and set it on the cameraController.
-                if (originCamera == null) {
-                    val newCamera = Camera(location, 0.0, 90.0, 0.0)
-                    originCamera = newCamera
+                // Create a new camera based on our location and set it on the originCamera.
+                originCamera = if (originCamera == null) {
+                    Camera(location, 0.0, 90.0, 0.0)
                 } else {
-                    cameraController.originCamera =
-                        Camera(location, oldCamera.heading, oldCamera.pitch, oldCamera.roll)
+                    Camera(location, oldCamera.heading, oldCamera.pitch, oldCamera.roll)
                 }
 
                 // If we're using ARCore, reset the session.
