@@ -329,8 +329,9 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
             if (lastLocation != null) {
                 val accuracyThreshold =
                     lastLocation!!.horizontalAccuracy * ACCURACY_THRESHOLD_FACTOR
-                if (location.accuracy > accuracyThreshold)
+                if (location.accuracy > accuracyThreshold) {
                     return
+                }
             }
 
             val currentLocation = location.toEsriLocation(lastKnown)
