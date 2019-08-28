@@ -481,8 +481,9 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
             if (success) {
                 SensorManager.getOrientation(rotationMatrixR, orientation)
                 this.heading = orientation[0].toDegrees()
-                if (this.heading < 0)
+                if (this.heading < 0) {
                     heading += 360f
+                }
 
                 // Update the heading value
                 updateHeading(heading.toDouble())
@@ -522,7 +523,7 @@ private fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
 }
 
 /**
- * Creates a Location from android.location.Location object.
+ * Creates an instance of LocationDataSource.Location from an instance of android.location.Location.
  *
  * @param lastKnown true if the location is last one, otherwise it should be false
  * @since 100.6.0
