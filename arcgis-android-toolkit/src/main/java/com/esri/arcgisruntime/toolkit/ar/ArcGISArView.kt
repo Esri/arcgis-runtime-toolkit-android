@@ -142,13 +142,19 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private var renderVideoFeed: Boolean = true
 
     /**
+     * Helper property to be used as an identity TransformationMatrix to prevent reallocation.
+     *
+     * @since 100.6.0
+     */
+    private val identityMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
+
+    /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
      * Initial [TransformationMatrix] used by [cameraController].
      *
      * @since 100.6.0
      */
-    var initialTransformationMatrix: TransformationMatrix =
-        TransformationMatrix.createIdentityMatrix()
+    var initialTransformationMatrix: TransformationMatrix = identityMatrix
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -450,6 +456,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
     fun startTracking() {
+        startTracking(true)
+    }
+
+    private fun startTracking(restartLocationDataSource: Boolean = true) {
         (context as? Activity)?.let { activity ->
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
@@ -497,7 +507,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
         sceneView.resume()
-        locationDataSource?.startAsync()
+        if (restartLocationDataSource) {
+            locationDataSource?.startAsync()
+        }
         isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
     }
 
@@ -520,7 +532,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     fun resetTracking() {
         originCamera = null
-        startTracking()
+        initialTransformationMatrix = identityMatrix
+        cameraController.transformationMatrix = identityMatrix
+        startTracking(false)
     }
 
     /**
@@ -579,7 +593,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun setInitialTransformationMatrix(screenPoint: android.graphics.Point): Boolean {
         hitTest(screenPoint)?.let {
             initialTransformationMatrix =
-                TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+                identityMatrix.subtractTransformation(it)
             return true
         }
         return false
