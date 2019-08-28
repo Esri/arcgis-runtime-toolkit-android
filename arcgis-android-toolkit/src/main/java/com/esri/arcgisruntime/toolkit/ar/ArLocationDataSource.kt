@@ -102,7 +102,8 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
 
     /**
      * Creates a new instance of ArLocationDataSource using the provided [context] and based on the given provider
-     * [criteria], with the given [minTime] update frequency and [minDistance] location distance change.
+     * [criteria], with the given [minTime] update frequency in milliseconds and [minDistance] location distance change
+     * in meters.
      *
      * Not all location providers can return all types of location information. Use the criteria parameter to specify
      * what kind of information or properties are required for this ArLocationDataSource; for example one that has low
@@ -120,7 +121,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
 
     /**
      * Creates a new instance of ArLocationDataSource using the provided [context] and based on the given [provider] name,
-     * with the given [minTime] update frequency and [minDistance] location distance change.
+     * with the given [minTime] update frequency in milliseconds and [minDistance] location distance change in meters.
      *
      * Provider names are defined as constants of the `android.location.LocationManager` class.
      *
@@ -135,8 +136,8 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     }
 
     /**
-     * Changes the location update parameters to use the given provider [criteria], [minTime] update frequency, and
-     * [minDistance] location distance change. Applies only when [isStarted] is true.
+     * Changes the location update parameters to use the given provider [criteria], [minTime] update frequency in
+     * milliseconds and [minDistance] location distance change in meters. Applies only when [isStarted] is true.
      *
      * @throws IllegalArgumentException if [minTime] or [minDistance] is negative, or no location provider matches the
      * [criteria]
@@ -157,8 +158,8 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     }
 
     /**
-     * Changes the location update parameters to use the given [provider] name, [minTime] update frequency, and
-     * [minDistance] location distance change. Applies only when [isStarted] is true.
+     * Changes the location update parameters to use the given [provider] name, [minTime] update frequency in
+     * milliseconds and [minDistance] location distance change in meters. Applies only when [isStarted] is true.
      *
      * @throws IllegalArgumentException if [minTime] or [minDistance] is negative
      * @throws IllegalStateException the specified location [provider] is not found in the location manager, or data source
