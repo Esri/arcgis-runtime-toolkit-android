@@ -533,8 +533,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun resetTracking() {
         originCamera = null
         initialTransformationMatrix = identityMatrix
-        cameraController.transformationMatrix = identityMatrix
         startTracking(false)
+        cameraController.transformationMatrix = identityMatrix
     }
 
     /**
