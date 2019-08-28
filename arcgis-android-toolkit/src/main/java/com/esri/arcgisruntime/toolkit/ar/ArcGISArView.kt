@@ -243,6 +243,13 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
     /**
+     * Property to determine if we are using only the first location provided by the LocationDataSource
+     *
+     * @since 100.6.0
+     */
+    private var useLocationDataSourceOnce: Boolean = true
+
+    /**
      * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
      * location updates.
      *
@@ -274,6 +281,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
                 // Reset the camera controller's transformationMatrix to its initial state, the identity matrix.
                 cameraController.transformationMatrix = identityMatrix
+
+                if (useLocationDataSourceOnce) {
+                    locationDataSource?.stop()
+                }
             }
         }
 
@@ -468,11 +479,12 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    fun startTracking() {
-        startTracking(true)
+    fun startTracking(useLocationDataSourceOnce: Boolean) {
+        this.useLocationDataSourceOnce = useLocationDataSourceOnce
+        internalStartTracking(true)
     }
 
-    private fun startTracking(restartLocationDataSource: Boolean = true) {
+    private fun internalStartTracking(restartLocationDataSource: Boolean = true) {
         (context as? Activity)?.let { activity ->
             // ARCore requires camera permissions to operate. If we did not yet obtain runtime
             // permission on Android M and above, now is a good time to ask the user for it.
@@ -550,7 +562,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun resetTracking() {
         originCamera = null
         initialTransformationMatrix = identityMatrix
-        startTracking(false)
+        internalStartTracking(false)
         cameraController.transformationMatrix = identityMatrix
     }
 
