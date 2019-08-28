@@ -27,7 +27,6 @@ import android.view.MotionEvent
 import android.widget.Toast
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
-import com.esri.arcgisruntime.location.AndroidLocationDataSource
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
@@ -37,6 +36,7 @@ import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
+import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
@@ -48,9 +48,9 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
  */
 class ArcGISArViewActivity : AppCompatActivity() {
 
-    private val androidLocationDataSource: LocationDataSource
+    private val locationDataSource: LocationDataSource
         get() {
-            return AndroidLocationDataSource(this)
+            return ArLocationDataSource(this)
         }
 
     /**
@@ -64,7 +64,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene(Basemap.createStreets()).apply {
                 addElevationSource(this)
 
-                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.translationTransformationFactor = 1.0
             }
         }
@@ -248,7 +248,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene().apply {
                 addElevationSource(this)
 
-                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
@@ -264,7 +264,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private fun redlandsFireHydrantsScene(): () -> ArcGISScene {
         return {
             ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
-                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
