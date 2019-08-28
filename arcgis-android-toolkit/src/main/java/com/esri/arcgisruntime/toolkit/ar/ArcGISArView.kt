@@ -28,10 +28,12 @@ import android.hardware.SensorManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.Toast
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
@@ -156,15 +158,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         TransformationMatrix.createIdentityMatrix()
 
     /**
-     * A quaternion used to compensate for the pitch being 90 degrees on ARCore; used to calculate the current device
-     * transformation for each frame.
-     *
-     * @since 100.6.0
-     */
-    private val compensationQuaternion: Quaternion =
-        Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
-
-    /**
      * Initial location from [locationDataSource].
      *
      * @since 100.6.0
@@ -273,7 +266,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             it.location.position?.let { location ->
                 if (initialLocation == null) {
                     initialLocation = location
-                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
+                    cameraController.originCamera = Camera(location, 0.0, 90.0, 0.0)
                 } else if (isUsingARCore != ARCoreUsage.YES) {
                     val camera = sceneView.currentViewpointCamera.moveTo(location)
                     sceneView.setViewpointCamera(camera)
@@ -555,35 +548,17 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView?.arFrame?.camera?.let { arCamera ->
             if (isTracking) {
-                Quaternion.multiply(
-                    compensationQuaternion,
-                    Quaternion(
-                        arCamera.displayOrientedPose.rotationQuaternion[0],
-                        arCamera.displayOrientedPose.rotationQuaternion[1],
-                        arCamera.displayOrientedPose.rotationQuaternion[2],
-                        arCamera.displayOrientedPose.rotationQuaternion[3]
-                    )
-                ).let { compensatedQuaternion ->
-                    // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                    Pair(
-                        compensatedQuaternion,
-                        arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
-                    )
-                }.let {
-                    // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
-                    TransformationMatrix.createWithQuaternionAndTranslation(
-                        it.first.x.toDouble(),
-                        it.first.y.toDouble(),
-                        it.first.z.toDouble(),
-                        it.first.w.toDouble(),
-                        it.second[0],
-                        -it.second[2],
-                        it.second[1]
-                    )
-                }.let { arCoreTransMatrix ->
+                var arCoreTransMatrix = TransformationMatrix.createWithQuaternionAndTranslation(
+                        arCamera.displayOrientedPose.rotationQuaternion[0].toDouble(),
+                        arCamera.displayOrientedPose.rotationQuaternion[1].toDouble(),
+                        arCamera.displayOrientedPose.rotationQuaternion[2].toDouble(),
+                        arCamera.displayOrientedPose.rotationQuaternion[3].toDouble(),
+                        arCamera.displayOrientedPose.translation[0].toDouble(),
+                        arCamera.displayOrientedPose.translation[1].toDouble(),
+                        arCamera.displayOrientedPose.translation[2].toDouble()
+                        )
                     cameraController.transformationMatrix =
                         initialTransformationMatrix.addTransformation(arCoreTransMatrix)
-                }
 
                 arCamera.imageIntrinsics.let {
                     sceneView.setFieldOfViewFromLensIntrinsics(
@@ -621,6 +596,23 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
+     * Performs a hitTest at the [screenPoint]. If the hitTest succeeds this returns the point in the
+     * world where the hitTest happened
+     *
+     * @return the point where the hit test happened, null if the hitTest didn't hit anything
+     * @since 100.6.0
+     */
+    fun arScreenToLocation(screenPoint: android.graphics.Point) : Point? {
+        var offsetMatrix = hitTest(screenPoint)
+        if (offsetMatrix != null) {
+            var originMatrix = cameraController.originCamera.transformationMatrix
+            var mat = originMatrix.addTransformation(offsetMatrix)
+            return Camera(mat).location
+        }
+        return null
+    }
+
+    /**
      * If the [TrackingState] of the camera is equal to [TrackingState.TRACKING] this function performs a ray cast from
      * the user's device in the direction of the given location in the camera view. If any intersections are returned the
      * first is used to create a new [TransformationMatrix] by applying the quaternion and translation factors.
@@ -639,9 +631,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                                 0.0,
                                 0.0,
                                 1.0,
-                                it[0],
-                                -it[2],
-                                it[1]
+                                    it[0],
+                                    it[1],
+                                    it[2]
                             )
                         }
                     }
