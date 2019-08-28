@@ -533,7 +533,7 @@ private fun android.location.Location.toEsriLocation(lastKnown: Boolean): Locati
     val verticalAccuracy =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) verticalAccuracyMeters.toDouble() else java.lang.Double.NaN
 
-    // If vertical accuracy is greater than 0, provide a position with Z value.
+    // If vertical accuracy is greater than 0, provide a position with Z value
     val position = if (verticalAccuracy.isNaN().not() && verticalAccuracy >= 0) Point(
         longitude,
         latitude,
