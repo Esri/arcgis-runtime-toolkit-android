@@ -58,7 +58,7 @@ import kotlin.math.PI
 class ArLocationDataSource(private val context: Context) : LocationDataSource() {
 
     companion object {
-        // the factor used to filter out the less accurate positions to reduce unnecessary updates.
+        // The factor used to filter out the less accurate positions to reduce unnecessary updates
         private const val ACCURACY_THRESHOLD_FACTOR = 2.0
         private const val EXCEPTION_MSG = "No location provider found on the device"
         private const val NO_STARTED_MSG = "The location data source is not started yet"
@@ -72,32 +72,32 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     // The minimum time between updates in milliseconds
     private var minimumUpdateTime: Long = 100 // 0.1 second
 
-    // android location manager
+    // The Android location manager
     private val locationManager: LocationManager? by lazy {
         context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager?
     }
 
-    // Sensor manager to detect the device orientation for compass mode.
+    // The sensor manager to detect the device orientation for compass mode
     private val sensorManager: SensorManager? by lazy {
         context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager?
     }
 
-    // store the current selected location provider;
+    // The current selected location providers
     private val selectedLocationProviders = ArrayList<String>()
 
-    // internal android location listener implementation.
+    // The internal android location listener implementation
     private var internalLocationListener: InternalLocationListener? = null
 
-    // internal listener to update the heading for compass mode.
+    // The internal listener to update the heading for compass mode
     private var internalHeadingListener: InternalHeadingListener? = null
 
-    // The criteria for selecting the android location provider;
+    // The criteria for selecting the android location provider
     private var criteria: Criteria? = null
 
-    // The user defined known provider;
+    // The user defined known provider
     private var provider: String? = null
 
-    // last update location;
+    // The last updated location
     private var lastLocation: Location? = null
 
     /**
