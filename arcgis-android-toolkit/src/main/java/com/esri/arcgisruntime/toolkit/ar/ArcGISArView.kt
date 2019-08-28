@@ -255,12 +255,25 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private val locationChangedListener: LocationDataSource.LocationChangedListener =
         LocationDataSource.LocationChangedListener {
             it.location.position?.let { location ->
+                // Always set the origin camera; then reset ARCore
+                val oldCamera = cameraController.originCamera
+
+                // Create a new camera based on our location and set it on the cameraController.
                 if (originCamera == null) {
-                    cameraController.originCamera = Camera(location, 0.0, 90.0, 0.0)
-                } else if (isUsingARCore != ARCoreUsage.YES) {
-                    val camera = sceneView.currentViewpointCamera.moveTo(location)
-                    sceneView.setViewpointCamera(camera)
+                    val newCamera = Camera(location, 0.0, 90.0, 0.0)
+                    originCamera = newCamera
+                } else {
+                    cameraController.originCamera =
+                        Camera(location, oldCamera.heading, oldCamera.pitch, oldCamera.roll)
                 }
+
+                // If we're using ARCore, reset the session.
+                if (isUsingARCore == ARCoreUsage.YES) {
+                    startArCoreSession()
+                }
+
+                // Reset the camera controller's transformationMatrix to its initial state, the identity matrix.
+                cameraController.transformationMatrix = identityMatrix
             }
         }
 
@@ -491,14 +504,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
         if (isUsingARCore == ARCoreUsage.YES) {
-            // Create the session.
-            Session(context).apply {
-                val config = Config(this)
-                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-                config.focusMode = Config.FocusMode.AUTO
-                this.configure(config)
-                arSceneView?.setupSession(this)
-            }
+            startArCoreSession()
             arSceneView?.scene?.addOnUpdateListener(this)
             arSceneView?.resume()
         } else {
@@ -511,6 +517,17 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             locationDataSource?.startAsync()
         }
         isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
+    }
+
+    private fun startArCoreSession() {
+        // Create the session.
+        Session(context).apply {
+            val config = Config(this)
+            config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+            config.focusMode = Config.FocusMode.AUTO
+            this.configure(config)
+            arSceneView?.setupSession(this)
+        }
     }
 
     /**
