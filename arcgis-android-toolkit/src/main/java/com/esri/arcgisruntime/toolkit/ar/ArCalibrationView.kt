@@ -38,6 +38,7 @@ class ArCalibrationView : FrameLayout {
     private val _headingControl: JoystickSeekBar by lazy {
         headingControl
     }
+    private var previousBaseSurfaceOpacity: Float? = null
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
@@ -87,11 +88,15 @@ class ArCalibrationView : FrameLayout {
     fun bindArcGISArView(arcGISArView: ArcGISArView) {
         this.arcGISArView = arcGISArView
         this.arcGISArView?.sceneView?.scene?.let {
+            previousBaseSurfaceOpacity = it.baseSurface?.opacity
             it.baseSurface?.opacity = SCENEVIEW_CALIBRATING_OPACITY
         }
     }
 
     fun unbindArcGISArView(arcGISArView: ArcGISArView) {
+        this.arcGISArView?.sceneView?.scene?.let {
+            it.baseSurface?.opacity = previousBaseSurfaceOpacity ?: 1.0f
+        }
         this.arcGISArView = null
     }
 }
