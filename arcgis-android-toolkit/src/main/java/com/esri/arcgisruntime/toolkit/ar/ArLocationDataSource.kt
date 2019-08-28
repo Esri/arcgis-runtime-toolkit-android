@@ -55,15 +55,16 @@ import kotlin.math.PI
  *
  * @since 100.6.0
  */
-
-// the factor used to filter out the less accurate positions to reduce unnecessary updates.
-private const val ACCURACY_THRESHOLD_FACTOR = 2.0
-private const val EXCEPTION_MSG = "No location provider found on the device"
-private const val NO_STARTED_MSG = "The location data source is not started yet"
-private const val NO_PROVIDER_MSG = "No provider found for the given name : %s"
-private const val PARAMETER_OUT_OF_BOUNDS_MSG = "Parameter %s is out of bounds"
-
 class ArLocationDataSource(private val context: Context) : LocationDataSource() {
+
+    companion object {
+        // the factor used to filter out the less accurate positions to reduce unnecessary updates.
+        private const val ACCURACY_THRESHOLD_FACTOR = 2.0
+        private const val EXCEPTION_MSG = "No location provider found on the device"
+        private const val NO_STARTED_MSG = "The location data source is not started yet"
+        private const val NO_PROVIDER_MSG = "No provider found for the given name : %s"
+        private const val PARAMETER_OUT_OF_BOUNDS_MSG = "Parameter %s is out of bounds"
+    }
 
     // The minimum distance to change updates in meters
     private var minimumUpdateDistance = 0f // meters
