@@ -187,8 +187,8 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      * @since 100.6.0
      */
     override fun onStart() {
-        //LocationManager.requestLocationUpdates() must be called from a looper thread.
-        //Use the main looper here to avoid creating new looper thread,thread management, and UI issue.
+        // LocationManager.requestLocationUpdates() must be called from a looper thread
+        // Use the main looper here to avoid creating new looper thread, thread management, and UI issue
         val handler = Handler(context.mainLooper)
         handler.post {
             var throwable: Throwable? = null
@@ -200,7 +200,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
                     else -> selectProvidersByDefault()
                 }
 
-                // if no location providers are available or enabled, the starting process fails;
+                // If no location providers are available or enabled, the starting process fails
                 check(selectedLocationProviders.isNotEmpty()) {
                     String.format(
                         NO_PROVIDER_MSG,
@@ -208,7 +208,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
                     )
                 }
 
-                //the LocationListeners need the caller thread having a Looper.
+                // The LocationListeners need the caller thread having a Looper
                 registerListeners()
             } catch (exception: Exception) {
                 throwable = exception
@@ -229,7 +229,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     private fun registerListeners() {
         val lastKnownLocation = locationManager?.getLastKnownLocation(selectedLocationProviders[0])
         if (lastKnownLocation != null) {
-            // reset the last known location'speed and bearing, original data no meaning anymore.
+            // Reset the last known location, speed and bearing, original data has no meaning anymore
             lastKnownLocation.speed = 0f
             lastKnownLocation.bearing = 0f
             setLastKnownLocation(lastKnownLocation.toEsriLocation(true))
@@ -252,7 +252,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
         locationManager?.removeUpdates(internalLocationListener)
         internalLocationListener = null
 
-        // stop update heading if it is started.
+        // Stop update heading if it is started
         stopUpdateHeading()
     }
 
@@ -288,7 +288,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
                 selectedLocationProviders.add(LocationManager.NETWORK_PROVIDER)
             }
 
-            // check if the GPS location service enabled,if true, use it too.
+            // Check if the GPS location service enabled, if true, use it too
             if (it.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 selectedLocationProviders.add(LocationManager.GPS_PROVIDER)
             }
@@ -325,7 +325,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     private fun updateEsriLocation(location: android.location.Location?, lastKnown: Boolean) {
         if (location != null) {
 
-            // if new location accuracy is two times less than previous one, it will be ignored.
+            // If new location accuracy is two times less than previous one, it will be ignored
             if (lastLocation != null) {
                 val accuracyThreshold =
                     lastLocation!!.horizontalAccuracy * ACCURACY_THRESHOLD_FACTOR
@@ -357,7 +357,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      * @since 100.6.0
      */
     private fun selectProviderByUserDefined(userProvider: String) {
-        // use the user supplied location provider if it is defined, otherwise ignore it.
+        // Use the user supplied location provider if it is defined, otherwise ignore it
         if (locationManager != null && locationManager!!.allProviders.contains(userProvider)) {
             selectedLocationProviders.add(userProvider)
         }
@@ -374,7 +374,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
         }
 
         sensorManager?.let {
-            // most of device has one or both hardware-sensors.
+            // Most devices have one or both hardware-sensors
             it.registerListener(
                 internalHeadingListener,
                 it.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -398,7 +398,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
         if (internalHeadingListener != null) {
             internalHeadingListener = null
         }
-        //reset the heading to NaN when the heading is not available.
+        // Reset the heading to NaN when the heading is not available
         updateHeading(java.lang.Double.NaN)
     }
 
@@ -412,20 +412,20 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
         private var innerAndroidLocation: android.location.Location? = null
 
         override fun onLocationChanged(location: android.location.Location) {
-            // update the core location
+            // Update the core location
             updateEsriLocation(location, false)
             innerAndroidLocation = location
         }
 
         override fun onProviderEnabled(provider: String) {
-            // re-registered the enabled provider.
+            // Re-register the enabled provider
             if (selectedLocationProviders.contains(provider)) {
                 startLocationProviders()
             }
         }
 
         override fun onProviderDisabled(provider: String) {
-            // if only one provider is disabled, the last known location is display in the gray symbol.
+            // If only one provider is disabled, the last known location is used
             if (selectedLocationProviders.contains(provider) && selectedLocationProviders.size == 1) {
                 updateEsriLocation(innerAndroidLocation, true)
             }
@@ -436,7 +436,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
                 if (status == LocationProvider.AVAILABLE) {
                     startLocationProviders()
                 } else {
-                    // out of service or temporarily unavailable.
+                    // Out of service or temporarily unavailable
                     updateEsriLocation(innerAndroidLocation, true)
                 }
             }
@@ -482,7 +482,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
                 if (this.heading < 0)
                     heading += 360f
 
-                // update the core heading value.
+                // Update the heading value
                 updateHeading(heading.toDouble())
             }
         }
