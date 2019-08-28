@@ -404,7 +404,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     }
 
     /**
-     * The internal implementation [LocationListener] to listen the changes of Location.
+     * The internal implementation [LocationListener] to listen for the changes of Location.
      *
      * @since 100.6.0
      */
@@ -426,7 +426,8 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
         }
 
         override fun onProviderDisabled(provider: String) {
-            // If only one provider is disabled, the last known location is used
+            // If only one provider is is selected and that provider is disabled then the last known location is used as
+            // the current location
             if (selectedLocationProviders.contains(provider) && selectedLocationProviders.size == 1) {
                 updateEsriLocation(innerAndroidLocation, true)
             }
