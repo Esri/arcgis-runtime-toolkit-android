@@ -182,7 +182,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      * by calling [LocationDisplay.startAsync] on the LocationDisplay associated with this data source.
      *
      * This method requests that location updates are received from the underlying Android platform location providers;
-     * if there is an error starting the location providers, it will be passed to [.onStartCompleted].
+     * if there is an error starting the location providers, it will be passed to [onStartCompleted].
      *
      * @since 100.6.0
      */
