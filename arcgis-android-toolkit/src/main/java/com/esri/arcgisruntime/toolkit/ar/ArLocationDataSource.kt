@@ -529,13 +529,22 @@ private fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
  * @since 100.6.0
  */
 private fun android.location.Location.toEsriLocation(lastKnown: Boolean): LocationDataSource.Location {
-    val position = Point(longitude, latitude, SpatialReference.create(4326))
-    var verticalAccuracy = java.lang.Double.NaN
-    val timeStamp = createCalendarFromTimeInMillis(time)
+    // Get vertical accuracy when available
+    val verticalAccuracy =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) verticalAccuracyMeters.toDouble() else java.lang.Double.NaN
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        verticalAccuracy = verticalAccuracyMeters.toDouble()
+    // If vertical accuracy is greater than 0, provide a position with Z value.
+    val position = if (verticalAccuracy.isNaN().not() && verticalAccuracy >= 0) Point(
+        longitude,
+        latitude,
+        altitude,
+        SpatialReference.create(4326)
+    ) else {
+        // Else provide a position without Z value
+        Point(longitude, latitude, SpatialReference.create(4326))
     }
+
+    val timeStamp = createCalendarFromTimeInMillis(time)
 
     return LocationDataSource.Location(
         position,
