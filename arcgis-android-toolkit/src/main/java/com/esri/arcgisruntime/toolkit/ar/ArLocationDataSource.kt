@@ -144,17 +144,14 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      * @since 100.6.0
      */
     fun requestLocationUpdates(criteria: Criteria, minTime: Long, minDistance: Float) {
-        if (!isStarted) {
-            throw IllegalStateException(NO_STARTED_MSG)
-        }
+        check(isStarted) { NO_STARTED_MSG }
+
         selectedLocationProviders.clear()
 
         checkTimeDistanceParameters(minTime, minDistance)
         selectProviderByCriteria(criteria)
 
-        if (selectedLocationProviders.isEmpty()) {
-            throw IllegalStateException(EXCEPTION_MSG)
-        }
+        check(selectedLocationProviders.isNotEmpty()) { EXCEPTION_MSG }
 
         startLocationProviders()
     }
@@ -169,15 +166,12 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      * @since 100.6.0
      */
     fun requestLocationUpdates(provider: String, minTime: Long, minDistance: Float) {
-        if (!isStarted) {
-            throw IllegalStateException(NO_STARTED_MSG)
-        }
+        check(isStarted) { NO_STARTED_MSG }
+
         checkTimeDistanceParameters(minTime, minDistance)
         selectProviderByUserDefined(provider)
 
-        if (selectedLocationProviders.isEmpty()) {
-            throw IllegalArgumentException(String.format(NO_PROVIDER_MSG, provider))
-        }
+        require(selectedLocationProviders.isNotEmpty()) { String.format(NO_PROVIDER_MSG, provider) }
 
         startLocationProviders()
     }
@@ -206,12 +200,10 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
                 }
 
                 // if no location providers are available or enabled, the starting process fails;
-                if (selectedLocationProviders.isEmpty()) {
-                    throw IllegalStateException(
-                        String.format(
-                            NO_PROVIDER_MSG,
-                            "selectedLocationProviders"
-                        )
+                check(selectedLocationProviders.isNotEmpty()) {
+                    String.format(
+                        NO_PROVIDER_MSG,
+                        "selectedLocationProviders"
                     )
                 }
 
@@ -269,19 +261,17 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      * @since 100.6.0
      */
     private fun checkTimeDistanceParameters(minTime: Long, minDistance: Float) {
-        if (minTime < 0) {
-            throw IllegalArgumentException(String.format(PARAMETER_OUT_OF_BOUNDS_MSG, "minTime"))
-        }
+        require(minTime >= 0) { String.format(PARAMETER_OUT_OF_BOUNDS_MSG, "minTime") }
+
         minimumUpdateTime = minTime
 
-        if (minDistance < 0) {
-            throw IllegalArgumentException(
-                String.format(
-                    PARAMETER_OUT_OF_BOUNDS_MSG,
-                    "minDistance"
-                )
+        require(minDistance >= 0) {
+            String.format(
+                PARAMETER_OUT_OF_BOUNDS_MSG,
+                "minDistance"
             )
         }
+
         minimumUpdateDistance = minDistance
     }
 
@@ -506,7 +496,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
             if (output == null) {
                 return input
             }
-            for (i in 0 until input.size) {
+            for (i in input.indices) {
                 output[i] = output[i] + 0.1f * (input[i] - output[i])
             }
             return output
