@@ -83,4 +83,8 @@ class ArCalibrationView : FrameLayout {
     fun bindArcGISArView(arcGISArView: ArcGISArView) {
         this.arcGISArView = arcGISArView
     }
+
+    fun unbindArcGISArView(arcGISArView: ArcGISArView) {
+        this.arcGISArView = null
+    }
 }

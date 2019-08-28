@@ -360,6 +360,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
         Log.e("LOG", error)
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onDestroy() {
+        arCalibrationView.unbindArcGISArView(arcGisArView)
+        super.onDestroy()
+    }
 }
 
 /**
