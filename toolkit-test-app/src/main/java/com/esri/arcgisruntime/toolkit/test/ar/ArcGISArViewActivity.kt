@@ -51,8 +51,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
             return ArLocationDataSource(this)
         }
 
-    private var graphicsOverlay : GraphicsOverlay = GraphicsOverlay()
-
     /**
      * AR Mode: Full-Scale AR
      * Scene that uses a Streets Basemap.
@@ -264,7 +262,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private fun redlandsFireHydrantsScene(): () -> ArcGISScene {
         return {
             ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
-                arcGisArView.locationDataSource = androidLocationDataSource
+                arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
@@ -286,7 +284,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
         set(value) {
             field = value
             arcGisArView.sceneView.scene = value?.scene?.invoke()
-            arcGisArView.sceneView.graphicsOverlays.add(graphicsOverlay)
             title = value?.name
         }
 
@@ -295,7 +292,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_ar_arcgissceneview)
         arcGisArView.registerLifecycle(lifecycle)
         currentScene = scenes[0]
-        graphicsOverlay.sceneProperties.surfacePlacement = LayerSceneProperties.SurfacePlacement.ABSOLUTE
 
         arcGisArView.sceneView.setOnTouchListener(object :
             DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
@@ -307,9 +303,15 @@ class ArcGISArViewActivity : AppCompatActivity() {
                         } else {
                             var sphere = SimpleMarkerSceneSymbol.createSphere(Color.CYAN, 0.25, SceneSymbol.AnchorPosition.BOTTOM)
                             var point = arcGisArView.arScreenToLocation(this)
-                            var graphic = Graphic(point, sphere)
-                            graphicsOverlay.graphics.add(graphic)
+                            if(point != null) {
+                                var graphic = Graphic(point, sphere)
+                                var overlay  = GraphicsOverlay()
+                                overlay.sceneProperties.surfacePlacement = LayerSceneProperties.SurfacePlacement.ABSOLUTE
+                                overlay.graphics.add(graphic)
+                                arcGisArView.sceneView.graphicsOverlays.add(overlay)
+                            }
                         }
+                        return true
                     }
                 }
                 return false
