@@ -155,11 +155,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var cameraController: TransformationMatrixCameraController =
+    private var cameraController: TransformationMatrixCameraController =
         TransformationMatrixCameraController()
-        private set(value) {
-            field = value
-        }
 
     /**
      * Device Orientation to be used when setting Field of View. Default is [DeviceOrientation.PORTRAIT].
