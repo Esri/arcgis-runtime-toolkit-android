@@ -611,9 +611,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                     offsetMatrix.quaternionY,
                     offsetMatrix.quaternionZ,
                     offsetMatrix.quaternionW,
-                    offsetMatrix.translationX,
-                    offsetMatrix.translationY,
-                    offsetMatrix.translationZ
+                    offsetMatrix.translationX * cameraController.translationFactor,
+                    offsetMatrix.translationY * cameraController.translationFactor,
+                    offsetMatrix.translationZ * cameraController.translationFactor
             )
             var mat = originMatrix.addTransformation(scaledOffset)
             return Camera(mat).location
