@@ -480,7 +480,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     private fun internalStartTracking(restartLocationDataSource: Boolean) {
-        startArCoreSession()
+        if (isUsingARCore == ARCoreUsage.YES) {
+            startArCoreSession()
+        }
+
         if (restartLocationDataSource) {
             startLocationDataSource()
         }
@@ -590,7 +593,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun resetTracking() {
         originCamera = null
         initialTransformationMatrix = identityMatrix
-        startArCoreSession()
+        if (isUsingARCore == ARCoreUsage.YES) {
+            startArCoreSession()
+        }
         cameraController.transformationMatrix = identityMatrix
     }
 
