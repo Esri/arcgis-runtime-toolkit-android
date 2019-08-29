@@ -670,9 +670,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 offsetMatrix.quaternionY,
                 offsetMatrix.quaternionZ,
                 offsetMatrix.quaternionW,
-                offsetMatrix.translationX * cameraController.translationFactor,
-                offsetMatrix.translationY * cameraController.translationFactor,
-                offsetMatrix.translationZ * cameraController.translationFactor
+                offsetMatrix.translationX * translationTransformationFactor,
+                offsetMatrix.translationY * translationTransformationFactor,
+                offsetMatrix.translationZ * translationTransformationFactor
             )
             val calculatedMatrix =
                 cameraController.originCamera.transformationMatrix.addTransformation(scaledOffset)
