@@ -28,12 +28,10 @@ import android.hardware.SensorManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.util.Log
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.Toast
 import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
@@ -605,17 +603,23 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView?.arFrame?.camera?.let { arCamera ->
             if (isTracking) {
-                var arCoreTransMatrix = TransformationMatrix.createWithQuaternionAndTranslation(
-                        arCamera.displayOrientedPose.rotationQuaternion[0].toDouble(),
-                        arCamera.displayOrientedPose.rotationQuaternion[1].toDouble(),
-                        arCamera.displayOrientedPose.rotationQuaternion[2].toDouble(),
-                        arCamera.displayOrientedPose.rotationQuaternion[3].toDouble(),
-                        arCamera.displayOrientedPose.translation[0].toDouble(),
-                        arCamera.displayOrientedPose.translation[1].toDouble(),
-                        arCamera.displayOrientedPose.translation[2].toDouble()
-                        )
+                Pair(
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                ).let {
+                    TransformationMatrix.createWithQuaternionAndTranslation(
+                        it.first[0],
+                        it.first[1],
+                        it.first[2],
+                        it.first[3],
+                        it.second[0],
+                        it.second[1],
+                        it.second[2]
+                    )
+                }.let { arCoreTransMatrix ->
                     cameraController.transformationMatrix =
                         initialTransformationMatrix.addTransformation(arCoreTransMatrix)
+                }
 
                 arCamera.imageIntrinsics.let {
                     sceneView.setFieldOfViewFromLensIntrinsics(
@@ -659,21 +663,20 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @return the point where the hit test happened, null if the hitTest didn't hit anything
      * @since 100.6.0
      */
-    fun arScreenToLocation(screenPoint: android.graphics.Point) : Point? {
-        var offsetMatrix = hitTest(screenPoint)
-        if (offsetMatrix != null) {
-            var originMatrix = cameraController.originCamera.transformationMatrix
-            var scaledOffset = TransformationMatrix.createWithQuaternionAndTranslation(
-                    offsetMatrix.quaternionX,
-                    offsetMatrix.quaternionY,
-                    offsetMatrix.quaternionZ,
-                    offsetMatrix.quaternionW,
-                    offsetMatrix.translationX * cameraController.translationFactor,
-                    offsetMatrix.translationY * cameraController.translationFactor,
-                    offsetMatrix.translationZ * cameraController.translationFactor
+    fun arScreenToLocation(screenPoint: android.graphics.Point): Point? {
+        hitTest(screenPoint)?.let { offsetMatrix ->
+            val scaledOffset = TransformationMatrix.createWithQuaternionAndTranslation(
+                offsetMatrix.quaternionX,
+                offsetMatrix.quaternionY,
+                offsetMatrix.quaternionZ,
+                offsetMatrix.quaternionW,
+                offsetMatrix.translationX * cameraController.translationFactor,
+                offsetMatrix.translationY * cameraController.translationFactor,
+                offsetMatrix.translationZ * cameraController.translationFactor
             )
-            var mat = originMatrix.addTransformation(scaledOffset)
-            return Camera(mat).location
+            val calculatedMatrix =
+                cameraController.originCamera.transformationMatrix.addTransformation(scaledOffset)
+            return Camera(calculatedMatrix).location
         }
         return null
     }
@@ -696,9 +699,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                                 0.0,
                                 0.0,
                                 1.0,
-                                    it[0],
-                                    it[1],
-                                    it[2]
+                                it[0],
+                                it[1],
+                                it[2]
                             )
                         }
                     }

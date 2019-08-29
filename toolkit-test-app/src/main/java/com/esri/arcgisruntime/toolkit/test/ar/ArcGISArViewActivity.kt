@@ -280,11 +280,19 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private val scenes: Array<SceneInfo> by lazy {
         arrayOf(
             SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets), false),
-            SceneInfo(pointCloudScene(), getString(R.string.arcgis_ar_view_scene_point_cloud), true),
+            SceneInfo(
+                pointCloudScene(),
+                getString(R.string.arcgis_ar_view_scene_point_cloud),
+                true
+            ),
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite), true),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border), true),
-			SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false),
-            SceneInfo(redlandsFireHydrantsScene(), getString(R.string.arcgis_ar_view_redlands_fire_hydrants), false)
+            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false),
+            SceneInfo(
+                redlandsFireHydrantsScene(),
+                getString(R.string.arcgis_ar_view_redlands_fire_hydrants),
+                false
+            )
         )
     }
 
@@ -306,15 +314,19 @@ class ArcGISArViewActivity : AppCompatActivity() {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
-                        if (currentScene?.tabletop == true) {
+                        if (currentScene?.isTabletop == true) {
                             arcGisArView.setInitialTransformationMatrix(this)
                         } else {
-                            var sphere = SimpleMarkerSceneSymbol.createSphere(Color.CYAN, 0.25, SceneSymbol.AnchorPosition.BOTTOM)
-                            var point = arcGisArView.arScreenToLocation(this)
-                            if(point != null) {
-                                var graphic = Graphic(point, sphere)
-                                var overlay  = GraphicsOverlay()
-                                overlay.sceneProperties.surfacePlacement = LayerSceneProperties.SurfacePlacement.ABSOLUTE
+                            var sphere = SimpleMarkerSceneSymbol.createSphere(
+                                Color.CYAN,
+                                0.25,
+                                SceneSymbol.AnchorPosition.BOTTOM
+                            )
+                            arcGisArView.arScreenToLocation(this)?.let {
+                                var graphic = Graphic(it, sphere)
+                                var overlay = GraphicsOverlay()
+                                overlay.sceneProperties.surfacePlacement =
+                                    LayerSceneProperties.SurfacePlacement.ABSOLUTE
                                 overlay.graphics.add(graphic)
                                 arcGisArView.sceneView.graphicsOverlays.add(overlay)
                             }
@@ -372,4 +384,8 @@ private fun addElevationSource(scene: ArcGISScene) {
     scene.baseSurface = surface
 }
 
-private data class SceneInfo(val scene: () -> ArcGISScene, val name: String, val tabletop: Boolean)
+private data class SceneInfo(
+    val scene: () -> ArcGISScene,
+    val name: String,
+    val isTabletop: Boolean
+)
