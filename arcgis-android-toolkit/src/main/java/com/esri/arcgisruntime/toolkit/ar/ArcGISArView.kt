@@ -378,9 +378,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
+    var translationFactor: Double
+        get() = cameraController.translationFactor
         set(value) {
-            field = value
             cameraController.translationFactor = value
         }
 
@@ -670,9 +670,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 offsetMatrix.quaternionY,
                 offsetMatrix.quaternionZ,
                 offsetMatrix.quaternionW,
-                offsetMatrix.translationX * translationTransformationFactor,
-                offsetMatrix.translationY * translationTransformationFactor,
-                offsetMatrix.translationZ * translationTransformationFactor
+                offsetMatrix.translationX * translationFactor,
+                offsetMatrix.translationY * translationFactor,
+                offsetMatrix.translationZ * translationFactor
             )
             val calculatedMatrix =
                 cameraController.originCamera.transformationMatrix.addTransformation(scaledOffset)

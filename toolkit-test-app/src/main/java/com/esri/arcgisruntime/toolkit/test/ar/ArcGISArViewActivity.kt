@@ -69,7 +69,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 addElevationSource(this)
 
                 arcGisArView.locationDataSource = locationDataSource
-                arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.translationFactor = 1.0
             }
         }
     }
@@ -103,7 +103,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                         val center = extent.center
                         val camera = Camera(center, 0.0, 90.0, 0.0)
                         arcGisArView.originCamera = camera
-                        arcGisArView.translationTransformationFactor = 2000.0
+                        arcGisArView.translationFactor = 2000.0
                     }
                 }
 
@@ -169,7 +169,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 0.0
                             )
                             arcGisArView.originCamera = camera
-                            arcGisArView.translationTransformationFactor = 1000.0
+                            arcGisArView.translationFactor = 1000.0
                         }
                     }
                 }
@@ -232,7 +232,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 0.0
                             )
                             arcGisArView.originCamera = camera
-                            arcGisArView.translationTransformationFactor = 1000.0
+                            arcGisArView.translationFactor = 1000.0
                         }
                     }
                 }
@@ -254,7 +254,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                 arcGisArView.locationDataSource = null
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
-                arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.translationFactor = 1.0
             }
         }
     }
@@ -270,7 +270,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
-                arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.translationFactor = 1.0
             }
         }
     }
