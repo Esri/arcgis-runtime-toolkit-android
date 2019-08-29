@@ -514,15 +514,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // permission on Android M and above, now is a good time to ask the user for it.
         // when the permission is requested and the user responds to the request from the OS this is executed again
         // during onResume()
-        if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(
-                CAMERA_PERMISSION
-            )
-        ) {
-            requestPermission(
-                context as Activity,
-                CAMERA_PERMISSION,
-                CAMERA_PERMISSION_CODE
-            )
+        if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
+            requestPermission(context as Activity, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
             return
         }
 
