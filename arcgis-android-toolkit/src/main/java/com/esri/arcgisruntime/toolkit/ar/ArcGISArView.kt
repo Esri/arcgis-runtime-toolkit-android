@@ -149,7 +149,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private val identityMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
 
     /**
-     * The camera controller used to control the camera that is used in [arcGisSceneView].
      * Initial [TransformationMatrix] used by [cameraController].
      *
      * @since 100.6.0
