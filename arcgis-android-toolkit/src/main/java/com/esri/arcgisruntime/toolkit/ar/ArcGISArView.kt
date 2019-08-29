@@ -253,8 +253,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * location updates.
      *
      * Upon receiving an updated location, if we don't previously have an [originCamera] we use the new location to
-     * create a [Camera] and set that as the origin camera of the [cameraController]. On every other location update, if we
-     * are not using ARCore we create a new Camera using properties of the old camera. If user is using ARCore we reset
+     * create a [Camera] and set that as the origin camera of the [cameraController]. If user is using ARCore we reset
      * the session to correct the tracking. We also reset the TransformationMatrix of the CameraController and stop the
      * [locationDataSource] if [useLocationDataSourceOnce] is true.
      *
