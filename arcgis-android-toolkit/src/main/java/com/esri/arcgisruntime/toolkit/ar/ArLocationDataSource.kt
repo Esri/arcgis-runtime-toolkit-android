@@ -30,7 +30,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import com.esri.arcgisruntime.geometry.Point
-import com.esri.arcgisruntime.geometry.SpatialReference
+import com.esri.arcgisruntime.geometry.SpatialReferences
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
 import java.util.ArrayList
@@ -529,13 +529,21 @@ private fun createCalendarFromTimeInMillis(timeInMillis: Long): Calendar {
  * @since 100.6.0
  */
 private fun android.location.Location.toEsriLocation(lastKnown: Boolean): LocationDataSource.Location {
-    val position = Point(longitude, latitude, SpatialReference.create(4326))
-    var verticalAccuracy = java.lang.Double.NaN
+    // If location has altitude, provide a position with Z value
+    val position = if (hasAltitude()) Point(
+        longitude,
+        latitude,
+        altitude,
+        SpatialReferences.getWgs84()
+    ) else {
+        // Else provide a position without Z value
+        Point(longitude, latitude, SpatialReferences.getWgs84())
+    }
+
     val timeStamp = createCalendarFromTimeInMillis(time)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        verticalAccuracy = verticalAccuracyMeters.toDouble()
-    }
+    val verticalAccuracy =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) verticalAccuracyMeters.toDouble() else Double.NaN
 
     return LocationDataSource.Location(
         position,

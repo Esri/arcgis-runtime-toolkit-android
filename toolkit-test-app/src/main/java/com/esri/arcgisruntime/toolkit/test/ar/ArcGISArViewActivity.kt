@@ -254,7 +254,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene().apply {
                 addElevationSource(this)
 
-                arcGisArView.locationDataSource = null
+                arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationTransformationFactor = 1.0
             }
