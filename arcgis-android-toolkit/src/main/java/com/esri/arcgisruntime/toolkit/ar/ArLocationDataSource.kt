@@ -30,7 +30,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import com.esri.arcgisruntime.geometry.Point
-import com.esri.arcgisruntime.geometry.SpatialReference
+import com.esri.arcgisruntime.geometry.SpatialReferences
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.view.LocationDisplay
 import java.util.ArrayList
@@ -534,10 +534,10 @@ private fun android.location.Location.toEsriLocation(lastKnown: Boolean): Locati
         longitude,
         latitude,
         altitude,
-        SpatialReference.create(4326)
+        SpatialReferences.getWgs84()
     ) else {
         // Else provide a position without Z value
-        Point(longitude, latitude, SpatialReference.create(4326))
+        Point(longitude, latitude, SpatialReferences.getWgs84())
     }
 
     val timeStamp = createCalendarFromTimeInMillis(time)
