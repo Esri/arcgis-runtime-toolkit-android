@@ -606,7 +606,16 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         var offsetMatrix = hitTest(screenPoint)
         if (offsetMatrix != null) {
             var originMatrix = cameraController.originCamera.transformationMatrix
-            var mat = originMatrix.addTransformation(offsetMatrix)
+            var scaledOffset = TransformationMatrix.createWithQuaternionAndTranslation(
+                    offsetMatrix.quaternionX,
+                    offsetMatrix.quaternionY,
+                    offsetMatrix.quaternionZ,
+                    offsetMatrix.quaternionW,
+                    offsetMatrix.translationX,
+                    offsetMatrix.translationY,
+                    offsetMatrix.translationZ
+            )
+            var mat = originMatrix.addTransformation(scaledOffset)
             return Camera(mat).location
         }
         return null
