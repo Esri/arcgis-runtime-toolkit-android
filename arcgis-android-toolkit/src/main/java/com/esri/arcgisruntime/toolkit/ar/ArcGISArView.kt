@@ -32,7 +32,6 @@ import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
-import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
@@ -50,15 +49,11 @@ import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
-import com.google.ar.sceneform.math.Quaternion
 import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
 import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
@@ -147,29 +142,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private var renderVideoFeed: Boolean = true
 
     /**
-     * The camera controller used to control the camera that is used in [arcGisSceneView].
+     * Helper property to be used as an identity TransformationMatrix to prevent reallocation.
+     *
+     * @since 100.6.0
+     */
+    private val identityMatrix: TransformationMatrix = TransformationMatrix.createIdentityMatrix()
+
+    /**
      * Initial [TransformationMatrix] used by [cameraController].
      *
      * @since 100.6.0
      */
-    var initialTransformationMatrix: TransformationMatrix =
-        TransformationMatrix.createIdentityMatrix()
-
-    /**
-     * A quaternion used to compensate for the pitch being 90 degrees on ARCore; used to calculate the current device
-     * transformation for each frame.
-     *
-     * @since 100.6.0
-     */
-    private val compensationQuaternion: Quaternion =
-        Quaternion((sin(45 / (180 / PI)).toFloat()), 0F, 0F, (cos(45 / (180 / PI)).toFloat()))
-
-    /**
-     * Initial location from [locationDataSource].
-     *
-     * @since 100.6.0
-     */
-    private var initialLocation: Point? = null
+    var initialTransformationMatrix: TransformationMatrix = identityMatrix
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -249,34 +233,55 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var originCamera: Camera = Camera(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    var originCamera: Camera? = null
         set(value) {
             field = value
-            cameraController.originCamera = value
-            if (isTracking) {
-                resetTracking()
+            if (value != null) {
+                cameraController.originCamera = value
             }
         }
+
+    /**
+     * Property to determine if we are using only the first location provided by the LocationDataSource
+     *
+     * @since 100.6.0
+     */
+    private var useLocationDataSourceOnce: Boolean = true
 
     /**
      * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
      * location updates.
      *
-     * Upon receiving an updated location, if we don't previously have an [initialLocation] we use that property to
-     * create a [Camera] and set that as the origin camera of the [cameraController]. On every other location update, if we
-     * are not using ARCore we set the current viewpoint camera of [sceneView] to a new Camera created from that location.
+     * Upon receiving an updated location, if we don't previously have an [originCamera] we use the new location to
+     * create a [Camera] and set that as the origin camera of the [cameraController]. If user is using ARCore we reset
+     * the session to correct the tracking. We also reset the TransformationMatrix of the CameraController and stop the
+     * [locationDataSource] if [useLocationDataSourceOnce] is true.
      *
      * @since 100.6.0
      */
     private val locationChangedListener: LocationDataSource.LocationChangedListener =
         LocationDataSource.LocationChangedListener {
             it.location.position?.let { location ->
-                if (initialLocation == null) {
-                    initialLocation = location
-                    cameraController.originCamera = Camera(location, 0.0, 0.0, 0.0)
-                } else if (isUsingARCore != ARCoreUsage.YES) {
-                    val camera = sceneView.currentViewpointCamera.moveTo(location)
-                    sceneView.setViewpointCamera(camera)
+                // Always set the origin camera; then reset ARCore
+                val oldCamera = cameraController.originCamera
+
+                // Create a new camera based on our location and set it on the originCamera.
+                originCamera = if (originCamera == null) {
+                    Camera(location, 0.0, 90.0, 0.0)
+                } else {
+                    Camera(location, oldCamera.heading, oldCamera.pitch, oldCamera.roll)
+                }
+
+                // If we're using ARCore, reset the session.
+                if (isUsingARCore == ARCoreUsage.YES) {
+                    startArCoreSession()
+                }
+
+                // Reset the camera controller's transformationMatrix to its initial state, the identity matrix.
+                cameraController.transformationMatrix = identityMatrix
+
+                if (useLocationDataSourceOnce) {
+                    locationDataSource?.stop()
                 }
             }
         }
@@ -353,9 +358,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var isTracking: Boolean = false
-        private set(value) {
-            field = value
-        }
 
     /**
      * Denotes whether ARCore is being used to track location and angles.
@@ -450,14 +452,46 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        startTracking()
+        internalStartTracking(true)
     }
 
     /**
      * Begins AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
      * lifecycle of this View is maintained by the LifecycleOwner.
      *
-     * Checks the following prerequisites required for the use of ARCore:
+     * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
+     * request permissions. This may not always be the case and the handling of permission are under review.
+     *
+     * Use [useLocationDataSourceOnce] to only use the first location provided by the LocationDataSource.
+     *
+     * @since 100.6.0
+     */
+    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
+    fun startTracking(useLocationDataSourceOnce: Boolean) {
+        this.useLocationDataSourceOnce = useLocationDataSourceOnce
+        internalStartTracking(true)
+    }
+
+    /**
+     * Internal function to begin ARCore Session and start LocationDataSource if provided. Use [restartLocationDataSource]
+     * to restart LocationDataSource if necessary.
+     *
+     * @since 100.6.0
+     */
+    private fun internalStartTracking(restartLocationDataSource: Boolean) {
+        startArCoreSession()
+        if (restartLocationDataSource) {
+            startLocationDataSource()
+        }
+
+        sceneView.resume()
+        isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
+    }
+
+    /**
+     * Starts the ARCore Session.
+     *
+     * * Checks the following prerequisites required for the use of ARCore:
      * - Checks for permissions required to use ARCore.
      * - Checks for an installation of ARCore.
      *
@@ -469,59 +503,70 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
      * request permissions. This may not always be the case and the handling of permission are under review.
      *
+     * @throws [IllegalStateException] if the Context is not an instance of Activity
      * @since 100.6.0
      */
-    @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    fun startTracking() {
-        (context as? Activity)?.let { activity ->
-            // ARCore requires camera permissions to operate. If we did not yet obtain runtime
-            // permission on Android M and above, now is a good time to ask the user for it.
-            // when the permission is requested and the user responds to the request from the OS this is executed again
-            // during onResume()
-            if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(
-                    CAMERA_PERMISSION
-                )
-            ) {
-                requestPermission(
-                    activity,
-                    CAMERA_PERMISSION,
-                    CAMERA_PERMISSION_CODE
-                )
-                return
-            }
+    private fun startArCoreSession() {
+        // Throw exception if Context is not an instance of Activity as it's required for permission request
+        check(context is Activity) { "Context must be an instance of Activity" }
 
-            // Request location permission if user has provided a LocationDataSource
-            locationDataSource?.let {
-                if (!hasPermission(LOCATION_PERMISSION)) {
-                    requestPermission(
-                        activity,
-                        LOCATION_PERMISSION,
-                        LOCATION_PERMISSION_CODE
-                    )
-                    return
-                }
-            }
+        // ARCore requires camera permissions to operate. If we did not yet obtain runtime
+        // permission on Android M and above, now is a good time to ask the user for it.
+        // when the permission is requested and the user responds to the request from the OS this is executed again
+        // during onResume()
+        if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
+            requestPermission(context as Activity, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+            return
+        }
+
+        // Create the session.
+        Session(context).apply {
+            val config = Config(this)
+            config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+            config.focusMode = Config.FocusMode.AUTO
+            this.configure(config)
+            arSceneView?.setupSession(this)
         }
 
         if (isUsingARCore == ARCoreUsage.YES) {
-            // Create the session.
-            Session(context).apply {
-                val config = Config(this)
-                config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-                config.focusMode = Config.FocusMode.AUTO
-                this.configure(config)
-                arSceneView?.setupSession(this)
-            }
             arSceneView?.scene?.addOnUpdateListener(this)
-            arSceneView?.resume()
+            try {
+                arSceneView?.resume()
+            } catch (e: Exception) {
+                error = e
+            }
         } else {
             removeView(arSceneView)
             arSceneView = null
         }
+    }
 
-        sceneView.resume()
+    /**
+     * Starts [locationDataSource] if it is not currently null and requests permissions if required.
+     *
+     * This function currently assumes that the [Context] of this view is an instance of [Activity] to ensure that we can
+     * request permissions. This may not always be the case and the handling of permission are under review.
+     *
+     * @throws [IllegalStateException] if the Context is not an instance of Activity
+     * @since 100.6.0
+     */
+    private fun startLocationDataSource() {
+        // Throw exception if Context is not an instance of Activity as it's required for permission request
+        check(context is Activity) { "Context must be an instance of Activity" }
+
+        // Request location permission if user has provided a LocationDataSource
+        locationDataSource?.let {
+            if (!hasPermission(LOCATION_PERMISSION)) {
+                requestPermission(
+                    context as Activity,
+                    LOCATION_PERMISSION,
+                    LOCATION_PERMISSION_CODE
+                )
+                return
+            }
+        }
+
         locationDataSource?.startAsync()
-        isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
     }
 
     /**
@@ -537,13 +582,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Resets the [initialLocation] and starts tracking.
+     * Resets the device tracking and related properties.
      *
      * @since 100.6.0
      */
     fun resetTracking() {
-        initialLocation = null
-        startTracking()
+        originCamera = null
+        initialTransformationMatrix = identityMatrix
+        startArCoreSession()
+        cameraController.transformationMatrix = identityMatrix
     }
 
     /**
@@ -555,30 +602,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     override fun onUpdate(frameTime: FrameTime?) {
         arSceneView?.arFrame?.camera?.let { arCamera ->
             if (isTracking) {
-                Quaternion.multiply(
-                    compensationQuaternion,
-                    Quaternion(
-                        arCamera.displayOrientedPose.rotationQuaternion[0],
-                        arCamera.displayOrientedPose.rotationQuaternion[1],
-                        arCamera.displayOrientedPose.rotationQuaternion[2],
-                        arCamera.displayOrientedPose.rotationQuaternion[3]
-                    )
-                ).let { compensatedQuaternion ->
-                    // create a Pair from the rotation quaternion and translation to create a TransformationMatrix
-                    Pair(
-                        compensatedQuaternion,
-                        arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
-                    )
-                }.let {
-                    // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
+                Pair(
+                    arCamera.displayOrientedPose.rotationQuaternion.map { it.toDouble() }.toDoubleArray(),
+                    arCamera.displayOrientedPose.translation.map { it.toDouble() }.toDoubleArray()
+                ).let {
                     TransformationMatrix.createWithQuaternionAndTranslation(
-                        it.first.x.toDouble(),
-                        it.first.y.toDouble(),
-                        it.first.z.toDouble(),
-                        it.first.w.toDouble(),
+                        it.first[0],
+                        it.first[1],
+                        it.first[2],
+                        it.first[3],
                         it.second[0],
-                        -it.second[2],
-                        it.second[1]
+                        it.second[1],
+                        it.second[2]
                     )
                 }.let { arCoreTransMatrix ->
                     cameraController.transformationMatrix =
@@ -614,7 +649,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun setInitialTransformationMatrix(screenPoint: android.graphics.Point): Boolean {
         hitTest(screenPoint)?.let {
             initialTransformationMatrix =
-                TransformationMatrix.createIdentityMatrix().subtractTransformation(it)
+                identityMatrix.subtractTransformation(it)
             return true
         }
         return false
@@ -633,15 +668,14 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 frame.hitTest(point.x.toFloat(), point.y.toFloat()).getOrNull(0).let { hitResult ->
                     hitResult?.let { theHitResult ->
                         theHitResult.hitPose.translation.map { it.toDouble() }.toDoubleArray().let {
-                            // swapping y and z co-ordinates and flipping the new y co-ordinate due to the compensation quaternion
                             return TransformationMatrix.createWithQuaternionAndTranslation(
                                 0.0,
                                 0.0,
                                 0.0,
                                 1.0,
                                 it[0],
-                                -it[2],
-                                it[1]
+                                it[1],
+                                it[2]
                             )
                         }
                     }
