@@ -54,10 +54,8 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
  */
 class ArcGISArViewActivity : AppCompatActivity() {
 
-    private val locationDataSource: LocationDataSource
-        get() {
-            return ArLocationDataSource(this)
-        }
+    private val locationDataSource: LocationDataSource get() = ArLocationDataSource(this)
+    private var sphereOverlay: GraphicsOverlay? = null
 
     /**
      * AR Mode: Full-Scale AR
@@ -323,12 +321,16 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 SceneSymbol.AnchorPosition.BOTTOM
                             )
                             arcGisArView.arScreenToLocation(this)?.let {
+                                if (sphereOverlay == null) {
+                                    sphereOverlay = GraphicsOverlay().apply {
+                                        this.sceneProperties.surfacePlacement =
+                                            LayerSceneProperties.SurfacePlacement.ABSOLUTE
+                                        arcGisArView.sceneView.graphicsOverlays.add(this)
+                                    }
+                                }
+
                                 var graphic = Graphic(it, sphere)
-                                var overlay = GraphicsOverlay()
-                                overlay.sceneProperties.surfacePlacement =
-                                    LayerSceneProperties.SurfacePlacement.ABSOLUTE
-                                overlay.graphics.add(graphic)
-                                arcGisArView.sceneView.graphicsOverlays.add(overlay)
+                                sphereOverlay!!.graphics.add(graphic)
                             }
                         }
                         return true
