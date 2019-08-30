@@ -27,11 +27,12 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 /**
- * A subclass of AppCompatSeekBar with an initial progress of 50% of the max value. When the user
- * changes the progress by sliding the thumb icon the [deltaProgress] is calculated using the delta
- * of the current progress and the initial progress. When the user releases the thumb icon the
- * progress returns to 50% of the max value. The user can use [addDeltaProgressUpdatedListener] to
- * listen for changes in the deltaProgress.
+ * A subclass of AppCompatSeekBar with an initial progress of 50% of the max value.
+ *
+ * The distance from the center point of the slider determines the [deltaProgress] value applied
+ * during each interval. For distances close to the center, the delta is small and used for fine-grained
+ * adjustments; distances farther from the center are for larger-scale adjustments. When released,
+ * the slider "thumb" will return to the center of the slider.
  *
  * _Example usage_:
  * ```
@@ -55,6 +56,7 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
     companion object {
         private const val DEFAULT_MIN = 0.0f
         private const val DEFAULT_MAX = 100.0f
+        private const val DEFAULT_DELTA_INTERVAL_MILLIS = 250L
     }
 
     private var _min: Float = DEFAULT_MIN
@@ -128,7 +130,7 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
                 }
             }
         }
-        deltaTimer.schedule(deltaTimerTask, 0, 250)
+        deltaTimer.schedule(deltaTimerTask, 0, DEFAULT_DELTA_INTERVAL_MILLIS)
     }
 
     override fun onStopTrackingTouch(seekBar: SeekBar?) {
