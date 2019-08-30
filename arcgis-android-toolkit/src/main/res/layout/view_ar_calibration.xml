@@ -19,8 +19,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="@dimen/ar_calibration_view_padding_horz"
+    android:paddingTop="@dimen/ar_calibration_view_padding_vert"
     android:paddingEnd="@dimen/ar_calibration_view_padding_horz"
-    android:paddingBottom="@dimen/ar_calibration_view_padding_bottom">
+    android:paddingBottom="@dimen/ar_calibration_view_padding_vert">
+
+    <!-- Not currently used -->
+    <TextView
+        android:id="@+id/calibrationInstructionsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/instructions_label_bg"
+        android:gravity="center"
+        android:paddingStart="@dimen/ar_calibration_view_instructions_label_padding_horz"
+        android:paddingEnd="@dimen/ar_calibration_view_instructions_label_padding_horz"
+        android:textColor="@android:color/black"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/elevationLabel"
@@ -40,6 +56,13 @@
         android:text="@string/ar_calibration_view_heading_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
     <com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
         android:id="@+id/elevationControl"

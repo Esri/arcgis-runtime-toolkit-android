@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2019 Esri
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +14,13 @@
   ~ limitations under the License.
   -->
 
-<resources>
-
-    <style name="TextView" />
-
-    <style name="TextView.CalibrationLabel" parent="TextView">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/calibration_label</item>
-    </style>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/instructions_label_bg_shape">
+    <corners android:radius="@dimen/instructions_label_corner_radius" />
+    <padding
+        android:bottom="@dimen/instructions_label_padding"
+        android:left="@dimen/instructions_label_padding"
+        android:right="@dimen/instructions_label_padding"
+        android:top="@dimen/instructions_label_padding" />
+    <solid android:color="@color/instructions_label_bg" />
+</shape>

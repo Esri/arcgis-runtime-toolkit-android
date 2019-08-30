@@ -15,5 +15,9 @@
   -->
 
 <resources>
-    <color name="calibration_label_color">#EEFF00</color>
+    <!-- ArCalibrationView -->
+    <color name="calibration_label">#EEFF00</color>
+
+    <!-- Drawables -->
+    <color name="instructions_label_bg">#30ffffff</color>
 </resources>
