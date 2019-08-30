@@ -663,7 +663,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
     /**
      * Performs a hitTest at the [screenPoint]. If the hitTest succeeds this returns the point in the
-     * world where the hitTest happened
+     * AR scene where the hitTest happened.
      *
      * @return the point where the hit test happened, null if the hitTest didn't hit anything
      * @since 100.6.0
