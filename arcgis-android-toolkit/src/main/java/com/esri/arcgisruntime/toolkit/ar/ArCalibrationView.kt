@@ -19,8 +19,8 @@ package com.esri.arcgisruntime.toolkit.ar
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.esri.arcgisruntime.toolkit.JoystickSeekBar
 import com.esri.arcgisruntime.toolkit.R
+import com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
 import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationControl
 import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 
@@ -94,9 +94,11 @@ class ArCalibrationView : FrameLayout {
     }
 
     fun unbindArcGISArView(arcGISArView: ArcGISArView) {
-        this.arcGISArView?.sceneView?.scene?.let {
-            it.baseSurface?.opacity = previousBaseSurfaceOpacity ?: 1.0f
+        if (this.arcGISArView == arcGISArView) {
+            this.arcGISArView?.sceneView?.scene?.let {
+                it.baseSurface?.opacity = previousBaseSurfaceOpacity ?: 1.0f
+            }
+            this.arcGISArView = null
         }
-        this.arcGISArView = null
     }
 }
