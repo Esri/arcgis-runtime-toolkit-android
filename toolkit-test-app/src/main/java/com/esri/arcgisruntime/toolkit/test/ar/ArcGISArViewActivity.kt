@@ -403,16 +403,31 @@ class ArcGISArViewActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Handle an action defined in the menu using the [itemId] as an identifier.
+     *
+     * @since 100.6.0
+     */
     private fun handleMenuAction(itemId: Int) {
         if (itemId == R.id.actionToggleCalibration) {
             toggleCalibration()
         }
     }
 
+    /**
+     * Select a scene using the [itemId] from the menuItem as an index.
+     *
+     * @since 100.6.0
+     */
     private fun selectScene(itemId: Int) {
         currentScene = scenes[itemId]
     }
 
+    /**
+     * Toggle [calibrating] property.
+     *
+     * @since 100.6.0
+     */
     private fun toggleCalibration() {
         calibrating = calibrating.not()
     }
