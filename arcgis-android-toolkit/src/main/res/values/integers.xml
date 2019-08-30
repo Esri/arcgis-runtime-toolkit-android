@@ -16,8 +16,8 @@
 
 <resources>
     <!-- ArCalibrationView -->
-    <item name="calibration_elevation_control_min" format="float" type="integer">50.0</item>
-    <item name="calibration_elevation_control_max" format="float" type="integer">-50.0</item>
-    <item name="calibration_heading_control_min" format="float" type="integer">10.0</item>
-    <item name="calibration_heading_control_max" format="float" type="integer">-10.0</item>
+    <item name="calibration_elevation_control_min" format="float" type="integer">-50.0</item>
+    <item name="calibration_elevation_control_max" format="float" type="integer">50.0</item>
+    <item name="calibration_heading_control_min" format="float" type="integer">-10.0</item>
+    <item name="calibration_heading_control_max" format="float" type="integer">10.0</item>
 </resources>
