@@ -20,10 +20,40 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.toolkit.R
+import com.esri.arcgisruntime.toolkit.ar.ArCalibrationView.Companion.SCENEVIEW_CALIBRATING_OPACITY
 import com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
 import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationControl
 import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 
+/**
+ * The ArCalibrationView allows the modification of the following properties of the SceneView within
+ * an [ArcGISArView]:
+ * - Elevation
+ * - Heading
+ *
+ * Modification of these properties can be achieved by binding an ArcGISArView to the ArCalibrationView
+ * using the [bindArcGISArView] function and subsequently using the controls provided by the
+ * ArCalibrationView.
+ *
+ * Upon binding, the opacity of the base layer in the SceneView is set to the
+ * [SCENEVIEW_CALIBRATING_OPACITY] value to aide in calibration.
+ *
+ * When calibration is completed, use [unbindArcGISArView] to restore the [previousBaseSurfaceOpacity]
+ * and release the ArcGISArView.
+ *
+ * _Example usage_:
+ * ```
+ * <com.esri.arcgisruntime.toolkit.ar.ArCalibrationView
+ * android:layout_width="match_parent"
+ * android:layout_height="match_parent" />
+ * ```
+ *
+ * ```
+ * arCalibrationView.bindArcGISArView(arcGisArView)
+ * ```
+ *
+ * @since 100.6.0
+ */
 class ArCalibrationView : FrameLayout {
 
     companion object {
