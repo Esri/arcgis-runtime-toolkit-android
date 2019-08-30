@@ -391,7 +391,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
      * @since 100.6.0
      */
     private fun displayErrorMessage(error: String) {
-        Log.e("LOG", error)
+        Log.e(logTag, error)
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
 
