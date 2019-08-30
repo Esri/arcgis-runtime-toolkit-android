@@ -32,6 +32,7 @@ import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.WindowManager
 import android.widget.FrameLayout
+import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.view.AtmosphereEffect
@@ -377,9 +378,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var translationTransformationFactor: Double = DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR
+    var translationFactor: Double
+        get() = cameraController.translationFactor
         set(value) {
-            field = value
             cameraController.translationFactor = value
         }
 
@@ -479,7 +480,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     private fun internalStartTracking(restartLocationDataSource: Boolean) {
-        startArCoreSession()
+        if (isUsingARCore == ARCoreUsage.YES) {
+            startArCoreSession()
+        }
+
         if (restartLocationDataSource) {
             startLocationDataSource()
         }
@@ -589,7 +593,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun resetTracking() {
         originCamera = null
         initialTransformationMatrix = identityMatrix
-        startArCoreSession()
+        if (isUsingARCore == ARCoreUsage.YES) {
+            startArCoreSession()
+        }
         cameraController.transformationMatrix = identityMatrix
     }
 
@@ -653,6 +659,31 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             return true
         }
         return false
+    }
+
+    /**
+     * Performs a hitTest at the [screenPoint]. If the hitTest succeeds this returns the point in the
+     * AR scene where the hitTest happened.
+     *
+     * @return the point where the hit test happened, null if the hitTest didn't hit anything
+     * @since 100.6.0
+     */
+    fun arScreenToLocation(screenPoint: android.graphics.Point): Point? {
+        hitTest(screenPoint)?.let { offsetMatrix ->
+            val scaledOffset = TransformationMatrix.createWithQuaternionAndTranslation(
+                offsetMatrix.quaternionX,
+                offsetMatrix.quaternionY,
+                offsetMatrix.quaternionZ,
+                offsetMatrix.quaternionW,
+                offsetMatrix.translationX * translationFactor,
+                offsetMatrix.translationY * translationFactor,
+                offsetMatrix.translationZ * translationFactor
+            )
+            val calculatedMatrix =
+                cameraController.originCamera.transformationMatrix.addTransformation(scaledOffset)
+            return Camera(calculatedMatrix).location
+        }
+        return null
     }
 
     /**

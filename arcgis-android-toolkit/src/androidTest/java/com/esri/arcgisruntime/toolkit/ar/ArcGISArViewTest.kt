@@ -151,7 +151,7 @@ class ArcGISArViewTest {
     }
 
     /**
-     * Tests setting the [ArcGISArView.translationTransformationFactor] property.
+     * Tests setting the [ArcGISArView.translationFactor] property.
      *
      * @since 100.6.0
      */
@@ -162,12 +162,12 @@ class ArcGISArViewTest {
         with(arcGisArViewTestActivityRule) {
             this.launchActivity()
             this.activity.arcGISArView.let {
-                it?.translationTransformationFactor = translationTransformationFactor
+                it?.translationFactor = translationTransformationFactor
 
                 assertEquals(
                     "Expected translation transformation factor $translationTransformationFactor",
                     translationTransformationFactor,
-                    it?.translationTransformationFactor
+                    it?.translationFactor
                 )
             }
             this.finish()
