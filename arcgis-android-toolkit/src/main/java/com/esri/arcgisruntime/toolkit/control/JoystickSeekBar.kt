@@ -54,13 +54,48 @@ import kotlin.math.roundToInt
 class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
 
     companion object {
+        /**
+         * Default minimum value for the JoystickSeekBar.
+         *
+         * @since 100.6.0
+         */
         private const val DEFAULT_MIN = 0.0f
+
+        /**
+         * Default maximum value for the JoystickSeekBar.
+         *
+         * @since 100.6.0
+         */
         private const val DEFAULT_MAX = 100.0f
+
+        /**
+         * Default interval value in milliseconds between delta progress updates.
+         *
+         * @since 100.6.0
+         */
         private const val DEFAULT_DELTA_INTERVAL_MILLIS = 250L
     }
 
+    /**
+     * Backing minimum property to not conflict with superclass's min value.
+     *
+     * @since 100.6.0
+     */
     private var _min: Float = DEFAULT_MIN
+
+    /**
+     * Backing maximum property to not conflict with superclass's max value.
+     *
+     * @since 100.6.0
+     */
     private var _max: Float = DEFAULT_MAX
+
+    /**
+     * Progress value that is offset based upon the [_min] & [_max] values if they are set. Otherwise
+     * the default max value is used.
+     *
+     * @since 100.6.0
+     */
     private val offsetProgress: Float
         get() {
             return if ((_min != DEFAULT_MIN).or(_max != DEFAULT_MAX)) {
@@ -69,12 +104,38 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
                 max * (progress * 0.01f)
             }
         }
+
+    /**
+     * The property representing the delta of the "thumb" control from the center of the JoystickSeekBar.
+     * Can be listened to by using [addDeltaProgressUpdatedListener].
+     *
+     * @since 100.6.0
+     */
     private var deltaProgress: Float = 0.0f
+
+    /**
+     * A list of [DeltaProgressUpdatedListener] used to listen for delta progress updates.
+     *
+     * @since 100.6.0
+     */
     private val deltaProgressUpdatedListeners = ArrayList<DeltaProgressUpdatedListener>()
+
+    /**
+     * Timer used to schedule [deltaTimerTask].
+     *
+     * @since 100.6.0
+     */
     private val deltaTimer: Timer = Timer()
+
+    /**
+     * TimerTask that notifies registered [DeltaProgressUpdatedListener] of the current [deltaProgress].
+     *
+     * @since 100.6.0
+     */
     private lateinit var deltaTimerTask: TimerTask
 
     init {
+        // Set the initial progress to half of the max value
         progress = (max * 0.5).roundToInt()
         setOnSeekBarChangeListener(this)
     }
@@ -139,14 +200,31 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
         progress = (max * 0.5).roundToInt()
     }
 
+    /**
+     * Add a [listener] to be notified when a [deltaProgress] update is made. Returns true if the
+     * listener was added, false otherwise.
+     *
+     * @since 100.6.0
+     */
     fun addDeltaProgressUpdatedListener(listener: DeltaProgressUpdatedListener): Boolean {
         return this.deltaProgressUpdatedListeners.add(listener)
     }
 
+    /**
+     * Removes a previously added [listener]. Returns true if the listener was removed, false
+     * otherwise.
+     *
+     * @since 100.6.0
+     */
     fun removeDeltaProgressUpdatedListener(listener: DeltaProgressUpdatedListener): Boolean {
         return this.removeDeltaProgressUpdatedListener(listener)
     }
 
+    /**
+     * Listener interface to listen for delta progress updates.
+     *
+     * @since 100.6.0
+     */
     interface DeltaProgressUpdatedListener {
         fun onDeltaProgressUpdated(deltaProgress: Float)
     }
