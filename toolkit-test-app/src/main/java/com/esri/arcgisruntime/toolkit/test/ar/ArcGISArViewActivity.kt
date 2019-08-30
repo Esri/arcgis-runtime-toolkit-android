@@ -18,6 +18,7 @@ package com.esri.arcgisruntime.toolkit.test.ar
 
 import android.graphics.Color
 import android.graphics.Point
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -362,12 +363,28 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.arcgisarview_menu, menu)
-        menu?.findItem(R.id.actionToggleCalibration)?.isVisible =
-            currentScene?.isTabletop?.not() ?: false
+
+        menu?.findItem(R.id.actionToggleCalibration)?.let {
+            setMenuItemIsEnabled(it, currentScene?.isTabletop?.not() ?: false)
+        }
+
         scenes.forEachIndexed { index, sceneInfo ->
             menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)
         }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun setMenuItemIsEnabled(menuItem: MenuItem, isEnabled: Boolean) {
+        menuItem.isEnabled = isEnabled
+
+        val icon = menuItem.icon.mutate()
+
+        icon.setColorFilter(
+            if (isEnabled) Color.WHITE else Color.GRAY,
+            PorterDuff.Mode.SRC_IN
+        )
+
+        menuItem.icon = icon
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
