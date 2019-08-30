@@ -101,6 +101,7 @@ class ArCalibrationView : FrameLayout {
     private fun initialize() {
         inflate(context, R.layout.view_ar_calibration, this)
 
+        // Begin listening for delta progress updates on the elevation control
         elevationControl.addDeltaProgressUpdatedListener(object :
             JoystickSeekBar.DeltaProgressUpdatedListener {
             override fun onDeltaProgressUpdated(deltaProgress: Float) {
@@ -112,6 +113,7 @@ class ArCalibrationView : FrameLayout {
             }
         })
 
+        // Begin listening for delta progress updates on the heading control
         headingControl.addDeltaProgressUpdatedListener(object :
             JoystickSeekBar.DeltaProgressUpdatedListener {
             override fun onDeltaProgressUpdated(deltaProgress: Float) {
