@@ -37,10 +37,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        release {}
         debug {
             // Required to run Instrumented tests in API 19. Only applicable to debug variants as tests are only run
             // on debug variants.
