@@ -57,17 +57,27 @@ import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 class ArCalibrationView : FrameLayout {
 
     companion object {
+        /**
+         * Opacity value used when ArcGISArView is bound to ArCalibrationView.
+         *
+         * @since 100.6.0
+         */
         private const val SCENEVIEW_CALIBRATING_OPACITY = 0.65f
     }
 
+    /**
+     * The ArcGISArView that is being calibrated. This property is set during [bindArcGISArView].
+     *
+     * @since 100.6.0
+     */
     private var arcGISArView: ArcGISArView? = null
-    private val _elevationControl: JoystickSeekBar by lazy {
-        elevationControl
-    }
 
-    private val _headingControl: JoystickSeekBar by lazy {
-        headingControl
-    }
+    /**
+     * The value of the base surface opacity of the SceneView before it is changed during binding of
+     * the ArcGISArView. Used to restore the opacity of the SceneView during [unbindArcGISArView].
+     *
+     * @since 100.6.0
+     */
     private var previousBaseSurfaceOpacity: Float? = null
 
     /**
@@ -91,7 +101,7 @@ class ArCalibrationView : FrameLayout {
     private fun initialize() {
         inflate(context, R.layout.view_ar_calibration, this)
 
-        _elevationControl.addDeltaProgressUpdatedListener(object :
+        elevationControl.addDeltaProgressUpdatedListener(object :
             JoystickSeekBar.DeltaProgressUpdatedListener {
             override fun onDeltaProgressUpdated(deltaProgress: Float) {
                 arcGISArView?.let { arcGISArView ->
@@ -102,7 +112,7 @@ class ArCalibrationView : FrameLayout {
             }
         })
 
-        _headingControl.addDeltaProgressUpdatedListener(object :
+        headingControl.addDeltaProgressUpdatedListener(object :
             JoystickSeekBar.DeltaProgressUpdatedListener {
             override fun onDeltaProgressUpdated(deltaProgress: Float) {
                 arcGISArView?.let { arcGISArView ->
@@ -115,6 +125,12 @@ class ArCalibrationView : FrameLayout {
         })
     }
 
+    /**
+     * Binds an ArcGISArView to an ArCalibrationView. During this, the base surface opacity is set
+     * to [SCENEVIEW_CALIBRATING_OPACITY] to aid calibration for the user.
+     *
+     * @since 100.6.0
+     */
     fun bindArcGISArView(arcGISArView: ArcGISArView) {
         this.arcGISArView = arcGISArView
         this.arcGISArView?.sceneView?.scene?.let {
@@ -123,6 +139,12 @@ class ArCalibrationView : FrameLayout {
         }
     }
 
+    /**
+     * Unbinds an ArcGISArView from an ArCalibrationView. During this, the base surface opacity is
+     * set to the value used before binding.
+     *
+     * @since 100.6.0
+     */
     fun unbindArcGISArView(arcGISArView: ArcGISArView) {
         if (this.arcGISArView == arcGISArView) {
             this.arcGISArView?.sceneView?.scene?.let {
