@@ -376,6 +376,13 @@ class ArcGISArViewActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    /**
+     * Sets the [isEnabled] property on the provided [menuItem] and adds a color filter to the icon
+     * to indicate whether it's enabled or not.Currently defaults to Color.WHITE for enabled and
+     * Color.GRAY for disabled.
+     *
+     * @since 100.6.0
+     */
     private fun setMenuItemIsEnabled(menuItem: MenuItem, isEnabled: Boolean) {
         menuItem.isEnabled = isEnabled
 
