@@ -318,8 +318,12 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private var currentScene: SceneInfo? = null
         set(value) {
             field = value
-            arcGisArView.sceneView.scene = value?.scene?.invoke()
-            title = value?.name
+            value?.let {
+                arcGisArView.sceneView.scene = it.scene.invoke()
+                title = it.name
+                calibrating = calibrating.and(it.isTabletop.not())
+                invalidateOptionsMenu()
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -356,6 +360,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.arcgisarview_menu, menu)
+        menu?.findItem(R.id.actionToggleCalibration)?.isVisible =
+            currentScene?.isTabletop?.not() ?: false
         scenes.forEachIndexed { index, sceneInfo ->
             menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)
         }
