@@ -18,11 +18,13 @@ package com.esri.arcgisruntime.toolkit.ar
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.ar.ArCalibrationView.Companion.SCENEVIEW_CALIBRATING_OPACITY
 import com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
 import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationControl
+import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationLabel
 import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 
 /**
@@ -155,4 +157,15 @@ class ArCalibrationView : FrameLayout {
             this.arcGISArView = null
         }
     }
+
+    /**
+     * Set visibility of elevation control.
+     *
+     * @since 100.6.0
+     */
+    fun setElevationControlVisibility(isVisible: Boolean) {
+        elevationLabel.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+        elevationControl.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
+    }
+
 }
