@@ -68,8 +68,8 @@
         android:id="@+id/elevationControl"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:jsb_max="50.0"
-        app:jsb_min="-50.0"
+        app:jsb_max="@integer/calibration_elevation_control_max"
+        app:jsb_min="@integer/calibration_elevation_control_min"
         app:layout_constraintBottom_toBottomOf="@id/elevationLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/elevationLabel" />
@@ -78,8 +78,8 @@
         android:id="@+id/headingControl"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:jsb_max="10.0"
-        app:jsb_min="-10.0"
+        app:jsb_max="@integer/calibration_heading_control_max"
+        app:jsb_min="@integer/calibration_heading_control_min"
         app:layout_constraintBottom_toBottomOf="@id/headingLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/headingLabel" />
