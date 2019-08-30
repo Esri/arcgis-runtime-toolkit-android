@@ -14,21 +14,48 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit
+package com.esri.arcgisruntime.toolkit.control
 
 import android.content.Context
 import android.support.v7.widget.AppCompatSeekBar
 import android.util.AttributeSet
 import android.widget.SeekBar
+import com.esri.arcgisruntime.toolkit.R
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-private const val DEFAULT_MIN = 0.0f
-private const val DEFAULT_MAX = 100.0f
-
+/**
+ * A subclass of AppCompatSeekBar with an initial progress of 50% of the max value. When the user
+ * changes the progress by sliding the thumb icon the [deltaProgress] is calculated using the delta
+ * of the current progress and the initial progress. When the user releases the thumb icon the
+ * progress returns to 50% of the max value. The user can use [addDeltaProgressUpdatedListener] to
+ * listen for changes in the deltaProgress.
+ *
+ * _Example usage_:
+ * ```
+ * <com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
+ * android:layout_width="100dp"
+ * android:layout_height="wrap_content"
+ * app:jsb_max="50.0"
+ * app:jsb_min="-50.0" />
+ * ```
+ *
+ * _Attributes_:
+ *
+ * `jsb_max` - Sets the maximum value
+ *
+ * `jsb_min` - Sets the minimum value
+ *
+ * @since 100.6.0
+ */
 class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
+
+    companion object {
+        private const val DEFAULT_MIN = 0.0f
+        private const val DEFAULT_MAX = 100.0f
+    }
 
     private var _min: Float = DEFAULT_MIN
     private var _max: Float = DEFAULT_MAX
@@ -46,11 +73,13 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
     private lateinit var deltaTimerTask: TimerTask
 
     init {
+        progress = (max * 0.5).roundToInt()
         setOnSeekBarChangeListener(this)
     }
 
     /**
-     * Constructor used when instantiating this View directly to attach it to another view programmatically.
+     * Constructor used when instantiating this View directly to attach it to another view
+     * programmatically.
      *
      * @since 100.6.0
      */
@@ -68,8 +97,14 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
             0, 0
         ).apply {
             try {
-                _min = getFloat(R.styleable.JoystickSeekBar_jsb_min, DEFAULT_MIN)
-                _max = getFloat(R.styleable.JoystickSeekBar_jsb_max, DEFAULT_MAX)
+                _min = getFloat(
+                    R.styleable.JoystickSeekBar_jsb_min,
+                    DEFAULT_MIN
+                )
+                _max = getFloat(
+                    R.styleable.JoystickSeekBar_jsb_max,
+                    DEFAULT_MAX
+                )
             } finally {
                 recycle()
             }
