@@ -32,11 +32,17 @@ import com.esri.arcgisruntime.location.LocationDataSource
 import com.esri.arcgisruntime.mapping.ArcGISScene
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource
 import com.esri.arcgisruntime.mapping.Basemap
+import com.esri.arcgisruntime.mapping.NavigationConstraint
 import com.esri.arcgisruntime.mapping.Surface
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.mapping.view.DefaultSceneViewOnTouchListener
+import com.esri.arcgisruntime.mapping.view.Graphic
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
+import com.esri.arcgisruntime.mapping.view.LayerSceneProperties
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
+import com.esri.arcgisruntime.symbology.SceneSymbol
+import com.esri.arcgisruntime.symbology.SimpleMarkerSceneSymbol
 import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
@@ -51,6 +57,13 @@ import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 class ArcGISArViewActivity : AppCompatActivity() {
 
     private val locationDataSource: LocationDataSource get() = ArLocationDataSource(this)
+    private val sphereOverlay: GraphicsOverlay by lazy {
+        GraphicsOverlay().apply {
+            this.sceneProperties.surfacePlacement =
+                LayerSceneProperties.SurfacePlacement.ABSOLUTE
+            arcGisArView.sceneView.graphicsOverlays.add(this)
+        }
+    }
     private var calibrating: Boolean = false
 
     /**
@@ -65,7 +78,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 addElevationSource(this)
 
                 arcGisArView.locationDataSource = locationDataSource
-                arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.translationFactor = 1.0
             }
         }
     }
@@ -99,7 +112,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                         val center = extent.center
                         val camera = Camera(center, 0.0, 90.0, 0.0)
                         arcGisArView.originCamera = camera
-                        arcGisArView.translationTransformationFactor = 2000.0
+                        arcGisArView.translationFactor = 2000.0
                     }
                 }
 
@@ -165,7 +178,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 0.0
                             )
                             arcGisArView.originCamera = camera
-                            arcGisArView.translationTransformationFactor = 1000.0
+                            arcGisArView.translationFactor = 1000.0
                         }
                     }
                 }
@@ -228,7 +241,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 0.0
                             )
                             arcGisArView.originCamera = camera
-                            arcGisArView.translationTransformationFactor = 1000.0
+                            arcGisArView.translationFactor = 1000.0
                         }
                     }
                 }
@@ -248,9 +261,9 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene().apply {
                 addElevationSource(this)
 
-                arcGisArView.locationDataSource = locationDataSource
+                arcGisArView.locationDataSource = null
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
-                arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.translationFactor = 1.0
             }
         }
     }
@@ -266,21 +279,26 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
-                arcGisArView.translationTransformationFactor = 1.0
+                arcGisArView.translationFactor = 1.0
             }
         }
     }
 
     private val scenes: Array<SceneInfo> by lazy {
         arrayOf(
-            SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets)),
-            SceneInfo(pointCloudScene(), getString(R.string.arcgis_ar_view_scene_point_cloud)),
-            SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite)),
-            SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border)),
-            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty)),
+            SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets), false),
+            SceneInfo(
+                pointCloudScene(),
+                getString(R.string.arcgis_ar_view_scene_point_cloud),
+                true
+            ),
+            SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite), true),
+            SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border), true),
+            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false),
             SceneInfo(
                 redlandsFireHydrantsScene(),
-                getString(R.string.arcgis_ar_view_redlands_fire_hydrants)
+                getString(R.string.arcgis_ar_view_redlands_fire_hydrants),
+                false
             )
         )
     }
@@ -303,11 +321,20 @@ class ArcGISArViewActivity : AppCompatActivity() {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
-                        if (arcGisArView.locationDataSource != null) {
-                            // TODO implement creation of point when implementing screenToLocation
-                        } else {
+                        if (currentScene?.isTabletop == true) {
                             arcGisArView.setInitialTransformationMatrix(this)
+                        } else {
+                            var sphere = SimpleMarkerSceneSymbol.createSphere(
+                                Color.CYAN,
+                                0.25,
+                                SceneSymbol.AnchorPosition.BOTTOM
+                            )
+                            arcGisArView.arScreenToLocation(this)?.let {
+                                var graphic = Graphic(it, sphere)
+                                sphereOverlay.graphics.add(graphic)
+                            }
                         }
+                        return true
                     }
                 }
                 return false
@@ -388,7 +415,12 @@ private fun addElevationSource(scene: ArcGISScene) {
     surface.isEnabled = true
     surface.backgroundGrid.color = Color.TRANSPARENT
     surface.backgroundGrid.gridLineColor = Color.TRANSPARENT
+    surface.navigationConstraint = NavigationConstraint.NONE
     scene.baseSurface = surface
 }
 
-private data class SceneInfo(val scene: () -> ArcGISScene, val name: String)
+private data class SceneInfo(
+    val scene: () -> ArcGISScene,
+    val name: String,
+    val isTabletop: Boolean
+)
