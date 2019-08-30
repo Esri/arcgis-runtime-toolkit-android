@@ -48,6 +48,8 @@ import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arCalibrationView
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 /**
  * Activity to show usages of [ArcGISArView].
@@ -64,7 +66,17 @@ class ArcGISArViewActivity : AppCompatActivity() {
             arcGisArView.sceneView.graphicsOverlays.add(this)
         }
     }
-    private var calibrating: Boolean = false
+    private var calibrating: Boolean by Delegates.observable(false) { _: KProperty<*>,
+                                                                      _: Boolean,
+                                                                      newValue: Boolean ->
+        if (newValue) {
+            arCalibrationView.bindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.VISIBLE
+        } else {
+            arCalibrationView.unbindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.GONE
+        }
+    }
 
     /**
      * AR Mode: Full-Scale AR
@@ -376,13 +388,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
     private fun toggleCalibration() {
         calibrating = calibrating.not()
-        if (calibrating) {
-            arCalibrationView.bindArcGISArView(arcGisArView)
-            arCalibrationView.visibility = View.VISIBLE
-        } else {
-            arCalibrationView.unbindArcGISArView(arcGisArView)
-            arCalibrationView.visibility = View.GONE
-        }
     }
 
     /**
