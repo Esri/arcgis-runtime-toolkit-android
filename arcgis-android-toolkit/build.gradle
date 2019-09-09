@@ -71,8 +71,8 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
             from components.android
-            groupId 'com.esri.arcgisruntime.toolkit'
-            artifactId 'android'
+            groupId 'com.esri.arcgisruntime'
+            artifactId 'arcgis-android-toolkit'
             version versionName
         }
     }
