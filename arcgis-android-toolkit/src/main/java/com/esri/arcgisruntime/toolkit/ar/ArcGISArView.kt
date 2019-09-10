@@ -257,6 +257,8 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private var didSetInitialLocation: Boolean = false
 
+    private var initialHeading: Double? = null
+
     /**
      * This listener is added to every [LocationDataSource] used when using the [locationDataSource] property to receive
      * location updates.
@@ -281,12 +283,29 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 // we create a new camera with the location and defaults for heading, pitch, roll.
                 // For CONTINUOUS mode, we use the location and the old camera's heading, pitch, roll.
                 if (arLocationTrackingMode == ARLocationTrackingMode.INITIAL || didSetInitialLocation.not()) {
-                    originCamera = Camera(location, 0.0, 90.0, 0.0)
+                    originCamera =
+                        Camera(
+                            location.y,
+                            location.x,
+                            // if location has altitude, use that else use a default value
+                            if (location.hasZ()) location.z else 1.0,
+                            0.0,
+                            90.0,
+                            0.0
+                        )
                     didSetInitialLocation = true
                 } else if (arLocationTrackingMode == ARLocationTrackingMode.CONTINUOUS) {
                     val oldCamera = cameraController.originCamera
                     originCamera =
-                        Camera(location, oldCamera.heading, oldCamera.pitch, oldCamera.roll)
+                        Camera(
+                            location.y,
+                            location.x,
+                            // if location has altitude, use that else the previous value
+                            if (location.hasZ()) location.z else oldCamera.location.z,
+                            oldCamera.heading,
+                            oldCamera.pitch,
+                            oldCamera.roll
+                        )
                 }
 
                 // If we're using ARCore, reset the session.
@@ -294,8 +313,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                     startArCoreSession()
                 }
 
+                // Commented out to prevent changes to scene before ARCore has received first frame.
+                // This is how ARKit does this but isn't a good solution for ARCore.
                 // Reset the camera controller's transformationMatrix to its initial state, the identity matrix.
-                cameraController.transformationMatrix = identityMatrix
+                // cameraController.transformationMatrix = identityMatrix
 
                 if (arLocationTrackingMode != ARLocationTrackingMode.CONTINUOUS) {
                     locationDataSource?.stop()
@@ -315,12 +336,24 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private val headingChangedListener: LocationDataSource.HeadingChangedListener =
         LocationDataSource.HeadingChangedListener {
-            if (isUsingARCore != ARCoreUsage.YES && !it.heading.isNaN()) {
-                // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
-                val currentCamera = sceneView.currentViewpointCamera
-                val camera =
-                    currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
-                sceneView.setViewpointCamera(camera)
+            if (it.heading.isNaN().not()) {
+                // Keep track of initial heading to orientate scene correctly as ARCore doesn't provide
+                // global heading accuracy.
+                if (initialHeading == null && originCamera != null) {
+                    initialHeading = it.heading
+                    originCamera = Camera(
+                        originCamera!!.location, it.heading,
+                        originCamera?.pitch!!, originCamera!!.roll
+                    )
+                }
+
+                if (isUsingARCore != ARCoreUsage.YES) {
+                    // Not using ARCore, so update heading on the camera directly; otherwise, let ARCore handle heading changes.
+                    val currentCamera = sceneView.currentViewpointCamera
+                    val camera =
+                        currentCamera.rotateTo(it.heading, currentCamera.pitch, currentCamera.roll)
+                    sceneView.setViewpointCamera(camera)
+                }
             }
         }
 
