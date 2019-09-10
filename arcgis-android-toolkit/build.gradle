@@ -16,10 +16,12 @@
 
 plugins {
     id 'com.android.library'
-    id 'kotlin-android-extensions'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
     id 'org.jetbrains.dokka-android'
+    // https://github.com/wupdigital/android-maven-publish
+    id 'digital.wup.android-maven-publish' version '3.6.2'
 }
 
 android {
@@ -35,15 +37,8 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            // Required to run Instrumented tests in API 19. Only applicable to debug variants as tests are only run
-            // on debug variants.
-            multiDexKeepProguard file("$rootProject.projectDir/proguard-multidex-rules.pro")
-        }
+        release {}
+        debug {}
     }
     compileOptions {
         sourceCompatibility 1.8
@@ -65,6 +60,17 @@ dokka {
     externalDocumentationLink {
         packageListUrl = new URL("https://developers.arcgis.com/android/latest/api-reference/")
         url = new URL("https://developers.arcgis.com/android/latest/api-reference/")
+    }
+}
+
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            from components.android
+            groupId 'com.esri.arcgisruntime'
+            artifactId 'arcgis-android-toolkit'
+            version versionName
+        }
     }
 }
 

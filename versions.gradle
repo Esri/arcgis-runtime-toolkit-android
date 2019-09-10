@@ -15,8 +15,8 @@
  */
 
 ext {
-    versionCode = 105
-    versionName = "100.5.0"
+    versionCode = 106
+    versionName = "100.6.0"
     droid = ext {
         minSdk = 19
         targetSdk = 28
