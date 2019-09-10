@@ -78,6 +78,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
             arCalibrationView.unbindArcGISArView(arcGisArView)
             arCalibrationView.visibility = View.GONE
         }
+
+        invalidateOptionsMenu()
     }
 
     /**
@@ -374,7 +376,9 @@ class ArcGISArViewActivity : AppCompatActivity() {
         }
 
         scenes.forEachIndexed { index, sceneInfo ->
-            menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)
+            menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)?.let {
+                setMenuItemIsEnabled(it, !calibrating)
+            }
         }
         return super.onCreateOptionsMenu(menu)
     }
@@ -389,14 +393,15 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private fun setMenuItemIsEnabled(menuItem: MenuItem, isEnabled: Boolean) {
         menuItem.isEnabled = isEnabled
 
-        val icon = menuItem.icon.mutate()
+        val icon = menuItem.icon?.mutate()
 
-        icon.setColorFilter(
-            if (isEnabled) Color.WHITE else Color.GRAY,
-            PorterDuff.Mode.SRC_IN
-        )
-
-        menuItem.icon = icon
+        icon?.let {
+            it.setColorFilter(
+                if (isEnabled) Color.WHITE else Color.GRAY,
+                PorterDuff.Mode.SRC_IN
+            )
+            menuItem.icon = it
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
