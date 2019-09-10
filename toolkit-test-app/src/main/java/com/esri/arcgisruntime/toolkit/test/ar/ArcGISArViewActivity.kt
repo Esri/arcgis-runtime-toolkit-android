@@ -45,6 +45,7 @@ import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.symbology.SceneSymbol
 import com.esri.arcgisruntime.symbology.SimpleMarkerSceneSymbol
 import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
+import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arCalibrationView
@@ -92,7 +93,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.translationFactor = 1.0
-                arcGisArView.startTracking(false)
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.CONTINUOUS)
                 arCalibrationView.elevationControlVisibility = false
             }
         }
@@ -280,6 +281,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
                 arCalibrationView.elevationControlVisibility = true
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.INITIAL)
             }
         }
     }
@@ -297,6 +299,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
                 arCalibrationView.elevationControlVisibility = true
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.INITIAL)
             }
         }
     }
