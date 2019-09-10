@@ -226,6 +226,14 @@ class JoystickSeekBar : AppCompatSeekBar, SeekBar.OnSeekBarChangeListener {
      * @since 100.6.0
      */
     interface DeltaProgressUpdatedListener {
+        /**
+         * The distance from the center point of the slider determines the [deltaProgress] value
+         * applied during each interval. For distances close to the center, the delta is small and
+         * used for fine-grained adjustments; distances farther from the center are for larger-scale
+         * adjustments. When released, the slider "thumb" will return to the center of the slider.
+         *
+         * @since 100.6.0
+         */
         fun onDeltaProgressUpdated(deltaProgress: Float)
     }
 }
