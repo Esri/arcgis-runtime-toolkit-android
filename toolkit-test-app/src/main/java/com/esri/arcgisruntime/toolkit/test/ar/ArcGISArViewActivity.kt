@@ -93,7 +93,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.translationFactor = 1.0
                 arcGisArView.startTracking(false)
-                arCalibrationView.setElevationControlVisibility(false)
+                arCalibrationView.elevationControlVisibility = false
             }
         }
     }
@@ -279,7 +279,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.locationDataSource = null
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
-                arCalibrationView.setElevationControlVisibility(true)
+                arCalibrationView.elevationControlVisibility = true
             }
         }
     }
@@ -296,7 +296,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
-                arCalibrationView.setElevationControlVisibility(true)
+                arCalibrationView.elevationControlVisibility = true
             }
         }
     }

@@ -83,6 +83,18 @@ class ArCalibrationView : FrameLayout {
     private var previousBaseSurfaceOpacity: Float? = null
 
     /**
+     * Visibility of elevation control.
+     *
+     * @since 100.6.0
+     */
+    var elevationControlVisibility: Boolean = true
+        set(value) {
+            field = value
+            elevationLabel.visibility = if (value) View.VISIBLE else View.INVISIBLE
+            elevationControl.visibility = if (value) View.VISIBLE else View.INVISIBLE
+        }
+
+    /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
      *
      * @since 100.6.0
@@ -157,15 +169,4 @@ class ArCalibrationView : FrameLayout {
             this.arcGISArView = null
         }
     }
-
-    /**
-     * Set visibility of elevation control.
-     *
-     * @since 100.6.0
-     */
-    fun setElevationControlVisibility(isVisible: Boolean) {
-        elevationLabel.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
-        elevationControl.visibility = if (isVisible) View.VISIBLE else View.INVISIBLE
-    }
-
 }
