@@ -24,6 +24,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.widget.Toast
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
@@ -45,6 +46,7 @@ import com.esri.arcgisruntime.symbology.SimpleMarkerSceneSymbol
 import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
+import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arCalibrationView
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
 
 /**
@@ -62,6 +64,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
             arcGisArView.sceneView.graphicsOverlays.add(this)
         }
     }
+    private var calibrating: Boolean = false
 
     /**
      * AR Mode: Full-Scale AR
@@ -95,12 +98,12 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 addElevationSource(this)
                 this.operationalLayers.add(layer)
 
-                layer.addDoneLoadingListener {
+                layer.addDoneLoadingListener doneLoadingLayer@{
                     layer.loadError?.let {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
                         }
-                        return@addDoneLoadingListener
+                        return@doneLoadingLayer
                     }
 
                     val extent = layer.fullExtent
@@ -133,11 +136,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
                     IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_Yosemite_Sample_Integrated_Mesh_scene_layer/SceneServer")
                 this.operationalLayers.add(layer)
 
-                layer.addDoneLoadingListener {
+                layer.addDoneLoadingListener doneLoadingLayer@{
                     layer.loadError?.let {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
-                            return@addDoneLoadingListener
+                            return@doneLoadingLayer
                         }
                     }
 
@@ -146,23 +149,23 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                     val elevationSource = baseSurface.elevationSources.first()
 
-                    elevationSource.addDoneLoadingListener {
+                    elevationSource.addDoneLoadingListener doneLoadingElevationSource@{
                         loadError?.let {
                             it.message?.let { errorMessage ->
                                 displayErrorMessage(errorMessage)
                             }
-                            return@addDoneLoadingListener
+                            return@doneLoadingElevationSource
                         }
 
                         val elevationFuture = this.baseSurface.getElevationAsync(center)
 
                         // when the elevation has loaded
-                        elevationFuture.addDoneListener {
+                        elevationFuture.addDoneListener doneLoadingElevation@{
                             loadError?.let {
                                 it.message?.let { errorMessage ->
                                     displayErrorMessage(errorMessage)
                                 }
-                                return@addDoneListener
+                                return@doneLoadingElevation
                             }
 
                             val elevation = elevationFuture.get()
@@ -198,11 +201,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 val layer =
                     IntegratedMeshLayer("https://tiles.arcgis.com/tiles/FQD0rKU8X5sAQfh8/arcgis/rest/services/VRICON_SW_US_Sample_Integrated_Mesh_scene_layer/SceneServer")
                 this.operationalLayers.add(layer)
-                this.addDoneLoadingListener {
+                this.addDoneLoadingListener doneLoadingScene@{
                     this.loadError?.let {
                         it.message?.let { errorMessage ->
                             displayErrorMessage(errorMessage)
-                            return@addDoneLoadingListener
+                            return@doneLoadingScene
                         }
                     }
 
@@ -210,22 +213,22 @@ class ArcGISArViewActivity : AppCompatActivity() {
                     val center = extent.center
 
                     val elevationSource = baseSurface.elevationSources.first()
-                    elevationSource.addDoneLoadingListener {
+                    elevationSource.addDoneLoadingListener doneLoadingElevationSource@{
                         loadError?.let {
                             it.message?.let { errorMessage ->
                                 displayErrorMessage(errorMessage)
                             }
-                            return@addDoneLoadingListener
+                            return@doneLoadingElevationSource
                         }
 
                         val elevationFuture = this.baseSurface.getElevationAsync(center)
                         // when the elevation has loaded
-                        elevationFuture.addDoneListener {
+                        elevationFuture.addDoneListener doneLoadingElevation@{
                             loadError?.let {
                                 it.message?.let { errorMessage ->
                                     displayErrorMessage(errorMessage)
                                 }
-                                return@addDoneListener
+                                return@doneLoadingElevation
                             }
 
                             val elevation = elevationFuture.get()
@@ -337,22 +340,64 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 return false
             }
         })
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.arcgisarview_menu, menu)
         scenes.forEachIndexed { index, sceneInfo ->
-            menu?.add(Menu.NONE, index, Menu.NONE, sceneInfo.name)
+            menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)
         }
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        item?.itemId?.let {
-            currentScene = scenes[it]
-            return true
+        when (item?.groupId) {
+            R.id.arcgisArViewMenuActionGroup -> {
+                handleMenuAction(item.itemId)
+                return true
+            }
+            R.id.arcgisArViewMenuSceneGroup -> {
+                selectScene(item.itemId)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * Handle an action defined in the menu using the [itemId] as an identifier.
+     *
+     * @since 100.6.0
+     */
+    private fun handleMenuAction(itemId: Int) {
+        if (itemId == R.id.actionToggleCalibration) {
+            toggleCalibration()
+        }
+    }
+
+    /**
+     * Select a scene using the [itemId] from the menuItem as an index.
+     *
+     * @since 100.6.0
+     */
+    private fun selectScene(itemId: Int) {
+        currentScene = scenes[itemId]
+    }
+
+    /**
+     * Toggle [calibrating] property.
+     *
+     * @since 100.6.0
+     */
+    private fun toggleCalibration() {
+        calibrating = calibrating.not()
+        if (calibrating) {
+            arCalibrationView.bindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.VISIBLE
+        } else {
+            arCalibrationView.unbindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.GONE
+        }
     }
 
     /**
@@ -363,6 +408,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private fun displayErrorMessage(error: String) {
         Log.e(logTag, error)
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        arCalibrationView.unbindArcGISArView(arcGisArView)
+        super.onDestroy()
     }
 }
 

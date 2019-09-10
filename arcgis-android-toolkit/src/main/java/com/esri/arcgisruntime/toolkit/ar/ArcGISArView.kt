@@ -161,7 +161,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    private val cameraController: TransformationMatrixCameraController =
+    internal val cameraController: TransformationMatrixCameraController =
         TransformationMatrixCameraController()
 
     /**

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2019 Esri
   ~
@@ -15,16 +16,11 @@
   -->
 
 <resources>
-    <!-- Scalebar -->
-    <dimen name="scalebar_default_text_size">16sp</dimen>
 
-    <!-- ArCalibrationView -->
-    <dimen name="ar_calibration_view_padding_horz">8dp</dimen>
-    <dimen name="ar_calibration_view_padding_vert">12dp</dimen>
-    <dimen name="ar_calibration_view_child_margin">8dp</dimen>
-    <dimen name="ar_calibration_view_instructions_label_padding_horz">8dp</dimen>
+    <style name="TextView" />
 
-    <!-- Drawables -->
-    <dimen name="instructions_label_corner_radius">5dp</dimen>
-    <dimen name="instructions_label_padding">2dp</dimen>
+    <style name="TextView.CalibrationLabel" parent="TextView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/calibration_label</item>
+    </style>
 </resources>

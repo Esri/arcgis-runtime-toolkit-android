@@ -17,4 +17,8 @@
 
 <resources>
     <string name="arcgis_ar_view_ar_core_unsupported_error">ARCore is unsupported: %s</string>
+
+    <!-- ArCalibrationView -->
+    <string name="ar_calibration_view_elevation_label">Elevation</string>
+    <string name="ar_calibration_view_heading_label">Heading</string>
 </resources>
