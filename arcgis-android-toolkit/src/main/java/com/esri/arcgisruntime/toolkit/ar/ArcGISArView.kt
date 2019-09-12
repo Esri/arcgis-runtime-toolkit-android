@@ -313,11 +313,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                     startArCoreSession()
                 }
 
-                // Commented out to prevent changes to scene before ARCore has received first frame.
-                // This is how ARKit does this but isn't a good solution for ARCore.
-                // Reset the camera controller's transformationMatrix to its initial state, the identity matrix.
-                // cameraController.transformationMatrix = identityMatrix
-
                 if (arLocationTrackingMode != ARLocationTrackingMode.CONTINUOUS) {
                     locationDataSource?.stop()
                 }
