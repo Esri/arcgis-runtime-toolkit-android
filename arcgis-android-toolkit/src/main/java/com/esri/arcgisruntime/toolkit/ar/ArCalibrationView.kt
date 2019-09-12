@@ -18,11 +18,13 @@ package com.esri.arcgisruntime.toolkit.ar
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.ar.ArCalibrationView.Companion.SCENEVIEW_CALIBRATING_OPACITY
 import com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
 import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationControl
+import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationLabel
 import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 
 /**
@@ -79,6 +81,18 @@ class ArCalibrationView : FrameLayout {
      * @since 100.6.0
      */
     private var previousBaseSurfaceOpacity: Float? = null
+
+    /**
+     * Visibility of elevation control.
+     *
+     * @since 100.6.0
+     */
+    var elevationControlVisibility: Boolean = true
+        set(value) {
+            field = value
+            elevationLabel.visibility = if (value) View.VISIBLE else View.INVISIBLE
+            elevationControl.visibility = if (value) View.VISIBLE else View.INVISIBLE
+        }
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.

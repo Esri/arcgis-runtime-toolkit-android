@@ -18,6 +18,7 @@ package com.esri.arcgisruntime.toolkit.test.ar
 
 import android.graphics.Color
 import android.graphics.Point
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -44,10 +45,13 @@ import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.symbology.SceneSymbol
 import com.esri.arcgisruntime.symbology.SimpleMarkerSceneSymbol
 import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
+import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arCalibrationView
 import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 /**
  * Activity to show usages of [ArcGISArView].
@@ -64,7 +68,19 @@ class ArcGISArViewActivity : AppCompatActivity() {
             arcGisArView.sceneView.graphicsOverlays.add(this)
         }
     }
-    private var calibrating: Boolean = false
+    private var calibrating: Boolean by Delegates.observable(false) { _: KProperty<*>,
+                                                                      _: Boolean,
+                                                                      newValue: Boolean ->
+        if (newValue) {
+            arCalibrationView.bindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.VISIBLE
+        } else {
+            arCalibrationView.unbindArcGISArView(arcGisArView)
+            arCalibrationView.visibility = View.GONE
+        }
+
+        invalidateOptionsMenu()
+    }
 
     /**
      * AR Mode: Full-Scale AR
@@ -79,6 +95,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.translationFactor = 1.0
+                arCalibrationView.elevationControlVisibility = false
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.CONTINUOUS)
             }
         }
     }
@@ -264,6 +282,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.locationDataSource = null
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
+                arCalibrationView.elevationControlVisibility = true
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.INITIAL)
             }
         }
     }
@@ -280,6 +300,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
+                arCalibrationView.elevationControlVisibility = true
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.INITIAL)
             }
         }
     }
@@ -306,8 +328,12 @@ class ArcGISArViewActivity : AppCompatActivity() {
     private var currentScene: SceneInfo? = null
         set(value) {
             field = value
-            arcGisArView.sceneView.scene = value?.scene?.invoke()
-            title = value?.name
+            value?.let {
+                arcGisArView.sceneView.scene = it.scene.invoke()
+                title = it.name
+                calibrating = calibrating.and(it.isTabletop.not())
+                invalidateOptionsMenu()
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -344,10 +370,38 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.arcgisarview_menu, menu)
+
+        menu?.findItem(R.id.actionToggleCalibration)?.let {
+            setMenuItemIsEnabled(it, currentScene?.isTabletop?.not() ?: false)
+        }
+
         scenes.forEachIndexed { index, sceneInfo ->
-            menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)
+            menu?.add(R.id.arcgisArViewMenuSceneGroup, index, Menu.NONE, sceneInfo.name)?.let {
+                setMenuItemIsEnabled(it, !calibrating)
+            }
         }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    /**
+     * Sets the [isEnabled] property on the provided [menuItem] and adds a color filter to the icon
+     * to indicate whether it's enabled or not.Currently defaults to Color.WHITE for enabled and
+     * Color.GRAY for disabled.
+     *
+     * @since 100.6.0
+     */
+    private fun setMenuItemIsEnabled(menuItem: MenuItem, isEnabled: Boolean) {
+        menuItem.isEnabled = isEnabled
+
+        val icon = menuItem.icon?.mutate()
+
+        icon?.let {
+            it.setColorFilter(
+                if (isEnabled) Color.WHITE else Color.GRAY,
+                PorterDuff.Mode.SRC_IN
+            )
+            menuItem.icon = it
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -391,13 +445,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
      */
     private fun toggleCalibration() {
         calibrating = calibrating.not()
-        if (calibrating) {
-            arCalibrationView.bindArcGISArView(arcGisArView)
-            arCalibrationView.visibility = View.VISIBLE
-        } else {
-            arCalibrationView.unbindArcGISArView(arcGisArView)
-            arCalibrationView.visibility = View.GONE
-        }
     }
 
     /**

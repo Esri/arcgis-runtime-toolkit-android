@@ -14,11 +14,16 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:id="@+id/arcgisArViewMenuActionGroup">
         <item
             android:id="@+id/actionToggleCalibration"
-            android:title="@string/arcgis_ar_view_action_toggle_calibration" />
+            android:icon="@drawable/ic_build"
+            android:title="@string/arcgis_ar_view_action_toggle_calibration"
+            app:showAsAction="ifRoom" />
     </group>
-    <group android:id="@+id/arcgisArViewMenuSceneGroup" />
+    <group
+        android:id="@+id/arcgisArViewMenuSceneGroup"
+        app:showAsAction="always" />
 </menu>

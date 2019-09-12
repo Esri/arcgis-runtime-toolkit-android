@@ -55,7 +55,8 @@
 
         <activity
             android:name=".ar.ArcGISArViewActivity"
-            android:label="@string/arcgis_ar_view_activity_label" />
+            android:label="@string/arcgis_ar_view_activity_label"
+            android:configChanges="orientation"/>
 
 
     </application>
