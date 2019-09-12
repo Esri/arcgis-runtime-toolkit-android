@@ -334,12 +334,14 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             if (it.heading.isNaN().not()) {
                 // Keep track of initial heading to orientate scene correctly as ARCore doesn't provide
                 // global heading accuracy.
-                if (initialHeading == null && originCamera != null) {
+                if (initialHeading == null) {
                     initialHeading = it.heading
-                    originCamera = Camera(
-                        originCamera!!.location, it.heading,
-                        originCamera?.pitch!!, originCamera!!.roll
-                    )
+                    originCamera?.let { originCamera ->
+                        this.originCamera = Camera(
+                            originCamera.location, it.heading,
+                            originCamera.pitch, originCamera.roll
+                        )
+                    }
                 }
 
                 if (isUsingARCore != ARCoreUsage.YES) {
