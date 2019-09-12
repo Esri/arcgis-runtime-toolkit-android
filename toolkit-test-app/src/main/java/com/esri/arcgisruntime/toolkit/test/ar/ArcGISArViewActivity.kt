@@ -95,8 +95,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.translationFactor = 1.0
-                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.CONTINUOUS)
                 arCalibrationView.elevationControlVisibility = false
+                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.CONTINUOUS)
             }
         }
     }
