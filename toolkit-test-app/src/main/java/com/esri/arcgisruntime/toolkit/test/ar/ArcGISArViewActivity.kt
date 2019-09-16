@@ -288,24 +288,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * AR Mode: Full-Scale AR.
-     * Scene that loads a FeatureLayer containing fire hydrant locations.
-     *
-     * @since 100.6.0
-     */
-    private fun redlandsFireHydrantsScene(): () -> ArcGISScene {
-        return {
-            ArcGISScene("http://www.arcgis.com/home/webscene/viewer.html?webscene=d406d82dbc714d5da146d15b024e8d33").apply {
-                arcGisArView.locationDataSource = locationDataSource
-                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
-                arcGisArView.translationFactor = 1.0
-                arCalibrationView.elevationControlVisibility = true
-                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.INITIAL)
-            }
-        }
-    }
-
     private val scenes: Array<SceneInfo> by lazy {
         arrayOf(
             SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets), false),
@@ -316,12 +298,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ),
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite), true),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border), true),
-            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false),
-            SceneInfo(
-                redlandsFireHydrantsScene(),
-                getString(R.string.arcgis_ar_view_redlands_fire_hydrants),
-                false
-            )
+            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false)
         )
     }
 

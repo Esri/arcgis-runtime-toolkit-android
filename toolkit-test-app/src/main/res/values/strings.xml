@@ -35,7 +35,6 @@
     <string name="arcgis_ar_view_scene_yosemite">Yosemite - Tabletop</string>
     <string name="arcgis_ar_view_scene_border">US - Mexico Border - Tabletop</string>
     <string name="arcgis_ar_view_scene_empty">Empty - Full Scale</string>
-    <string name="arcgis_ar_view_redlands_fire_hydrants">Redlands Fire Hydrants - Full Scale</string>
     <string name="arcgis_ar_view_action_toggle_calibration">Toggle Calibration Controls</string>
 
 </resources>
