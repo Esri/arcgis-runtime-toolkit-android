@@ -308,11 +308,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         )
                 }
 
-                // If we're using ARCore, reset the session.
-                if (isUsingARCore == ARCoreUsage.YES) {
-                    startArCoreSession()
-                }
-
                 if (arLocationTrackingMode != ARLocationTrackingMode.CONTINUOUS) {
                     locationDataSource?.stop()
                 }
@@ -580,7 +575,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
         if (isUsingARCore == ARCoreUsage.YES) {
-            arSceneView?.scene?.addOnUpdateListener(this)
+            arSceneView?.scene?.let { scene ->
+                post { scene.addOnUpdateListener(this) }
+            }
             try {
                 arSceneView?.resume()
             } catch (e: Exception) {
@@ -627,7 +624,12 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     fun stopTracking() {
-        arSceneView?.pause()
+        arSceneView?.let {
+            it.scene?.let { scene ->
+                post { scene.removeOnUpdateListener(this) }
+            }
+            it.pause()
+        }
         locationDataSource?.stop()
         isTracking = false
     }
