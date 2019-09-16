@@ -308,6 +308,11 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         )
                 }
 
+                // If we're using ARCore, reset the session.
+                if (isUsingARCore == ARCoreUsage.YES) {
+                    startArCoreSession()
+                }
+
                 if (arLocationTrackingMode != ARLocationTrackingMode.CONTINUOUS) {
                     locationDataSource?.stop()
                 }
