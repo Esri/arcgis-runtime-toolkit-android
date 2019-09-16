@@ -576,6 +576,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
 
         if (isUsingARCore == ARCoreUsage.YES) {
             arSceneView?.scene?.let { scene ->
+                // ensure that OnUpdateListener is added on the UI thread to prevent threading issues with ARCore
                 post { scene.addOnUpdateListener(this) }
             }
             try {
@@ -626,6 +627,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun stopTracking() {
         arSceneView?.let {
             it.scene?.let { scene ->
+                // ensure that OnUpdateListener is removed on the UI thread to prevent threading issues with ARCore
                 post { scene.removeOnUpdateListener(this) }
             }
             it.pause()
