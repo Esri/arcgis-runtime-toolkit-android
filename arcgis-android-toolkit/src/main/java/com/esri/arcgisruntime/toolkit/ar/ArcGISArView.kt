@@ -410,7 +410,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
      * TransformationMatrix. Meaning that if the user moves 1 meter in real life, they could be moving faster in the
-     * digital model, dependant on the value used. The default value is 1.0.
+     * digital model, dependant on the value used.
      *
      * @since 100.6.0
      */
