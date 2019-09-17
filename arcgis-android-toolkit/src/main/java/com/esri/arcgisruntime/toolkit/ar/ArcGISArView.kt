@@ -82,7 +82,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     /**
      * A background task used to poll ArCoreApk to set the value of ARCore availability for the current device.
      *
-     * The ArCoreApk.getInstance().checkAvailability() function may inititate a query to a remote service to determine compatibility, in which case
+     * The ArCoreApk.getInstance().checkAvailability() function may initiate a query to a remote service to determine compatibility, in which case
      * it immediately returns ArCoreApk.Availability.UNKNOWN_CHECKING. This leaves us unable to determine if the device
      * is compatible with ARCore until the value is retrieved. See: https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk#checkAvailability(android.content.Context)
      *
@@ -801,7 +801,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Requests installation of ARCore using ArCoreApk. Should only be called once we know the device is suopported by
+     * Requests installation of ARCore using ArCoreApk. Should only be called once we know the device is supported by
      * ARCore.
      *
      * @since 100.6.0
