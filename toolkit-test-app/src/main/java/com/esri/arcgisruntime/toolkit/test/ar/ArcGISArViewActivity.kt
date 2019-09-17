@@ -96,7 +96,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.locationDataSource = locationDataSource
                 arcGisArView.translationFactor = 1.0
                 arCalibrationView.elevationControlVisibility = false
-                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.CONTINUOUS)
             }
         }
     }
@@ -283,14 +282,16 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
                 arcGisArView.translationFactor = 1.0
                 arCalibrationView.elevationControlVisibility = true
-                arcGisArView.startTracking(ArcGISArView.ARLocationTrackingMode.INITIAL)
             }
         }
     }
 
     private val scenes: Array<SceneInfo> by lazy {
         arrayOf(
-            SceneInfo(streetsScene(), getString(R.string.arcgis_ar_view_scene_streets), false),
+            SceneInfo(
+                streetsScene(), getString(R.string.arcgis_ar_view_scene_streets), false,
+                ArcGISArView.ARLocationTrackingMode.CONTINUOUS
+            ),
             SceneInfo(
                 pointCloudScene(),
                 getString(R.string.arcgis_ar_view_scene_point_cloud),
@@ -298,7 +299,10 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ),
             SceneInfo(yosemiteScene(), getString(R.string.arcgis_ar_view_scene_yosemite), true),
             SceneInfo(borderScene(), getString(R.string.arcgis_ar_view_scene_border), true),
-            SceneInfo(emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false)
+            SceneInfo(
+                emptyScene(), getString(R.string.arcgis_ar_view_scene_empty), false,
+                ArcGISArView.ARLocationTrackingMode.INITIAL
+            )
         )
     }
 
@@ -343,6 +347,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 return false
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        arcGisArView.startTracking(currentScene?.locationTrackingMode)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -434,6 +443,11 @@ class ArcGISArViewActivity : AppCompatActivity() {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
     }
 
+    override fun onPause() {
+        arcGisArView.stopTracking()
+        super.onPause()
+    }
+
     override fun onDestroy() {
         arCalibrationView.unbindArcGISArView(arcGisArView)
         super.onDestroy()
@@ -461,5 +475,6 @@ private fun addElevationSource(scene: ArcGISScene) {
 private data class SceneInfo(
     val scene: () -> ArcGISScene,
     val name: String,
-    val isTabletop: Boolean
+    val isTabletop: Boolean,
+    val locationTrackingMode: ArcGISArView.ARLocationTrackingMode = ArcGISArView.ARLocationTrackingMode.IGNORE
 )

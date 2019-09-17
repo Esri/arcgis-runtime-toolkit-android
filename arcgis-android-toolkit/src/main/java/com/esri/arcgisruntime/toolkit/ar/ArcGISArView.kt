@@ -308,11 +308,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                         )
                 }
 
-                // If we're using ARCore, reset the session.
-                if (isUsingARCore == ARCoreUsage.YES) {
-                    startArCoreSession()
-                }
-
                 if (arLocationTrackingMode != ARLocationTrackingMode.CONTINUOUS) {
                     locationDataSource?.stop()
                 }
@@ -393,10 +388,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             isTracking = (value != null).or(isUsingARCore == ARCoreUsage.YES)
 
             field = value
-
-            if (isTracking) {
-                resetTracking()
-            }
         }
 
     /**
@@ -499,7 +490,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        internalStartTracking()
+        sceneView.resume()
     }
 
     /**
@@ -515,7 +506,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    fun startTracking(arLocationTrackingMode: ARLocationTrackingMode) {
+    fun startTracking(arLocationTrackingMode: ARLocationTrackingMode? = ARLocationTrackingMode.IGNORE) {
         this.arLocationTrackingMode = arLocationTrackingMode
         internalStartTracking()
     }
@@ -535,7 +526,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             startLocationDataSource()
         }
 
-        sceneView.resume()
         isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
     }
 
@@ -771,7 +761,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     override fun onPause(owner: LifecycleOwner) {
-        stopTracking()
         sceneView.pause()
         super.onPause(owner)
     }
