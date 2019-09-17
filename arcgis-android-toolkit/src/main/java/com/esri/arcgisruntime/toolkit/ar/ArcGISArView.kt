@@ -640,6 +640,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     fun resetTracking() {
         didSetInitialLocation = false
         originCamera = null
+        initialHeading = null
         initialTransformationMatrix = identityMatrix
         if (isUsingARCore == ARCoreUsage.YES) {
             startArCoreSession()
