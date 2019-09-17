@@ -62,7 +62,6 @@ private const val CAMERA_PERMISSION_CODE = 0
 private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
-private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
  * This view simplifies the task of configuring a [SceneView] to be used for Augmented Reality experiences by calculating
@@ -83,7 +82,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     /**
      * A background task used to poll ArCoreApk to set the value of ARCore availability for the current device.
      *
-     * The ArCoreApk.getInstance().checkAvailability() function may inititate a query to a remote service to determine compatibility, in which case
+     * The ArCoreApk.getInstance().checkAvailability() function may initiate a query to a remote service to determine compatibility, in which case
      * it immediately returns ArCoreApk.Availability.UNKNOWN_CHECKING. This leaves us unable to determine if the device
      * is compatible with ARCore until the value is retrieved. See: https://developers.google.com/ar/reference/java/arcore/reference/com/google/ar/core/ArCoreApk#checkAvailability(android.content.Context)
      *
@@ -393,10 +392,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             isTracking = (value != null).or(isUsingARCore == ARCoreUsage.YES)
 
             field = value
-
-            if (isTracking) {
-                resetTracking()
-            }
         }
 
     /**
@@ -420,7 +415,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     /**
      * This allows the "flyover" and the "table top" experience by augmenting the translation inside the
      * TransformationMatrix. Meaning that if the user moves 1 meter in real life, they could be moving faster in the
-     * digital model, dependant on the value used. The default value is 1.0.
+     * digital model, dependant on the value used.
      *
      * @since 100.6.0
      */
@@ -499,7 +494,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        internalStartTracking()
+        sceneView.resume()
     }
 
     /**
@@ -515,14 +510,13 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     @SuppressLint("MissingPermission") // suppressed as function returns if permission hasn't been granted
-    fun startTracking(arLocationTrackingMode: ARLocationTrackingMode) {
+    fun startTracking(arLocationTrackingMode: ARLocationTrackingMode? = ARLocationTrackingMode.IGNORE) {
         this.arLocationTrackingMode = arLocationTrackingMode
         internalStartTracking()
     }
 
     /**
-     * Internal function to begin ARCore Session and start LocationDataSource if provided. Use [restartLocationDataSource]
-     * to restart LocationDataSource if necessary.
+     * Internal function to begin ARCore Session and start LocationDataSource if provided.
      *
      * @since 100.6.0
      */
@@ -535,7 +529,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             startLocationDataSource()
         }
 
-        sceneView.resume()
         isTracking = (isUsingARCore == ARCoreUsage.YES).or(locationDataSource != null)
     }
 
@@ -570,16 +563,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             return
         }
 
-        // Create the session.
-        Session(context).apply {
-            val config = Config(this)
-            config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-            config.focusMode = Config.FocusMode.AUTO
-            this.configure(config)
-            arSceneView?.setupSession(this)
-        }
-
         if (isUsingARCore == ARCoreUsage.YES) {
+            if (arSceneView?.session == null) {
+                // Create the session.
+                Session(context).apply {
+                    val config = Config(this)
+                    config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                    config.focusMode = Config.FocusMode.AUTO
+                    this.configure(config)
+                    arSceneView?.setupSession(this)
+                }
+            }
+
             arSceneView?.scene?.let { scene ->
                 // ensure that OnUpdateListener is added on the UI thread to prevent threading issues with ARCore
                 post { scene.addOnUpdateListener(this) }
@@ -624,8 +619,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
-     * lifecycle of this View is maintained by the LifecycleOwner.
+     * Suspends device tracking.
      *
      * @since 100.6.0
      */
@@ -638,6 +632,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             it.pause()
         }
         locationDataSource?.stop()
+        initialHeading = null
         isTracking = false
     }
 
@@ -780,7 +775,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     override fun onPause(owner: LifecycleOwner) {
-        stopTracking()
         sceneView.pause()
         super.onPause(owner)
     }
@@ -812,7 +806,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Requests installation of ARCore using ArCoreApk. Should only be called once we know the device is suopported by
+     * Requests installation of ARCore using ArCoreApk. Should only be called once we know the device is supported by
      * ARCore.
      *
      * @since 100.6.0
