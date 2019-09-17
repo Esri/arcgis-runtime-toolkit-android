@@ -644,6 +644,9 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         originCamera = null
         initialHeading = null
         initialTransformationMatrix = identityMatrix
+        if (isUsingARCore == ARCoreUsage.YES) {
+            startArCoreSession()
+        }
         cameraController.transformationMatrix = identityMatrix
     }
 
