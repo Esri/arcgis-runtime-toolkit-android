@@ -331,13 +331,13 @@ class ArcGISArViewActivity : AppCompatActivity() {
                         if (currentScene?.isTabletop == true) {
                             arcGisArView.setInitialTransformationMatrix(this)
                         } else {
-                            var sphere = SimpleMarkerSceneSymbol.createSphere(
+                            val sphere = SimpleMarkerSceneSymbol.createSphere(
                                 Color.CYAN,
                                 0.25,
                                 SceneSymbol.AnchorPosition.BOTTOM
                             )
                             arcGisArView.arScreenToLocation(this)?.let {
-                                var graphic = Graphic(it, sphere)
+                                val graphic = Graphic(it, sphere)
                                 sphereOverlay.graphics.add(graphic)
                             }
                         }
