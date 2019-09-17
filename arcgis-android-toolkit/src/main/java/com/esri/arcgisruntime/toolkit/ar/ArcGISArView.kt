@@ -580,7 +580,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
         if (isUsingARCore == ARCoreUsage.YES) {
-            arSceneView?.scene?.addOnUpdateListener(this)
+            arSceneView?.scene?.let { scene ->
+                // ensure that OnUpdateListener is added on the UI thread to prevent threading issues with ARCore
+                post { scene.addOnUpdateListener(this) }
+            }
             try {
                 arSceneView?.resume()
             } catch (e: Exception) {
@@ -627,7 +630,13 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     fun stopTracking() {
-        arSceneView?.pause()
+        arSceneView?.let {
+            it.scene?.let { scene ->
+                // ensure that OnUpdateListener is removed on the UI thread to prevent threading issues with ARCore
+                post { scene.removeOnUpdateListener(this) }
+            }
+            it.pause()
+        }
         locationDataSource?.stop()
         isTracking = false
     }
