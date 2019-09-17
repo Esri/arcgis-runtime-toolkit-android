@@ -62,7 +62,6 @@ private const val CAMERA_PERMISSION_CODE = 0
 private const val LOCATION_PERMISSION_CODE = 1
 private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 private const val LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
-private const val DEFAULT_TRANSLATION_TRANSFORMATION_FACTOR = 1.0
 
 /**
  * This view simplifies the task of configuring a [SceneView] to be used for Augmented Reality experiences by calculating
@@ -512,8 +511,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Internal function to begin ARCore Session and start LocationDataSource if provided. Use [restartLocationDataSource]
-     * to restart LocationDataSource if necessary.
+     * Internal function to begin ARCore Session and start LocationDataSource if provided.
      *
      * @since 100.6.0
      */
@@ -616,8 +614,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
-     * Pauses AR session. Should not be used in conjunction with [registerLifecycle] as when using [registerLifecycle] the
-     * lifecycle of this View is maintained by the LifecycleOwner.
+     * Suspends device tracking.
      *
      * @since 100.6.0
      */
