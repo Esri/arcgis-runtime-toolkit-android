@@ -560,16 +560,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             return
         }
 
-        // Create the session.
-        Session(context).apply {
-            val config = Config(this)
-            config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-            config.focusMode = Config.FocusMode.AUTO
-            this.configure(config)
-            arSceneView?.setupSession(this)
-        }
-
         if (isUsingARCore == ARCoreUsage.YES) {
+            if (arSceneView?.session == null) {
+                // Create the session.
+                Session(context).apply {
+                    val config = Config(this)
+                    config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                    config.focusMode = Config.FocusMode.AUTO
+                    this.configure(config)
+                    arSceneView?.setupSession(this)
+                }
+            }
+
             arSceneView?.scene?.let { scene ->
                 // ensure that OnUpdateListener is added on the UI thread to prevent threading issues with ARCore
                 post { scene.addOnUpdateListener(this) }
@@ -628,6 +630,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             it.pause()
         }
         locationDataSource?.stop()
+        initialHeading = null
         isTracking = false
     }
 
@@ -641,9 +644,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         originCamera = null
         initialHeading = null
         initialTransformationMatrix = identityMatrix
-        if (isUsingARCore == ARCoreUsage.YES) {
-            startArCoreSession()
-        }
         cameraController.transformationMatrix = identityMatrix
     }
 
