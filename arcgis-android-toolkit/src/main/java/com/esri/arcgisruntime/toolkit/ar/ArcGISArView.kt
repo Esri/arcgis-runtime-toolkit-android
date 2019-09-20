@@ -153,7 +153,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var initialTransformationMatrix: TransformationMatrix = identityMatrix
+    private var initialTransformationMatrix: TransformationMatrix = identityMatrix
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
@@ -224,6 +224,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var arSceneView: ArSceneView? = null
+        private set
         get() = _arSceneView
 
     /**
@@ -400,6 +401,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var isTracking: Boolean = false
+        private set
 
     /**
      * Denotes whether ARCore is being used to track location and angles.
@@ -407,7 +409,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var isUsingARCore: ARCoreUsage = ARCoreUsage.UNKNOWN
-        set(value) {
+        private set(value) {
             field = value
             sceneView.isManualRenderingEnabled = value == ARCoreUsage.YES
         }
@@ -431,6 +433,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      * @since 100.6.0
      */
     var error: Exception? = null
+        private set
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
