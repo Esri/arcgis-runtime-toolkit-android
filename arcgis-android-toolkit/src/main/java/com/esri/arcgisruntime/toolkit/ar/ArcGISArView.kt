@@ -233,12 +233,10 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var originCamera: Camera? = null
+    var originCamera: Camera = cameraController.originCamera
         set(value) {
             field = value
-            if (value != null) {
-                cameraController.originCamera = value
-            }
+            cameraController.originCamera = value
         }
 
     /**
@@ -643,7 +641,6 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     fun resetTracking() {
         didSetInitialLocation = false
-        originCamera = null
         initialHeading = null
         initialTransformationMatrix = identityMatrix
         if (isUsingARCore == ARCoreUsage.YES) {
