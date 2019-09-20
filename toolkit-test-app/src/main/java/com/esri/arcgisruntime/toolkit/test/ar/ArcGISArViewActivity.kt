@@ -314,6 +314,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
                 title = it.name
                 calibrating = calibrating.and(it.isTabletop.not())
                 invalidateOptionsMenu()
+                arcGisArView.resetTracking()
+                arcGisArView.startTracking(it.locationTrackingMode)
             }
         }
 
