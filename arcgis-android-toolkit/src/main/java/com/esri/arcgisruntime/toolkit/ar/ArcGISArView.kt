@@ -153,7 +153,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    var initialTransformationMatrix: TransformationMatrix = identityMatrix
+    private var initialTransformationMatrix: TransformationMatrix = identityMatrix
 
     /**
      * The camera controller used to control the camera that is used in [arcGisSceneView].
