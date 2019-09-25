@@ -18,11 +18,12 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
-    id 'kotlin-kapt'
     id 'org.jetbrains.dokka-android'
     // https://github.com/wupdigital/android-maven-publish
     id 'digital.wup.android-maven-publish' version '3.6.2'
 }
+
+apply from: "$rootProject.projectDir/gradle/script/aar-publishing.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
@@ -31,13 +32,20 @@ android {
     defaultConfig {
         minSdkVersion droid.minSdk
         targetSdkVersion droid.targetSdk
-        versionCode project.property("versionCode")
-        versionName project.property("versionName")
+        versionCode _versionCode
+        versionName _versionName
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        release {}
+        release {
+            project.ext.set("archivesBaseName", _artifactId + '-' + _versionName)
+            libraryVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = outputFileName.replace("-release", "")
+                }
+            }
+        }
         debug {}
     }
     compileOptions {
@@ -60,17 +68,6 @@ dokka {
     externalDocumentationLink {
         packageListUrl = new URL("https://developers.arcgis.com/android/latest/api-reference/")
         url = new URL("https://developers.arcgis.com/android/latest/api-reference/")
-    }
-}
-
-publishing {
-    publications {
-        mavenAar(MavenPublication) {
-            from components.android
-            groupId 'com.esri.arcgisruntime'
-            artifactId 'arcgis-android-toolkit'
-            version versionName
-        }
     }
 }
 

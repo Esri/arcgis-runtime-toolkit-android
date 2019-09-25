@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-ext {
-    droid = ext {
-        minSdk = 19
-        targetSdk = 28
-        buildTools = "28.0.3"
-        constraintLayout = "1.1.3"
-        multiDex = "1.0.3"
-        support = "28.0.0"
-        testRunner = "1.0.2"
-        arCore = "1.8.0"
-        lifecycle = "1.1.1"
+apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
+
+publishing {
+    publications {
+        mavenAar(MavenPublication) {
+            from components.android
+            groupId _groupId
+            artifactId _artifactId
+            version _versionName
+        }
     }
-    test = ext {
-        espresso = "2.2.2"
-        jUnit = "4.12"
-    }
-    kotlin_version = "1.3.41"
-    kotlin_coroutines = "1.3.0-RC"
-    arcgis = "100.6.0"
 }
