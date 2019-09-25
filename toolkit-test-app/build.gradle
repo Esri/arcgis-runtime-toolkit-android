@@ -21,12 +21,6 @@ plugins {
     id 'org.jetbrains.dokka-android'
 }
 
-ext {
-    _versionCode = 106
-    _versionName = "100.6.0"
-    _groupId = "com.esri.arcgisruntime"
-}
-
 apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
 
 android {
