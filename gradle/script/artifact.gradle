@@ -15,24 +15,8 @@
  */
 
 ext {
-    versionCode = 106
-    versionName = "100.6.0"
-    droid = ext {
-        minSdk = 19
-        targetSdk = 28
-        buildTools = "28.0.3"
-        constraintLayout = "1.1.3"
-        multiDex = "1.0.3"
-        support = "28.0.0"
-        testRunner = "1.0.2"
-        arCore = "1.8.0"
-        lifecycle = "1.1.1"
-    }
-    test = ext {
-        espresso = "2.2.2"
-        jUnit = "4.12"
-    }
-    kotlin_version = "1.3.41"
-    kotlin_coroutines = "1.3.0-RC"
-    arcgis = "100.6.0"
+    _versionCode = 106
+    _versionName = "100.6.0"
+    _groupId = "com.esri.arcgisruntime"
+    _artifactId = 'arcgis-android-toolkit'
 }

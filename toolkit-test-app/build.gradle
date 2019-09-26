@@ -21,6 +21,8 @@ plugins {
     id 'org.jetbrains.dokka-android'
 }
 
+apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
+
 android {
     compileSdkVersion droid.targetSdk
     buildToolsVersion droid.buildTools
@@ -29,8 +31,8 @@ android {
         applicationId "com.esri.arcgisruntime.toolkit"
         minSdkVersion droid.minSdk
         targetSdkVersion droid.targetSdk
-        versionCode project.property("versionCode")
-        versionName project.property("versionName")
+        versionCode _versionCode
+        versionName _versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
