@@ -1,7 +1,6 @@
 # ArcGIS Runtime Toolkit Android
 
 ## Components
-Please read the toolkit components usage guide on our [wiki](../../wiki)
 Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions) in our wiki.
 
 - [ArcGISArView](../../wiki/ArcGISArView) - Allows quick and easy integration of AR into your application for a wide variety of scenarios
