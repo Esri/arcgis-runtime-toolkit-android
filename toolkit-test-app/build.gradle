@@ -21,6 +21,8 @@ plugins {
     id 'org.jetbrains.dokka-android'
 }
 
+apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
+
 android {
     compileSdkVersion droid.targetSdk
     buildToolsVersion droid.buildTools
@@ -29,15 +31,15 @@ android {
         applicationId "com.esri.arcgisruntime.toolkit"
         minSdkVersion droid.minSdk
         targetSdkVersion droid.targetSdk
-        versionCode project.property("versionCode")
-        versionName project.property("versionName")
+        versionCode _versionCode
+        versionName _versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -56,7 +58,7 @@ dokka {
 }
 
 dependencies {
-    implementation project(':arcgis-android-toolkit')
+    api project(':arcgis-android-toolkit')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$droid.support"
@@ -64,7 +66,6 @@ dependencies {
     implementation "com.android.support:support-vector-drawable:$droid.support"
     implementation "com.android.support.constraint:constraint-layout:$droid.constraintLayout"
     implementation "com.android.support:multidex:$droid.multiDex"
-    implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation "junit:junit:$test.jUnit"
     androidTestImplementation "com.android.support:support-annotations:$droid.support"

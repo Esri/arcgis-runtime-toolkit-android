@@ -16,10 +16,14 @@
 
 plugins {
     id 'com.android.library'
-    id 'kotlin-android-extensions'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
     id 'org.jetbrains.dokka-android'
+    // https://github.com/wupdigital/android-maven-publish
+    id 'digital.wup.android-maven-publish' version '3.6.2'
 }
+
+apply from: "$rootProject.projectDir/gradle/script/aar-publishing.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
@@ -28,25 +32,28 @@ android {
     defaultConfig {
         minSdkVersion droid.minSdk
         targetSdkVersion droid.targetSdk
-        versionCode project.property("versionCode")
-        versionName project.property("versionName")
+        versionCode _versionCode
+        versionName _versionName
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            project.ext.set("archivesBaseName", _artifactId + '-' + _versionName)
+            libraryVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = outputFileName.replace("-release", "")
+                }
+            }
         }
-        debug {
-            // Required to run Instrumented tests in API 19. Only applicable to debug variants as tests are only run
-            // on debug variants.
-            multiDexKeepProguard file("$rootProject.projectDir/proguard-multidex-rules.pro")
-        }
+        debug {}
     }
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
@@ -67,9 +74,17 @@ dokka {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
     implementation "com.android.support:appcompat-v7:$droid.support"
+    implementation "com.android.support.constraint:constraint-layout:$droid.constraintLayout"
     implementation "com.android.support:multidex:$droid.multiDex"
-    implementation "com.esri.arcgisruntime:arcgis-android:$arcgis"
+    implementation "android.arch.lifecycle:runtime:$droid.lifecycle"
+    api "android.arch.lifecycle:common-java8:$droid.lifecycle"
+    api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
+    api "com.google.ar.sceneform:core:$droid.arCore"
+    // fixing failing D8 https://github.com/google-ar/sceneform-android-sdk/issues/575
+    implementation "com.google.ar.sceneform:animation:$droid.arCore"
+    api "com.esri.arcgisruntime:arcgis-android:$arcgis"
     testImplementation "junit:junit:$test.jUnit"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'

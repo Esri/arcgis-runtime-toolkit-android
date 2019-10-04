@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2019 Esri
   ~
@@ -15,16 +16,9 @@
   -->
 
 <resources>
-    <!-- Scalebar -->
-    <dimen name="scalebar_default_text_size">16sp</dimen>
+    <string name="arcgis_ar_view_ar_core_unsupported_error">ARCore is unsupported: %s</string>
 
     <!-- ArCalibrationView -->
-    <dimen name="ar_calibration_view_padding_horz">8dp</dimen>
-    <dimen name="ar_calibration_view_padding_vert">12dp</dimen>
-    <dimen name="ar_calibration_view_child_margin">8dp</dimen>
-    <dimen name="ar_calibration_view_instructions_label_padding_horz">8dp</dimen>
-
-    <!-- Drawables -->
-    <dimen name="instructions_label_corner_radius">5dp</dimen>
-    <dimen name="instructions_label_padding">2dp</dimen>
+    <string name="ar_calibration_view_elevation_label">Elevation</string>
+    <string name="ar_calibration_view_heading_label">Heading</string>
 </resources>

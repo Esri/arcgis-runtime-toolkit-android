@@ -22,8 +22,19 @@
     <string name="scalebar_message_custom1">Custom Layout 1\nScalebar overlaid on MapView</string>
     <string name="scalebar_message_custom2">Custom Layout 2\nScalebar outside MapView</string>
     <string name="scalebar_message_all_styles">All Styles Layout\nAll Scalebar styles overlaid on MapView</string>
+
+    <!-- Compass -->
     <string name="compass_message_regular">Regular Layout\nCompass added to GeoView</string>
     <string name="compass_message_custom1">Custom Layout 1\nCompass overlayed on GeoView</string>
     <string name="compass_message_custom2">Custom Layout 2\nCompass outside GeoView</string>
+
+    <!-- ArcGISArSceneView -->
+    <string name="arcgis_ar_view_activity_label">ArcGISArView</string>
+    <string name="arcgis_ar_view_scene_streets">Streets - Full Scale</string>
+    <string name="arcgis_ar_view_scene_point_cloud">Point Cloud - Tabletop</string>
+    <string name="arcgis_ar_view_scene_yosemite">Yosemite - Tabletop</string>
+    <string name="arcgis_ar_view_scene_border">US - Mexico Border - Tabletop</string>
+    <string name="arcgis_ar_view_scene_empty">Empty - Full Scale</string>
+    <string name="arcgis_ar_view_action_toggle_calibration">Toggle Calibration Controls</string>
 
 </resources>

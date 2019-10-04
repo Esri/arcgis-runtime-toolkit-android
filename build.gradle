@@ -17,16 +17,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    apply from: "versions.gradle"
+    apply from: "$rootProject.projectDir/gradle/script/versions.gradle"
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath "com.android.tools.build:gradle:$droid.androidGradlePlugin"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        classpath 'org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18' // https://github.com/Kotlin/dokka
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$droid.androidMavenGradlePlugin"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$droid.dokka" // https://github.com/Kotlin/dokka
     }
 }
 
@@ -34,7 +34,8 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven{ url 'https://esri.bintray.com/arcgis' }
+        maven { url 'https://esri.bintray.com/arcgis' }
+        maven { url 'http://olympus.esri.com/artifactory/arcgisruntime-repo/' }
     }
 }
 

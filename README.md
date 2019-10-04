@@ -1,8 +1,9 @@
 # ArcGIS Runtime Toolkit Android
 
 ## Components
-Please read the toolkit components usage guide on our [wiki](../../wiki)
+Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions) in our wiki.
 
+- [ArcGISArView](../../wiki/ArcGISArView) - Allows quick and easy integration of AR into your application for a wide variety of scenarios
 - [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 - [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
 
@@ -11,18 +12,29 @@ Please read the toolkit components usage guide on our [wiki](../../wiki)
 Hiding instructions as AAR is not yet published to Bintray and will not be published to Bintray when 100.6.0 is released.
 
 ## Instructions
-Add the following to your buildscript
+
+Update the project Gradle repositories in the **Project** view under **Gradle Scripts > build.gradle (Project:...)** to Esri's Bintray maven repository URL.
 
 ```groovy
-repositories {
-    jcenter()
-    // Our internal artifactory repository
-    maven { url 'https://esri.bintray.com/arcgis' }
+allprojects {
+  ...
+  repositories {
+    ...
+    // *** ADD ***
+    maven {
+      url 'https://esri.bintray.com/arcgis'
+    }
+```
+
+Update the app module Gradle dependencies in the **Project** view under **Gradle Scripts > build.gradle (Module: app)** to include the **ArcGIS Runtime Toolkit Android** dependency.
+
+```groovy
+dependencies {
+  ...
+  // *** ADD ***
+  implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.6.0"
 }
 
-dependencies {
-    implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.5.0"
-}
 ```
 -->
 
@@ -42,7 +54,7 @@ The following table shows which versions of the SDK are compatible with the tool
 
 |  SDK Version  |  Toolkit Version  |
 | --- | --- |
-| 100.5.0 | 100.5.0 |
+| 100.6.0 | 100.6.0 |
 
 ## Resources
 

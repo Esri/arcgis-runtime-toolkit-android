@@ -1,0 +1,30 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.esri.arcgisruntime.toolkit">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:glEsVersion="0x00030000"
+        android:required="true" />
+
+    <application>
+        <!-- Indicates that app supports, but does not require ARCore ("AR Optional").
+             Unlike "AR Required" apps, Google Play Store will not automatically
+             download and install ARCore when the app is installed.
+        -->
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
+
+        <activity
+            android:name=".TestActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".ar.ArcGISArViewTestActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+    </application>
+
+</manifest>
