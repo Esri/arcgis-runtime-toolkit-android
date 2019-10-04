@@ -2,6 +2,7 @@
 
 ## Components
 Please read the toolkit components usage guide on our [wiki](../../wiki)
+Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions) in our wiki.
 
 - [ArcGISArView](../../wiki/ArcGISArView) - Allows quick and easy integration of AR into your application for a wide variety of scenarios
 - [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
