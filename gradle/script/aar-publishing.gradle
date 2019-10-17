@@ -31,5 +31,5 @@ publishing {
 // Rewrites default filename for pom to match that of the artifact
 // https://docs.gradle.org/current/dsl/org.gradle.api.publish.maven.tasks.GenerateMavenPom.html
 generatePomFileForAarPublication {
-    destination = new File("build/outputs/aar/${_artifactId}-${_versionName}.xml")
+    destination = "$buildDir/outputs/aar/${_artifactId}-${_versionName}.xml"
 }
