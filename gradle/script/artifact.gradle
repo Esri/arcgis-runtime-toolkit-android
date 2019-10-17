@@ -15,8 +15,8 @@
  */
 
 ext {
-    _versionCode = 106
-    _versionName = "100.6.0"
+    _versionCode = 107
+    _versionName = "100.7.0"
     _groupId = "com.esri.arcgisruntime"
     _artifactId = 'arcgis-android-toolkit'
 }
