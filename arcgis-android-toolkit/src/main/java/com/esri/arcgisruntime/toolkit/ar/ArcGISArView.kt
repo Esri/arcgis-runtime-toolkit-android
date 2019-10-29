@@ -426,6 +426,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
     /**
+     * List of permissions requested during this session.
+     *
+     * @since 100.6.1
+     */
+    private val requestedPermissions: MutableList<String> by lazy {
+        ArrayList<String>()
+    }
+
+    /**
      * Exposes an [Exception] should it occur when using this view.
      *
      * @since 100.6.0
@@ -560,7 +569,11 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // when the permission is requested and the user responds to the request from the OS this is executed again
         // during onResume()
         if (isUsingARCore == ARCoreUsage.YES && !hasPermission(CAMERA_PERMISSION)) {
-            if (permissionHasBeenPermanentlyDenied(context as Activity, CAMERA_PERMISSION)) {
+            if (permissionHasBeenRequestedPreviously(CAMERA_PERMISSION) && permissionHasBeenPermanentlyDenied(
+                    context as Activity,
+                    CAMERA_PERMISSION
+                )
+            ) {
                 error = Exception(
                     resources.getString(
                         R.string.arcgis_ar_view_exception_permission_permanently_denied,
@@ -616,7 +629,11 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // Request location permission if user has provided a LocationDataSource
         locationDataSource?.let {
             if (!hasPermission(LOCATION_PERMISSION)) {
-                if (permissionHasBeenPermanentlyDenied(context as Activity, LOCATION_PERMISSION)) {
+                if (permissionHasBeenRequestedPreviously(LOCATION_PERMISSION) && permissionHasBeenPermanentlyDenied(
+                        context as Activity,
+                        LOCATION_PERMISSION
+                    )
+                ) {
                     error = Exception(
                         resources.getString(
                             R.string.arcgis_ar_view_exception_permission_permanently_denied,
@@ -857,6 +874,16 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
+     * Checks [requestedPermissions] property for permission to determine if it has already been
+     * requested this session. [permissionHasBeenPermanentlyDenied] returns false if we have
+     * never requested such a permission. So it's best to check both of these functions.
+     *
+     * @since 100.6.1
+     */
+    private fun permissionHasBeenRequestedPreviously(permission: String): Boolean =
+        requestedPermissions.contains(permission)
+
+    /**
      * Checks if [permission] has been permanently denied.
      *
      * @since 100.6.1
@@ -871,6 +898,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     private fun requestPermission(activity: Activity, permission: String, permissionCode: Int) {
         ActivityCompat.requestPermissions(activity, arrayOf(permission), permissionCode)
+        requestedPermissions.add(permission)
     }
 
     /**
