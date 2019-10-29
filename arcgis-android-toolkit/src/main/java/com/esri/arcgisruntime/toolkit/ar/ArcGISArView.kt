@@ -559,9 +559,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // permission on Android M and above, now is a good time to ask the user for it.
         // when the permission is requested and the user responds to the request from the OS this is executed again
         // during onResume()
-        if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
-            requestPermission(context as Activity, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
-            return
+        if (isUsingARCore == ARCoreUsage.YES && !hasPermission(CAMERA_PERMISSION)) {
+            if (permissionHasBeenPermanentlyDenied(context as Activity, CAMERA_PERMISSION)) {
+                error = Exception(
+                    resources.getString(
+                        R.string.arcgis_ar_view_exception_permission_permanently_denied,
+                        LOCATION_PERMISSION
+                    )
+                )
+            } else {
+                requestPermission(context as Activity, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                return
+            }
         }
 
         if (isUsingARCore == ARCoreUsage.YES) {
@@ -607,11 +616,20 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // Request location permission if user has provided a LocationDataSource
         locationDataSource?.let {
             if (!hasPermission(LOCATION_PERMISSION)) {
-                requestPermission(
-                    context as Activity,
-                    LOCATION_PERMISSION,
-                    LOCATION_PERMISSION_CODE
-                )
+                if (permissionHasBeenPermanentlyDenied(context as Activity, LOCATION_PERMISSION)) {
+                    error = Exception(
+                        resources.getString(
+                            R.string.arcgis_ar_view_exception_permission_permanently_denied,
+                            LOCATION_PERMISSION
+                        )
+                    )
+                } else {
+                    requestPermission(
+                        context as Activity,
+                        LOCATION_PERMISSION,
+                        LOCATION_PERMISSION_CODE
+                    )
+                }
                 return
             }
         }
@@ -837,6 +855,14 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
             permission
         ) == PackageManager.PERMISSION_GRANTED
     }
+
+    /**
+     * Checks if [permission] has been permanently denied.
+     *
+     * @since 100.6.1
+     */
+    private fun permissionHasBeenPermanentlyDenied(activity: Activity, permission: String) =
+        ActivityCompat.shouldShowRequestPermissionRationale(activity, permission).not()
 
     /**
      * Request a [permission] using the provided [activity] and [permissionCode].
