@@ -19,8 +19,8 @@ package com.esri.arcgisruntime.toolkit.scalebar
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Looper
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.esri.arcgisruntime.UnitSystem

@@ -17,8 +17,8 @@
 package com.esri.arcgisruntime.toolkit.compass
 
 import android.os.Looper
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import android.view.LayoutInflater
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.toolkit.MISSING_ILLEGAL_ARGUMENT_EXCEPTION
