@@ -66,8 +66,7 @@ dependencies {
     implementation "androidx.vectordrawable:vectordrawable:$droid.vectordrawable"
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
-    testImplementation "junit:junit:$test.jUnit"
-    androidTestImplementation "junit:junit:$test.jUnit"
     androidTestImplementation "androidx.annotation:annotation:$droid.annotation"
     androidTestImplementation "androidx.test:runner:$droid.testRunner"
+    androidTestImplementation "androidx.test.ext:junit:$test.jUnit"
 }

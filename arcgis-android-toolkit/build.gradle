@@ -85,7 +85,8 @@ dependencies {
     // fixing failing D8 https://github.com/google-ar/sceneform-android-sdk/issues/575
     implementation "com.google.ar.sceneform:animation:$droid.arCore"
     api "com.esri.arcgisruntime:arcgis-android:$arcgis"
-    testImplementation "junit:junit:$test.jUnit"
+    androidTestImplementation "androidx.test:rules:$test.rules"
+    androidTestImplementation "androidx.test.ext:junit:$test.jUnit"
     androidTestImplementation("androidx.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

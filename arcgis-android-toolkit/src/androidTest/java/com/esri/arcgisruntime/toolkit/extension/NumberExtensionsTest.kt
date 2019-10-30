@@ -40,7 +40,7 @@ class NumberExtensionsTest {
      */
     @Test
     fun intToPixelsEightyDpReturnsSameValue() {
-        with(InstrumentationRegistry.getContext().resources) {
+        with(InstrumentationRegistry.getInstrumentation().context.resources) {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
             val actual = 80.dpToPixels(this.displayMetrics.density)
             assertEquals(expected, actual)
@@ -55,7 +55,7 @@ class NumberExtensionsTest {
      */
     @Test
     fun intToPixelsZeroDpReturnsSameValue() {
-        with(InstrumentationRegistry.getContext().resources)
+        with(InstrumentationRegistry.getInstrumentation().context.resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
             val actual = 0.dpToPixels(this.displayMetrics.density)
@@ -71,7 +71,7 @@ class NumberExtensionsTest {
      */
     @Test
     fun doubleToPixelsEightyDpReturnsSameValue() {
-        with(InstrumentationRegistry.getContext().resources)
+        with(InstrumentationRegistry.getInstrumentation().context.resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_eighty)
             val actual = 80.0.dpToPixels(this.displayMetrics.density)
@@ -87,7 +87,7 @@ class NumberExtensionsTest {
      */
     @Test
     fun doubleToPixelsZeroDpReturnsSameValue() {
-        with(InstrumentationRegistry.getContext().resources)
+        with(InstrumentationRegistry.getInstrumentation().context.resources)
         {
             val expected = this.getDimensionPixelSize(R.dimen.test_int_to_pixel_size_zero)
             val actual = 0.0.dpToPixels(this.displayMetrics.density)

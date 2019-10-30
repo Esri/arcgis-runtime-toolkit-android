@@ -17,7 +17,7 @@
 package com.esri.arcgisruntime.toolkit.ar
 
 import android.os.Bundle
-import androidx.test.espresso.core.deps.guava.annotations.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.test.R

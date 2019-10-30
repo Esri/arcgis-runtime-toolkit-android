@@ -46,7 +46,7 @@ class CompassTest {
      */
     @Test
     fun testSimpleConstructorDefaultValues() {
-        val compass = Compass(InstrumentationRegistry.getContext())
+        val compass = Compass(InstrumentationRegistry.getInstrumentation().context)
         checkDefaultValues(compass)
     }
 
@@ -58,7 +58,7 @@ class CompassTest {
     @Test
     fun testXmlNoCompassAttributes() {
         // Inflate layout containing a Compass that doesn't set any of the Compass attributes
-        val context = InstrumentationRegistry.getTargetContext()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val viewGroup = LayoutInflater.from(context).inflate(R.layout.unit_test_compass_no_attrs, null)
 
         // Find and instantiate that Compass
@@ -76,7 +76,7 @@ class CompassTest {
     @Test
     fun testXmlFullyPopulated() {
         // Inflate layout containing a Compass that sets all of the Compass attributes
-        val context = InstrumentationRegistry.getTargetContext()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val viewGroup =
             LayoutInflater.from(context).inflate(R.layout.unit_test_compass_fully_populated, null)
 
@@ -94,7 +94,7 @@ class CompassTest {
      */
     @Test
     fun testSetters() {
-        val compass = Compass(InstrumentationRegistry.getContext())
+        val compass = Compass(InstrumentationRegistry.getInstrumentation().context)
 
         // Call all the setters
         compass.isAutoHide = false
@@ -112,7 +112,7 @@ class CompassTest {
      */
     @Test
     fun testIllegalArgumentExceptions() {
-        val compass = Compass(InstrumentationRegistry.getContext())
+        val compass = Compass(InstrumentationRegistry.getInstrumentation().context)
 
         // Test the setters
         try {
@@ -143,7 +143,7 @@ class CompassTest {
             Looper.prepare()
         }
 
-        val context = InstrumentationRegistry.getContext()
+        val context = InstrumentationRegistry.getInstrumentation().context
         val mapView = MapView(context)
 
         // Instantiate a Compass and add it to a GeoView (Workflow 1)
