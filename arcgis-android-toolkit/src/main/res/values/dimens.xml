@@ -24,6 +24,11 @@
     <dimen name="ar_calibration_view_child_margin">8dp</dimen>
     <dimen name="ar_calibration_view_instructions_label_padding_horz">8dp</dimen>
 
+    <!-- Bookmark item -->
+    <dimen name="item_bookmark_padding_vert">8dp</dimen>
+    <dimen name="item_bookmark_padding_horz">6dp</dimen>
+    <dimen name="item_bookmark_text_size">24sp</dimen>
+
     <!-- Drawables -->
     <dimen name="instructions_label_corner_radius">5dp</dimen>
     <dimen name="instructions_label_padding">2dp</dimen>

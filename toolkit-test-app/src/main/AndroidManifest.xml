@@ -58,6 +58,11 @@
             android:label="@string/arcgis_ar_view_activity_label"
             android:configChanges="orientation"/>
 
+        <activity
+                android:name="com.esri.arcgisruntime.toolkit.test.bookmark.BookmarkActivity"
+                android:label="@string/arcgis_bookmark_view_activity_label"
+                android:theme="@style/AppTheme"/>
+
 
     </application>
 
