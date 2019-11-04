@@ -30,19 +30,19 @@ import kotlinx.android.synthetic.main.item_bookmark_row.view.*
 class BookmarkAdapter(
     private val onItemClickListener: OnItemClickListener<Bookmark>,
     diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback(),
-    private val itemLayoutRes: Int
+    private val itemLayoutRes: Int?
 ) : ListAdapter<Bookmark, ViewHolder>(diffCallback) {
 
     constructor(
         onItemClickListener: OnItemClickListener<Bookmark>,
         diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
-    ) : this(onItemClickListener, diffCallback, -1)
+    ) : this(onItemClickListener, diffCallback, null)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(
             inflater.inflate(
-                if (itemLayoutRes == -1) R.layout.item_bookmark_row else itemLayoutRes,
+                if (itemLayoutRes == null) R.layout.item_bookmark_row else itemLayoutRes,
                 parent,
                 false
             )
