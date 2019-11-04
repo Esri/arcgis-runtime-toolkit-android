@@ -38,7 +38,6 @@ class BookmarkView : FrameLayout {
         fun onItemClick(item: T)
     }
 
-
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
      *
