@@ -18,19 +18,17 @@ package com.esri.arcgisruntime.toolkit.bookmark
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
-import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
 import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
 
 class BookmarkView : FrameLayout {
 
-    var recyclerView : RecyclerView? = null
+    var recyclerView: RecyclerView? = null
 
     var bookmarksAdapter: BookmarkAdapter? = null
 
@@ -67,7 +65,6 @@ class BookmarkView : FrameLayout {
         recyclerView?.layoutManager = LinearLayoutManager(context)
         if (bookmarksAdapter == null) {
             bookmarksAdapter = BookmarkAdapter(
-                R.layout.item_bookmark, BR.bookmarkItem, BR.onItemClickListener,
                 object : BookmarkAdapter.OnItemClickListener<Bookmark> {
                     override fun onItemClick(item: Bookmark) {
                         onItemClickListener?.onItemClick(item)
@@ -75,7 +72,6 @@ class BookmarkView : FrameLayout {
                 })
         }
         recyclerView?.adapter = bookmarksAdapter
-
     }
 
 }

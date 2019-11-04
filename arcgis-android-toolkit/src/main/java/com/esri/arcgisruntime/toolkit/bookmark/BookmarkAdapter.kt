@@ -17,32 +17,28 @@
 package com.esri.arcgisruntime.toolkit.bookmark
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
-import com.esri.arcgisruntime.toolkit.bookmark.databinding.DataBindingViewHolder
+import com.esri.arcgisruntime.toolkit.R
+import kotlinx.android.synthetic.main.item_bookmark_row.view.*
 
 class BookmarkAdapter(
-    @LayoutRes private val itemLayoutRes: Int,
-    private val itemBindingId: Int,
-    private val onItemClickListenerBindingId: Int,
     private val onItemClickListener: OnItemClickListener<Bookmark>,
     diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
-) : ListAdapter<Bookmark, ViewHolder<Bookmark>>(diffCallback) {
+) : ListAdapter<Bookmark, ViewHolder>(diffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<Bookmark> {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding =
-            DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
-        return ViewHolder(binding, itemBindingId, onItemClickListenerBindingId, onItemClickListener)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return ViewHolder(inflater.inflate(R.layout.item_bookmark_row, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder<Bookmark>, position: Int) =
-        holder.bind(getItem(position))
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(getItem(position), onItemClickListener)
+    }
 
     class DiffCallback : DiffUtil.ItemCallback<Bookmark>() {
 
@@ -55,25 +51,19 @@ class BookmarkAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int = itemLayoutRes
-
     interface OnItemClickListener<T> {
         fun onItemClick(item: T)
     }
 }
 
-class ViewHolder<Bookmark>(
-    private val binding: ViewDataBinding,
-    private val itemId: Int,
-    private val onItemClickListenerBindingId: Int,
-    private val onItemClickListener: BookmarkAdapter.OnItemClickListener<Bookmark>
-) :
-    DataBindingViewHolder<Bookmark>(binding, itemId) {
+class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    override fun bind(item: Bookmark) {
-        binding.setVariable(itemId, item)
-        binding.setVariable(onItemClickListenerBindingId, onItemClickListener)
-        binding.executePendingBindings()
+    fun bind(
+        bookmark: Bookmark,
+        onItemClickListener: BookmarkAdapter.OnItemClickListener<Bookmark>
+    ) {
+        itemView.txtBookmarkName.text = bookmark.name
+        itemView.setOnClickListener { onItemClickListener.onItemClick(bookmark) }
     }
-
 }
+

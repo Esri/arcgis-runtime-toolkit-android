@@ -50,6 +50,9 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dokka {
@@ -66,6 +69,7 @@ dependencies {
     implementation "androidx.vectordrawable:vectordrawable:$droid.vectordrawable"
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
+    implementation "androidx.lifecycle:lifecycle-extensions:$droid.lifecycle"
     androidTestImplementation "androidx.annotation:annotation:$droid.annotation"
     androidTestImplementation "androidx.test:runner:$droid.testRunner"
     androidTestImplementation "androidx.test.ext:junit:$test.jUnit"
