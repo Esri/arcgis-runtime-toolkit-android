@@ -25,7 +25,6 @@ import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.toolkit.R
 import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
-
 class BookmarkView : FrameLayout {
 
     var recyclerView: RecyclerView? = null
