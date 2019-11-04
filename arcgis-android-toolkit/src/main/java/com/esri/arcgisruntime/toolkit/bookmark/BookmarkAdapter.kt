@@ -19,6 +19,7 @@ package com.esri.arcgisruntime.toolkit.bookmark
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -28,12 +29,24 @@ import kotlinx.android.synthetic.main.item_bookmark_row.view.*
 
 class BookmarkAdapter(
     private val onItemClickListener: OnItemClickListener<Bookmark>,
-    diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
+    diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback(),
+    private val itemLayoutRes: Int
 ) : ListAdapter<Bookmark, ViewHolder>(diffCallback) {
+
+    constructor(
+        onItemClickListener: OnItemClickListener<Bookmark>,
+        diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
+    ) : this(onItemClickListener, diffCallback, -1)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(inflater.inflate(R.layout.item_bookmark_row, parent, false))
+        return ViewHolder(
+            inflater.inflate(
+                if (itemLayoutRes == -1) R.layout.item_bookmark_row else itemLayoutRes,
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
