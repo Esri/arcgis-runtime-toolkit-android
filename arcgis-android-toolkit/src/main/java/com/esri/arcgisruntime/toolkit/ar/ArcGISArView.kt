@@ -569,11 +569,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // when the permission is requested and the user responds to the request from the OS this is executed again
         // during onResume()
         if (isUsingARCore == ARCoreUsage.YES && !hasPermission(CAMERA_PERMISSION)) {
-            if (permissionHasBeenRequestedPreviously(CAMERA_PERMISSION) && permissionHasBeenPermanentlyDenied(
-                    context as Activity,
-                    CAMERA_PERMISSION
-                )
-            ) {
+            if (permissionHasBeenPermanentlyDenied(context as Activity, CAMERA_PERMISSION)) {
                 error = Exception(
                     resources.getString(
                         R.string.arcgis_ar_view_exception_permission_permanently_denied,
@@ -629,11 +625,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // Request location permission if user has provided a LocationDataSource
         locationDataSource?.let {
             if (!hasPermission(LOCATION_PERMISSION)) {
-                if (permissionHasBeenRequestedPreviously(LOCATION_PERMISSION) && permissionHasBeenPermanentlyDenied(
-                        context as Activity,
-                        LOCATION_PERMISSION
-                    )
-                ) {
+                if (permissionHasBeenPermanentlyDenied(context as Activity, LOCATION_PERMISSION)) {
                     error = Exception(
                         resources.getString(
                             R.string.arcgis_ar_view_exception_permission_permanently_denied,
@@ -874,22 +866,26 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
+     * We use [ActivityCompat.shouldShowRequestPermissionRationale] as a workaround to detect whether
+     * the user has denied the permission permanently, i.e. has selected `Don't Ask Again`. There is
+     * no official API to detect that, so we use a variation of a workaround described here:
+     * https://blog.usejournal.com/method-to-detect-if-user-has-selected-dont-ask-again-while-requesting-for-permission-921b95ded536
+     *
      * Checks [requestedPermissions] property for permission to determine if it has already been
-     * requested this session. [permissionHasBeenPermanentlyDenied] returns false if we have
-     * never requested such a permission. So it's best to check both of these functions.
+     * requested this session. Returns false if permission has never been requested and therefore the
+     * user has not selected `Don't Ask Again`. Returns true otherwise.
      *
      * @since 100.6.1
      */
-    private fun permissionHasBeenRequestedPreviously(permission: String): Boolean =
-        requestedPermissions.contains(permission)
-
-    /**
-     * Checks if [permission] has been permanently denied.
-     *
-     * @since 100.6.1
-     */
-    private fun permissionHasBeenPermanentlyDenied(activity: Activity, permission: String) =
-        ActivityCompat.shouldShowRequestPermissionRationale(activity, permission).not()
+    private fun permissionHasBeenPermanentlyDenied(
+        activity: Activity,
+        permission: String
+    ): Boolean {
+        return requestedPermissions.contains(permission) && ActivityCompat.shouldShowRequestPermissionRationale(
+            activity,
+            permission
+        ).not()
+    }
 
     /**
      * Request a [permission] using the provided [activity] and [permissionCode].
