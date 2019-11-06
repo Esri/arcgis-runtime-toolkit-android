@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
 class BookmarkView : FrameLayout {
 
-    val recyclerView: RecyclerView by lazy { _bookmarkRecyclerView }
+    val recyclerView: RecyclerView by lazy { bookmarkRecyclerView }
 
     var bookmarksAdapter: BookmarkAdapter = BookmarkAdapter(
         object : BookmarkAdapter.OnItemClickListener<Bookmark> {
