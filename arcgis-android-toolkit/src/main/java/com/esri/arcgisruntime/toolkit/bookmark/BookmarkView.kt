@@ -19,7 +19,6 @@ package com.esri.arcgisruntime.toolkit.bookmark
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.toolkit.R
@@ -27,14 +26,19 @@ import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
 class BookmarkView : FrameLayout {
 
-    var recyclerView: RecyclerView? = null
+    val recyclerView: RecyclerView by lazy { _bookmarkRecyclerView }
 
-    var bookmarksAdapter: BookmarkAdapter? = null
+    var bookmarksAdapter: BookmarkAdapter = BookmarkAdapter(
+        object : BookmarkAdapter.OnItemClickListener<Bookmark> {
+            override fun onItemClick(item: Bookmark) {
+                onItemClickListener?.onItemClick(item)
+            }
+        })
 
     var onItemClickListener: OnItemClickListener<Bookmark>? = null
 
-    interface OnItemClickListener<T> {
-        fun onItemClick(item: T)
+    interface OnItemClickListener<Bookmark> {
+        fun onItemClick(item: Bookmark)
     }
 
     /**
@@ -57,19 +61,7 @@ class BookmarkView : FrameLayout {
 
     private fun init(context: Context) {
         inflate(context, R.layout.layout_bookmarkview, this)
-        if (recyclerView == null) {
-            recyclerView = _bookmarkRecyclerView
-        }
-        recyclerView?.layoutManager = LinearLayoutManager(context)
-        if (bookmarksAdapter == null) {
-            bookmarksAdapter = BookmarkAdapter(
-                object : BookmarkAdapter.OnItemClickListener<Bookmark> {
-                    override fun onItemClick(item: Bookmark) {
-                        onItemClickListener?.onItemClick(item)
-                    }
-                })
-        }
-        recyclerView?.adapter = bookmarksAdapter
+        recyclerView.adapter = bookmarksAdapter
     }
 
 }

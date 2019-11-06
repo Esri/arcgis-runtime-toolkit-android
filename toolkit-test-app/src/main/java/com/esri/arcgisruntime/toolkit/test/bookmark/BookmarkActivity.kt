@@ -32,8 +32,15 @@ import kotlinx.android.synthetic.main.activity_bookmark.*
 
 class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<Bookmark> {
 
+    private val map: ArcGISMap by lazy {
+        val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
+        val portalItem = PortalItem(portal, "e1aa3973d50a456f998406a7c4dfd804")
+        portal.credential = UserCredential("ArcGISRuntimeSDK", "agsRT3dk")
+        ArcGISMap(portalItem)
+    }
+
     private val mapViewModel: MapViewModel by lazy {
-        ViewModelProviders.of(this, MapViewModel.Factory(mapView.map))
+        ViewModelProviders.of(this, MapViewModel.Factory(map))
             .get(MapViewModel::class.java)
     }
 
@@ -41,12 +48,13 @@ class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<B
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bookmark)
 
-        val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
-        val portalItem = PortalItem(portal, "e1aa3973d50a456f998406a7c4dfd804")
-        portal.credential = UserCredential("ArcGISRuntimeSDK", "agsRT3dk")
-        mapView.map = ArcGISMap(portalItem)
-
         bookmarkView.onItemClickListener = this
+
+        mapViewModel.mapData.observe(this, Observer {
+            it.let {
+                mapView.map = mapViewModel.mapData.value
+            }
+        })
 
         mapViewModel.bookmarks.observe(this, Observer {
             it?.let { bookmarkView.bookmarksAdapter?.submitList(it) }

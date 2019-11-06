@@ -19,25 +19,25 @@ package com.esri.arcgisruntime.toolkit.bookmark
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.toolkit.R
-import kotlinx.android.synthetic.main.item_bookmark_row.view.*
 
 class BookmarkAdapter(
     private val onItemClickListener: OnItemClickListener<Bookmark>,
-    diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback(),
-    private val itemLayoutRes: Int? = null
+    @LayoutRes private val itemLayoutRes: Int = R.layout.item_bookmark_row,
+    diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
 ) : ListAdapter<Bookmark, ViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(
             inflater.inflate(
-                itemLayoutRes ?: R.layout.item_bookmark_row,
+                itemLayoutRes,
                 parent,
                 false
             )
@@ -58,8 +58,8 @@ class BookmarkAdapter(
         }
     }
 
-    interface OnItemClickListener<T> {
-        fun onItemClick(item: T)
+    interface OnItemClickListener<Bookmark> {
+        fun onItemClick(item: Bookmark)
     }
 }
 
@@ -69,7 +69,9 @@ class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         bookmark: Bookmark,
         onItemClickListener: BookmarkAdapter.OnItemClickListener<Bookmark>
     ) {
-        itemView.txtBookmarkName.text = bookmark.name
+        if (itemView is ViewGroup && itemView.getChildAt(0) is TextView) {
+            (itemView.getChildAt(0) as TextView).text = bookmark.name
+        }
         itemView.setOnClickListener { onItemClickListener.onItemClick(bookmark) }
     }
 }
