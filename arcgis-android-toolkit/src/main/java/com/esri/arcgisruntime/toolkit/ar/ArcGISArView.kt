@@ -573,7 +573,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
                 error = Exception(
                     resources.getString(
                         R.string.arcgis_ar_view_exception_permission_permanently_denied,
-                        LOCATION_PERMISSION
+                        CAMERA_PERMISSION
                     )
                 )
             } else {
