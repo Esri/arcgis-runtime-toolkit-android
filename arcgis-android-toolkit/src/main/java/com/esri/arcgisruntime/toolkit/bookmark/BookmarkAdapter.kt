@@ -17,31 +17,25 @@
 package com.esri.arcgisruntime.toolkit.bookmark
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.annotation.LayoutRes
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
+import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
 
 class BookmarkAdapter(
     private val onItemClickListener: OnItemClickListener<Bookmark>,
-    @LayoutRes private val itemLayoutRes: Int = R.layout.item_bookmark_row,
     diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
 ) : ListAdapter<Bookmark, ViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(
-            inflater.inflate(
-                itemLayoutRes,
-                parent,
-                false
-            )
-        )
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater, R.layout.item_bookmark_row, parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
@@ -63,17 +57,15 @@ class BookmarkAdapter(
     }
 }
 
-class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class ViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(
         bookmark: Bookmark,
         onItemClickListener: BookmarkAdapter.OnItemClickListener<Bookmark>
     ) {
-        if (itemView is ViewGroup && itemView.getChildAt(0) is TextView) {
-            (itemView.getChildAt(0) as TextView).text = bookmark.name
-        }
-
+        binding.setVariable(BR.bookmarkItem, bookmark)
         itemView.setOnClickListener { onItemClickListener.onItemClick(bookmark) }
+        binding.executePendingBindings()
     }
 }
 

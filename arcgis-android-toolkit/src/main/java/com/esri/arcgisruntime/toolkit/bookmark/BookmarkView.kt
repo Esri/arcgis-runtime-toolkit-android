@@ -21,6 +21,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
+import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
 import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
