@@ -67,6 +67,11 @@ class BookmarkView : FrameLayout {
         init(context)
     }
 
+    private fun init(context: Context) {
+        inflate(context, R.layout.layout_bookmarkview, this)
+        recyclerView.adapter = bookmarksAdapter
+    }
+
     /**
      *  Submits a new BookmarkList to be diffed, and displayed.
      *
@@ -74,11 +79,6 @@ class BookmarkView : FrameLayout {
      */
     fun submitBookmarkList(bookmarkList: BookmarkList) {
         bookmarksAdapter.submitList(bookmarkList)
-    }
-
-    private fun init(context: Context) {
-        inflate(context, R.layout.layout_bookmarkview, this)
-        recyclerView.adapter = bookmarksAdapter
     }
 
     private class BookmarkAdapter(
