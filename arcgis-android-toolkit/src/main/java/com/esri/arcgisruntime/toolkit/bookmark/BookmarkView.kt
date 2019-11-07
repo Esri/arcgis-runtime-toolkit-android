@@ -67,7 +67,12 @@ class BookmarkView : FrameLayout {
         init(context)
     }
 
-    fun submitList(bookmarkList: List<Bookmark>) {
+    /**
+     *  Submits a new BookmarkList to be diffed, and displayed.
+     *
+     *  @since 100.7.0
+     */
+    fun submitBookmarkList(bookmarkList: BookmarkList) {
         bookmarksAdapter.submitList(bookmarkList)
     }
 

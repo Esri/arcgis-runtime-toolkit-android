@@ -21,11 +21,12 @@ import androidx.lifecycle.MutableLiveData
 import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Bookmark
+import com.esri.arcgisruntime.mapping.BookmarkList
 
 class BookmarksRepository(private val map: ArcGISMap) {
 
-    private val _bookmarks: MutableLiveData<List<Bookmark>> = MutableLiveData()
-    val bookmarks: LiveData<List<Bookmark>>
+    private val _bookmarks: MutableLiveData<BookmarkList> = MutableLiveData()
+    val bookmarks: LiveData<BookmarkList>
         get() {
             loadBookmarks()
             return _bookmarks

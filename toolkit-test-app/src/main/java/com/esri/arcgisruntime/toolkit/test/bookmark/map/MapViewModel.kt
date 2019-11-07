@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Bookmark
+import com.esri.arcgisruntime.mapping.BookmarkList
 import com.esri.arcgisruntime.toolkit.test.bookmark.BookmarksRepository
 
 class MapViewModel(map: ArcGISMap) : ViewModel() {
@@ -30,7 +31,7 @@ class MapViewModel(map: ArcGISMap) : ViewModel() {
     val mapData: LiveData<ArcGISMap> = _mapData
 
     private val bookmarksRepository: BookmarksRepository = BookmarksRepository(map)
-    val bookmarks: LiveData<List<Bookmark>> = bookmarksRepository.bookmarks
+    val bookmarks: LiveData<BookmarkList> = bookmarksRepository.bookmarks
 
     class Factory(private val arcGISMap: ArcGISMap) : ViewModelProvider.Factory {
 

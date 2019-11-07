@@ -57,7 +57,7 @@ class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<B
         })
 
         mapViewModel.bookmarks.observe(this, Observer {
-            it?.let { bookmarkView.bookmarksAdapter?.submitList(it) }
+            it?.let { bookmarkView.submitBookmarkList(it) }
         })
     }
 
