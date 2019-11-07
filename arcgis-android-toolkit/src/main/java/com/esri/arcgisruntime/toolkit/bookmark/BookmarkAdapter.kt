@@ -69,6 +69,10 @@ class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         bookmark: Bookmark,
         onItemClickListener: BookmarkAdapter.OnItemClickListener<Bookmark>
     ) {
+        if (itemView is ViewGroup && itemView.getChildAt(0) is TextView) {
+            (itemView.getChildAt(0) as TextView).text = bookmark.name
+        }
+
         itemView.setOnClickListener { onItemClickListener.onItemClick(bookmark) }
     }
 }
