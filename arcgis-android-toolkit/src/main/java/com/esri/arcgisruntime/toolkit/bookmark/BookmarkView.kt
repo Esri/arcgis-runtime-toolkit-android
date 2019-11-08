@@ -82,9 +82,8 @@ class BookmarkView : FrameLayout {
     }
 
     private class BookmarkAdapter(
-        private val onItemClickListener: OnItemClickListener<Bookmark>,
-        diffCallback: DiffUtil.ItemCallback<Bookmark> = DiffCallback()
-    ) : ListAdapter<Bookmark, ViewHolder>(diffCallback) {
+        private val onItemClickListener: OnItemClickListener<Bookmark>
+    ) : ListAdapter<Bookmark, ViewHolder>(DiffCallback()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -100,7 +99,7 @@ class BookmarkView : FrameLayout {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) =
             holder.bind(getItem(position), onItemClickListener)
 
-        class DiffCallback : DiffUtil.ItemCallback<Bookmark>() {
+        private class DiffCallback : DiffUtil.ItemCallback<Bookmark>() {
 
             override fun areItemsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
                 return oldItem == newItem
