@@ -37,7 +37,7 @@ class BookmarkView : FrameLayout {
     val recyclerView: RecyclerView by lazy { bookmarkRecyclerView }
 
     private val bookmarksAdapter: BookmarkAdapter = BookmarkAdapter(
-        object : BookmarkAdapter.OnItemClickListener<Bookmark> {
+        object : OnItemClickListener<Bookmark> {
             override fun onItemClick(item: Bookmark) {
                 onItemClickListener?.onItemClick(item)
             }
@@ -110,10 +110,6 @@ class BookmarkView : FrameLayout {
                 return oldItem.name == newItem.name && oldItem.viewpoint.toJson() == newItem.viewpoint.toJson()
             }
         }
-
-        interface OnItemClickListener<Bookmark> {
-            fun onItemClick(item: Bookmark)
-        }
     }
 
     private class ViewHolder(private val binding: ViewDataBinding) :
@@ -121,7 +117,7 @@ class BookmarkView : FrameLayout {
 
         fun bind(
             bookmark: Bookmark,
-            onItemClickListener: BookmarkAdapter.OnItemClickListener<Bookmark>
+            onItemClickListener: OnItemClickListener<Bookmark>
         ) {
             binding.setVariable(BR.bookmarkItem, bookmark)
             itemView.setOnClickListener { onItemClickListener.onItemClick(bookmark) }
