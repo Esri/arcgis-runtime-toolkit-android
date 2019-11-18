@@ -426,6 +426,15 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         }
 
     /**
+     * List of permissions requested during this session.
+     *
+     * @since 100.6.1
+     */
+    private val requestedPermissions: MutableList<String> by lazy {
+        ArrayList<String>()
+    }
+
+    /**
      * Exposes an [Exception] should it occur when using this view.
      *
      * @since 100.6.0
@@ -559,9 +568,18 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // permission on Android M and above, now is a good time to ask the user for it.
         // when the permission is requested and the user responds to the request from the OS this is executed again
         // during onResume()
-        if (isUsingARCore == ARCoreUsage.YES && renderVideoFeed && !hasPermission(CAMERA_PERMISSION)) {
-            requestPermission(context as Activity, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
-            return
+        if (isUsingARCore == ARCoreUsage.YES && !hasPermission(CAMERA_PERMISSION)) {
+            if (permissionHasBeenPermanentlyDenied(context as Activity, CAMERA_PERMISSION)) {
+                error = Exception(
+                    resources.getString(
+                        R.string.arcgis_ar_view_exception_permission_permanently_denied,
+                        CAMERA_PERMISSION
+                    )
+                )
+            } else {
+                requestPermission(context as Activity, CAMERA_PERMISSION, CAMERA_PERMISSION_CODE)
+                return
+            }
         }
 
         if (isUsingARCore == ARCoreUsage.YES) {
@@ -607,11 +625,20 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         // Request location permission if user has provided a LocationDataSource
         locationDataSource?.let {
             if (!hasPermission(LOCATION_PERMISSION)) {
-                requestPermission(
-                    context as Activity,
-                    LOCATION_PERMISSION,
-                    LOCATION_PERMISSION_CODE
-                )
+                if (permissionHasBeenPermanentlyDenied(context as Activity, LOCATION_PERMISSION)) {
+                    error = Exception(
+                        resources.getString(
+                            R.string.arcgis_ar_view_exception_permission_permanently_denied,
+                            LOCATION_PERMISSION
+                        )
+                    )
+                } else {
+                    requestPermission(
+                        context as Activity,
+                        LOCATION_PERMISSION,
+                        LOCATION_PERMISSION_CODE
+                    )
+                }
                 return
             }
         }
@@ -839,12 +866,35 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     }
 
     /**
+     * We use [ActivityCompat.shouldShowRequestPermissionRationale] as a workaround to detect whether
+     * the user has denied the permission permanently, i.e. has selected `Don't Ask Again`. There is
+     * no official API to detect that, so we use a variation of a workaround described here:
+     * https://blog.usejournal.com/method-to-detect-if-user-has-selected-dont-ask-again-while-requesting-for-permission-921b95ded536
+     *
+     * Checks [requestedPermissions] property for permission to determine if it has already been
+     * requested this session. Returns false if permission has never been requested and therefore the
+     * user has not selected `Don't Ask Again`. Returns true otherwise.
+     *
+     * @since 100.6.1
+     */
+    private fun permissionHasBeenPermanentlyDenied(
+        activity: Activity,
+        permission: String
+    ): Boolean {
+        return requestedPermissions.contains(permission) && ActivityCompat.shouldShowRequestPermissionRationale(
+            activity,
+            permission
+        ).not()
+    }
+
+    /**
      * Request a [permission] using the provided [activity] and [permissionCode].
      *
      * @since 100.6.0
      */
     private fun requestPermission(activity: Activity, permission: String, permissionCode: Int) {
         ActivityCompat.requestPermissions(activity, arrayOf(permission), permissionCode)
+        requestedPermissions.add(permission)
     }
 
     /**
