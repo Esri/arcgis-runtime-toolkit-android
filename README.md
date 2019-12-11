@@ -55,6 +55,7 @@ The following table shows which versions of the SDK are compatible with the tool
 |  SDK Version  |  Toolkit Version  |
 | --- | --- |
 | 100.6.0 | 100.6.0 |
+| 100.6.0 | 100.6.1 |
 
 ## Resources
 
