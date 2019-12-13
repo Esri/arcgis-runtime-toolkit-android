@@ -261,7 +261,6 @@ class ArcGISArViewActivity : AppCompatActivity() {
                             )
                             arcGisArView.originCamera = camera
                             arcGisArView.translationFactor = 1000.0
-
                             // Set the clipping distance to limit the data display around the originCamera.
                             arcGisArView.clippingDistance = 500.0
                         }
