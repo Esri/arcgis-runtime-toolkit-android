@@ -189,7 +189,7 @@ class ArcGISArViewTest {
                 it?.clippingDistance = clippingDistance
 
                 assertEquals(
-                        "Expected translation transformation factor $clippingDistance",
+                        "Expected clipping distance $clippingDistance",
                         clippingDistance,
                         it?.clippingDistance
                 )
