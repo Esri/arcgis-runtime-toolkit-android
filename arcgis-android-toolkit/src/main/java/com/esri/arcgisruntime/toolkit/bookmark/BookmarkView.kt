@@ -32,6 +32,12 @@ import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
 import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
+/**
+ * The BookmarkView will display a list of bookmarks in a [RecyclerView] and allows the user to
+ * select a bookmark and perform some action.
+ *
+ * @since 100.7.0
+ */
 class BookmarkView : FrameLayout {
 
     val recyclerView: RecyclerView by lazy { bookmarkRecyclerView }
@@ -67,20 +73,30 @@ class BookmarkView : FrameLayout {
         init(context)
     }
 
+    /**
+     * Initializes this BookmarkView by inflating the layout and setting the [RecyclerView] adapter.
+     *
+     * @since 100.7.0
+     */
     private fun init(context: Context) {
         inflate(context, R.layout.layout_bookmarkview, this)
         recyclerView.adapter = bookmarksAdapter
     }
 
     /**
-     *  Submits a new BookmarkList to be diffed, and displayed.
+     * Submits a new BookmarkList to be diffed, and displayed.
      *
-     *  @since 100.7.0
+     * @since 100.7.0
      */
     fun submitBookmarkList(bookmarkList: BookmarkList) {
         bookmarksAdapter.submitList(bookmarkList)
     }
 
+    /**
+     * Implements the adapter to be set on the [RecyclerView].
+     *
+     * @since 100.7.0
+     */
     private class BookmarkAdapter(
         private val onItemClickListener: OnItemClickListener<Bookmark>
     ) : ListAdapter<Bookmark, ViewHolder>(DiffCallback()) {
@@ -111,6 +127,11 @@ class BookmarkView : FrameLayout {
         }
     }
 
+    /**
+     * The BookmarkAdapter ViewHolder.
+     *
+     * @since 100.7.0
+     */
     private class ViewHolder(private val binding: ViewDataBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
