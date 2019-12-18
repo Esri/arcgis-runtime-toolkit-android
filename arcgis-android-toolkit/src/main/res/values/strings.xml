@@ -16,7 +16,10 @@
   -->
 
 <resources>
+
+    <!-- ArcGISArView -->
     <string name="arcgis_ar_view_ar_core_unsupported_error">ARCore is unsupported: %s</string>
+    <string name="arcgis_ar_view_exception_permission_permanently_denied">%s permission has been permanently denied</string>
 
     <!-- ArCalibrationView -->
     <string name="ar_calibration_view_elevation_label">Elevation</string>

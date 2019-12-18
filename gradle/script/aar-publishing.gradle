@@ -16,13 +16,20 @@
 
 apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
 
+// https://docs.gradle.org/current/userguide/publishing_maven.html
 publishing {
     publications {
-        mavenAar(MavenPublication) {
+        aar(MavenPublication) {
             from components.android
             groupId _groupId
             artifactId _artifactId
             version _versionName
         }
     }
+}
+
+// Rewrites default filename for pom to match that of the artifact
+// https://docs.gradle.org/current/dsl/org.gradle.api.publish.maven.tasks.GenerateMavenPom.html
+generatePomFileForAarPublication {
+    destination = "$buildDir/outputs/aar/${_artifactId}-${_versionName}.xml"
 }
