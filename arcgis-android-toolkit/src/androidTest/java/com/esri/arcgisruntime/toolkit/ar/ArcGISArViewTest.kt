@@ -174,4 +174,28 @@ class ArcGISArViewTest {
         }
     }
 
+    /**
+     * Tests setting the [ArcGISArView.clippingDistance] property.
+     *
+     * @since 100.6.0
+     */
+    @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
+    fun testClippingDistance() {
+        val clippingDistance = 99.9
+        with(arcGisArViewTestActivityRule) {
+            this.launchActivity()
+            this.activity.arcGISArView.let {
+                it?.clippingDistance = clippingDistance
+
+                assertEquals(
+                        "Expected clipping distance $clippingDistance",
+                        clippingDistance,
+                        it?.clippingDistance
+                )
+            }
+            this.finish()
+        }
+    }
+
 }

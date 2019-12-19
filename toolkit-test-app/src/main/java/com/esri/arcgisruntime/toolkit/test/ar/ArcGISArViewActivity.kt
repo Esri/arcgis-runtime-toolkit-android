@@ -130,6 +130,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
                         val camera = Camera(center, 0.0, 90.0, 0.0)
                         arcGisArView.originCamera = camera
                         arcGisArView.translationFactor = 2000.0
+                        // Set the clipping distance to limit the data display around the originCamera.
+                        arcGisArView.clippingDistance = 750.0
                     }
                 }
 
@@ -259,6 +261,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
                             )
                             arcGisArView.originCamera = camera
                             arcGisArView.translationFactor = 1000.0
+                            // Set the clipping distance to limit the data display around the originCamera.
+                            arcGisArView.clippingDistance = 500.0
                         }
                     }
                 }

@@ -434,6 +434,19 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
         ArrayList<String>()
     }
 
+	/**
+     * Determines the clipping distance around the originCamera. The units are meters; the default is 0.0.
+     * When the value is set to 0.0 there is no enforced clipping distance. Setting the value to 10.0 will
+     * only render data 10 meters around the originCamera.
+     *
+     * @since 100.7.0
+     */
+    var clippingDistance: Double
+        get() = cameraController.clippingDistance
+        set(value) {
+            cameraController.clippingDistance = value
+        }
+
     /**
      * Exposes an [Exception] should it occur when using this view.
      *
