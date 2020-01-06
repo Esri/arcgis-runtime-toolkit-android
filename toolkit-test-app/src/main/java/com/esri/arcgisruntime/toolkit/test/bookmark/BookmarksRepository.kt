@@ -20,7 +20,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.ArcGISMap
-import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.mapping.BookmarkList
 
 class BookmarksRepository(private val map: ArcGISMap) {
