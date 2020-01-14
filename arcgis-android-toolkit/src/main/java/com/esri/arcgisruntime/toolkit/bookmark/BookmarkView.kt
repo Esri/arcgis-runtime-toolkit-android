@@ -30,7 +30,7 @@ import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.mapping.BookmarkList
 import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
-import kotlinx.android.synthetic.main.layout_bookmarkview.view.bookmarkRecyclerView
+import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
 
 /**
  * The BookmarkView will display a list of bookmarks in a [RecyclerView] and allows the user to
@@ -40,14 +40,20 @@ import kotlinx.android.synthetic.main.layout_bookmarkview.view.bookmarkRecyclerV
  */
 class BookmarkView : FrameLayout {
 
-    val recyclerView: RecyclerView by lazy { bookmarkRecyclerView }
-
     private val bookmarksAdapter: BookmarkAdapter = BookmarkAdapter(
         object : OnItemClickListener<Bookmark> {
             override fun onItemClick(item: Bookmark) {
                 onItemClickListener?.onItemClick(item)
             }
         })
+
+    var bookmarkList: BookmarkList? = null
+    set(value) {
+        value?.let {
+            field = value
+            bookmarksAdapter.submitList(value)
+        }
+    }
 
     var onItemClickListener: OnItemClickListener<Bookmark>? = null
 
@@ -80,16 +86,7 @@ class BookmarkView : FrameLayout {
      */
     private fun init(context: Context) {
         inflate(context, R.layout.layout_bookmarkview, this)
-        recyclerView.adapter = bookmarksAdapter
-    }
-
-    /**
-     * Submits a new BookmarkList to be diffed, and displayed.
-     *
-     * @since 100.7.0
-     */
-    fun submitBookmarkList(bookmarkList: BookmarkList) {
-        bookmarksAdapter.submitList(bookmarkList)
+        bookmarkRecyclerView.adapter = bookmarksAdapter
     }
 
     /**
@@ -100,6 +97,8 @@ class BookmarkView : FrameLayout {
     private class BookmarkAdapter(
         private val onItemClickListener: OnItemClickListener<Bookmark>
     ) : ListAdapter<Bookmark, ViewHolder>(DiffCallback()) {
+
+
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)

@@ -19,27 +19,37 @@ package com.esri.arcgisruntime.toolkit.test.bookmark.map
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.ArcGISMap
-import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.mapping.BookmarkList
-import com.esri.arcgisruntime.toolkit.test.bookmark.BookmarksRepository
+import com.esri.arcgisruntime.portal.Portal
+import com.esri.arcgisruntime.portal.PortalItem
+import com.esri.arcgisruntime.security.UserCredential
 
-class MapViewModel(map: ArcGISMap) : ViewModel() {
+class MapViewModel : ViewModel() {
 
-    private val _mapData: MutableLiveData<ArcGISMap> = MutableLiveData(map)
-    val mapData: LiveData<ArcGISMap> = _mapData
+    val map: ArcGISMap by lazy {
+        val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
+        val portalItem = PortalItem(portal, "e1aa3973d50a456f998406a7c4dfd804")
+        portal.credential = UserCredential("ArcGISRuntimeSDK", "agsRT3dk")
+        ArcGISMap(portalItem)
+    }
 
-    private val bookmarksRepository: BookmarksRepository = BookmarksRepository(map)
-    val bookmarks: LiveData<BookmarkList> = bookmarksRepository.bookmarks
-
-    class Factory(private val arcGISMap: ArcGISMap) : ViewModelProvider.Factory {
-
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return modelClass.getConstructor(ArcGISMap::class.java)
-                .newInstance(arcGISMap)
+    private val _bookmarks: MutableLiveData<BookmarkList> = MutableLiveData()
+    val bookmarks: LiveData<BookmarkList>
+        get() {
+            loadBookmarks()
+            return _bookmarks
         }
 
+    private fun loadBookmarks() {
+        if (map.loadStatus == LoadStatus.LOADED) {
+            _bookmarks.postValue(map.bookmarks)
+        } else {
+            map.addDoneLoadingListener {
+                _bookmarks.postValue(map.bookmarks)
+            }
+        }
     }
 
 }

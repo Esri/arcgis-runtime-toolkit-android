@@ -18,47 +18,28 @@ package com.esri.arcgisruntime.toolkit.test.bookmark
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
-import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Bookmark
-import com.esri.arcgisruntime.portal.Portal
-import com.esri.arcgisruntime.portal.PortalItem
-import com.esri.arcgisruntime.security.UserCredential
 import com.esri.arcgisruntime.toolkit.bookmark.BookmarkView
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.bookmark.map.MapViewModel
+import com.esri.arcgisruntime.toolkit.test.databinding.ActivityBookmarkBinding
 import kotlinx.android.synthetic.main.activity_bookmark.*
 
 class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<Bookmark> {
 
-    private val map: ArcGISMap by lazy {
-        val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
-        val portalItem = PortalItem(portal, "e1aa3973d50a456f998406a7c4dfd804")
-        portal.credential = UserCredential("ArcGISRuntimeSDK", "agsRT3dk")
-        ArcGISMap(portalItem)
-    }
-
-    private val mapViewModel: MapViewModel by lazy {
-        ViewModelProviders.of(this, MapViewModel.Factory(map))
-            .get(MapViewModel::class.java)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bookmark)
+
+        val binding: ActivityBookmarkBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_bookmark)
+        val model = ViewModelProviders.of(this)[MapViewModel::class.java]
+
+        binding.mapViewModel = model
+        binding.lifecycleOwner = this
 
         bookmarkView.onItemClickListener = this
-
-        mapViewModel.mapData.observe(this, Observer {
-            it.let {
-                mapView.map = mapViewModel.mapData.value
-            }
-        })
-
-        mapViewModel.bookmarks.observe(this, Observer {
-            it?.let { bookmarkView.submitBookmarkList(it) }
-        })
     }
 
     override fun onItemClick(item: Bookmark) {
