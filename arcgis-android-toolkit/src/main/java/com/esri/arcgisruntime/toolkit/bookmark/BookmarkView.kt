@@ -40,20 +40,13 @@ import kotlinx.android.synthetic.main.layout_bookmarkview.view.bookmarkRecyclerV
  */
 class BookmarkView : FrameLayout {
 
-    private val bookmarksAdapter: BookmarkAdapter = BookmarkAdapter(
-        object : OnItemClickListener<Bookmark> {
-            override fun onItemClick(item: Bookmark) {
-                onItemClickListener?.onItemClick(item)
-            }
-        })
+    private val bookmarksAdapter by lazy { BookmarkAdapter() }
 
-    var bookmarkList: BookmarkList? = null
-    set(value) {
-        value?.let {
+    var bookmarks: BookmarkList? = null
+        set(value) {
             field = value
             bookmarksAdapter.submitList(value)
         }
-    }
 
     var onItemClickListener: OnItemClickListener<Bookmark>? = null
 
@@ -94,9 +87,13 @@ class BookmarkView : FrameLayout {
      *
      * @since 100.7.0
      */
-    private class BookmarkAdapter(
-        private val onItemClickListener: OnItemClickListener<Bookmark>
-    ) : ListAdapter<Bookmark, ViewHolder>(DiffCallback()) {
+    private inner class BookmarkAdapter : ListAdapter<Bookmark, ViewHolder>(DiffCallback()) {
+
+        private val onItemClickListener = object : OnItemClickListener<Bookmark> {
+            override fun onItemClick(item: Bookmark) {
+                this@BookmarkView.onItemClickListener?.onItemClick(item)
+            }
+        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -112,15 +109,21 @@ class BookmarkView : FrameLayout {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) =
             holder.bind(getItem(position), onItemClickListener)
 
-        private class DiffCallback : DiffUtil.ItemCallback<Bookmark>() {
+    }
 
-            override fun areItemsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
-                return oldItem == newItem
-            }
+    /**
+     * Callback for calculating the diff between two non-null items in a list.
+     *
+     * @since 100.7.0
+     */
+    private class DiffCallback : DiffUtil.ItemCallback<Bookmark>() {
 
-            override fun areContentsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
-                return oldItem.name == newItem.name && oldItem.viewpoint.toJson() == newItem.viewpoint.toJson()
-            }
+        override fun areItemsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Bookmark, newItem: Bookmark): Boolean {
+            return oldItem.name == newItem.name && oldItem.viewpoint.toJson() == newItem.viewpoint.toJson()
         }
     }
 

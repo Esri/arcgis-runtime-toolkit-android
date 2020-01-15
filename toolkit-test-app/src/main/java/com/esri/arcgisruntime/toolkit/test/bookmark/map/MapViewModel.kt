@@ -24,14 +24,12 @@ import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.BookmarkList
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
-import com.esri.arcgisruntime.security.UserCredential
 
 class MapViewModel : ViewModel() {
 
     val map: ArcGISMap by lazy {
         val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
-        val portalItem = PortalItem(portal, "e1aa3973d50a456f998406a7c4dfd804")
-        portal.credential = UserCredential("ArcGISRuntimeSDK", "agsRT3dk")
+        val portalItem = PortalItem(portal, "16f1b8ba37b44dc3884afc8d5f454dd2")
         ArcGISMap(portalItem)
     }
 
