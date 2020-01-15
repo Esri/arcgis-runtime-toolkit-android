@@ -34,9 +34,9 @@ class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<B
 
         val binding: ActivityBookmarkBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_bookmark)
-        val model = ViewModelProviders.of(this)[MapViewModel::class.java]
+        val mapViewModel = ViewModelProviders.of(this)[MapViewModel::class.java]
 
-        binding.mapViewModel = model
+        binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
 
         bookmarkView.onItemClickListener = this
