@@ -19,7 +19,6 @@ package com.esri.arcgisruntime.toolkit.test.bookmark.map
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.BookmarkList
 import com.esri.arcgisruntime.portal.Portal
@@ -36,18 +35,11 @@ class MapViewModel : ViewModel() {
     private val _bookmarks: MutableLiveData<BookmarkList> = MutableLiveData()
     val bookmarks: LiveData<BookmarkList>
         get() {
-            loadBookmarks()
             return _bookmarks
         }
 
-    private fun loadBookmarks() {
-        if (map.loadStatus == LoadStatus.LOADED) {
-            _bookmarks.postValue(map.bookmarks)
-        } else {
-            map.addDoneLoadingListener {
-                _bookmarks.postValue(map.bookmarks)
-            }
-        }
+    fun updateBookmarks() {
+        _bookmarks.postValue(map.bookmarks)
     }
 
 }
