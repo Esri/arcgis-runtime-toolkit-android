@@ -30,7 +30,7 @@ import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.mapping.BookmarkList
 import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
-import kotlinx.android.synthetic.main.layout_bookmarkview.view.*
+import kotlinx.android.synthetic.main.layout_bookmarkview.view.bookmarkRecyclerView
 
 /**
  * The BookmarkView will display a list of bookmarks in a [RecyclerView] and allows the user to
