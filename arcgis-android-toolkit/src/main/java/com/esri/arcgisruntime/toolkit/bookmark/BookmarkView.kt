@@ -98,8 +98,6 @@ class BookmarkView : FrameLayout {
         private val onItemClickListener: OnItemClickListener<Bookmark>
     ) : ListAdapter<Bookmark, ViewHolder>(DiffCallback()) {
 
-
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = DataBindingUtil.inflate<ViewDataBinding>(
