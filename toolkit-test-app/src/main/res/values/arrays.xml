@@ -24,6 +24,7 @@
         <item>com.esri.arcgisruntime.toolkit.test.compass.CompassTestActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.scalebar.ScalebarTestActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.ar.ArcGISArViewActivity</item>
+        <item>com.esri.arcgisruntime.toolkit.test.bookmark.BookmarkActivity</item>
     </string-array>
 
     <!-- Compass -->

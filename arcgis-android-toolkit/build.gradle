@@ -18,6 +18,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
     id 'org.jetbrains.dokka-android'
     // https://github.com/wupdigital/android-maven-publish
     id 'digital.wup.android-maven-publish' version '3.6.2'
@@ -55,6 +56,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dokka {
@@ -79,6 +83,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
     implementation "androidx.lifecycle:lifecycle-runtime:$droid.lifecycle"
+    implementation "androidx.recyclerview:recyclerview:$droid.recyclerview"
     api "androidx.lifecycle:lifecycle-common-java8:$droid.lifecycle"
     api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
     api "com.google.ar.sceneform:core:$droid.arCore"
