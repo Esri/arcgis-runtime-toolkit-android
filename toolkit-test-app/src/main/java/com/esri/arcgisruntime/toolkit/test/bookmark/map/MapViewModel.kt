@@ -29,7 +29,11 @@ class MapViewModel : ViewModel() {
     val map: ArcGISMap by lazy {
         val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
         val portalItem = PortalItem(portal, "16f1b8ba37b44dc3884afc8d5f454dd2")
-        ArcGISMap(portalItem)
+        val map = ArcGISMap(portalItem)
+        map.addDoneLoadingListener{
+            _bookmarks.postValue(map.bookmarks)
+        }
+        map
     }
 
     private val _bookmarks: MutableLiveData<BookmarkList> = MutableLiveData()
@@ -37,9 +41,4 @@ class MapViewModel : ViewModel() {
         get() {
             return _bookmarks
         }
-
-    fun updateBookmarks() {
-        _bookmarks.postValue(map.bookmarks)
-    }
-
 }

@@ -39,10 +39,6 @@ class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<B
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
 
-        mapViewModel.map.addDoneLoadingListener{
-            mapViewModel.updateBookmarks()
-        }
-
         bookmarkView.onItemClickListener = this
     }
 
