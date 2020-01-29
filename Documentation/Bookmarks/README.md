@@ -48,8 +48,8 @@ being bound to `map.bookmarks` via mapViewModel's bookmarks property:
     </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-Here is example Kotlin code to set the activity that implements the BookmarkView's onItemClickListener interface as the onItemClickListener
-and implementing the `onItemClick()`
+Here is example Kotlin code to set the activity that implements the BookmarkView's onItemClickListener interface as the 
+onItemClickListener and implementing the `onItemClick()`
 
 ```
 class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<Bookmark> {
