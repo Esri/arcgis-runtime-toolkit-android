@@ -6,6 +6,7 @@ Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-tool
 - [ArcGISArView](../../wiki/ArcGISArView) - Allows quick and easy integration of AR into your application for a wide variety of scenarios
 - [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 - [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
+- [Bookmarks](Documentation/Bookmarks) - Displays the bookmarks present in a map
 
 <!-- 
 
