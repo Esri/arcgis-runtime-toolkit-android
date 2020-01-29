@@ -9,8 +9,8 @@ The app can define the `BookmarkView` in its view hierarchy, as `BookmarkView` e
 have to set the `bookmarks` property on the `BookmarkView` with the map's bookmarks. To handle the event when the 
 user taps on an item in the list, the app will have to implement `BookmarkView.onItemClickListener` interface.
 
-Here is an example XML code that shows the BookMarkView below a MapView and the BookmarkView's bookmarks attribute being 
-bound to `map.bookmarks` via mapViewModel's bookmarks property:
+Here is an example XML code that shows the BookMarkView below a MapView and the BookmarkView's bookmarks attribute 
+being bound to `map.bookmarks` via mapViewModel's bookmarks property:
 
 ```
   <androidx.constraintlayout.widget.ConstraintLayout
