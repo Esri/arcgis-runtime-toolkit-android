@@ -1,13 +1,13 @@
 # Bookmarks
 
-The Bookmarks component will show the list of bookmarks in a RecyclerView and allows the user to select
+The Bookmarks component shows the list of a map's bookmarks in a RecyclerView and allows the user to select
 a bookmark and perform some action.
 
 ## Workflow
 
-The app can define the `BookmarkView` in its view hierarchy, as `BookmarkView` extends FrameLayout. The app will
-have to set the `bookmarks` property on the `BookmarkView` with the map's bookmarks. To handle the event when the 
-user taps on an item in the list, the app will have to implement `BookmarkView.onItemClickListener` interface.
+The app can define the `BookmarkView` in its view hierarchy, as `BookmarkView` extends FrameLayout. The app 
+has to set the `bookmarks` property on the `BookmarkView` with the map's bookmarks. To handle the event when the 
+user taps on an item in the list, the app has to implement `BookmarkView.onItemClickListener` interface.
 
 Here is an example XML code that shows the BookMarkView below a MapView and the BookmarkView's bookmarks attribute 
 being bound to `map.bookmarks` via mapViewModel's bookmarks property:
