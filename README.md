@@ -1,48 +1,26 @@
 # ArcGIS Runtime Toolkit Android
 
-## Components
+[![doc](https://img.shields.io/badge/Doc-purple)](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki) [![](https://img.shields.io/bintray/v/esri/arcgis/arcgis-android-toolkit?color=limegreen)](https://bintray.com/esri/arcgis/arcgis-android-toolkit)
+
+The ArcGIS Runtime Toolkit for Android contains views that you can use with [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).
+
+You can use the Toolkit in your projects by:
+
+1. **Reference from Bintray** - the fastest way to get toolkit into your app
+    * Ensure the Esri public Bintray Maven repository is in your project's gradle file - `https://esri.bintray.com/arcgis`
+    * Add the toolkit dependency in the gradle file - `implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.6.1'`
+2. **[Build from source](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions)** - do this if you want to customize toolkit
+    ```groovy
+    $ ./gradlew clean assembleDebug --info
+    ```
+
+## Features
+
 Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions) in our wiki.
 
-- [ArcGISArView](../../wiki/ArcGISArView) - Allows quick and easy integration of AR into your application for a wide variety of scenarios
-- [Compass](../../wiki/Compass) -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
-- [Scalebar](../../wiki/Scalebar) - Displays the representation of an accurate linear measurement on a map
-
-<!-- 
-
-Hiding instructions as AAR is not yet published to Bintray and will not be published to Bintray when 100.6.0 is released.
-
-## Instructions
-
-Update the project Gradle repositories in the **Project** view under **Gradle Scripts > build.gradle (Project:...)** to Esri's Bintray maven repository URL.
-
-```groovy
-allprojects {
-  ...
-  repositories {
-    ...
-    // *** ADD ***
-    maven {
-      url 'https://esri.bintray.com/arcgis'
-    }
-```
-
-Update the app module Gradle dependencies in the **Project** view under **Gradle Scripts > build.gradle (Module: app)** to include the **ArcGIS Runtime Toolkit Android** dependency.
-
-```groovy
-dependencies {
-  ...
-  // *** ADD ***
-  implementation "com.esri.arcgisruntime:arcgis-android-toolkit:100.6.0"
-}
-
-```
--->
-
-## Build the Toolkit AAR
-
-```groovy
-$ ./gradlew clean assembleDebug --info
-```
+- **[ArcGISArView](../../wiki/ArcGISArView)** - Allows quick and easy integration of AR into your application for a wide variety of scenarios
+- **[Compass](../../wiki/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
+- **[Scalebar](../../wiki/Scalebar)** - Displays the representation of an accurate linear measurement on a map
 
 ## Requirements
 
@@ -60,18 +38,21 @@ The following table shows which versions of the SDK are compatible with the tool
 ## Resources
 
 * [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/)
+* [System requirements](https://developers.arcgis.com/android/latest/guide/system-requirements.htm)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * [twitter@esri](http://twitter.com/esri)
 
 ## Issues
-Find a bug or want to request a new feature enhancement?  Please let us know by submitting an issue.
+
+Find a bug or want to request a new feature enhancement? Please let us know by submitting an issue.
 
 ## Contributing
 
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing
-Copyright 2019 Esri
+
+Copyright 2019-2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
