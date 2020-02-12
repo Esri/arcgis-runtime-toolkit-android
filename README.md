@@ -18,7 +18,7 @@ You can use the Toolkit in your projects by:
 
 Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions) in our wiki.
 
-- **[ArcGISArView](../../wiki/ArcGISArView)** - Allows quick and easy integration of AR into your application for a wide variety of scenarios
+- **[ArcGISArView](../../wiki/ArcGISArView)** - Integrates SceneView with ARCore to enable augmented reality (AR)
 - **[Compass](../../wiki/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 - **[Scalebar](../../wiki/Scalebar)** - Displays the representation of an accurate linear measurement on a map
 
@@ -44,7 +44,7 @@ The following table shows which versions of the SDK are compatible with the tool
 
 ## Issues
 
-Find a bug or want to request a new feature enhancement? Please let us know by submitting an issue.
+Find a bug or want to request a new feature enhancement? Please let us know by [submitting an issue](https://github.com/Esri/arcgis-runtime-toolkit-android/issues/new).
 
 ## Contributing
 
