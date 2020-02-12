@@ -9,24 +9,18 @@ The app can define the `BookmarkView` in its view hierarchy, as `BookmarkView` e
 has to set the `bookmarks` property on the `BookmarkView` with the map's bookmarks. To handle the event when the 
 user taps on an item in the list, the app has to implement `BookmarkView.onItemClickListener` interface.
 
-Here is an example XML code that shows the BookMarkView below a MapView and the BookmarkView's bookmarks attribute 
+Here is an example XML code that shows the BookMarkView and the BookmarkView's bookmarks attribute
 being bound to `map.bookmarks` via mapViewModel's bookmarks property:
 
 ```
-  <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        <com.esri.arcgisruntime.mapping.view.MapView
-                android:id="@+id/mapView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/guideline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:map="@{mapViewModel.map}">
-        </com.esri.arcgisruntime.mapping.view.MapView>
+  <data>
+        <variable
+                name="mapViewModel"
+                type="com.esri.arcgisruntime.toolkit.test.bookmark.map.MapViewModel" />
+  </data>
+  
+  
+       .....
 
         <com.esri.arcgisruntime.toolkit.bookmark.BookmarkView
                 android:id="@+id/bookmarkView"
@@ -38,14 +32,8 @@ being bound to `map.bookmarks` via mapViewModel's bookmarks property:
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/guideline" />
 
-        <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.5" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        .....
+    
 ```
 
 Here is example Kotlin code to set the activity that implements the BookmarkView's onItemClickListener interface as the 
