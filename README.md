@@ -1,6 +1,6 @@
 # ArcGIS Runtime Toolkit Android
 
-[![doc](https://img.shields.io/badge/Doc-purple)](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki) [![](https://img.shields.io/bintray/v/esri/arcgis/arcgis-android-toolkit?color=limegreen)](https://bintray.com/esri/arcgis/arcgis-android-toolkit)
+[![doc](https://img.shields.io/badge/Doc-purple)](Documentation/readme) [![](https://img.shields.io/bintray/v/esri/arcgis/arcgis-android-toolkit?color=limegreen)](https://bintray.com/esri/arcgis/arcgis-android-toolkit)
 
 The ArcGIS Runtime Toolkit for Android contains views that you can use with [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).
 
@@ -9,18 +9,21 @@ You can use the Toolkit in your projects by:
 1. **Reference from Bintray** - the fastest way to get toolkit into your app
     * Ensure the Esri public Bintray Maven repository is in your project's gradle file - `https://esri.bintray.com/arcgis`
     * Add the toolkit dependency in the gradle file - `implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.6.1'`
-2. **[Build from source](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions)** - do this if you want to customize toolkit
+2. **[Build from source](Documentation/setup)** - do this if you want to customize toolkit
+
     ```groovy
     $ ./gradlew clean assembleDebug --info
     ```
 
+See the [setup instructions](Documentation/setup) for a more detailed guide.
+
 ## Features
 
-Please read the [setup instructions](https://github.com/Esri/arcgis-runtime-toolkit-android/wiki/Setup-Instructions) in our wiki.
+Please read the [setup instructions](Documentation/setup) in our wiki.
 
-- **[ArcGISArView](../../wiki/ArcGISArView)** - Integrates SceneView with ARCore to enable augmented reality (AR)
-- **[Compass](../../wiki/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
-- **[Scalebar](../../wiki/Scalebar)** - Displays the representation of an accurate linear measurement on a map
+* **[ArcGISArView](Documentation/AugmentedReality)** - Integrates SceneView with ARCore to enable augmented reality (AR)
+* **[Compass](Documentation/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
+* **[Scalebar](Documentation/Scalebar)** - Displays the representation of an accurate linear measurement on a map
 
 ## Requirements
 
