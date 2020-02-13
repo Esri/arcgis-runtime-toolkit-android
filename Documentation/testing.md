@@ -32,4 +32,4 @@ This app displays a list of activities that are used to test the toolkit compone
     ```
 
 5. When you create resource files for the new activity, give them all a prefix that identifies the activity that uses them, for example **foo_layout1.xml**.
-6. Add documentation in the [Documentation folder](./readme.md) for the test.
+6. Add documentation in the [Documentation directory](./readme.md) for the test.
