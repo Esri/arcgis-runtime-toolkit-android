@@ -2,7 +2,7 @@
 
 This folder contains guides for using toolkit components. These components assist in the development of apps using [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).
 
-To prepare your app to use Toolkit, see the **[setup instructions](./setup)**.
+To prepare your app to use Toolkit, see the **[setup instructions](./setup.md)**.
 
 ## Components
 
@@ -12,7 +12,7 @@ To prepare your app to use Toolkit, see the **[setup instructions](./setup)**.
 
 ## Testing
 
-Most Toolkit components have a test activity in the [Toolkit test app](./testing):
+Most Toolkit components have a test activity in the [Toolkit test app](./testing.md):
 
-* [Compass](Compass/testing)
-* [Scalebar](Scalebar/testing)
+* [Compass](Compass/testing.md)
+* [Scalebar](Scalebar/testing.md)
