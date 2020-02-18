@@ -17,7 +17,7 @@
 package com.esri.arcgisruntime.toolkit
 
 import android.app.Activity
-import android.support.test.rule.ActivityTestRule
+import androidx.test.rule.ActivityTestRule
 
 /**
  * Extension method to invoke finish on the Activity belonging to the ActivityTestRule.

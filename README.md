@@ -1,6 +1,6 @@
 # ArcGIS Runtime Toolkit Android
 
-[![doc](https://img.shields.io/badge/Doc-purple)](Documentation) [![](https://img.shields.io/bintray/v/esri/arcgis/arcgis-android-toolkit?color=limegreen)](https://bintray.com/esri/arcgis/arcgis-android-toolkit)
+[![doc badge](https://img.shields.io/badge/Doc-purple)](Documentation) [![package badge](https://img.shields.io/bintray/v/esri/arcgis/arcgis-android-toolkit?color=limegreen)](https://bintray.com/esri/arcgis/arcgis-android-toolkit)
 
 The ArcGIS Runtime Toolkit for Android contains views that you can use with [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).
 
@@ -20,6 +20,7 @@ See the [setup instructions](Documentation/setup.md) for a more detailed guide.
 ## Features
 
 * **[ArcGISArView](Documentation/AugmentedReality)** - Integrates SceneView with ARCore to enable augmented reality (AR)
+* **[Bookmarks](Documentation/Bookmarks)** - Displays the bookmarks present in a map
 * **[Compass](Documentation/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 * **[Scalebar](Documentation/Scalebar)** - Displays the representation of an accurate linear measurement on a map
 

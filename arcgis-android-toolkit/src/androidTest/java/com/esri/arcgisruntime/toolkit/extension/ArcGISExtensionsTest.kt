@@ -16,7 +16,7 @@
 
 package com.esri.arcgisruntime.toolkit.extension
 
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.esri.arcgisruntime.UnitSystem
 import junit.framework.Assert.assertSame
 import org.junit.Test

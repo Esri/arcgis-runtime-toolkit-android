@@ -16,7 +16,7 @@
 
 package com.esri.arcgisruntime.toolkit
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * An Activity that can be used to obtain a Context that is an Activity.

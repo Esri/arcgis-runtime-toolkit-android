@@ -19,8 +19,8 @@ package com.esri.arcgisruntime.toolkit.scalebar
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Looper
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.esri.arcgisruntime.UnitSystem
@@ -49,7 +49,7 @@ class ScalebarTest {
      */
     @Test
     fun testSimpleConstructorDefaultValues() {
-        val scalebar = Scalebar(InstrumentationRegistry.getTargetContext())
+        val scalebar = Scalebar(InstrumentationRegistry.getInstrumentation().targetContext)
         checkDefaultValues(scalebar)
     }
 
@@ -60,7 +60,7 @@ class ScalebarTest {
      */
     @Test
     fun testNullAttributeSet() {
-        val scalebar = Scalebar(InstrumentationRegistry.getTargetContext(), null)
+        val scalebar = Scalebar(InstrumentationRegistry.getInstrumentation().targetContext, null)
         checkDefaultValues(scalebar)
     }
 
@@ -72,7 +72,7 @@ class ScalebarTest {
     @Test
     fun testXmlNoScalebarAttributes() {
         // Inflate layout containing a Scalebar that doesn't set any of the Scalebar attributes
-        val context = InstrumentationRegistry.getTargetContext()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val viewGroup = LayoutInflater.from(context).inflate(R.layout.unit_test_scalebar_no_attrs, null) as ViewGroup
 
         // Find and instantiate that Scalebar
@@ -90,7 +90,7 @@ class ScalebarTest {
     @Test
     fun testXmlFullyPopulated() {
         // Inflate layout containing a Scalebar that sets all of the Scalebar attributes
-        val context = InstrumentationRegistry.getTargetContext()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val viewGroup =
             LayoutInflater.from(context).inflate(R.layout.unit_test_scalebar_fully_populated, null) as ViewGroup
 
@@ -109,7 +109,7 @@ class ScalebarTest {
     @Test
     fun testSetters() {
         // Instantiate a Scalebar
-        val scalebar = Scalebar(InstrumentationRegistry.getTargetContext())
+        val scalebar = Scalebar(InstrumentationRegistry.getInstrumentation().targetContext)
 
         // Call all the setters
         scalebar.style = Style.GRADUATED_LINE
@@ -141,7 +141,7 @@ class ScalebarTest {
             Looper.prepare()
         }
 
-        val context = InstrumentationRegistry.getTargetContext()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val mapView = MapView(context)
 
         // Instantiate a Scalebar and add it to a MapView (Workflow 1)
