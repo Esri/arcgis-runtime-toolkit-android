@@ -12,7 +12,7 @@ user taps on an item in the list, the app has to implement `BookmarkView.onItemC
 Here is an example XML code that shows the BookMarkView and the BookmarkView's bookmarks attribute
 being bound to `map.bookmarks` via mapViewModel's bookmarks property:
 
-```
+```xml
   <data>
         <variable
                 name="mapViewModel"
@@ -33,20 +33,19 @@ being bound to `map.bookmarks` via mapViewModel's bookmarks property:
                 app:layout_constraintTop_toBottomOf="@id/guideline" />
 
         .....
-    
 ```
 
 Here is example Kotlin code to set the activity that implements the BookmarkView's onItemClickListener interface as the 
 onItemClickListener and implementing the `onItemClick()`
 
-```
+```kotlin
 class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<Bookmark> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ...
         ...
-        
+
         bookmarkView.onItemClickListener = this
     }
 

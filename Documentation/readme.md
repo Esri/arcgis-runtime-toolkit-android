@@ -7,6 +7,7 @@ To prepare your app to use Toolkit, see the **[setup instructions](./setup.md)**
 ## Components
 
 * **[Augmented reality (ArcGISArView)](AugmentedReality)** - Integrates SceneView with ARCore to enable augmented reality (AR)
+* **[Bookmarks](Bookmarks)** -  Displays the bookmarks present in a map
 * **[Compass](Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 * **[Scalebar](Scalebar)** - Displays the representation of an accurate linear measurement on a map
 
