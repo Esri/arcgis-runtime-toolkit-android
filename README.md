@@ -8,7 +8,7 @@ You can use the Toolkit in your projects by:
 
 1. **Reference from Bintray** - the fastest way to get toolkit into your app
     * Ensure the Esri public Bintray Maven repository is in your project's gradle file - `https://esri.bintray.com/arcgis`
-    * Add the toolkit dependency in the gradle file - `implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.6.1'`
+    * Add the toolkit dependency to the module's gradle file - `implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.6.1'`
 2. **[Build from source](Documentation/setup)** - do this if you want to customize toolkit
 
     ```groovy
