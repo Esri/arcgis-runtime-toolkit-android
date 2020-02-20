@@ -24,6 +24,7 @@ import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.mapping.Bookmark
@@ -79,6 +80,7 @@ class BookmarkView : FrameLayout {
      */
     private fun init(context: Context) {
         inflate(context, R.layout.layout_bookmarkview, this)
+        bookmarkRecyclerView.layoutManager = LinearLayoutManager(context)
         bookmarkRecyclerView.adapter = bookmarksAdapter
     }
 
