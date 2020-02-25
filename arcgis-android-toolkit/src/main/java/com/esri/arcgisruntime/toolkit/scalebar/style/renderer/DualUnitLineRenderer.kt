@@ -78,7 +78,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
             secondaryUnitsLength = secondaryBaseUnits.convertTo(secondaryDisplayUnits, secondaryUnitsLength)
         }
 
-        val verticalTextSpace = textSizePx + textPaint.fontMetrics.bottom
+        val verticalTextSpace = textSizePx + textPaint.fontMetrics.top
 
         // Create Paint for drawing the lines
         with(paint) {
@@ -114,7 +114,7 @@ class DualUnitLineRenderer : ScalebarRenderer() {
                 canvas.drawPath(linePath, this)
 
                 // Draw the primary units label above the tick at the right hand end
-                var yPosText = top + textSizePx
+                var yPosText = top
                 textPaint.textAlign = Paint.Align.RIGHT
                 canvas.drawText(distance.asDistanceString(), right, yPosText, textPaint)
                 textPaint.textAlign = Paint.Align.LEFT
