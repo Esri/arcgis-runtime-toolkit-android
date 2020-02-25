@@ -83,7 +83,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
     implementation "androidx.lifecycle:lifecycle-runtime:$droid.lifecycle"
-    implementation "androidx.recyclerview:recyclerview:$droid.recyclerview"
+    api "androidx.recyclerview:recyclerview:$droid.recyclerview"
     api "androidx.lifecycle:lifecycle-common-java8:$droid.lifecycle"
     api "com.google.ar.sceneform.ux:sceneform-ux:$droid.arCore"
     api "com.google.ar.sceneform:core:$droid.arCore"
