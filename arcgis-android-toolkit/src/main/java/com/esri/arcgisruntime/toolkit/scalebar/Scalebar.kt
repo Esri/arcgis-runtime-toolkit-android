@@ -481,7 +481,9 @@ class Scalebar : View {
             }
 
             val top: Float = when (style) {
-                Style.DUAL_UNIT_LINE -> if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() - textSize - maxPixelsBelowBaseline else 0.0f
+                Style.DUAL_UNIT_LINE -> if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(
+                    displayDensity
+                ).toFloat() - textSize - maxPixelsBelowBaseline else 0.0f
                 else -> if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else 0.0f
             }
 
