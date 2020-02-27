@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ScalebarTestActivity** is a test activity for the [`Scalebar`](./readme) toolkit component. It displays a `MapView` and allows a `Scalebar` for that `MapView` to be displayed using a number of different layouts. It also offers a set of menu options to change the attributes of the Scalebar and modify the `MapView`.
+**ScalebarTestActivity** is a test activity for the [`Scalebar`](./readme.md) toolkit component. It displays a `MapView` and allows a `Scalebar` for that `MapView` to be displayed using a number of different layouts. It also offers a set of menu options to change the attributes of the Scalebar and modify the `MapView`.
 
 ## Layout Selection
 
@@ -13,7 +13,7 @@ The layout selection buttons are displayed at the bottom of the screen in portra
 * **REGULAR** - This is the default layout and uses Workflow 1 to add a Scalebar to the MapView. Initially the Scalebar uses the default settings, so it is displayed near the bottom-left corner of the MapView.
 * **CUSTOM1** - This uses Workflow 2 and a layout that defines a Scalebar that overlays the top-left corner of the MapView.
 * **CUSTOM2** - This uses Workflow 2 and a layout that defines a Scalebar that's completely outside the MapView.
-* **ALL STYLES** - This uses Workflow 2 and a layout that defines all 5 styles of Scalebar outside the MapView.
+* **ALL STYLES** - This uses Workflow 2 and a layout that defines all 5 styles of Scalebar on top of the MapView.
 
 Part of the screen is devoted to information display. In portrait orientation it is a strip at the top of the screen, above the MapView. In landscape orientation it is an area at the left-hand side of the screen. The information consists of a simple message describing which layout is currently displayed and, in CUSTOM2 layout only, the Scalebar itself.
 
@@ -27,7 +27,7 @@ and in landscape orientation:
 
 ## Changing Scalebar Attributes
 
-To change the attributes of the current Scalebar, click on the Action Bar overflow to see a menu of options:
+To change the attributes of the current Scalebar, click on the Action Bar overflow (not present in the ALL STYLES layout) to see a menu of options:
 
 ![ScalebarTestMenuOptions](./Images/ScalebarTestMenuOptions.png)
 

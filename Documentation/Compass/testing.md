@@ -2,7 +2,7 @@
 
 ## Introduction
 
-CompassTestActivity is a test activity for the [`Compass`](./readme) toolkit component. It displays a GeoView and allows a Compass for that GeoView to be displayed using a number of different layouts. It also offers a set of menu options to change the attributes of the Compass and modify the GeoView.
+CompassTestActivity is a test activity for the [`Compass`](./readme.md) toolkit component. It displays a GeoView and allows a Compass for that GeoView to be displayed using a number of different layouts. It also offers a set of menu options to change the attributes of the Compass and modify the GeoView.
 
 ## Select MapView or SceneView
 

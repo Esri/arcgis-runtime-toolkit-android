@@ -9,7 +9,7 @@ To use the ArcGIS Runtime Toolkit for Android, first you need an app that uses t
 
 ## Use the toolkit library
 
-You can add toolkit components which compliment the functionality of the ArcGIS Runtime SDK for Android into your own applications.  For example the toolkit allows you to add components such as scale bars, north arrows, or augmented reality controls.
+You can add toolkit components which complement the functionality of the ArcGIS Runtime SDK for Android into your own applications.  For example the toolkit allows you to add components such as scale bars, north arrows, or augmented reality controls.
 
 The toolkit components are available as a library (.aar) in Bintray, or you can use the the source code for the toolkit directly from this repository.  Read the [read me](https://github.com/Esri/arcgis-runtime-toolkit-android/tree/100.6.0) instructions for using the compiled library.
 

@@ -79,7 +79,8 @@ values of `fillColor`, `lineColor`, `style`, `textColor`, `textShadowColor` and 
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -110,7 +111,7 @@ values of `fillColor`, `lineColor`, `style`, `textColor`, `textShadowColor` and 
         app:textShadowColor="@android:color/white"
         app:unitSystem="imperial" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
 Here's example Kotlin code to bind the `Scalebar` to the MapView:

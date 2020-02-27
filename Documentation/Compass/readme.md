@@ -28,39 +28,40 @@ mCompass.addToGeoView(mGeoView);
 
 Alternatively, the app could define a `Compass` anywhere it likes in its view hierarchy, because `Compass` extends the Android `View` class. The app then calls `Compass.bindTo(GeoView)` to make it come to life as a compass for the given GeoView. This workflow gives the app complete control over where the compass is displayed - it could be positioned on top of any part of the GeoView, or placed somewhere outside the bounds of the GeoView.
 
-Here's example XML code that puts a compass on top of the top-left corner of the GeoView and overrides the default
+Here's example XML code that puts a compass on top of the top-left corner of a MapView and overrides the default
 value of `autoHide`:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.esri.arcgisruntime.mapping.view.MapView
+        android:id="@+id/mapView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <com.esri.arcgisruntime.toolkit.compass.Compass
         android:id="@+id/compass"
         android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:layout_height="100dp"
         android:layout_margin="5dp"
         app:autoHide="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/mapView"
+        app:layout_constraintTop_toTopOf="@+id/mapView" />
 
-    <!-- In this example, GeoView is a MapView -->
-    <com.esri.arcgisruntime.mapping.view.MapView
-        android:id="@+id/mapview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/message" />
-
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-Here's example Kotlin code to bind the `Compass` to the GeoView:
+Here's example Kotlin code to bind the `Compass` to a GeoView:
 
 ```kotlin
 compass.bindTo(geoView)
