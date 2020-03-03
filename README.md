@@ -11,16 +11,22 @@ You can use the Toolkit in your projects by:
 
     ```
     allprojects {
-       repositories {
-         ...
-         maven { url 'https://esri.bintray.com/arcgis' }
-         ...
-       }
+    	repositories {
+    		...
+    		maven { url 'https://esri.bintray.com/arcgis' }
+    		...
+    	}
     }
     ```
 
-    * Add the toolkit dependency to the module's gradle file - `implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.7.0'`
-    
+    * Add the toolkit dependency to the module's gradle file 
+
+    ```
+    dependencies {
+    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.7.0
+    }
+    ```
+
 2. **[Build from source](Documentation/setup)** - do this if you want to customize the toolkit
 
     ```groovy
