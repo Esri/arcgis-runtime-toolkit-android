@@ -27,7 +27,7 @@ You can use the Toolkit in your projects by:
     }
     ```
 
-2. **[Build from source](Documentation/setup)** - do this if you want to customize the toolkit
+2. **[Build from source](Documentation/setup.md)** - do this if you want to customize the toolkit
 
     ```groovy
     $ ./gradlew clean assembleDebug --info
