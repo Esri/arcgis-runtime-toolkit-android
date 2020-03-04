@@ -23,7 +23,7 @@ You can use the Toolkit in your projects by:
 
     ```
     dependencies {
-    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.7.0
+    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.7.0'
     }
     ```
 

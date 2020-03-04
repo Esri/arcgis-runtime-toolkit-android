@@ -51,8 +51,8 @@ comfortably within the MapView).
 For example in Kotlin:
 
 ```kotlin
-val scaleBar = Scalebar(mapView.context)
-with (scaleBar) {
+val scalebar = Scalebar(mapView.context)
+with (scalebar) {
     alignment = Scalebar.Alignment.CENTER
     addToMapView(mapView)
 }
@@ -79,7 +79,7 @@ values of `fillColor`, `lineColor`, `style`, `textColor`, `textShadowColor` and 
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout 
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -103,13 +103,13 @@ values of `fillColor`, `lineColor`, `style`, `textColor`, `textShadowColor` and 
         android:layout_height="50dp"
         android:layout_margin="5dp"
         app:fillColor="@android:color/holo_orange_light"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:lineColor="@android:color/holo_blue_bright"
         app:style="dualUnitLine"
         app:textColor="@android:color/black"
         app:textShadowColor="@android:color/white"
-        app:unitSystem="imperial" />
+        app:unitSystem="imperial"
+        app:layout_constraintStart_toStartOf="@+id/mapView"
+        app:layout_constraintTop_toTopOf="@+id/mapView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
@@ -117,7 +117,7 @@ values of `fillColor`, `lineColor`, `style`, `textColor`, `textShadowColor` and 
 Here's example Kotlin code to bind the `Scalebar` to the MapView:
 
 ```kotlin
-scaleBar.bindTo(mapView)
+scalebar.bindTo(mapView)
 ```
 
 and the same thing in Java:
