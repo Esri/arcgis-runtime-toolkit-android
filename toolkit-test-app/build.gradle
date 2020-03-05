@@ -33,7 +33,7 @@ android {
         targetSdkVersion droid.targetSdk
         versionCode _versionCode
         versionName _versionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
@@ -50,6 +50,9 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dokka {
@@ -61,13 +64,13 @@ dependencies {
     api project(':arcgis-android-toolkit')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:appcompat-v7:$droid.support"
-    implementation "com.android.support:design:$droid.support"
-    implementation "com.android.support:support-vector-drawable:$droid.support"
-    implementation "com.android.support.constraint:constraint-layout:$droid.constraintLayout"
-    implementation "com.android.support:multidex:$droid.multiDex"
-    testImplementation "junit:junit:$test.jUnit"
-    androidTestImplementation "junit:junit:$test.jUnit"
-    androidTestImplementation "com.android.support:support-annotations:$droid.support"
-    androidTestImplementation "com.android.support.test:runner:$droid.testRunner"
+    implementation "androidx.appcompat:appcompat:$droid.appcompat"
+    implementation "com.google.android.material:material:$droid.material"
+    implementation "androidx.vectordrawable:vectordrawable:$droid.vectordrawable"
+    implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
+    implementation "androidx.multidex:multidex:$droid.multiDex"
+    implementation "androidx.lifecycle:lifecycle-extensions:$droid.lifecycle"
+    androidTestImplementation "androidx.annotation:annotation:$droid.annotation"
+    androidTestImplementation "androidx.test:runner:$droid.testRunner"
+    androidTestImplementation "androidx.test.ext:junit:$test.jUnit"
 }

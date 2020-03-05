@@ -480,8 +480,12 @@ class Scalebar : View {
                 height.toFloat() - textSize - maxPixelsBelowBaseline
             }
 
-            val top: Float =
-                if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else 0.0f
+            val top: Float = when (style) {
+                Style.DUAL_UNIT_LINE -> if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(
+                    displayDensity
+                ).toFloat() - textSize - maxPixelsBelowBaseline else 0.0f
+                else -> if (drawInMapView) bottom - DEFAULT_BAR_HEIGHT_DP.dpToPixels(displayDensity).toFloat() else 0.0f
+            }
 
             // Draw the scalebar
             style.renderer.drawScalebar(
@@ -541,13 +545,13 @@ class Scalebar : View {
      */
     private fun calculateLeftPos(alignment: Alignment, scalebarLength: Float, displayUnits: LinearUnit): Float {
         var left = 0
-        val right = width
+        var right = width
         // padding to ensure the lines at the ends fit within the view
         var padding = lineWidthDp.dpToPixels(displayDensity)
         if (drawInMapView) {
             mapView?.let { mapView ->
                 left = mapView.viewInsetLeft.dpToPixels(displayDensity)
-                right.minus(mapView.viewInsetRight.dpToPixels(displayDensity))
+                right = right.minus(mapView.viewInsetRight.dpToPixels(displayDensity))
                 padding = SCALEBAR_X_PAD_DP.dpToPixels(displayDensity)
             }
         }

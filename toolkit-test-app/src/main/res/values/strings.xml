@@ -37,4 +37,7 @@
     <string name="arcgis_ar_view_scene_empty">Empty - Full Scale</string>
     <string name="arcgis_ar_view_action_toggle_calibration">Toggle Calibration Controls</string>
 
+    <!-- Bookmark -->
+    <string name="arcgis_bookmark_view_activity_label">BookmarkView</string>
+
 </resources>

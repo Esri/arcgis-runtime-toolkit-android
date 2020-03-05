@@ -17,9 +17,9 @@
 package com.esri.arcgisruntime.toolkit.ar
 
 import android.os.Build
-import android.support.test.filters.SdkSuppress
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
+import androidx.test.rule.ActivityTestRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.esri.arcgisruntime.mapping.view.Camera
 import com.esri.arcgisruntime.toolkit.TestActivity
 import com.esri.arcgisruntime.toolkit.finish
@@ -168,6 +168,30 @@ class ArcGISArViewTest {
                     "Expected translation transformation factor $translationTransformationFactor",
                     translationTransformationFactor,
                     it?.translationFactor
+                )
+            }
+            this.finish()
+        }
+    }
+
+    /**
+     * Tests setting the [ArcGISArView.clippingDistance] property.
+     *
+     * @since 100.6.0
+     */
+    @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
+    fun testClippingDistance() {
+        val clippingDistance = 99.9
+        with(arcGisArViewTestActivityRule) {
+            this.launchActivity()
+            this.activity.arcGISArView.let {
+                it?.clippingDistance = clippingDistance
+
+                assertEquals(
+                        "Expected clipping distance $clippingDistance",
+                        clippingDistance,
+                        it?.clippingDistance
                 )
             }
             this.finish()

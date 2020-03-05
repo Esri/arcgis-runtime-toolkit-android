@@ -17,14 +17,14 @@ package com.esri.arcgisruntime.toolkit.test.scalebar;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.UnitSystem;
 import com.esri.arcgisruntime.loadable.LoadStatus;

@@ -19,14 +19,14 @@ package com.esri.arcgisruntime.toolkit.ar
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.arch.lifecycle.DefaultLifecycleObserver
-import android.arch.lifecycle.Lifecycle
-import android.arch.lifecycle.LifecycleOwner
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.SensorManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.OrientationEventListener
 import android.view.Surface
@@ -433,6 +433,19 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
     private val requestedPermissions: MutableList<String> by lazy {
         ArrayList<String>()
     }
+
+	/**
+     * Determines the clipping distance around the originCamera. The units are meters; the default is 0.0.
+     * When the value is set to 0.0 there is no enforced clipping distance. Setting the value to 10.0 will
+     * only render data 10 meters around the originCamera.
+     *
+     * @since 100.7.0
+     */
+    var clippingDistance: Double
+        get() = cameraController.clippingDistance
+        set(value) {
+            cameraController.clippingDistance = value
+        }
 
     /**
      * Exposes an [Exception] should it occur when using this view.
