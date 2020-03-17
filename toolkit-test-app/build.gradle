@@ -25,7 +25,6 @@ apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
-    buildToolsVersion droid.buildTools
 
     defaultConfig {
         applicationId "com.esri.arcgisruntime.toolkit"
