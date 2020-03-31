@@ -28,7 +28,6 @@ apply from: "$rootProject.projectDir/gradle/script/aar-publishing.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
-    buildToolsVersion droid.buildTools
 
     defaultConfig {
         minSdkVersion droid.minSdk
