@@ -16,8 +16,9 @@
 
 plugins {
     id 'com.android.application'
-    id 'kotlin-android-extensions'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
     id 'org.jetbrains.dokka-android'
 }
 
