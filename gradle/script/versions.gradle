@@ -18,7 +18,7 @@ ext {
     droid = ext {
         minSdk = 21
         targetSdk = 29
-        androidGradlePlugin = "3.5.1"
+        androidGradlePlugin = "4.0.0"
         androidMavenGradlePlugin = "2.1"
         dokka = "0.9.18"
         constraintLayout = "1.1.3"
