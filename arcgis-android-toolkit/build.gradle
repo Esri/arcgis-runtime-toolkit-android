@@ -111,10 +111,8 @@ afterEvaluate {
 
         repositories {
             maven {
-                // Properties passed through command line or read from GRADLE_HOME/gradle.properties
-                // or local gradle.properties
-
-                // change URLs to point to your repos, e.g. http://my.org/repo
+                // find the maven repository URL, e.g. http://my.org/repo, in properties passed through command line or read
+                // from GRADLE_HOME/gradle.properties or local gradle.properties
                 url project.findProperty("ARTIFACTORY_URL") ?: ""
                 credentials {
                     username project.findProperty("ARTIFACTORY_USER") ?: ""
