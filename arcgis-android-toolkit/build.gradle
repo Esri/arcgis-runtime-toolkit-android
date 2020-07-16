@@ -105,7 +105,7 @@ afterEvaluate {
                 from components.release
                 groupId _groupId
                 artifactId _artifactId
-                version _versionName
+                version _fullVersion
             }
         }
 
