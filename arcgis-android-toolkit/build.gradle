@@ -24,7 +24,7 @@ plugins {
     id 'digital.wup.android-maven-publish' version '3.6.2'
 }
 
-apply from: "$rootProject.projectDir/gradle/script/aar-publishing.gradle"
+apply from: "$rootProject.projectDir/gradle/script/artifact.gradle"
 
 android {
     compileSdkVersion droid.targetSdk
@@ -94,4 +94,33 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:$test.espresso", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+}
+
+afterEvaluate {
+    // define publication and maven repo for publishing the aar and pom file
+    // https://docs.gradle.org/current/userguide/publishing_maven.html
+    publishing {
+        publications {
+            aar(MavenPublication) {
+                from components.release
+                groupId _groupId
+                artifactId _artifactId
+                version _versionName
+            }
+        }
+
+        repositories {
+            maven {
+                // Properties passed through command line or read from GRADLE_HOME/gradle.properties
+                // or local gradle.properties
+
+                // change URLs to point to your repos, e.g. http://my.org/repo
+                url project.findProperty("ARTIFACTORY_URL") ?: ""
+                credentials {
+                    username project.findProperty("ARTIFACTORY_USER") ?: ""
+                    password project.findProperty("ARTIFACTORY_PASSWORD") ?: ""
+                }
+            }
+        }
+    }
 }
