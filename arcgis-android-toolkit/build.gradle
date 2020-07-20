@@ -124,5 +124,5 @@ afterEvaluate {
 
     // publishAarPublicationToMavenRepository is defined by aar publication above
     // make sure assemble task runs before publishing
-    tasks.findByName("publishAarPublicationToMavenRepository").dependsOn(assemble)
+    tasks.findByName("publishAarPublicationToMavenRepository").dependsOn(assembleRelease)
 }
