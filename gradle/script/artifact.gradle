@@ -17,6 +17,22 @@
 ext {
     _versionCode = 111
     _versionName = "100.9.0"
+    _fullVersion = getFullVersion() // e.g. 100.9.0-1234
     _groupId = "com.esri.arcgisruntime"
     _artifactId = 'arcgis-android-toolkit'
+}
+
+// Returns the full version number, including the build number, for example 100.9.0-1234 by looking
+// for the build number defined by one of the following options:
+// - BUILDNUM property passed through command line
+// - BUILDNUM property read from GRADLE_HOME/gradle.properties or local gradle.properties
+// - BUILDNUM set as system environment variable
+String getFullVersion() {
+    def buildNumber = "1"
+    if (project.hasProperty("BUILDNUM")) {
+        buildNumber = project.findProperty("BUILDNUM") ?: "1"
+    } else {
+        buildNumber = System.getenv("BUILDNUM") ?: "1"
+    }
+    return _versionName + "-" + buildNumber
 }
