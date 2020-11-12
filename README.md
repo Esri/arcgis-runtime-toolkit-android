@@ -7,13 +7,13 @@ The ArcGIS Runtime Toolkit for Android contains views that you can use with [Arc
 You can use the Toolkit in your projects by:
 
 1. **Reference from Bintray** - the fastest way to get toolkit into your app
-    * Ensure the Esri public Bintray Maven repository is in your project's gradle file - `https://esri.bintray.com/arcgis`
+    * Ensure the Esri public Bintray Maven repository is in your project's gradle file - `https://esri.jfrog.io/artifactory/arcgis`
 
     ```
     allprojects {
     	repositories {
     		...
-    		maven { url 'https://esri.bintray.com/arcgis' }
+    		maven { url 'https://esri.jfrog.io/artifactory/arcgis' }
     		...
     	}
     }
