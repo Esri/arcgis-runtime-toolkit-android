@@ -1,13 +1,13 @@
 # ArcGIS Runtime Toolkit Android
 
-[![doc badge](https://img.shields.io/badge/Doc-purple)](Documentation) [![package badge](https://img.shields.io/bintray/v/esri/arcgis/arcgis-android-toolkit?color=limegreen)](https://bintray.com/esri/arcgis/arcgis-android-toolkit)
+[![doc badge](https://img.shields.io/badge/Doc-purple)](Documentation) 
 
 The ArcGIS Runtime Toolkit for Android contains views that you can use with [ArcGIS Runtime SDK for Android](https://developers.arcgis.com/android/).
 
 You can use the Toolkit in your projects by:
 
-1. **Reference from Bintray** - the fastest way to get toolkit into your app
-    * Ensure the Esri public Bintray Maven repository is in your project's gradle file - `https://esri.jfrog.io/artifactory/arcgis`
+1. **Reference from Jfrog** - the fastest way to get toolkit into your app
+    * Ensure the Esri public Jfrog Maven repository is in your project's gradle file - `https://esri.jfrog.io/artifactory/arcgis`
 
     ```
     allprojects {
