@@ -40,4 +40,7 @@
     <!-- Bookmark -->
     <string name="arcgis_bookmark_view_activity_label">BookmarkView</string>
 
+    <!-- PopupView -->
+    <string name="arcgis_popup_view_activity_label">PopupView</string>
+
 </resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Esri
+ * Copyright 2021 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.popup.views.fragment
+package com.esri.arcgisruntime.toolkit.test.popup.views.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,10 +25,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.esri.arcgisruntime.toolkit.R
-import com.esri.arcgisruntime.toolkit.databinding.FragmentPopupBinding
 import com.esri.arcgisruntime.toolkit.popup.util.observeEvent
 import com.esri.arcgisruntime.toolkit.popup.viewmodel.PopupViewModel
+import com.esri.arcgisruntime.toolkit.test.R
+import com.esri.arcgisruntime.toolkit.test.databinding.FragmentPopupBinding
 import kotlinx.android.synthetic.main.fragment_popup.*
 
 /**

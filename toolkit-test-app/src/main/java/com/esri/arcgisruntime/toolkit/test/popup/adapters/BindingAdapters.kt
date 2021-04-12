@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Esri
+ * Copyright 2021 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.popup.adapters
+package com.esri.arcgisruntime.toolkit.test.popup.adapters
 
 import android.util.Log
 import android.widget.ImageView
