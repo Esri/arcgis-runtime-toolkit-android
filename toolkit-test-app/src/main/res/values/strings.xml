@@ -42,5 +42,9 @@
 
     <!-- PopupView -->
     <string name="arcgis_popup_view_activity_label">PopupView</string>
+    <string name="ok">@android:string/ok</string>
+    <string name="cancel"> @android:string/cancel</string>
+    <string name="edit">Edit</string>
+    <string name="saving_record">Saving Record</string>
 
 </resources>

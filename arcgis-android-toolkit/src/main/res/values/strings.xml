@@ -24,10 +24,4 @@
     <!-- ArCalibrationView -->
     <string name="ar_calibration_view_elevation_label">Elevation</string>
     <string name="ar_calibration_view_heading_label">Heading</string>
-
-    <!-- PopupView -->
-    <string name="ok">@android:string/ok</string>
-    <string name="cancel"> @android:string/cancel</string>
-    <string name="edit">Edit</string>
-    <string name="saving_record">Saving Record</string>
 </resources>
