@@ -144,7 +144,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:contentDescription="@string/cancel"
-                    android:onClick="@{() -> popupViewModel.confirmCancelEditing()}"
+                    android:onClick="@{() -> popupViewModel.confirmDeletePopup()}"
                     android:visibility="@{popupViewModel.isPopupInEditMode ? View.GONE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/edit"

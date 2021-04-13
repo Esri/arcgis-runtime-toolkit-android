@@ -25,6 +25,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.esri.arcgisruntime.mapping.popup.Popup
 import com.esri.arcgisruntime.toolkit.popup.util.observeEvent
 import com.esri.arcgisruntime.toolkit.popup.viewmodel.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
@@ -68,11 +69,38 @@ class PopupFragment : Fragment() {
             showAlertDialog(errorMessage)
         }
 
+        popupViewModel.showDeletePopupErrorEvent.observeEvent(viewLifecycleOwner) { errorMessage ->
+            showAlertDialog(errorMessage)
+        }
+
         popupViewModel.confirmCancelPopupEditingEvent.observeEvent(viewLifecycleOwner) {
             showConfirmCancelEditingDialog()
         }
 
+        popupViewModel.confirmDeletePopupEvent.observeEvent(viewLifecycleOwner) {
+            showConfirmDeletePopupDialog()
+        }
+
         return binding.root
+    }
+
+    /**
+     * Shows dialog to confirm deleting the popup.
+     */
+    private fun showConfirmDeletePopupDialog() {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setMessage("Delete ${(popupViewModel.popup.value as Popup).title}?")
+            .setCancelable(false)
+            // positive button text and action
+            .setPositiveButton(getString(R.string.ok)) { dialog, id ->
+                popupViewModel.deletePopup()
+            }
+            // negative button text and action
+            .setNegativeButton(getString(R.string.cancel)) { dialog, id -> dialog.cancel()
+            }
+        val alert = dialogBuilder.create()
+        // show alert dialog
+        alert.show()
     }
 
     /**

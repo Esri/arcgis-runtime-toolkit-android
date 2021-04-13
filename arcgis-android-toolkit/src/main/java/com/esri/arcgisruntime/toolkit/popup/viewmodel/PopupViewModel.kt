@@ -62,6 +62,11 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
     // It passes the exception message to all the observers in the observeEvent() method.
     val showSavePopupErrorEvent: LiveData<Event<String>> = _showSavePopupErrorEvent
 
+    private val _showDeletePopupErrorEvent = MutableLiveData<Event<String>>()
+    // This event is raised when an error is encountered while trying to delete a popup.
+    // It passes the exception message to all the observers in the observeEvent() method.
+    val showDeletePopupErrorEvent: LiveData<Event<String>> = _showDeletePopupErrorEvent
+
     private val _showSavingProgressEvent = MutableLiveData<Event<Boolean>>()
     // This event is raised when the save operation begins/ends.
     // It passes true to all the observers in the observeEvent() method when the save operation
@@ -76,6 +81,11 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
     private val _dismissPopupEvent = MutableLiveData<Event<Unit>>()
     // This event is raised when the user taps on the close button to dismiss the popup.
     val dismissPopupEvent: LiveData<Event<Unit>> = _dismissPopupEvent
+
+    private val _confirmDeletePopupEvent = MutableLiveData<Event<Unit>>()
+    // This event is raised when the user presses the button to delete the Popup.
+    // It is used for showing confirmation dialog to the user, before calling cancelEditing()
+    val confirmDeletePopupEvent: LiveData<Event<Unit>> = _confirmDeletePopupEvent
 
     /**
      * Updates popup property to set the popup field values being displayed in
@@ -125,6 +135,72 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun dismissPopup() {
         _dismissPopupEvent.raiseEvent()
+    }
+
+    /**
+     * Raises ConfirmCancelPopupEditingEvent that can be observed and used for
+     * prompting user with confirmation dialog to make sure the user wants to cancel edits.
+     * To be followed by cancelEditing() if the user response is positive.
+     */
+    fun confirmDeletePopup() {
+        _confirmDeletePopupEvent.raiseEvent()
+    }
+
+    /**
+     * Deletes Popup by applying changes to the feature service associated with a Popup's
+     * feature
+     */
+    fun deletePopup() {
+        // show the Progress bar informing user that save operation is in progress
+        _showSavingProgressEvent.raiseEvent(true)
+        _popupManager.value?.let { popupManager ->
+            val feature: Feature = popupManager.popup.geoElement as Feature
+            val featureTable: FeatureTable = feature.featureTable
+
+            val deletedFeatureFuture = featureTable.deleteFeatureAsync(feature)
+            deletedFeatureFuture.addDoneListener {
+                // apply update to the server
+                try {
+                    deletedFeatureFuture.get()
+                    if (featureTable is ServiceFeatureTable) {
+                        val applyEditsFuture = featureTable.applyEditsAsync()
+                        applyEditsFuture.addDoneListener {
+                            // dismiss the Progress bar
+                            _showSavingProgressEvent.raiseEvent(false)
+                            // dismiss the popup
+                            _dismissPopupEvent.raiseEvent()
+                            try {
+                                val featureDeleteResults: List<FeatureEditResult> =
+                                    applyEditsFuture.get()
+                                // Check for errors in FeatureEditResults
+                                if (featureDeleteResults.any { result -> result.hasCompletedWithErrors() }) {
+                                    // an error was encountered when trying to apply edits
+                                    val exception =
+                                        featureDeleteResults.filter { featureEditResult -> featureEditResult.hasCompletedWithErrors() }[0].error
+                                    // show the error message to the user
+                                    exception.message?.let { exceptionMessage ->
+                                        _showDeletePopupErrorEvent.raiseEvent(exceptionMessage)
+                                    }
+                                }
+
+                            } catch (exception: Exception) {
+                                // show the error message to the user
+                                exception.message?.let { exceptionMessage ->
+                                    _showDeletePopupErrorEvent.raiseEvent(exceptionMessage)
+                                }
+                            }
+                        }
+                    }
+                } catch (exception: Exception) {
+                    // dismiss the Progress bar
+                    _showSavingProgressEvent.raiseEvent(false)
+                    // show the error message to the user
+                    exception.message?.let { exceptionMessage ->
+                        _showDeletePopupErrorEvent.raiseEvent(exceptionMessage)
+                    }
+                }
+            }
+        }
     }
 
     /**
