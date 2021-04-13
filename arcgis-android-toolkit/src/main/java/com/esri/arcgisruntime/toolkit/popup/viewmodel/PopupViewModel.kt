@@ -52,7 +52,7 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
     // The manager for the Popup responsible for viewing and editing of the Popup
     val popupManager: LiveData<PopupManager> = _popupManager
 
-    private val _isPopupInEditMode = MutableLiveData<Boolean>()
+    private val _isPopupInEditMode = MutableLiveData(false)
     // Depicts whether the PopupManager is currently in editing mode
     // When in edit mode the user can edit the values of fields of the Popup
     val isPopupInEditMode: LiveData<Boolean> = _isPopupInEditMode

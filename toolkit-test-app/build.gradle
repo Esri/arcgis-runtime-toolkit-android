@@ -53,6 +53,9 @@ android {
     buildFeatures {
         dataBinding = true
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dokka {
@@ -70,6 +73,8 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
     implementation "androidx.lifecycle:lifecycle-extensions:$droid.lifecycle"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.4'
     androidTestImplementation "androidx.annotation:annotation:$droid.annotation"
     androidTestImplementation "androidx.test:runner:$droid.testRunner"
     androidTestImplementation "androidx.test.ext:junit:$test.jUnit"

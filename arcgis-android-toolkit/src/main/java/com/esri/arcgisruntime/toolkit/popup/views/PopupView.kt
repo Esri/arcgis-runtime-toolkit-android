@@ -60,6 +60,10 @@ class PopupView : FrameLayout {
     private var isEditMode: Boolean = false
 
     var popupManager: PopupManager? = null
+    set(value) {
+        field =  value
+        setEditMode(isEditMode)
+    }
     var popup: Popup? = null
 
     /**
@@ -92,11 +96,9 @@ class PopupView : FrameLayout {
         isEditMode = isEnabled
         popupManager?.let { popupManager->
             if (isEnabled) {
-//                popupAttributeListAdapter.submitList(null)
                 popupAttributeListAdapter.submitList(popupManager.editableFields)
                 popupManager.startEditing()
             } else {
-//                popupAttributeListAdapter.submitList(null)
                 popupAttributeListAdapter.submitList(popupManager.displayedFields)
             }
             popupAttributeListAdapter.notifyDataSetChanged()

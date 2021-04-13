@@ -120,7 +120,6 @@ class PopupViewTestActivity : AppCompatActivity() {
 
                     if (identifyLayerResult.popups.size > 0) {
                         popupViewModel.setPopup(identifyLayerResult.popups[0])
-                        popupViewModel.setEditMode(false)
                         val featureLayer: FeatureLayer? = identifyLayerResult.layerContent as? FeatureLayer
                         featureLayer?.selectFeature(identifyLayerResult.popups[0].geoElement as Feature)
                         popupViewTestViewModel.setCurrentBottomSheetState(BottomSheetBehavior.STATE_HALF_EXPANDED)
