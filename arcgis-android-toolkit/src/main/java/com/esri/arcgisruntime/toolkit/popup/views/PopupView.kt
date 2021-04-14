@@ -147,7 +147,7 @@ class PopupView : FrameLayout {
             oldItem: PopupField,
             newItem: PopupField
         ): Boolean {
-            return oldItem.isEditable == newItem.isEditable
+            return oldItem.fieldName == newItem.fieldName
         }
     }
 
