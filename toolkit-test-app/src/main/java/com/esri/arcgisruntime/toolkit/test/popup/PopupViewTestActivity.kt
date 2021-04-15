@@ -29,6 +29,7 @@ import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.toolkit.extension.logTag
+import com.esri.arcgisruntime.toolkit.popup.views.PopupView
 import com.esri.arcgisruntime.toolkit.popup.util.observeEvent
 import com.esri.arcgisruntime.toolkit.popup.viewmodel.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
@@ -37,6 +38,9 @@ import com.esri.arcgisruntime.toolkit.test.databinding.ActivityPopupBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.roundToInt
 
+/**
+ * Activity to show usages of [PopupView]
+ */
 class PopupViewTestActivity : AppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
@@ -131,6 +135,9 @@ class PopupViewTestActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Resets the Identify Result.
+     */
     private fun resetIdentifyResult() {
         popupViewTestViewModel.identifiableLayer?.clearSelection()
         popupViewModel.clearPopup()
@@ -138,8 +145,6 @@ class PopupViewTestActivity : AppCompatActivity() {
 
     /**
      * Displays an error message in LogCat and as a Toast.
-     *
-     * @since 100.6.0
      */
     private fun displayErrorMessage(error: String) {
         Log.e(logTag, error)

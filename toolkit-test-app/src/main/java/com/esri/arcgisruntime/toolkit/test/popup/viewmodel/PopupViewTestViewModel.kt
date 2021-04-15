@@ -26,6 +26,9 @@ import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.portal.PortalItem
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
+/**
+ * The ViewModel that provides a map, identifiableLayers in the map and the bottomsheet state.
+ */
 class PopupViewTestViewModel : ViewModel() {
 
     val map: ArcGISMap by lazy {

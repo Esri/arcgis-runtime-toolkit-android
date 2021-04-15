@@ -60,10 +60,10 @@ class PopupView : FrameLayout {
     private var isEditMode: Boolean = false
 
     var popupManager: PopupManager? = null
-    set(value) {
-        field =  value
-        setEditMode(isEditMode)
-    }
+        set(value) {
+            field = value
+            setEditMode(isEditMode)
+        }
     var popup: Popup? = null
 
     /**

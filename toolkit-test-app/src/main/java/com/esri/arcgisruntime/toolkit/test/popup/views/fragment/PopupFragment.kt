@@ -42,7 +42,7 @@ class PopupFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding: FragmentPopupBinding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_popup,

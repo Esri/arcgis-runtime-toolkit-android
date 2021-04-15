@@ -34,10 +34,9 @@ import com.esri.arcgisruntime.toolkit.popup.util.raiseEvent
 /**
  * The view model that represents a Popup. It supports:
  *
- * <ul>
- * <li>Viewing a GeoElement's attributes
- * <li>Editing a GeoElement's attributes as well as saving
- * </ul>
+ * - Viewing a GeoElement's attributes
+ * - Editing a GeoElement's attributes as well as saving
+ * - Deleting a GeoElement
  *
  * A PopupViewModel can be bound to a PopupView for visualisation of the Popup GeoElement's
  * attributes and editing experience.
