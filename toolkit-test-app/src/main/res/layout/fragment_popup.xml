@@ -21,7 +21,7 @@
         <import type="android.view.View"/>
         <variable
                 name="popupViewModel"
-                type="com.esri.arcgisruntime.toolkit.popup.viewmodel.PopupViewModel"/>
+                type="com.esri.arcgisruntime.toolkit.popup.PopupViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -211,7 +211,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/editLayout" />
 
-            <com.esri.arcgisruntime.toolkit.popup.views.PopupView
+            <com.esri.arcgisruntime.toolkit.popup.PopupView
                     android:id="@+id/popupView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -222,7 +222,7 @@
                     app:popup="@{popupViewModel.popup}"
                     app:popupManager="@{popupViewModel.popupManager}"
                     app:editMode="@{popupViewModel.isPopupInEditMode()}">
-            </com.esri.arcgisruntime.toolkit.popup.views.PopupView>
+            </com.esri.arcgisruntime.toolkit.popup.PopupView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

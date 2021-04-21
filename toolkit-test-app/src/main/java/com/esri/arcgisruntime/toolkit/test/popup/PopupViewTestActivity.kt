@@ -29,9 +29,9 @@ import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.toolkit.extension.logTag
-import com.esri.arcgisruntime.toolkit.popup.views.PopupView
-import com.esri.arcgisruntime.toolkit.popup.util.observeEvent
-import com.esri.arcgisruntime.toolkit.popup.viewmodel.PopupViewModel
+import com.esri.arcgisruntime.toolkit.popup.PopupView
+import com.esri.arcgisruntime.toolkit.util.observeEvent
+import com.esri.arcgisruntime.toolkit.popup.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.popup.viewmodel.PopupViewTestViewModel
 import com.esri.arcgisruntime.toolkit.test.databinding.ActivityPopupBinding
@@ -39,7 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.roundToInt
 
 /**
- * Activity to show usages of [PopupView]
+ * Activity to show usages of [PopupView] and [PopupViewModel].
  */
 class PopupViewTestActivity : AppCompatActivity() {
 

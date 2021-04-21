@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.popup.views
+package com.esri.arcgisruntime.toolkit.popup
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -186,8 +186,11 @@ class PopupView : FrameLayout {
         }
 
         /**
-         * Toggles the view for popup field value from edittext to textview and vice-versa, given the
-         * edit mode of the popupView.
+         * Toggles the view for the specified popup field value from editing to read-only and
+         * vice-versa, given the edit mode of the popupView.
+         *
+         * If the popup field value represents a CodedValueDomain, a spinner is used in edit mode,
+         * for all other field values an EditText view is used.
          */
         fun updateView(popupField: PopupField) {
             popupManager?.let { popupManager ->

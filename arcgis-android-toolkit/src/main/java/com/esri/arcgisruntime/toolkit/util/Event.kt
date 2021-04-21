@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.popup.util
+package com.esri.arcgisruntime.toolkit.util
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData

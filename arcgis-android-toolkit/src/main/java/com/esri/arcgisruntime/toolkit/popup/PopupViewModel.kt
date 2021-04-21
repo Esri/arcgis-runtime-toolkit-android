@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esri.arcgisruntime.toolkit.popup.viewmodel
+package com.esri.arcgisruntime.toolkit.popup
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -28,8 +28,8 @@ import com.esri.arcgisruntime.data.FeatureTable
 import com.esri.arcgisruntime.data.ServiceFeatureTable
 import com.esri.arcgisruntime.mapping.popup.Popup
 import com.esri.arcgisruntime.mapping.popup.PopupManager
-import com.esri.arcgisruntime.toolkit.popup.util.Event
-import com.esri.arcgisruntime.toolkit.popup.util.raiseEvent
+import com.esri.arcgisruntime.toolkit.util.Event
+import com.esri.arcgisruntime.toolkit.util.raiseEvent
 
 /**
  * The view model that represents a Popup. It supports:
@@ -38,7 +38,7 @@ import com.esri.arcgisruntime.toolkit.popup.util.raiseEvent
  * - Editing a GeoElement's attributes as well as saving
  * - Deleting a GeoElement
  *
- * A PopupViewModel can be bound to a PopupView for visualisation of the Popup GeoElement's
+ * A PopupViewModel can be bound to a [PopupView] for visualisation of the GeoElement's
  * attributes and editing experience.
  */
 class PopupViewModel(application: Application) : AndroidViewModel(application) {
