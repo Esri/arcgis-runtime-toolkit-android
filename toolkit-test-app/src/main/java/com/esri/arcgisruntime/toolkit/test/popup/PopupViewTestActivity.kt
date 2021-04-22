@@ -25,16 +25,19 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.esri.arcgisruntime.data.Feature
+import com.esri.arcgisruntime.geometry.GeometryType
 import com.esri.arcgisruntime.layers.FeatureLayer
+import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.MapView
+import com.esri.arcgisruntime.portal.Portal
+import com.esri.arcgisruntime.portal.PortalItem
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.popup.PopupView
-import com.esri.arcgisruntime.toolkit.util.observeEvent
 import com.esri.arcgisruntime.toolkit.popup.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
-import com.esri.arcgisruntime.toolkit.test.popup.viewmodel.PopupViewTestViewModel
 import com.esri.arcgisruntime.toolkit.test.databinding.ActivityPopupBinding
+import com.esri.arcgisruntime.toolkit.util.observeEvent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.roundToInt
 
@@ -45,8 +48,23 @@ class PopupViewTestActivity : AppCompatActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var mapView: MapView
-    private val popupViewTestViewModel: PopupViewTestViewModel by viewModels()
     private val popupViewModel: PopupViewModel by viewModels()
+
+    val map: ArcGISMap by lazy {
+        val portal = Portal("https://arcgisruntime.maps.arcgis.com/")
+        val portalItem = PortalItem(portal, "16f1b8ba37b44dc3884afc8d5f454dd2")
+        val map = ArcGISMap(portalItem)
+        map
+    }
+
+    private val identifiableLayer: FeatureLayer?
+        get() {
+            return map.operationalLayers?.filterIsInstance<FeatureLayer>()?.filter {
+                (it.featureTable?.geometryType == GeometryType.POINT)
+                    .and(it.isVisible)
+                    .and(it.isPopupEnabled && it.popupDefinition != null)
+            }?.get(0)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,15 +72,12 @@ class PopupViewTestActivity : AppCompatActivity() {
         val binding: ActivityPopupBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_popup)
 
-        binding.popupViewTestViewModel = popupViewTestViewModel
         binding.lifecycleOwner = this
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetContainer)
         mapView = binding.mapView
-
-        popupViewTestViewModel.bottomSheetState.observe(this, { bottomSheetState ->
-            bottomSheetBehavior.state = bottomSheetState
-        })
+        mapView.map = map
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -77,7 +92,7 @@ class PopupViewTestActivity : AppCompatActivity() {
         })
 
         popupViewModel.dismissPopupEvent.observeEvent(this) {
-            popupViewTestViewModel.setCurrentBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             // Clear the selected features from the feature layer
             resetIdentifyResult()
         }
@@ -89,7 +104,7 @@ class PopupViewTestActivity : AppCompatActivity() {
                     // Only perform identify on the mapview if the Popup is not in edit mode
                     if (popupViewModel.isPopupInEditMode.value == false) {
 
-                        popupViewTestViewModel.setCurrentBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
                         e?.let {
                             val screenPoint = android.graphics.Point(
@@ -111,12 +126,12 @@ class PopupViewTestActivity : AppCompatActivity() {
      */
     private fun identifyLayer(screenPoint: android.graphics.Point) {
 
-        popupViewTestViewModel.identifiableLayer?.let {
+        identifiableLayer?.let {
             // Clear the selected features from the feature layer
             resetIdentifyResult()
 
             val identifyLayerResultsFuture = mapView
-                .identifyLayerAsync(popupViewTestViewModel.identifiableLayer, screenPoint, 5.0, true)
+                .identifyLayerAsync(identifiableLayer, screenPoint, 5.0, true)
 
             identifyLayerResultsFuture.addDoneListener {
                 try {
@@ -126,7 +141,7 @@ class PopupViewTestActivity : AppCompatActivity() {
                         popupViewModel.setPopup(identifyLayerResult.popups[0])
                         val featureLayer: FeatureLayer? = identifyLayerResult.layerContent as? FeatureLayer
                         featureLayer?.selectFeature(identifyLayerResult.popups[0].geoElement as Feature)
-                        popupViewTestViewModel.setCurrentBottomSheetState(BottomSheetBehavior.STATE_HALF_EXPANDED)
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                     }
                 } catch (e: Exception) {
                     displayErrorMessage("Error identifying results ${e.message}")
@@ -139,7 +154,7 @@ class PopupViewTestActivity : AppCompatActivity() {
      * Resets the Identify Result.
      */
     private fun resetIdentifyResult() {
-        popupViewTestViewModel.identifiableLayer?.clearSelection()
+        identifiableLayer?.clearSelection()
         popupViewModel.clearPopup()
     }
 

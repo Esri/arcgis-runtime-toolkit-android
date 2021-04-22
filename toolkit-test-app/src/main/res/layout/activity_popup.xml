@@ -17,13 +17,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-                name="popupViewTestViewModel"
-                type="com.esri.arcgisruntime.toolkit.test.popup.viewmodel.PopupViewTestViewModel" />
-    </data>
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -31,8 +24,7 @@
         <com.esri.arcgisruntime.mapping.view.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:map="@{popupViewTestViewModel.map}" />
+                android:layout_height="match_parent"/>
 
         <androidx.cardview.widget.CardView
                 android:id="@+id/bottomSheetContainer"
