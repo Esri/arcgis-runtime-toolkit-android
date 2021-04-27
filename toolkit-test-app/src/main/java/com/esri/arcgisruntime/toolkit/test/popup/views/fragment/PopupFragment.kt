@@ -26,18 +26,19 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.esri.arcgisruntime.mapping.popup.Popup
-import com.esri.arcgisruntime.toolkit.util.observeEvent
+import com.esri.arcgisruntime.toolkit.popup.PopupView
 import com.esri.arcgisruntime.toolkit.popup.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.databinding.FragmentPopupBinding
+import com.esri.arcgisruntime.toolkit.util.observeEvent
 import kotlinx.android.synthetic.main.fragment_popup.*
 
 /**
  * Responsible for displaying a Popup.
  *
- * - This fragment's layout comprises of edit layout which hosts the controls to change the edit
- * mode on the PopupView, delete feature, save and cancel edits. It also has the PopupView which
- * shows the attributes of the identified feature in read-only mode upon initialization.
+ * - This fragment's layout comprises of edit layout which hosts the controls to activate/de-activate
+ * the edit-mode on the PopupView, delete feature, save and cancel edits. It also has the [PopupView]
+ * which shows the attributes of the identified feature in read-only mode upon initialization.
  * - It also has the listener's for the various events raised by the [PopupViewModel] to give UI
  * feedback to the user, such as showing progress, displaying error messages and confirmation
  * dialogs.
