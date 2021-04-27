@@ -50,8 +50,8 @@ import kotlin.math.roundToInt
  * onSingleTapConfirmed on DefaultMapViewOnTouchListener
  * - When a feature is identified, selects that feature in the MapView, initializes the
  * PopupViewModel and shows the bottom sheet populated with PopupFragment.
- * - The PopupFragment's layout comprises of edit layout which hosts the controls to change the edit
- * mode on the PopupView, delete feature, save and cancel edits. It also has the PopupView which
+ * - The PopupFragment's layout comprises of edit layout which hosts the controls to activate/de-activate
+ * the edit-mode on the PopupView, delete feature, save and cancel edits. It also has the [PopupView] which
  * shows the attributes of the identified feature in read-only mode upon initialization.
  */
 class PopupViewTestActivity : AppCompatActivity() {
