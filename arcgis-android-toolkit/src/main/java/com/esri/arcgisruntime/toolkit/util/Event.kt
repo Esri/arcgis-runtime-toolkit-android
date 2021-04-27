@@ -24,11 +24,10 @@ import androidx.lifecycle.Observer
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
  *
- * <p>
  * This avoids a common problem with events: on configuration change (like rotation) an update
  * can be emitted if the observer is active. This LiveData only calls the observable if there's an
  * explicit call to postValue().
- * <p>
+ *
  * https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
  */
 open class Event<out T>(private val content: T) {

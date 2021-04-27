@@ -43,6 +43,16 @@ import kotlin.math.roundToInt
 
 /**
  * Activity to show usages of [PopupView] and [PopupViewModel].
+ *
+ * - The activity's layout hosts the MapView and bottom sheet
+ * - Creates and owns the PopupViewModel for showing the Popup of an identified feature
+ * - It handles tap gestures on the MapView in order to identify a feature by overriding
+ * onSingleTapConfirmed on DefaultMapViewOnTouchListener
+ * - When a feature is identified, selects that feature in the MapView, initializes the
+ * PopupViewModel and shows the bottom sheet populated with PopupFragment.
+ * - The PopupFragment's layout comprises of edit layout which hosts the controls to change the edit
+ * mode on the PopupView, delete feature, save and cancel edits. It also has the PopupView which
+ * shows the attributes of the identified feature in read-only mode upon initialization.
  */
 class PopupViewTestActivity : AppCompatActivity() {
 

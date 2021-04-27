@@ -40,6 +40,9 @@ import com.esri.arcgisruntime.toolkit.util.raiseEvent
  *
  * A PopupViewModel can be bound to a [PopupView] for visualisation of the GeoElement's
  * attributes and editing experience.
+ *
+ * For an example of how to use it by binding it to a PopupView see PopupViewTestActivity in the
+ * tookit-test-app project.
  */
 class PopupViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -98,14 +101,14 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Enables/disables edit mode on the PopupView
+     * Enables/disables edit mode on the PopupView.
      */
     fun setEditMode(isEnabled: Boolean) {
         _isPopupInEditMode.value = isEnabled
     }
 
     /**
-     * Clear the popup
+     * Clear the popup.
      */
     fun clearPopup() {
         _popup.value = null
@@ -130,7 +133,7 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Raises an event to dismiss the popup
+     * Raises an event to dismiss the popup.
      */
     fun dismissPopup() {
         _dismissPopupEvent.raiseEvent()
@@ -147,7 +150,7 @@ class PopupViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Deletes Popup by applying changes to the feature service associated with a Popup's
-     * feature
+     * feature.
      */
     fun deletePopup() {
         // show the Progress bar informing user that save operation is in progress

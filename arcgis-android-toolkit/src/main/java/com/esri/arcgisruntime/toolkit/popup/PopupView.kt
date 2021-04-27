@@ -52,7 +52,12 @@ import kotlinx.android.synthetic.main.layout_popupview.view.*
 private const val TAG = "PopupView"
 
 /**
- * Displays the popup attribute list in a [RecyclerView].
+ * Displays a [Popup]'s attribute list in a [RecyclerView].
+ * Supports two viewing modes of the Popup's attribute list, a read-only mode by default and an
+ * editing mode that can be activated/deactivated with [setEditMode(Boolean)].
+ *
+ * For an example of how to use it by binding it to a [PopupViewModel] see PopupViewTestActivity in
+ * the toolkit-test-app module.
  */
 class PopupView : FrameLayout {
 
@@ -279,7 +284,7 @@ class PopupView : FrameLayout {
 
         /**
          * Updates the value of the specified PopupField to the appropriately cast string value of
-         * the specified value
+         * the specified value.
          */
         private fun updateValue(popupField: PopupField, newValue: String): ArcGISRuntimeException? {
             var error: ArcGISRuntimeException? = null
