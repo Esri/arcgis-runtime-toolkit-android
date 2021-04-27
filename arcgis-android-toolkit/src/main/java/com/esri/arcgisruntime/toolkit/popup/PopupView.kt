@@ -53,8 +53,13 @@ private const val TAG = "PopupView"
 
 /**
  * Displays a [Popup]'s attribute list in a [RecyclerView].
- * Supports two viewing modes of the Popup's attribute list, a read-only mode by default and an
- * editing mode that can be activated/deactivated with [setEditMode(Boolean)].
+ * - Supports two viewing modes of the Popup's attribute list, a read-only mode by default and an
+ * edit-mode that can be activated/deactivated with [setEditMode(Boolean)].
+ * - Comprises of [PopupAttributeListAdapter], which provides view to the [RecyclerView] with data
+ * from [PopupManager].displayedFields in read-only mode and [PopupManager].displayedFields in
+ * edit-mode.
+ * - Implements [ViewHolder] which is a custom ViewHolder for the [PopupAttributeListAdapter].
+ * The [ViewHolder] is used to store data and to bind the view contents.
  *
  * For an example of how to use it by binding it to a [PopupViewModel] see PopupViewTestActivity in
  * the toolkit-test-app module.
