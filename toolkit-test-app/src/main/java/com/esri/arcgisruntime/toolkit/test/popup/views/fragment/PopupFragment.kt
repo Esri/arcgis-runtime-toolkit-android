@@ -36,10 +36,10 @@ import kotlinx.android.synthetic.main.fragment_popup.*
 /**
  * Responsible for displaying a Popup.
  *
- * - This fragment's layout comprises of edit layout which hosts the controls to activate/de-activate
- * the edit-mode on the PopupView, delete feature, save and cancel edits. It also has the [PopupView]
+ * - This fragment's layout comprises an edit layout which hosts the controls to activate/de-activate
+ * the edit-mode on the PopupView, delete a feature, save and cancel edits. It also contains the [PopupView]
  * which shows the attributes of the identified feature in read-only mode upon initialization.
- * - It also has the listener's for the various events raised by the [PopupViewModel] to give UI
+ * - It also implements listeners for the various events raised by the [PopupViewModel] to give UI
  * feedback to the user, such as showing progress, displaying error messages and confirmation
  * dialogs.
  */

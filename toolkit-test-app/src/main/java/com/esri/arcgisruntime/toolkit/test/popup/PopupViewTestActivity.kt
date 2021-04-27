@@ -28,6 +28,7 @@ import com.esri.arcgisruntime.data.Feature
 import com.esri.arcgisruntime.geometry.GeometryType
 import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
+import com.esri.arcgisruntime.mapping.popup.Popup
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.MapView
 import com.esri.arcgisruntime.portal.Portal
@@ -37,6 +38,7 @@ import com.esri.arcgisruntime.toolkit.popup.PopupView
 import com.esri.arcgisruntime.toolkit.popup.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.databinding.ActivityPopupBinding
+import com.esri.arcgisruntime.toolkit.test.popup.views.fragment.PopupFragment
 import com.esri.arcgisruntime.toolkit.util.observeEvent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.math.roundToInt
@@ -44,15 +46,12 @@ import kotlin.math.roundToInt
 /**
  * Activity to show usages of [PopupView] and [PopupViewModel].
  *
- * - The activity's layout hosts the MapView and bottom sheet
- * - Creates and owns the PopupViewModel for showing the Popup of an identified feature
+ * - The activity's layout hosts the [MapView] and bottom sheet
+ * - Creates and owns the [PopupViewModel] for showing the [Popup] of an identified feature
  * - It handles tap gestures on the MapView in order to identify a feature by overriding
- * onSingleTapConfirmed on DefaultMapViewOnTouchListener
+ * onSingleTapConfirmed on [DefaultMapViewOnTouchListener]
  * - When a feature is identified, selects that feature in the MapView, initializes the
- * PopupViewModel and shows the bottom sheet populated with PopupFragment.
- * - The PopupFragment's layout comprises of edit layout which hosts the controls to activate/de-activate
- * the edit-mode on the PopupView, delete feature, save and cancel edits. It also has the [PopupView] which
- * shows the attributes of the identified feature in read-only mode upon initialization.
+ * [PopupViewModel] and shows the bottom sheet populated with [PopupFragment].
  */
 class PopupViewTestActivity : AppCompatActivity() {
 
