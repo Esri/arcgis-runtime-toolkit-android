@@ -41,6 +41,7 @@ See the [setup instructions](Documentation/setup.md) for a more detailed guide.
 * **[Bookmarks](Documentation/Bookmarks)** - Displays the bookmarks present in a map
 * **[Compass](Documentation/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 * **[Scalebar](Documentation/Scalebar)** - Displays the representation of an accurate linear measurement on a map
+* **[PopupView](Documentation/PopupView)** - Displays a Popup's attribute list
 
 ## Requirements
 
