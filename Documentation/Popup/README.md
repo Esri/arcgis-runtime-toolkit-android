@@ -1,6 +1,6 @@
 # PopupView
 
-The PopupView shows the Popup's attribute list in a Recyclerview, allows user to edit Popup's attribute list and delete the Popup. 
+The PopupView shows a Popup's attribute list in a Recyclerview, allows users to edit a Popup's attribute list and delete the Popup. 
 
 
 ## Workflow 
@@ -10,7 +10,7 @@ has to set the `popup` and `popupManager` property on the `PopupView` with the P
 adhers to the `MVVM` pattern and comes with the `PopupViewModel` that exposes the functionality to delete the `GeoElement`, set the edit mode on
 the `PopupView` and other LiveData events that the app can listen to, to provide user with UI notifications.
 
-Here is an example XML code that shows the PopupView and how the PopupView Properties are tied to the PopupViewModel:
+Here is an example XML layout that shows the PopupView and how the its Properties are bound to the PopupViewModel:
 
 ```xml
   <data>
@@ -114,13 +114,9 @@ Here is example Kotlin code to set the `Popup` on the `PopupViewModel` and handl
      
      popupViewModel.showSavingProgressEvent.observeEvent(viewLifecycleOwner) { isShowProgressBar ->
             if (isShowProgressBar) {
-                requireActivity().window.setFlags(
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                progressBarLayout.visibility = View.VISIBLE
+                showProgressBar()
             } else {
-                progressBarLayout.visibility = View.GONE
-                requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+                hideProgressBar()
             }
         }                    
      
