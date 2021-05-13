@@ -6,7 +6,7 @@ The PopupView shows a Popup's attribute list in a Recyclerview, allows users to 
 ## Workflow 
 
 The app can define the `PopupView` in its view hierarchy, as `PopupView` extends FrameLayout. The app 
-has to set the `popup` and `popupManager` property on the `PopupView` with the Popup it wasnts to view/edit. The `PopupView` toolkit component
+has to set the `popup` and `popupManager` property on the `PopupView` with the Popup it wants to view/edit. The `PopupView` toolkit component
 adhers to the `MVVM` pattern and comes with the `PopupViewModel` that exposes the functionality to delete the `GeoElement`, set the edit mode on
 the `PopupView` and other LiveData events that the app can listen to, to provide user with UI notifications.
 
