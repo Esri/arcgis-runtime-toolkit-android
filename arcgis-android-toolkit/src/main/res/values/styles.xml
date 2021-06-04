@@ -23,4 +23,26 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/calibration_label</item>
     </style>
+
+    <style name="FloorFilterButtonSize">
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">48dp</item>
+    </style>
+
+    <style name="FloorFilterButton" parent="FloorFilterButtonSize">
+        <item name="tint">@color/floor_filter_text_list</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="FloorFilterSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="textSize">16sp</item>
+        <item name="android:editTextColor">@color/floor_filter_text</item>
+        <item name="android:textColorHint">@color/floor_filter_text</item>
+    </style>
 </resources>

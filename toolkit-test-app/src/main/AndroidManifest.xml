@@ -68,6 +68,11 @@
                 android:label="@string/arcgis_popup_view_activity_label"
                 android:theme="@style/PopupViewTheme"></activity>
 
+        <activity
+            android:name="com.esri.arcgisruntime.toolkit.test.floorfilter.FloorFilterTestActivity"
+            android:label="@string/arcgis_floorfilter_view_activity_label"
+            android:theme="@style/AppTheme"/>
+
     </application>
 
 </manifest>

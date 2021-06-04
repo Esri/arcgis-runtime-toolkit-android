@@ -51,4 +51,9 @@
         <attr name="jsb_min" format="float" />
         <attr name="jsb_max" format="float" />
     </declare-styleable>
+    <declare-styleable name="FloorFilterView">
+        <attr name="levelsMax" format="integer"/>
+        <attr name="hideCloseButton" format="boolean"/>
+        <attr name="hideSiteFacilityButton" format="boolean"/>
+    </declare-styleable>
 </resources>

@@ -18,6 +18,16 @@
     <!-- ArCalibrationView -->
     <color name="calibration_label">#EEFF00</color>
 
+    <!-- FloorFilterView -->
+    <color name="floor_filter_background">#FFFFFF</color>
+    <color name="floor_filter_disabled_background">#FFFFFF</color>
+    <color name="floor_filter_selected_background">#E2F1FB</color>
+    <color name="floor_filter_close_background">#E7E7E7</color>
+    <color name="floor_filter_search_background">#F3F3F3</color>
+    <color name="floor_filter_text">#6A6A6A</color>
+    <color name="floor_filter_disabled_text">#D7D7D7</color>
+    <color name="floor_filter_selected_text">#005E95</color>
+
     <!-- Drawables -->
     <color name="instructions_label_bg">#30ffffff</color>
 </resources>

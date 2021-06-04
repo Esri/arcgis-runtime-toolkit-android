@@ -47,4 +47,7 @@
     <string name="edit">Edit</string>
     <string name="saving_record">Saving Record</string>
 
+    <!-- Floor Filter -->
+    <string name="arcgis_floorfilter_view_activity_label">FloorFilterView</string>
+
 </resources>

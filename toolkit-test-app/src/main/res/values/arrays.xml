@@ -26,6 +26,7 @@
         <item>com.esri.arcgisruntime.toolkit.test.ar.ArcGISArViewActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.bookmark.BookmarkActivity</item>
         <item>com.esri.arcgisruntime.toolkit.test.popup.PopupViewTestActivity</item>
+        <item>com.esri.arcgisruntime.toolkit.test.floorfilter.FloorFilterTestActivity</item>
     </string-array>
 
     <!-- Compass -->

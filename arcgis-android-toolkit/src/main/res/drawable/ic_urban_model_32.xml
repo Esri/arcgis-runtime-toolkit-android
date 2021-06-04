@@ -1,0 +1,25 @@
+<!--
+  ~ Copyright 2021 Esri
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M13,29L13,7h2L15,3h1.455L18,5.568L18,14h-2v1h3v6h1v-7h-1L19,5.29L17.02,2L14,2v4h-2v15L9,21L9,11L4,11v3L2,14v16h12v-1zM12,29L3,29L3,15h2v-3h3v9L6,21v1h6zM30,13v17h-4v-1h3L29,14h-4v7h-1v-8zM25,22h-6v3h-4v5h10zM24,29h-8v-3h4v-3h4zM8,24h2v1L8,25zM8,26h2v1L8,27z"/>
+</vector>
