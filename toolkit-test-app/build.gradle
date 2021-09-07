@@ -72,7 +72,6 @@ dependencies {
     implementation "androidx.vectordrawable:vectordrawable:$droid.vectordrawable"
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
-    implementation "androidx.lifecycle:lifecycle-extensions:$droid.lifecycle"
     implementation "androidx.navigation:navigation-fragment-ktx:$droid.nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$droid.nav_version"
     androidTestImplementation "androidx.annotation:annotation:$droid.annotation"
