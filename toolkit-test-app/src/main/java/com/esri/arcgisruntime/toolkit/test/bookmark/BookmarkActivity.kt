@@ -17,9 +17,9 @@
 package com.esri.arcgisruntime.toolkit.test.bookmark
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProviders
 import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.toolkit.bookmark.BookmarkView
 import com.esri.arcgisruntime.toolkit.test.R
@@ -34,7 +34,7 @@ class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<B
 
         val binding: ActivityBookmarkBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_bookmark)
-        val mapViewModel = ViewModelProviders.of(this)[MapViewModel::class.java]
+        val mapViewModel: MapViewModel by viewModels()
 
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
