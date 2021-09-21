@@ -76,13 +76,13 @@ dokka {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_reflect"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
     implementation "androidx.appcompat:appcompat:$droid.appcompat"
     implementation "androidx.constraintlayout:constraintlayout:$droid.constraintLayout"
     implementation "androidx.multidex:multidex:$droid.multiDex"
     implementation "androidx.navigation:navigation-fragment-ktx:$droid.nav_version"
-    implementation "androidx.lifecycle:lifecycle-runtime:$droid.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$droid.lifecycle"
     implementation "androidx.recyclerview:recyclerview:$droid.recyclerview"
     implementation "com.google.android.material:material:$droid.material"
     api "androidx.lifecycle:lifecycle-common-java8:$droid.lifecycle"
