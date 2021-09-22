@@ -20,12 +20,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.ar.ArCalibrationView.Companion.SCENEVIEW_CALIBRATING_OPACITY
 import com.esri.arcgisruntime.toolkit.control.JoystickSeekBar
-import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationControl
-import kotlinx.android.synthetic.main.view_ar_calibration.view.elevationLabel
-import kotlinx.android.synthetic.main.view_ar_calibration.view.headingControl
 
 /**
  * The ArCalibrationView allows the modification of the following properties of the SceneView within
@@ -90,6 +89,8 @@ class ArCalibrationView : FrameLayout {
     var elevationControlVisibility: Boolean = true
         set(value) {
             field = value
+            val elevationLabel = findViewById<TextView>(R.id.elevationLabel)
+            val elevationControl = findViewById<JoystickSeekBar>(R.id.elevationControl)
             elevationLabel.visibility = if (value) View.VISIBLE else View.INVISIBLE
             elevationControl.visibility = if (value) View.VISIBLE else View.INVISIBLE
         }
@@ -113,7 +114,9 @@ class ArCalibrationView : FrameLayout {
     }
 
     private fun initialize() {
-        inflate(context, R.layout.view_ar_calibration, this)
+        inflate(context, R.layout.layout_arcalibrationview, this)
+        val headingControl = findViewById<JoystickSeekBar>(R.id.headingControl)
+        val elevationControl = findViewById<JoystickSeekBar>(R.id.elevationControl)
 
         // Begin listening for delta progress updates on the elevation control
         elevationControl.addDeltaProgressUpdatedListener(object :

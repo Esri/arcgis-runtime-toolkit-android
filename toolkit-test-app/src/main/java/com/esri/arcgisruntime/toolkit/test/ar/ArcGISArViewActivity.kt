@@ -27,6 +27,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import com.esri.arcgisruntime.layers.IntegratedMeshLayer
 import com.esri.arcgisruntime.layers.PointCloudLayer
 import com.esri.arcgisruntime.location.LocationDataSource
@@ -48,8 +49,8 @@ import com.esri.arcgisruntime.toolkit.ar.ArLocationDataSource
 import com.esri.arcgisruntime.toolkit.ar.ArcGISArView
 import com.esri.arcgisruntime.toolkit.extension.logTag
 import com.esri.arcgisruntime.toolkit.test.R
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arCalibrationView
-import kotlinx.android.synthetic.main.activity_ar_arcgissceneview.arcGisArView
+import com.esri.arcgisruntime.toolkit.test.databinding.ActivityArcgisarviewBinding
+
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
@@ -65,18 +66,18 @@ class ArcGISArViewActivity : AppCompatActivity() {
         GraphicsOverlay().apply {
             this.sceneProperties.surfacePlacement =
                 LayerSceneProperties.SurfacePlacement.ABSOLUTE
-            arcGisArView.sceneView.graphicsOverlays.add(this)
+            binding.arcGisArView.sceneView.graphicsOverlays.add(this)
         }
     }
     private var calibrating: Boolean by Delegates.observable(false) { _: KProperty<*>,
                                                                       _: Boolean,
                                                                       newValue: Boolean ->
         if (newValue) {
-            arCalibrationView.bindArcGISArView(arcGisArView)
-            arCalibrationView.visibility = View.VISIBLE
+            binding.arCalibrationView.bindArcGISArView(binding.arcGisArView)
+            binding.arCalibrationView.visibility = View.VISIBLE
         } else {
-            arCalibrationView.unbindArcGISArView(arcGisArView)
-            arCalibrationView.visibility = View.GONE
+            binding.arCalibrationView.unbindArcGISArView(binding.arcGisArView)
+            binding.arCalibrationView.visibility = View.GONE
         }
 
         invalidateOptionsMenu()
@@ -93,9 +94,9 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene(Basemap.createStreets()).apply {
                 addElevationSource(this)
 
-                arcGisArView.locationDataSource = locationDataSource
-                arcGisArView.translationFactor = 1.0
-                arCalibrationView.elevationControlVisibility = false
+                binding.arcGisArView.locationDataSource = locationDataSource
+                binding.arcGisArView.translationFactor = 1.0
+                binding.arCalibrationView.elevationControlVisibility = false
             }
         }
     }
@@ -128,14 +129,14 @@ class ArcGISArViewActivity : AppCompatActivity() {
                     if (extent != null) {
                         val center = extent.center
                         val camera = Camera(center, 0.0, 90.0, 0.0)
-                        arcGisArView.originCamera = camera
-                        arcGisArView.translationFactor = 2000.0
+                        binding.arcGisArView.originCamera = camera
+                        binding.arcGisArView.translationFactor = 2000.0
                         // Set the clipping distance to limit the data display around the originCamera.
-                        arcGisArView.clippingDistance = 750.0
+                        binding.arcGisArView.clippingDistance = 750.0
                     }
                 }
 
-                arcGisArView.locationDataSource = null
+                binding.arcGisArView.locationDataSource = null
             }
         }
     }
@@ -196,12 +197,12 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 90.0,
                                 0.0
                             )
-                            arcGisArView.originCamera = camera
-                            arcGisArView.translationFactor = 1000.0
+                            binding.arcGisArView.originCamera = camera
+                            binding.arcGisArView.translationFactor = 1000.0
                         }
                     }
                 }
-                arcGisArView.locationDataSource = null
+                binding.arcGisArView.locationDataSource = null
             }
         }
     }
@@ -259,14 +260,14 @@ class ArcGISArViewActivity : AppCompatActivity() {
                                 90.0,
                                 0.0
                             )
-                            arcGisArView.originCamera = camera
-                            arcGisArView.translationFactor = 1000.0
+                            binding.arcGisArView.originCamera = camera
+                            binding.arcGisArView.translationFactor = 1000.0
                             // Set the clipping distance to limit the data display around the originCamera.
-                            arcGisArView.clippingDistance = 500.0
+                            binding.arcGisArView.clippingDistance = 500.0
                         }
                     }
                 }
-                arcGisArView.locationDataSource = null
+                binding.arcGisArView.locationDataSource = null
             }
         }
     }
@@ -282,10 +283,10 @@ class ArcGISArViewActivity : AppCompatActivity() {
             ArcGISScene().apply {
                 addElevationSource(this)
 
-                arcGisArView.locationDataSource = null
-                arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
-                arcGisArView.translationFactor = 1.0
-                arCalibrationView.elevationControlVisibility = true
+                binding.arcGisArView.locationDataSource = null
+                binding.arcGisArView.originCamera = Camera(0.0, 0.0, 0.0, 0.0, 90.0, 0.0)
+                binding.arcGisArView.translationFactor = 1.0
+                binding.arCalibrationView.elevationControlVisibility = true
             }
         }
     }
@@ -314,35 +315,37 @@ class ArcGISArViewActivity : AppCompatActivity() {
         set(value) {
             field = value
             value?.let {
-                arcGisArView.sceneView.scene = it.scene.invoke()
+                binding.arcGisArView.sceneView.scene = it.scene.invoke()
                 title = it.name
                 calibrating = calibrating.and(it.isTabletop.not())
                 invalidateOptionsMenu()
-                arcGisArView.resetTracking()
-                arcGisArView.startTracking(it.locationTrackingMode)
+                binding.arcGisArView.resetTracking()
+                binding.arcGisArView.startTracking(it.locationTrackingMode)
             }
         }
 
+    private lateinit var binding: ActivityArcgisarviewBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ar_arcgissceneview)
-        arcGisArView.registerLifecycle(lifecycle)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_arcgisarview)
+        binding.lifecycleOwner = this
         currentScene = scenes[0]
 
-        arcGisArView.sceneView.setOnTouchListener(object :
-            DefaultSceneViewOnTouchListener(arcGisArView.sceneView) {
+        binding.arcGisArView.sceneView.setOnTouchListener(object :
+            DefaultSceneViewOnTouchListener(binding.arcGisArView.sceneView) {
             override fun onSingleTapConfirmed(motionEvent: MotionEvent?): Boolean {
                 motionEvent?.let {
                     with(Point(motionEvent.x.toInt(), motionEvent.y.toInt())) {
                         if (currentScene?.isTabletop == true) {
-                            arcGisArView.setInitialTransformationMatrix(this)
+                            binding.arcGisArView.setInitialTransformationMatrix(this)
                         } else {
                             val sphere = SimpleMarkerSceneSymbol.createSphere(
                                 Color.CYAN,
                                 0.25,
                                 SceneSymbol.AnchorPosition.BOTTOM
                             )
-                            arcGisArView.arScreenToLocation(this)?.let {
+                            binding.arcGisArView.arScreenToLocation(this)?.let {
                                 val graphic = Graphic(it, sphere)
                                 sphereOverlay.graphics.add(graphic)
                             }
@@ -357,7 +360,7 @@ class ArcGISArViewActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        arcGisArView.startTracking(currentScene?.locationTrackingMode)
+        binding.arcGisArView.startTracking(currentScene?.locationTrackingMode)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -450,12 +453,12 @@ class ArcGISArViewActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        arcGisArView.stopTracking()
+        binding.arcGisArView.stopTracking()
         super.onPause()
     }
 
     override fun onDestroy() {
-        arCalibrationView.unbindArcGISArView(arcGisArView)
+        binding.arCalibrationView.unbindArcGISArView(binding.arcGisArView)
         super.onDestroy()
     }
 }

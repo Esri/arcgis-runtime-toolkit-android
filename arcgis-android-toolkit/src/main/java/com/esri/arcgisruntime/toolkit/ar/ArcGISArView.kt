@@ -50,8 +50,6 @@ import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
-import kotlinx.android.synthetic.main.layout_arcgisarview.view._arSceneView
-import kotlinx.android.synthetic.main.layout_arcgisarview.view.arcGisSceneView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -216,7 +214,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      *
      * @since 100.6.0
      */
-    val sceneView: SceneView get() = arcGisSceneView
+    val sceneView: SceneView get() = findViewById(R.id.arcGisSceneView)
 
     /**
      * A SurfaceView that integrates with ARCore and renders a scene.
@@ -225,7 +223,7 @@ class ArcGISArView : FrameLayout, DefaultLifecycleObserver, Scene.OnUpdateListen
      */
     var arSceneView: ArSceneView? = null
         private set
-        get() = _arSceneView
+        get() = findViewById(R.id._arSceneView)
 
     /**
      * A Camera that defines the origin of the Camera used as the viewpoint for the [SceneView]. Setting this property

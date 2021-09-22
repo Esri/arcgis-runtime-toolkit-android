@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2019 Esri
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +15,20 @@
   -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/bookmarkRecyclerView"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+            android:layout_height="match_parent">
 
+        <com.esri.arcgisruntime.toolkit.ar.ArcGISArView
+                android:id="@+id/arcGisArView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        <com.esri.arcgisruntime.toolkit.ar.ArCalibrationView
+                android:id="@+id/arCalibrationView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
