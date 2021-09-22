@@ -25,24 +25,23 @@ import com.esri.arcgisruntime.toolkit.bookmark.BookmarkView
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.bookmark.map.MapViewModel
 import com.esri.arcgisruntime.toolkit.test.databinding.ActivityBookmarkBinding
-import kotlinx.android.synthetic.main.activity_bookmark.*
 
 class BookmarkActivity : AppCompatActivity(), BookmarkView.OnItemClickListener<Bookmark> {
+    private lateinit var binding: ActivityBookmarkBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding: ActivityBookmarkBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_bookmark)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_bookmark)
         val mapViewModel: MapViewModel by viewModels()
 
         binding.mapViewModel = mapViewModel
         binding.lifecycleOwner = this
 
-        bookmarkView.onItemClickListener = this
+        binding.bookmarkView.onItemClickListener = this
     }
 
     override fun onItemClick(item: Bookmark) {
-        mapView.setViewpointAsync(item.viewpoint)
+        binding.mapView.setViewpointAsync(item.viewpoint)
     }
 }
