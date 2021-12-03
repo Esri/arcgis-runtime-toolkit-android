@@ -41,6 +41,13 @@ fun Double.dpToPixels(displayDensity: Float): Int = (this * displayDensity).roun
 fun Int.pixelsToDp(displayDensity: Float): Int = (this / displayDensity).roundToInt()
 
 /**
+ * Calculate an [Int] of pixels as an SP value using the supplied [scaledDensity] value.
+ *
+ * @since 100.13.0
+ */
+fun Int.pixelsToSp(scaledDensity: Float): Int = (this / scaledDensity).roundToInt()
+
+/**
  * Throw a [IllegalArgumentException] when the [Int] is not positive
  *
  * @since 100.5.0

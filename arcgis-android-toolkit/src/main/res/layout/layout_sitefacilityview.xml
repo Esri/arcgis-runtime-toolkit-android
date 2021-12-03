@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2021 Esri
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="56dp">
+
+        <ImageView
+            android:id="@+id/siteFacilityBackButton"
+            android:layout_height="match_parent"
+            android:layout_width="32dp"
+            android:src="@drawable/ic_chevron_left_32"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"/>
+
+        <View
+            android:id="@+id/backToSitesButtonSeparator"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/siteFacilityTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:lines="1"
+                android:ellipsize="end"
+                android:text=""/>
+
+            <TextView
+                android:id="@+id/siteFacilitySubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:lines="1"
+                android:ellipsize="end"
+                android:text=""/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/siteFacilityCloseButton"
+            android:layout_height="match_parent"
+            android:layout_width="52dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:src="@drawable/ic_x_32"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/siteFacilityTitleSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FFFFFF"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/siteFacilitySearchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#FFFFFF">
+
+        <ImageView
+            android:id="@+id/siteFacilitySearchButton"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_search_32"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"/>
+
+        <EditText
+            android:id="@+id/siteFacilitySearchEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:textSize="16sp"
+            android:lines="1"
+            android:background="#FFFFFF"
+            android:hint="@string/floor_filter_view_search_hint"
+            android:importantForAutofill="no" />
+
+        <ImageView
+            android:id="@+id/siteFacilitySearchClearButton"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_x_32"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/siteFacilityRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        android:scrollbarSize="4dp"
+        tools:listitem="@layout/item_site_facility_row"/>
+
+    <TextView
+        android:id="@+id/siteFacilityEmptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:gravity="center_horizontal"
+        android:textSize="16sp"
+        android:text="@string/floor_filter_no_results"
+        android:visibility="gone"/>
+
+</merge>
