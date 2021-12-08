@@ -218,6 +218,7 @@ class PopupView : FrameLayout {
                         valueEditText.visibility = View.VISIBLE
                         separatingLineView.visibility = View.GONE
                         valueTextView.visibility = View.GONE
+                        codedValueDomainSpinner.visibility = View.GONE
                         //save original colors
                         val oldColors: ColorStateList = labelTextView.textColors
                         // here we assign and hold the values of the editable fields, entered by the user
