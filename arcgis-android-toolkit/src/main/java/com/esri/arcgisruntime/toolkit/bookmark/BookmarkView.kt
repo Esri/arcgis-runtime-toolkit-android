@@ -31,7 +31,6 @@ import com.esri.arcgisruntime.mapping.Bookmark
 import com.esri.arcgisruntime.mapping.BookmarkList
 import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
-import kotlinx.android.synthetic.main.layout_bookmarkview.view.bookmarkRecyclerView
 
 /**
  * The BookmarkView will display a list of bookmarks in a [RecyclerView] and allows the user to
@@ -80,6 +79,7 @@ class BookmarkView : FrameLayout {
      */
     private fun init(context: Context) {
         inflate(context, R.layout.layout_bookmarkview, this)
+        val bookmarkRecyclerView = findViewById<RecyclerView>(R.id.bookmarkRecyclerView)
         bookmarkRecyclerView.layoutManager = LinearLayoutManager(context)
         bookmarkRecyclerView.adapter = bookmarksAdapter
     }
