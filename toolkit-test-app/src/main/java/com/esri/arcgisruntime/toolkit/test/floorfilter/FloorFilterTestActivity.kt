@@ -88,7 +88,11 @@ class FloorFilterTestActivity : AppCompatActivity() {
         // floorFilterView = FloorFilterView(this)
         // floorFilterView?.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
 
-        floorFilterView?.selectedLevelId = "ESRI.RED.MAIN.L.L1"
+        floorFilterView?.floorManager?.addDoneLoadingListener {
+            floorFilterView?.selectedLevel = floorFilterView?.floorManager?.levels?.find {
+                it?.levelId == "ESRI.RED.MAIN.L.L1"
+            }
+        }
     }
 
 }

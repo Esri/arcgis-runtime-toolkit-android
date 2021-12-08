@@ -114,42 +114,42 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
 class FloorFilterView: LinearLayout {
 
     /**
-     * The siteId of the selected [FloorSite].
+     * The selected [FloorSite].
      *
      * @since 100.13.0
      */
-    var selectedSiteId: String?
+    var selectedSite: FloorSite?
         get() {
-            return floorFilterManager.selectedSiteId
+            return floorFilterManager.getSelectedSite()
         }
         set(value) {
-            floorFilterManager.selectedSiteId = value
+            floorFilterManager.selectedSiteId = value?.siteId
         }
 
     /**
-     * The facilityId of the selected [FloorFacility].
+     * The selected [FloorFacility].
      *
      * @since 100.13.0
      */
-    var selectedFacilityId: String?
+    var selectedFacility: FloorFacility?
         get() {
-            return floorFilterManager.selectedFacilityId
+            return floorFilterManager.getSelectedFacility()
         }
         set(value) {
-            floorFilterManager.selectedFacilityId = value
+            floorFilterManager.selectedFacilityId = value?.facilityId
         }
 
     /**
-     * The levelId of the selected [FloorLevel].
+     * The selected [FloorLevel].
      *
      * @since 100.13.0
      */
-    var selectedLevelId: String?
+    var selectedLevel: FloorLevel?
         get() {
-            return floorFilterManager.selectedLevelId
+            return floorFilterManager.getSelectedLevel()
         }
         set(value) {
-            floorFilterManager.selectedLevelId = value
+            floorFilterManager.selectedLevelId = value?.levelId
         }
 
     /**
@@ -1020,7 +1020,7 @@ class FloorFilterView: LinearLayout {
                     onlyShowSelected = false
                     scrollToSelectedLevel()
                 } else {
-                    selectedLevelId = clickedLevel.levelId
+                    selectedLevel = clickedLevel
                 }
             }
         }
@@ -1045,7 +1045,7 @@ class FloorFilterView: LinearLayout {
                 // This shouldn't happen, but handling it just in case. There should always be a
                 // selected level by the time this code runs.
                 val verticalOrder0Floor = allLevels.lastOrNull { it.verticalOrder == 0 } ?: allLevels.lastOrNull()
-                selectedLevelId = verticalOrder0Floor?.levelId
+                selectedLevel = verticalOrder0Floor
             }
 
             visibleLevels = if (onlyShowSelected) {

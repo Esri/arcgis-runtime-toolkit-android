@@ -184,7 +184,7 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    private fun getSelectedLevel(): FloorLevel? {
+    fun getSelectedLevel(): FloorLevel? {
         return levels.firstOrNull { isLevelSelected(it) }
     }
 
