@@ -23,9 +23,20 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
+import com.esri.arcgisruntime.mapping.GeoModel
+import com.esri.arcgisruntime.mapping.floor.FloorFacility
+import com.esri.arcgisruntime.mapping.floor.FloorLevel
+import com.esri.arcgisruntime.mapping.floor.FloorManager
+import com.esri.arcgisruntime.mapping.floor.FloorSite
 import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.floorfilter.FloorFilterView.ButtonPosition
 
+/**
+ * Stores the customizable options for the [FloorFilterView] and [SiteFacilityView]. Also contains
+ * some utility functions to apply the options to the UI components.
+ *
+ * @since 100.13.0
+ */
 internal data class UiParameters(
     var buttonHeightDp: Int = DEFAULT_BUTTON_HEIGHT_DP,
     var buttonWidthDp: Int = DEFAULT_BUTTON_WIDTH_DP,
@@ -45,6 +56,12 @@ internal data class UiParameters(
     var closeButtonPosition: ButtonPosition = DEFAULT_CLOSE_BUTTON_POSITION
 ) {
 
+    /**
+     * Sets the imageTintList of the [view] to the disabled [textColor], [selectedTextColor],
+     * and [textColor].
+     *
+     * @since 100.13.0
+     */
     fun setButtonTintColors(view: ImageView?) {
         val states = arrayOf(
             intArrayOf(-android.R.attr.state_enabled),
@@ -55,6 +72,12 @@ internal data class UiParameters(
         view?.imageTintList = ColorStateList(states, colors)
     }
 
+    /**
+     * Sets the backgroundTintList of the [view] to the disabled [buttonBackgroundColor],
+     * [selectedButtonBackgroundColor], and [buttonBackgroundColor].
+     *
+     * @since 100.13.0
+     */
     fun setButtonBackgroundColors(view: View?) {
         val states = arrayOf(
             intArrayOf(-android.R.attr.state_enabled),
@@ -65,6 +88,12 @@ internal data class UiParameters(
         view?.backgroundTintList = ColorStateList(states, colors)
     }
 
+    /**
+     * Sets the width of the [view] to [buttonWidthDp] unless [ignoreWidth] is true.
+     * Sets the height of the [view] to [buttonHeightDp] unless [ignoreHeight] is true.
+     *
+     * @since 100.13.0
+     */
     fun setButtonSizeForView(view: View?, displayDensity: Float, ignoreHeight: Boolean = false, ignoreWidth: Boolean = false) {
         val layoutParams = view?.layoutParams
         if (!ignoreHeight) {
@@ -76,6 +105,11 @@ internal data class UiParameters(
         view?.layoutParams = layoutParams
     }
 
+    /**
+     * Sets the color of the [recyclerView] scrollbar to [textColor].
+     *
+     * @since 100.13.0
+     */
     fun setScrollbarColor(recyclerView: RecyclerView?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val drawable = recyclerView?.verticalScrollbarThumbDrawable
@@ -83,7 +117,11 @@ internal data class UiParameters(
         }
     }
 
-    // (100 is about 38% opacity recommended by material design)
+    /**
+     * Returns the [color] with 38% opacity as recommended by material design for disabled controls.
+     *
+     * @since 100.13.0
+     */
     private fun getDisabledColor(color: Int): Int {
         return ColorUtils.setAlphaComponent(color, 100)
     }

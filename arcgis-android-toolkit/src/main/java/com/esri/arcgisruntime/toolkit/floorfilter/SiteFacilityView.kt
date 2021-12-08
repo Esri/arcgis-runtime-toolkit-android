@@ -42,24 +42,25 @@ import com.esri.arcgisruntime.mapping.floor.FloorSite
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.toolkit.extension.logTag
 
+/**
+ * A popup dialog that allows the user to choose a [FloorSite] and [FloorFacility] to display.
+ *
+ * @since 100.13.0
+ */
 internal class SiteFacilityView: LinearLayout {
-
-    // This will be set to the FloorFilterView's floorFilterManager once created.
-    private var floorFilterManager: FloorFilterManager? = null
-    // This will be updated to the FloorFilterView's uiParameters once created.
-    private var uiParameters: UiParameters = UiParameters()
-
-    // Custom events
 
     /**
      * Called when the sites and facilities dialog closes.
      *
      * @since 100.13.0
      */
-    private var onDismissListener: (() -> Unit)? = null
-    internal fun setOnDismissListener(onDismissListener: (() -> Unit)?) {
-        this.onDismissListener = onDismissListener
-    }
+    var onDismissListener: (() -> Unit)? = null
+
+    // This will be set to the FloorFilterView's floorFilterManager once created.
+    private var floorFilterManager: FloorFilterManager? = null
+
+    // This will be updated to the FloorFilterView's uiParameters once created.
+    private var uiParameters: UiParameters = UiParameters()
 
     /**
      * The list of [FloorSite]s from the [FloorFilterManager].
@@ -91,6 +92,19 @@ internal class SiteFacilityView: LinearLayout {
     private var dialog: Dialog? = null
     private val siteFacilityAdapter by lazy { SiteFacilityAdapter() }
 
+    private var siteFacilityBackButton: ImageView? = null
+    private var backToSitesButtonSeparator: View? = null
+    private var siteFacilityTitle: TextView? = null
+    private var siteFacilitySubtitle: TextView? = null
+    private var siteFacilityCloseButton: ImageView? = null
+    private var siteFacilityTitleSeparator: View? = null
+    private var siteFacilitySearchLayout: LinearLayout? = null
+    private var siteFacilitySearchButton: ImageView? = null
+    private var siteFacilitySearchEditText: EditText? = null
+    private var siteFacilitySearchClearButton: ImageView? = null
+    private var siteFacilityRecyclerView: RecyclerView? = null
+    private var siteFacilityEmptyView: TextView? = null
+
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.
      *
@@ -119,6 +133,11 @@ internal class SiteFacilityView: LinearLayout {
         this.uiParameters = uiParameters
     }
 
+    /**
+     * Shows the popup dialog to choose a [FloorSite] and [FloorFacility].
+     *
+     * @since 100.13.0
+     */
     internal fun show() {
         val dialog = showSiteFacilityDialog()
         if (dialog != null) {
@@ -132,6 +151,11 @@ internal class SiteFacilityView: LinearLayout {
         }
     }
 
+    /**
+     * Closes the site/facility popup dialog.
+     *
+     * @since 100.13.0
+     */
     internal fun close() {
         val dialog = this.dialog ?: return
         dialog.dismiss()
@@ -183,39 +207,56 @@ internal class SiteFacilityView: LinearLayout {
         siteFacilityAdapter.notifyDataSetChanged()
     }
 
+    /**
+     * Clears the site and facility search text.
+     *
+     * @since 100.13.0
+     */
     private fun clearSearch() {
         siteFacilitySearchEditText?.setText("")
     }
 
+    /**
+     * Returns the selected [FloorSite].
+     *
+     * @since 100.13.0
+     */
     private fun getSelectedSite(): FloorSite? {
         return floorFilterManager?.getSelectedSite()
     }
 
+    /**
+     * Returns true if the [site] is selected.
+     *
+     * @since 100.13.0
+     */
     private fun isSelectedSite(site: FloorSite): Boolean {
-        return floorFilterManager?.isSelectedSite(site) ?: false
+        return floorFilterManager?.isSiteSelected(site) ?: false
     }
 
+    /**
+     * Returns the selected [FloorFacility].
+     *
+     * @since 100.13.0
+     */
     private fun getSelectedFacility(): FloorFacility? {
         return floorFilterManager?.getSelectedFacility()
     }
 
+    /**
+     * Returns true if the [facility] is selected.
+     *
+     * @since 100.13.0
+     */
     private fun isSelectedFacility(facility: FloorFacility): Boolean {
-        return floorFilterManager?.isSelectedFacility(facility) ?: false
+        return floorFilterManager?.isFacilitySelected(facility) ?: false
     }
 
-
-    private var siteFacilityBackButton: ImageView? = null
-    private var backToSitesButtonSeparator: View? = null
-    private var siteFacilityTitle: TextView? = null
-    private var siteFacilitySubtitle: TextView? = null
-    private var siteFacilityCloseButton: ImageView? = null
-    private var siteFacilityTitleSeparator: View? = null
-    private var siteFacilitySearchLayout: LinearLayout? = null
-    private var siteFacilitySearchButton: ImageView? = null
-    private var siteFacilitySearchEditText: EditText? = null
-    private var siteFacilitySearchClearButton: ImageView? = null
-    private var siteFacilityRecyclerView: RecyclerView? = null
-    private var siteFacilityEmptyView: TextView? = null
+    /**
+     * Initializes this SiteFacilityView by inflating the layout and setting the UI listeners.
+     *
+     * @since 100.13.0
+     */
     private fun init(context: Context) {
         orientation = VERTICAL
         inflate(context, R.layout.layout_sitefacilityview, this)
@@ -283,6 +324,12 @@ internal class SiteFacilityView: LinearLayout {
         })
     }
 
+    /**
+     * Updates the title to the selected [FloorSite] or [FloorFacility] or default text if nothing
+     * is selected.
+     *
+     * @since 100.13.0
+     */
     private fun updateSiteFacilityTitle() {
         if (sites.isEmpty()) {
             isShowingFacilities = true
@@ -311,17 +358,32 @@ internal class SiteFacilityView: LinearLayout {
         showHideSearch()
     }
 
+    /**
+     * Sets the visibility of the back chevron button.
+     *
+     * @since 100.13.0
+     */
     private fun showSiteFacilityBackButton(show: Boolean) {
         val visibility = if (show) View.VISIBLE else View.GONE
         siteFacilityBackButton?.visibility = visibility
         backToSitesButtonSeparator?.visibility = visibility
     }
 
+    /**
+     * Closes the site/facility popup dialog.
+     *
+     * @since 100.13.0
+     */
     private fun closeSiteFacilityView() {
         close()
         onDismissListener?.invoke()
     }
 
+    /**
+     * Shows the site/facility popup dialog.
+     *
+     * @since 100.13.0
+     */
     private fun showSiteFacilityDialog(): Dialog? {
         val activity = getActivity(context) ?: return null
 
@@ -349,6 +411,11 @@ internal class SiteFacilityView: LinearLayout {
         return dialog
     }
 
+    /**
+     * Returns the [Activity] associated with the [Context].
+     *
+     * @since 100.13.0
+     */
     private fun getActivity(context: Context?): Activity? {
         if (context == null) {
             return null

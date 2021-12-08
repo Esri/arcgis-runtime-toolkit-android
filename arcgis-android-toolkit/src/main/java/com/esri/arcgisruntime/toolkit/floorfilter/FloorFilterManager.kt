@@ -25,6 +25,13 @@ import com.esri.arcgisruntime.mapping.floor.FloorManager
 import com.esri.arcgisruntime.mapping.floor.FloorSite
 import com.esri.arcgisruntime.mapping.view.GeoView
 
+/**
+ * Manages the sharing of information between the [FloorFilterView] and the [SiteFacilityView].
+ * Responsible for loading the [FloorManager], filtering the [GeoModel] based on the selected
+ * [FloorLevel], and zooming to the selected [FloorSite] and [FloorFacility].
+ *
+ * @since 100.13.0
+ */
 internal class FloorFilterManager {
 
     /**
@@ -34,38 +41,32 @@ internal class FloorFilterManager {
      */
     var floorManager: FloorManager? = null
 
-    // Custom events
-
     /**
      * Invoked when the selected facility changes
      *
      * @since 100.13.0
      */
-    private var onFacilityChangeListener: ((FloorFacility?) -> Unit)? = null
-    fun setOnFacilityChangeListener(onFacilityChangeListener: ((FloorFacility?) -> Unit)?) {
-        this.onFacilityChangeListener = onFacilityChangeListener
-    }
+    var onFacilityChangeListener: ((FloorFacility?) -> Unit)? = null
 
     /**
      * Invoked when the selected level changes
      *
      * @since 100.13.0
      */
-    private var onLevelChangeListener: ((FloorLevel?) -> Unit)? = null
-    fun setOnLevelChangeListener(onLevelChangeListener: ((FloorLevel?) -> Unit)?) {
-        this.onLevelChangeListener = onLevelChangeListener
-    }
+    var onLevelChangeListener: ((FloorLevel?) -> Unit)? = null
 
     /**
      * The selected [FloorSite]'s site ID.
      *
      * @since 100.13.0
      */
-    private var mSelectedSiteId: String? = null
+    private var _selectedSiteId: String? = null
     var selectedSiteId: String?
-        get() { return mSelectedSiteId }
+        get() {
+            return _selectedSiteId
+        }
         set(value) {
-            mSelectedSiteId = value
+            _selectedSiteId = value
             selectedFacilityId = null
             zoomToSite()
         }
@@ -75,13 +76,15 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    private var mSelectedFacilityId: String? = null
+    private var _selectedFacilityId: String? = null
     var selectedFacilityId: String?
-        get() { return mSelectedFacilityId }
+        get() {
+            return _selectedFacilityId
+        }
         set(value) {
-            mSelectedFacilityId = value
-            if (mSelectedFacilityId != null) {
-                mSelectedSiteId = getSelectedFacility()?.site?.siteId
+            _selectedFacilityId = value
+            if (_selectedFacilityId != null) {
+                _selectedSiteId = getSelectedFacility()?.site?.siteId
             }
             selectedLevelId = getDefaultLevelIdForFacility(value)
             zoomToFacility()
@@ -93,16 +96,18 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    private var mSelectedLevelId: String? = null
+    private var _selectedLevelId: String? = null
     var selectedLevelId: String?
-        get() { return mSelectedLevelId }
+        get() {
+            return _selectedLevelId
+        }
         set(value) {
-            if (mSelectedLevelId != value) {
-                mSelectedLevelId = value
-                if (mSelectedLevelId != null) {
+            if (_selectedLevelId != value) {
+                _selectedLevelId = value
+                if (_selectedLevelId != null) {
                     val selectedLevelsFacility = getSelectedLevel()?.facility
-                    mSelectedFacilityId = selectedLevelsFacility?.facilityId
-                    mSelectedSiteId = selectedLevelsFacility?.site?.siteId
+                    _selectedFacilityId = selectedLevelsFacility?.facilityId
+                    _selectedSiteId = selectedLevelsFacility?.site?.siteId
                 }
                 filterMap()
             }
@@ -123,28 +128,36 @@ internal class FloorFilterManager {
      * @since 100.13.0
      */
     val sites: List<FloorSite>
-        get() { return floorManager?.sites ?: emptyList() }
+        get() {
+            return floorManager?.sites ?: emptyList()
+        }
+
     /**
      * The list of [FloorFacility]s from the [FloorManager].
      *
      * @since 100.13.0
      */
     val facilities: List<FloorFacility>
-        get() { return floorManager?.facilities ?: emptyList() }
+        get() {
+            return floorManager?.facilities ?: emptyList()
+        }
+
     /**
      * The list of [FloorLevel]s from the [FloorManager].
      *
      * @since 100.13.0
      */
-    val levels: List<FloorLevel>
-        get() { return floorManager?.levels ?: emptyList() }
+    private val levels: List<FloorLevel>
+        get() {
+            return floorManager?.levels ?: emptyList()
+        }
 
     /**
      * Returns true if the [level] is selected.
      *
      * @since 100.13.0
      */
-    fun isSelectedLevel(level: FloorLevel?): Boolean {
+    fun isLevelSelected(level: FloorLevel?): Boolean {
         return level != null && selectedLevelId == level.levelId
     }
 
@@ -153,7 +166,7 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    fun isSelectedFacility(facility: FloorFacility?): Boolean {
+    fun isFacilitySelected(facility: FloorFacility?): Boolean {
         return facility != null && selectedFacilityId == facility.facilityId
     }
 
@@ -162,7 +175,7 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    fun isSelectedSite(site: FloorSite?): Boolean {
+    fun isSiteSelected(site: FloorSite?): Boolean {
         return site != null && selectedSiteId == site.siteId
     }
 
@@ -171,8 +184,8 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    fun getSelectedLevel(): FloorLevel? {
-        return levels.firstOrNull { isSelectedLevel(it) }
+    private fun getSelectedLevel(): FloorLevel? {
+        return levels.firstOrNull { isLevelSelected(it) }
     }
 
     /**
@@ -181,7 +194,7 @@ internal class FloorFilterManager {
      * @since 100.13.0
      */
     fun getSelectedFacility(): FloorFacility? {
-        return facilities.firstOrNull { isSelectedFacility(it) }
+        return facilities.firstOrNull { isFacilitySelected(it) }
     }
 
     /**
@@ -190,7 +203,7 @@ internal class FloorFilterManager {
      * @since 100.13.0
      */
     fun getSelectedSite(): FloorSite? {
-        return sites.firstOrNull { isSelectedSite(it) }
+        return sites.firstOrNull { isSiteSelected(it) }
     }
 
     /**
@@ -201,30 +214,29 @@ internal class FloorFilterManager {
     fun setupMap(geoView: GeoView, map: GeoModel, setupDone: (() -> Unit)? = null) {
         this.geoView = geoView
 
-        val floorManager = map.floorManager
+        floorManager = map.floorManager
 
         if (floorManager == null) {
             setupDone?.invoke()
             return
         }
 
-        this.floorManager = floorManager
         val doneLoadingListener: Runnable = object: Runnable {
             override fun run() {
-                floorManager.removeDoneLoadingListener(this)
+                floorManager?.removeDoneLoadingListener(this)
 
                 // Do this to make sure the UI gets set correctly if the selected level id was set
                 // before the floor manager loaded.
-                val temp = mSelectedLevelId
-                mSelectedLevelId = null
+                val temp = _selectedLevelId
+                _selectedLevelId = null
                 selectedLevelId = temp
                 filterMap()
 
                 setupDone?.invoke()
             }
         }
-        floorManager.addDoneLoadingListener(doneLoadingListener)
-        floorManager.loadAsync()
+        floorManager?.addDoneLoadingListener(doneLoadingListener)
+        floorManager?.loadAsync()
     }
 
     /**
@@ -275,7 +287,7 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    private fun zoomToExtent(geoView: GeoView?, envelope: Envelope?, bufferFactor:Double = 1.25) {
+    private fun zoomToExtent(geoView: GeoView?, envelope: Envelope?, bufferFactor: Double = 1.25) {
         if (geoView != null && envelope != null && !envelope.isEmpty) {
             try {
                 val envelopeWithBuffer = Envelope(envelope.center, envelope.width * bufferFactor,envelope.height * bufferFactor)

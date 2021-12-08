@@ -29,7 +29,6 @@ import com.esri.arcgisruntime.toolkit.floorfilter.FloorFilterView
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.databinding.ActivityFloorfilterBinding
 
-
 class FloorFilterTestActivity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
@@ -84,8 +83,10 @@ class FloorFilterTestActivity : AppCompatActivity() {
     private fun setupFloorFilterView() {
         floorFilterView?.bindTo(mapView)
 
-//        floorFilterView = FloorFilterView(this)
-//        floorFilterView?.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+        // You can alternatively initialize floorFilterView programmatically rather than in xml and
+        // add it to GeoView using addToGeoView().
+        // floorFilterView = FloorFilterView(this)
+        // floorFilterView?.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
 
         floorFilterView?.selectedLevelId = "ESRI.RED.MAIN.L.L1"
     }

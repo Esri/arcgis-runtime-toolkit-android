@@ -48,6 +48,69 @@ import com.esri.arcgisruntime.toolkit.extension.dpToPixels
 import com.esri.arcgisruntime.toolkit.extension.pixelsToDp
 import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
 
+/**
+ * Displays a control for the user to pick which level of a floor aware [GeoView] to display.
+ * Two workflows are supported:
+ *
+ * _Workflow 1:_
+ *
+ * The simplest workflow is for the app to instantiate a FloorFilterView using an instance of
+ * [Context] and call [addToGeoView] to display it within the GeoView. Optionally, setter methods
+ * may be called to override some of the default settings. The app has limited control over the
+ * position of the [FloorFilterView] ([ListPosition.BOTTOM_START], [ListPosition.BOTTOM_END],
+ * [ListPosition.TOP_START], [ListPosition.TOP_END]).
+ *
+ * For example:
+ * ```
+ * val floorFilterView = FloorFilterView(mapView.context)
+ * floorFilterView.setMaxDisplayLevels(3) // optionally override default settings
+ * floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+ * ```
+ *
+ * _Workflow 2:_
+ *
+ * Alternatively, the app could define a [FloorFilterView] anywhere it likes in its view hierarchy,
+ * because [FloorFilterView] extends the Android [LinearLayout] class. The system will instantiate
+ * the [FloorFilterView]. The app then calls [bindTo] to make it come to life as a [FloorFilterView]
+ * for the given [GeoView]. This workflow gives the app complete control over where the
+ * [FloorFilterView] is displayed - it could be positioned on top of any part of the [GeoView], or
+ * placed somewhere outside the bounds of the [GeoView].
+ *
+ * Here's example XML code to define a [FloorFilterView]:
+ * ```
+ * <com.esri.arcgisruntime.toolkit.floorfilter.FloorFilterView
+ * android:id="@+id/floorFilterView"
+ * android:layout_width="wrap_content"
+ * android:layout_height="0dp"
+ * android:layout_marginBottom="40dp"
+ * android:layout_marginStart="20dp"
+ * android:layout_marginEnd="20dp"
+ * android:layout_marginTop="20dp"
+ * app:layout_constraintTop_toTopOf="parent"
+ * app:layout_constraintBottom_toBottomOf="parent"
+ * app:layout_constraintStart_toStartOf="parent"
+ * app:layout_constraintHeight_max="wrap"
+ * app:layout_constraintVertical_bias="1"
+ * app:closeButtonPosition="top"
+ * android:background="@drawable/floor_filter_rounded_background"
+ * android:elevation="4dp" />
+ * ```
+ *
+ * Here's example Kotlin code to bind the [FloorFilterView] to the [GeoView]:
+ * ```
+ * val floorFilterView = findViewById(R.id.floorFilterView)
+ * floorFilterView.bindTo(mapView)
+ * ```
+ *
+ * _Mutually Exclusive Workflows:_
+ *
+ * The methods to connect and disconnect a [FloorFilterView] to a [GeoView] are mutually exclusive
+ * between the two workflows. In Workflow 1, use [addToGeoView] to connect it to a [GeoView] and
+ * [removeFromGeoView] to disconnect it. In Workflow 2, use [bindTo] to connect it to a [GeoView]
+ * and [bindTo], passing **_null_** as an argument to disconnect it.
+ *
+ * @since 100.13.0
+ */
 class FloorFilterView: LinearLayout {
 
     /**
@@ -56,8 +119,12 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var selectedSiteId: String?
-        get() { return floorFilterManager.selectedSiteId }
-        set(value) { floorFilterManager.selectedSiteId = value }
+        get() {
+            return floorFilterManager.selectedSiteId
+        }
+        set(value) {
+            floorFilterManager.selectedSiteId = value
+        }
 
     /**
      * The facilityId of the selected [FloorFacility].
@@ -65,8 +132,12 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var selectedFacilityId: String?
-        get() { return floorFilterManager.selectedFacilityId }
-        set(value) { floorFilterManager.selectedFacilityId = value }
+        get() {
+            return floorFilterManager.selectedFacilityId
+        }
+        set(value) {
+            floorFilterManager.selectedFacilityId = value
+        }
 
     /**
      * The levelId of the selected [FloorLevel].
@@ -74,8 +145,12 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var selectedLevelId: String?
-        get() { return floorFilterManager.selectedLevelId }
-        set(value) { floorFilterManager.selectedLevelId = value }
+        get() {
+            return floorFilterManager.selectedLevelId
+        }
+        set(value) {
+            floorFilterManager.selectedLevelId = value
+        }
 
     /**
      * The [FloorManager] of the attached [GeoModel].
@@ -83,71 +158,18 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     val floorManager: FloorManager?
-        get() { return floorFilterManager.floorManager }
-
-    // Custom events
+        get() {
+            return floorFilterManager.floorManager
+        }
 
     /**
      * Called when the selected [FloorSite], [FloorFacility], or [FloorLevel] changes.
      *
      * @since 100.13.0
      */
-    private var onSelectionChangeListener: (() -> Unit)? = null
-    fun setOnSelectionChangeListener(onSelectionChangeListener: (() -> Unit)?) {
-        this.onSelectionChangeListener = onSelectionChangeListener
-    }
+    var onSelectionChangeListener: (() -> Unit)? = null
 
     // UI related parameters
-
-    /**
-     * The [Int] used to determine the height of the level, close, and site/facility buttons
-     * in the [floorsRecyclerView].
-     *
-     * The default is 40dp.
-     * Use [setButtonSize] to change the height of the buttons.
-     *
-     * @since 100.13.0
-     */
-    private var buttonHeightDp: Int
-        set(value) { uiParameters.buttonHeightDp = value }
-        get() { return uiParameters.buttonHeightDp }
-
-    /**
-     * The [Int] used to determine the width of the level, close, and site/facility buttons
-     * in the [floorsRecyclerView].
-     *
-     * The default is 48 dp.
-     * Use [setButtonSize] to change the width of the buttons.
-     *
-     * @since 100.13.0
-     */
-    private var buttonWidthDp: Int
-        set(value) { uiParameters.buttonWidthDp = value }
-        get() { return uiParameters.buttonWidthDp }
-
-    /**
-     * The [Int] used to determine the max amount of levels to show in the [floorsRecyclerView].
-     *
-     * The default is -1. Anything that is less than 1 will show all of the levels.
-     * Use [setMaxDisplayLevels] to change the max amount of levels to display.
-     *
-     * @since 100.13.0
-     */
-    private var maxDisplayLevels: Int
-        set(value) { uiParameters.maxDisplayLevels = value }
-        get() { return uiParameters.maxDisplayLevels }
-
-    /**
-     * The [Int] used to determine the text size in [Dimension.SP].
-     *
-     * The default is 16sp.
-     * Use [setTextSize] to change the text size.
-     *
-     * @since 100.13.0
-     */
-    private var textSizeSp: Int
-        set(value) { uiParameters.textSizeSp = value }
-        get() { return uiParameters.textSizeSp }
 
     /**
      * The color used for text.
@@ -157,11 +179,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var textColor: Int
+        get() {
+            return uiParameters.textColor
+        }
         set(value) {
             uiParameters.textColor = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.textColor }
 
     /**
      * The color used for selected text.
@@ -171,11 +195,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var selectedTextColor: Int
+        get() {
+            return uiParameters.selectedTextColor
+        }
         set(value) {
             uiParameters.selectedTextColor = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.selectedTextColor }
 
     /**
      * The color used for button background.
@@ -185,11 +211,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var buttonBackgroundColor: Int
+        get() {
+            return uiParameters.buttonBackgroundColor
+        }
         set(value) {
             uiParameters.buttonBackgroundColor = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.buttonBackgroundColor }
 
     /**
      * The color used for selected button background.
@@ -199,11 +227,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var selectedButtonBackgroundColor: Int
+        get() {
+            return uiParameters.selectedButtonBackgroundColor
+        }
         set(value) {
             uiParameters.selectedButtonBackgroundColor = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.selectedButtonBackgroundColor }
 
     /**
      * The color used for close button background.
@@ -213,11 +243,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var closeButtonBackgroundColor: Int
+        get() {
+            return uiParameters.closeButtonBackgroundColor
+        }
         set(value) {
             uiParameters.closeButtonBackgroundColor = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.closeButtonBackgroundColor }
 
     /**
      * The color used for search bar background.
@@ -227,11 +259,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var searchBackgroundColor: Int
+        get() {
+            return uiParameters.searchBackgroundColor
+        }
         set(value) {
             uiParameters.searchBackgroundColor = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.searchBackgroundColor }
 
     /**
      * The [Typeface] used to draw text.
@@ -241,11 +275,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var typeface: Typeface
+        get() {
+            return uiParameters.typeface
+        }
         set(value) {
             uiParameters.typeface = value
             processUiParamUpdate()
         }
-        get() { return uiParameters.typeface }
 
     /**
      * The [Boolean] used to decide if the close button should be shown.
@@ -255,11 +291,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var hideCloseButton: Boolean
+        get() {
+            return uiParameters.hideCloseButton
+        }
         set(value) {
             uiParameters.hideCloseButton = value
             levelAdapter.updateCloseButtonVisibility()
         }
-        get() { return uiParameters.hideCloseButton }
 
     /**
      * The [Boolean] used to decide if the site/facility button should be shown.
@@ -269,11 +307,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var hideSiteFacilityButton: Boolean
+        get() {
+            return uiParameters.hideSiteFacilityButton
+        }
         set(value) {
             uiParameters.hideSiteFacilityButton = value
             updateSiteFacilityButtonEnabled()
         }
-        get() { return uiParameters.hideSiteFacilityButton }
 
     /**
      * The [Boolean] used to decide if search for site should be shown.
@@ -283,11 +323,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var hideSiteSearch: Boolean
+        get() {
+            return uiParameters.hideSiteSearch
+        }
         set(value) {
             uiParameters.hideSiteSearch = value
             siteFacilityView.showHideSearch()
         }
-        get() { return uiParameters.hideSiteSearch }
 
     /**
      * The [Boolean] used to decide if search for facility should be shown.
@@ -297,11 +339,13 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var hideFacilitySearch: Boolean
+        get() {
+            return uiParameters.hideFacilitySearch
+        }
         set(value) {
             uiParameters.hideFacilitySearch = value
             siteFacilityView.showHideSearch()
         }
-        get() { return uiParameters.hideFacilitySearch }
 
     /**
      * The [ButtonPosition] used to place the close button at the top or bottom of
@@ -314,13 +358,81 @@ class FloorFilterView: LinearLayout {
      * @since 100.13.0
      */
     var closeButtonPosition: ButtonPosition
+        get() {
+            return uiParameters.closeButtonPosition
+        }
         set(value) {
             if (uiParameters.closeButtonPosition != value) {
                 uiParameters.closeButtonPosition = value
                 setButtonPositions()
             }
         }
-        get() { return uiParameters.closeButtonPosition }
+
+    /**
+     * The [Int] used to determine the height of the level, close, and site/facility buttons
+     * in the [floorsRecyclerView].
+     *
+     * The default is 40dp.
+     * Use [setButtonSize] to change the height of the buttons.
+     *
+     * @since 100.13.0
+     */
+    private var buttonHeightDp: Int
+        get() {
+            return uiParameters.buttonHeightDp
+        }
+        set(value) {
+            uiParameters.buttonHeightDp = value
+        }
+
+    /**
+     * The [Int] used to determine the width of the level, close, and site/facility buttons
+     * in the [floorsRecyclerView].
+     *
+     * The default is 48 dp.
+     * Use [setButtonSize] to change the width of the buttons.
+     *
+     * @since 100.13.0
+     */
+    private var buttonWidthDp: Int
+        get() {
+            return uiParameters.buttonWidthDp
+        }
+        set(value) {
+            uiParameters.buttonWidthDp = value
+        }
+
+    /**
+     * The [Int] used to determine the max amount of levels to show in the [floorsRecyclerView].
+     *
+     * The default is -1. Anything that is less than 1 will show all of the levels.
+     * Use [setMaxDisplayLevels] to change the max amount of levels to display.
+     *
+     * @since 100.13.0
+     */
+    private var maxDisplayLevels: Int
+        get() {
+            return uiParameters.maxDisplayLevels
+        }
+        set(value) {
+            uiParameters.maxDisplayLevels = value
+        }
+
+    /**
+     * The [Int] used to determine the text size in [Dimension.SP].
+     *
+     * The default is 16sp.
+     * Use [setTextSize] to change the text size.
+     *
+     * @since 100.13.0
+     */
+    private var textSizeSp: Int
+        get() {
+            return uiParameters.textSizeSp
+        }
+        set(value) {
+            uiParameters.textSizeSp = value
+        }
 
     private var drawInGeoView: Boolean = false
     private var geoViewHolder: View? = null
@@ -341,6 +453,11 @@ class FloorFilterView: LinearLayout {
         setupSiteFacilityView(view)
         view
     }
+
+    private var floorsRecyclerView: RecyclerView? = null
+    private var floorListCloseButton: ImageView? = null
+    private var siteFacilityButton: ImageView? = null
+    private var siteFacilityButtonSeparator: View? = null
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view
@@ -410,10 +527,6 @@ class FloorFilterView: LinearLayout {
      *
      * @since 100.13.0
      */
-    private var floorsRecyclerView: RecyclerView? = null
-    private var floorListCloseButton: ImageView? = null
-    private var siteFacilityButton: ImageView? = null
-    private var siteFacilityButtonSeparator: View? = null
     private fun init(context: Context) {
         orientation = VERTICAL
         inflate(context, R.layout.layout_floorfilterview, this)
@@ -674,23 +787,39 @@ class FloorFilterView: LinearLayout {
         updateSeparatorVisible()
     }
 
+    /**
+     * Updates the visibility of the [siteFacilityButtonSeparator] based on if the
+     * [siteFacilityButton] is visible or not and if there are any levels displayed.
+     *
+     * @since 100.13.0
+     */
     private fun updateSeparatorVisible() {
         siteFacilityButtonSeparator?.visibility = if (levelAdapter.itemCount > 0 && !hideSiteFacilityButton) View.VISIBLE else View.GONE
     }
 
+    /**
+     * Adds the level and facility change listeners to update the UI.
+     *
+     * @since 100.13.0
+     */
     private fun addDataChangeListeners() {
-        floorFilterManager.setOnLevelChangeListener {
+        floorFilterManager.onLevelChangeListener = {
             levelAdapter.updateData()
             onSelectionChangeListener?.invoke()
         }
 
-        floorFilterManager.setOnFacilityChangeListener {
+        floorFilterManager.onFacilityChangeListener = {
             levelAdapter.updateData()
             levelAdapter.onlyShowSelected = false
             scrollToSelectedLevel()
         }
     }
 
+    /**
+     * Sets up the [LevelAdapter] for the [floorsRecyclerView].
+     *
+     * @since 100.13.0
+     */
     private fun setupLevelsAdapter() {
         floorsRecyclerView?.layoutManager = LinearLayoutManager(context)
         floorsRecyclerView?.adapter = levelAdapter
@@ -704,6 +833,11 @@ class FloorFilterView: LinearLayout {
         })
     }
 
+    /**
+     * Adds the [siteFacilityButton] click listener and sets if it is enabled or not.
+     *
+     * @since 100.13.0
+     */
     private fun setupSiteFacilityButton() {
         siteFacilityButton?.setOnClickListener {
             if (siteFacilityButton?.isSelected == true) {
@@ -716,11 +850,17 @@ class FloorFilterView: LinearLayout {
         updateSiteFacilityButtonEnabled()
     }
 
+    /**
+     * Gets the [siteFacilityView] setup with the [floorFilterManager] and [uiParameters]. Also adds
+     * the dismiss handler for the siteFacilityView popup dialog.
+     *
+     * @since 100.13.0
+     */
     private fun setupSiteFacilityView(siteFacilityView: SiteFacilityView) {
         siteFacilityView.setup(floorFilterManager, uiParameters)
         siteFacilityView.processUiParamUpdate()
 
-        siteFacilityView.setOnDismissListener {
+        siteFacilityView.onDismissListener = {
             siteFacilityButton?.isSelected = false
         }
     }
@@ -924,7 +1064,7 @@ class FloorFilterView: LinearLayout {
         }
 
         private fun isSelectedLevel(level: FloorLevel?): Boolean {
-            return floorFilterManager.isSelectedLevel(level)
+            return floorFilterManager.isLevelSelected(level)
         }
 
         private fun getItem(position: Int): FloorLevel? {
