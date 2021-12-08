@@ -22,11 +22,11 @@ floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
 ## Workflow 2
 
 Alternatively, the app could define a `FloorFilterView` anywhere it likes in its view hierarchy, because `FloorFilterView` extends the
-Android `LinearLayout` class. The app then calls `FloorFilterView.bindTo(GeoView)` to make it come to life as a 'FloorFilterView' for the given
+Android `LinearLayout` class. The app then calls `FloorFilterView.bindTo(GeoView)` to make it come to life as a `FloorFilterView` for the given
 GeoView. This workflow gives the app complete control over where the `FloorFilterView` is displayed - it could be positioned on
 top of any part of the GeoView, or placed somewhere outside the bounds of the GeoView.
 
-Here's example XML code that puts a 'FloorFilterView' in the bottom-left corner of the MapView :
+Here's example XML code that puts a 'FloorFilterView' in the bottom-left corner of a MapView :
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
