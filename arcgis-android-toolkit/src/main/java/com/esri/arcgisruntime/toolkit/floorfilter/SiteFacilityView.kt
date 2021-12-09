@@ -49,13 +49,6 @@ import com.esri.arcgisruntime.toolkit.extension.logTag
  */
 internal class SiteFacilityView: LinearLayout {
 
-    /**
-     * Called when the sites and facilities dialog closes.
-     *
-     * @since 100.13.0
-     */
-    var onDismissListener: (() -> Unit)? = null
-
     // This will be set to the FloorFilterView's floorFilterManager once created.
     private var floorFilterManager: FloorFilterManager? = null
 
@@ -104,6 +97,13 @@ internal class SiteFacilityView: LinearLayout {
     private var siteFacilitySearchClearButton: ImageView? = null
     private var siteFacilityRecyclerView: RecyclerView? = null
     private var siteFacilityEmptyView: TextView? = null
+
+    /**
+     * Called when the sites and facilities dialog closes.
+     *
+     * @since 100.13.0
+     */
+    var onDismissListener: (() -> Unit)? = null
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view programmatically.

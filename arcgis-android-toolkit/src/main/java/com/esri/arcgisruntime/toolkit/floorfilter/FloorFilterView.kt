@@ -114,6 +114,97 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
 class FloorFilterView: LinearLayout {
 
     /**
+     * The [Int] used to determine the height of the level, close, and site/facility buttons
+     * in the [floorsRecyclerView].
+     *
+     * The default is 40dp.
+     * Use [setButtonSize] to change the height of the buttons.
+     *
+     * @since 100.13.0
+     */
+    private var buttonHeightDp: Int
+        get() {
+            return uiParameters.buttonHeightDp
+        }
+        set(value) {
+            uiParameters.buttonHeightDp = value
+        }
+
+    /**
+     * The [Int] used to determine the width of the level, close, and site/facility buttons
+     * in the [floorsRecyclerView].
+     *
+     * The default is 48 dp.
+     * Use [setButtonSize] to change the width of the buttons.
+     *
+     * @since 100.13.0
+     */
+    private var buttonWidthDp: Int
+        get() {
+            return uiParameters.buttonWidthDp
+        }
+        set(value) {
+            uiParameters.buttonWidthDp = value
+        }
+
+    /**
+     * The [Int] used to determine the max amount of levels to show in the [floorsRecyclerView].
+     *
+     * The default is -1. Anything that is less than 1 will show all of the levels.
+     * Use [setMaxDisplayLevels] to change the max amount of levels to display.
+     *
+     * @since 100.13.0
+     */
+    private var maxDisplayLevels: Int
+        get() {
+            return uiParameters.maxDisplayLevels
+        }
+        set(value) {
+            uiParameters.maxDisplayLevels = value
+        }
+
+    /**
+     * The [Int] used to determine the text size in [Dimension.SP].
+     *
+     * The default is 16sp.
+     * Use [setTextSize] to change the text size.
+     *
+     * @since 100.13.0
+     */
+    private var textSizeSp: Int
+        get() {
+            return uiParameters.textSizeSp
+        }
+        set(value) {
+            uiParameters.textSizeSp = value
+        }
+
+    private var drawInGeoView: Boolean = false
+    private var geoViewHolder: View? = null
+    private val floorFilterManager: FloorFilterManager = FloorFilterManager()
+    private val uiParameters: UiParameters = UiParameters()
+    private val levelAdapter by lazy { LevelAdapter(floorFilterManager) }
+
+    private val displayDensity: Float by lazy {
+        resources.displayMetrics.density
+    }
+
+    private val scaledDensity: Float by lazy {
+        resources.displayMetrics.scaledDensity
+    }
+
+    private val siteFacilityView by lazy {
+        val view = SiteFacilityView(context)
+        setupSiteFacilityView(view)
+        view
+    }
+
+    private var floorsRecyclerView: RecyclerView? = null
+    private var floorListCloseButton: ImageView? = null
+    private var siteFacilityButton: ImageView? = null
+    private var siteFacilityButtonSeparator: View? = null
+
+    /**
      * The selected [FloorSite].
      *
      * @since 100.13.0
@@ -367,97 +458,6 @@ class FloorFilterView: LinearLayout {
                 setButtonPositions()
             }
         }
-
-    /**
-     * The [Int] used to determine the height of the level, close, and site/facility buttons
-     * in the [floorsRecyclerView].
-     *
-     * The default is 40dp.
-     * Use [setButtonSize] to change the height of the buttons.
-     *
-     * @since 100.13.0
-     */
-    private var buttonHeightDp: Int
-        get() {
-            return uiParameters.buttonHeightDp
-        }
-        set(value) {
-            uiParameters.buttonHeightDp = value
-        }
-
-    /**
-     * The [Int] used to determine the width of the level, close, and site/facility buttons
-     * in the [floorsRecyclerView].
-     *
-     * The default is 48 dp.
-     * Use [setButtonSize] to change the width of the buttons.
-     *
-     * @since 100.13.0
-     */
-    private var buttonWidthDp: Int
-        get() {
-            return uiParameters.buttonWidthDp
-        }
-        set(value) {
-            uiParameters.buttonWidthDp = value
-        }
-
-    /**
-     * The [Int] used to determine the max amount of levels to show in the [floorsRecyclerView].
-     *
-     * The default is -1. Anything that is less than 1 will show all of the levels.
-     * Use [setMaxDisplayLevels] to change the max amount of levels to display.
-     *
-     * @since 100.13.0
-     */
-    private var maxDisplayLevels: Int
-        get() {
-            return uiParameters.maxDisplayLevels
-        }
-        set(value) {
-            uiParameters.maxDisplayLevels = value
-        }
-
-    /**
-     * The [Int] used to determine the text size in [Dimension.SP].
-     *
-     * The default is 16sp.
-     * Use [setTextSize] to change the text size.
-     *
-     * @since 100.13.0
-     */
-    private var textSizeSp: Int
-        get() {
-            return uiParameters.textSizeSp
-        }
-        set(value) {
-            uiParameters.textSizeSp = value
-        }
-
-    private var drawInGeoView: Boolean = false
-    private var geoViewHolder: View? = null
-    private val floorFilterManager: FloorFilterManager = FloorFilterManager()
-    private val uiParameters: UiParameters = UiParameters()
-    private val levelAdapter by lazy { LevelAdapter(floorFilterManager) }
-
-    private val displayDensity: Float by lazy {
-        resources.displayMetrics.density
-    }
-
-    private val scaledDensity: Float by lazy {
-        resources.displayMetrics.scaledDensity
-    }
-
-    private val siteFacilityView by lazy {
-        val view = SiteFacilityView(context)
-        setupSiteFacilityView(view)
-        view
-    }
-
-    private var floorsRecyclerView: RecyclerView? = null
-    private var floorListCloseButton: ImageView? = null
-    private var siteFacilityButton: ImageView? = null
-    private var siteFacilityButtonSeparator: View? = null
 
     /**
      * Constructor used when instantiating this View directly to attach it to another view

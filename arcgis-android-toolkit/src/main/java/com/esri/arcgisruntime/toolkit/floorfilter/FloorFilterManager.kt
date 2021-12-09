@@ -35,6 +35,36 @@ import com.esri.arcgisruntime.mapping.view.GeoView
 internal class FloorFilterManager {
 
     /**
+     * The list of [FloorLevel]s from the [FloorManager].
+     *
+     * @since 100.13.0
+     */
+    private val levels: List<FloorLevel>
+        get() {
+            return floorManager?.levels ?: emptyList()
+        }
+
+    /**
+     * The list of [FloorSite]s from the [FloorManager].
+     *
+     * @since 100.13.0
+     */
+    val sites: List<FloorSite>
+        get() {
+            return floorManager?.sites ?: emptyList()
+        }
+
+    /**
+     * The list of [FloorFacility]s from the [FloorManager].
+     *
+     * @since 100.13.0
+     */
+    val facilities: List<FloorFacility>
+        get() {
+            return floorManager?.facilities ?: emptyList()
+        }
+
+    /**
      * The [FloorManager] from the attached [GeoModel].
      *
      * @since 100.13.0
@@ -122,35 +152,6 @@ internal class FloorFilterManager {
     var geoView: GeoView? = null
         private set
 
-    /**
-     * The list of [FloorSite]s from the [FloorManager].
-     *
-     * @since 100.13.0
-     */
-    val sites: List<FloorSite>
-        get() {
-            return floorManager?.sites ?: emptyList()
-        }
-
-    /**
-     * The list of [FloorFacility]s from the [FloorManager].
-     *
-     * @since 100.13.0
-     */
-    val facilities: List<FloorFacility>
-        get() {
-            return floorManager?.facilities ?: emptyList()
-        }
-
-    /**
-     * The list of [FloorLevel]s from the [FloorManager].
-     *
-     * @since 100.13.0
-     */
-    private val levels: List<FloorLevel>
-        get() {
-            return floorManager?.levels ?: emptyList()
-        }
 
     /**
      * Returns true if the [level] is selected.
