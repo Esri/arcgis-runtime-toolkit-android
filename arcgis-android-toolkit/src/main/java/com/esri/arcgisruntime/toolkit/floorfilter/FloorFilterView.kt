@@ -55,26 +55,30 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
  * _Workflow 1:_
  *
  * The simplest workflow is for the app to instantiate a FloorFilterView using an instance of
- * [Context] and call [addToGeoView] to display it within the GeoView. Optionally, setter methods
- * may be called to override some of the default settings. The app has limited control over the
- * position of the [FloorFilterView] ([ListPosition.BOTTOM_START], [ListPosition.BOTTOM_END],
- * [ListPosition.TOP_START], [ListPosition.TOP_END]).
+ * [Context] and call [addToGeoView] after the map is `Loaded` to display it within the GeoView.
+ * Optionally, setter methods may be called to override some of the default settings. The app has
+ * limited control over the position of the [FloorFilterView] ([ListPosition.BOTTOM_START],
+ * [ListPosition.BOTTOM_END], [ListPosition.TOP_START], [ListPosition.TOP_END]).
  *
  * For example:
  * ```
  * val floorFilterView = FloorFilterView(mapView.context)
- * floorFilterView.setMaxDisplayLevels(3) // optionally override default settings
- * floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+ * floorFilterView.maxDisplayLevels = 3 // optionally override default settings
+ * mapView.map.addDoneLoadingListener {
+ *   if (mapView.map.loadStatus == LoadStatus.LOADED) {
+ *     floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+ *   }
+ * }
  * ```
  *
  * _Workflow 2:_
  *
  * Alternatively, the app could define a [FloorFilterView] anywhere it likes in its view hierarchy,
  * because [FloorFilterView] extends the Android [LinearLayout] class. The system will instantiate
- * the [FloorFilterView]. The app then calls [bindTo] to make it come to life as a [FloorFilterView]
- * for the given [GeoView]. This workflow gives the app complete control over where the
- * [FloorFilterView] is displayed - it could be positioned on top of any part of the [GeoView], or
- * placed somewhere outside the bounds of the [GeoView].
+ * the [FloorFilterView]. The app then calls [bindTo] after the map is `Loaded` to make it come to
+ * life as a [FloorFilterView] for the given [GeoView]. This workflow gives the app complete control
+ * over where the [FloorFilterView] is displayed - it could be positioned on top of any part of the
+ * [GeoView], or placed somewhere outside the bounds of the [GeoView].
  *
  * Here's example XML code to define a [FloorFilterView]:
  * ```
@@ -99,7 +103,11 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
  * Here's example Kotlin code to bind the [FloorFilterView] to the [GeoView]:
  * ```
  * val floorFilterView = findViewById(R.id.floorFilterView)
- * floorFilterView.bindTo(mapView)
+ * mapView.map.addDoneLoadingListener {
+ *   if (mapView.map.loadStatus == LoadStatus.LOADED) {
+ *     floorFilterView.bindTo(mapView)
+ *   }
+ * }
  * ```
  *
  * _Mutually Exclusive Workflows:_
@@ -145,22 +153,6 @@ class FloorFilterView: LinearLayout {
         }
         set(value) {
             uiParameters.buttonWidthDp = value
-        }
-
-    /**
-     * The [Int] used to determine the max amount of levels to show in the [floorsRecyclerView].
-     *
-     * The default is -1. Anything that is less than 1 will show all of the levels.
-     * Use [setMaxDisplayLevels] to change the max amount of levels to display.
-     *
-     * @since 100.13.0
-     */
-    private var maxDisplayLevels: Int
-        get() {
-            return uiParameters.maxDisplayLevels
-        }
-        set(value) {
-            uiParameters.maxDisplayLevels = value
         }
 
     /**
@@ -460,6 +452,22 @@ class FloorFilterView: LinearLayout {
         }
 
     /**
+     * The [Int] used to determine the max amount of levels to show in the [floorsRecyclerView].
+     *
+     * The default is -1. Anything that is less than 1 will show all of the levels.
+     *
+     * @since 100.13.0
+     */
+    var maxDisplayLevels: Int
+        get() {
+            return uiParameters.maxDisplayLevels
+        }
+        set(value) {
+            uiParameters.maxDisplayLevels = value
+            processUiParamUpdate()
+        }
+
+    /**
      * Constructor used when instantiating this View directly to attach it to another view
      * programmatically.
      *
@@ -554,35 +562,6 @@ class FloorFilterView: LinearLayout {
     }
 
     /**
-     * Returns the [maxDisplayLevels] used to determine the max amount of levels to show in the [floorsRecyclerView].
-     *
-     * The default is -1. Anything that is less than 1 will show all of the levels.
-     * Use [setMaxDisplayLevels] to change the max amount of levels to display.
-     *
-     * @since 100.13.0
-     */
-    fun getMaxDisplayLevels(): Int? {
-        return if (maxDisplayLevels < 0) {
-            null
-        } else {
-            maxDisplayLevels
-        }
-    }
-
-    /**
-     * The [Int] used to determine the max amount of levels to show in the list before scrolling.
-     *
-     * The default is -1. Anything that is less than 1 will show all of the levels.
-     * Use [getMaxDisplayLevels] to get the current value.
-     *
-     * @since 100.13.0
-     */
-    fun setMaxDisplayLevels(maxDisplayLevels: Int?) {
-        this.maxDisplayLevels = maxDisplayLevels ?: -1
-        scrollToSelectedLevel()
-    }
-
-    /**
      * The size of the text in the levels list.
      *
      * The default is 16sp. Use [Dimension.SP] as the [unit] to pass [size] as sp.
@@ -630,7 +609,8 @@ class FloorFilterView: LinearLayout {
     }
 
     /**
-     * Adds this [FloorFilterView] to the provided [geoView].
+     * Adds this [FloorFilterView] to the provided [geoView]. This method should be called after
+     * the [GeoModel] associated with the [GeoView] has successfully Loaded.
      *
      * @throws IllegalStateException if this FloorFilterView is already added to or bound to
      * a [GeoView]
@@ -686,7 +666,7 @@ class FloorFilterView: LinearLayout {
         }
         constraintSet.applyTo(holder)
 
-        setupGeoView(geoView, map)
+        setupFloorFilterManager(geoView, map)
     }
 
     /**
@@ -708,8 +688,11 @@ class FloorFilterView: LinearLayout {
 
     /**
      * Binds this [FloorFilterView] to the provided [geoView], or unbinds it when passing in null.
+     * This method should be called after the [GeoModel] associated with the [GeoView] has
+     * successfully Loaded.
      *
      * @throws IllegalStateException if this FloorFilterView is currently added to a [GeoView]
+     * @throws IllegalStateException if there is no [GeoModel] in the [GeoView]
      * @since 100.13.0
      */
     fun bindTo(geoView: GeoView?) {
@@ -722,7 +705,7 @@ class FloorFilterView: LinearLayout {
             }
         } else {
             val map = getGeoModel(geoView) ?: throw IllegalStateException("There is no GeoModel in the GeoView")
-            setupGeoView(geoView, map)
+            setupFloorFilterManager(geoView, map)
         }
     }
 
@@ -761,12 +744,13 @@ class FloorFilterView: LinearLayout {
     // Setup functions
 
     /**
-     * Sets up the [FloorFilterView] to work with the provided [geoView].
+     * Sets up the [FloorFilterManager] associated with this [FloorFilterView] to work with the
+     * provided [geoView].
      *
      * @since 100.13.0
      */
-    private fun setupGeoView(geoView: GeoView, map: GeoModel) {
-        floorFilterManager.setupMap(geoView, map) {
+    private fun setupFloorFilterManager(geoView: GeoView, map: GeoModel) {
+        floorFilterManager.setupFloorManager(geoView, map) {
             updateSiteFacilityButtonEnabled()
         }
     }

@@ -32,7 +32,7 @@ import com.esri.arcgisruntime.toolkit.test.databinding.ActivityFloorfilterBindin
 class FloorFilterTestActivity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
-    private var floorFilterView: FloorFilterView? = null
+    private lateinit var floorFilterView: FloorFilterView
 
     val map: ArcGISMap by lazy {
         val portal = Portal("https://arcgis.com/")
@@ -50,7 +50,7 @@ class FloorFilterTestActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         floorFilterView = binding.floorFilterView
 
-        floorFilterView?.clipToOutline = true
+        floorFilterView.clipToOutline = true
 
         mapView = binding.mapView
         mapView.map = map
@@ -81,15 +81,15 @@ class FloorFilterTestActivity : AppCompatActivity() {
     }
 
     private fun setupFloorFilterView() {
-        floorFilterView?.bindTo(mapView)
+        floorFilterView.bindTo(mapView)
 
         // You can alternatively initialize floorFilterView programmatically rather than in xml and
         // add it to GeoView using addToGeoView().
         // floorFilterView = FloorFilterView(this)
-        // floorFilterView?.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+        // floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
 
-        floorFilterView?.floorManager?.addDoneLoadingListener {
-            floorFilterView?.selectedLevel = floorFilterView?.floorManager?.levels?.find {
+        floorFilterView.floorManager?.addDoneLoadingListener {
+            floorFilterView.selectedLevel = floorFilterView.floorManager?.levels?.find {
                 it?.levelId == "ESRI.RED.MAIN.L.L1"
             }
         }

@@ -7,24 +7,28 @@ The ArcGIS Runtime SDK currently supports filtering a 2D floor aware map based o
 ## Workflow 1
 
 The simplest workflow is to just instantiate a `FloorFilterView` and call `FloorFilterView.addToGeoView(GeoView)`
-to display it within the GeoView. This causes default settings to be used. Optionally, setter methods may be called
-to override some of the default settings. The app has limited control over the position of the `FloorFilterView`
-(bottom-left, bottom-right, top-left, or top-right).
+to display it within the GeoView after the map is `Loaded`. This causes default settings to be used. Optionally,
+setter methods may be called to override some of the default settings. The app has limited control over the position
+of the `FloorFilterView` (bottom-left, bottom-right, top-left, or top-right).
 
 For example in Kotlin:
 
 ```kotlin
 val floorFilterView = FloorFilterView(mapView.context)
 floorFilterView.setMaxDisplayLevels(3) // optionally override default settings
-floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+mapView.map.addDoneLoadingListener {
+  if (mapView.map.loadStatus == LoadStatus.LOADED) {
+    floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
+  }
+}
 ```
 
 ## Workflow 2
 
 Alternatively, the app could define a `FloorFilterView` anywhere it likes in its view hierarchy, because `FloorFilterView` extends the
-Android `LinearLayout` class. The app then calls `FloorFilterView.bindTo(GeoView)` to make it come to life as a `FloorFilterView` for the given
-GeoView. This workflow gives the app complete control over where the `FloorFilterView` is displayed - it could be positioned on
-top of any part of the GeoView, or placed somewhere outside the bounds of the GeoView.
+Android `LinearLayout` class. The app then calls `FloorFilterView.bindTo(GeoView)` after the map is `Loaded` to make it come to life as
+a `FloorFilterView` for the given GeoView. This workflow gives the app complete control over where the `FloorFilterView` is
+displayed - it could be positioned on top of any part of the GeoView, or placed somewhere outside the bounds of the GeoView.
 
 Here's example XML code that puts a 'FloorFilterView' in the bottom-left corner of a MapView :
 
@@ -73,7 +77,11 @@ Here's example Kotlin code to bind the `FloorFilterView` to the GeoView:
 
 ```kotlin
 val floorFilterView = findViewById(R.id.floorFilterView)
-floorFilterView.bindTo(mapView)
+mapView.map.addDoneLoadingListener {
+  if (mapView.map.loadStatus == LoadStatus.LOADED) {
+    floorFilterView.bindTo(mapView)
+  }
+}
 ```
 
 To see it in action, try out the floorfilter test in the [toolkit-test-app](https://github.com/Esri/arcgis-runtime-toolkit-android/tree/master/toolkit-test-app/src/main/java/com/esri/arcgisruntime/toolkit/test)

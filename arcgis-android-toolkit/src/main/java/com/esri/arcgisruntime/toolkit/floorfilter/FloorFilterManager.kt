@@ -212,13 +212,13 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    fun setupMap(geoView: GeoView, map: GeoModel, setupDone: (() -> Unit)? = null) {
+    fun setupFloorManager(geoView: GeoView, map: GeoModel, setupDone: (() -> Unit)) {
         this.geoView = geoView
 
         floorManager = map.floorManager
 
         if (floorManager == null) {
-            setupDone?.invoke()
+            setupDone.invoke()
             return
         }
 
@@ -233,7 +233,7 @@ internal class FloorFilterManager {
                 selectedLevelId = temp
                 filterMap()
 
-                setupDone?.invoke()
+                setupDone.invoke()
             }
         }
         floorManager?.addDoneLoadingListener(doneLoadingListener)
