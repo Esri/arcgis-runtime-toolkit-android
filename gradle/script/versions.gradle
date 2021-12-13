@@ -17,7 +17,7 @@
 ext {
     droid = ext {
         minSdk = 23
-        targetSdk = 29
+        targetSdk = 31
         androidGradlePlugin = "4.0.0"
         androidMavenGradlePlugin = "2.1"
         dokka = "0.9.18"
@@ -42,5 +42,5 @@ ext {
     kotlin_version = "1.4.32"
     kotlin_reflect = "1.5.0"
     kotlin_coroutines = "1.4.1"
-    arcgis = "100.13.0-3276"
+    arcgis = "100.13.0"
 }
