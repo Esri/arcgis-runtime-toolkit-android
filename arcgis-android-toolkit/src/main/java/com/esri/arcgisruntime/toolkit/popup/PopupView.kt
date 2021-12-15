@@ -46,8 +46,6 @@ import com.esri.arcgisruntime.mapping.popup.PopupField
 import com.esri.arcgisruntime.mapping.popup.PopupManager
 import com.esri.arcgisruntime.toolkit.BR
 import com.esri.arcgisruntime.toolkit.R
-import kotlinx.android.synthetic.main.item_popup_row.view.*
-import kotlinx.android.synthetic.main.layout_popupview.view.*
 
 private const val TAG = "PopupView"
 
@@ -95,6 +93,7 @@ class PopupView : FrameLayout {
      */
     private fun init(context: Context) {
         inflate(context, R.layout.layout_popupview, this)
+        val popupRecyclerView = findViewById<RecyclerView>(R.id.popupRecyclerView)
         popupRecyclerView.layoutManager = LinearLayoutManager(context)
         popupRecyclerView.adapter = popupAttributeListAdapter
     }
@@ -168,23 +167,23 @@ class PopupView : FrameLayout {
         RecyclerView.ViewHolder(binding.root) {
 
         val labelTextView: TextView by lazy {
-            binding.root.labelTextView
+            binding.root.findViewById(R.id.labelTextView)
         }
 
         val valueTextView: TextView by lazy {
-            binding.root.valueTextView
+            binding.root.findViewById(R.id.valueTextView)
         }
 
         val valueEditText: EditText by lazy {
-            binding.root.valueEditText
+            binding.root.findViewById(R.id.valueEditText)
         }
 
         val codedValueDomainSpinner: Spinner by lazy {
-            binding.root.codedValueDomainSpinner
+            binding.root.findViewById(R.id.codedValueDomainSpinner)
         }
 
         val separatingLineView: View by lazy {
-            binding.root.separatingLine
+            binding.root.findViewById(R.id.separatingLine)
         }
 
         fun bind(
@@ -219,6 +218,7 @@ class PopupView : FrameLayout {
                         valueEditText.visibility = View.VISIBLE
                         separatingLineView.visibility = View.GONE
                         valueTextView.visibility = View.GONE
+                        codedValueDomainSpinner.visibility = View.GONE
                         //save original colors
                         val oldColors: ColorStateList = labelTextView.textColors
                         // here we assign and hold the values of the editable fields, entered by the user

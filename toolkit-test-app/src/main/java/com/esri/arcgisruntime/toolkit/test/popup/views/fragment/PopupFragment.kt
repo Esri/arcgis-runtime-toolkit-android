@@ -31,7 +31,6 @@ import com.esri.arcgisruntime.toolkit.popup.PopupViewModel
 import com.esri.arcgisruntime.toolkit.test.R
 import com.esri.arcgisruntime.toolkit.test.databinding.FragmentPopupBinding
 import com.esri.arcgisruntime.toolkit.util.observeEvent
-import kotlinx.android.synthetic.main.fragment_popup.*
 
 /**
  * Responsible for displaying a Popup.
@@ -66,9 +65,9 @@ class PopupFragment : Fragment() {
                 requireActivity().window.setFlags(
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-                progressBarLayout.visibility = View.VISIBLE
+                binding.progressBarLayout.visibility = View.VISIBLE
             } else {
-                progressBarLayout.visibility = View.GONE
+                binding.progressBarLayout.visibility = View.GONE
                 requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             }
         }

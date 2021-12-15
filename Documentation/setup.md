@@ -4,8 +4,8 @@
 
 To use the ArcGIS Runtime Toolkit for Android, first you need an app that uses the ArcGIS Runtime SDK for Android:
 
-1. Install the ArcGIS Runtime SDK for Android by following the instructions to [Install the SDK](https://developers.arcgis.com/android/latest/guide/install-and-set-up.htm).
-2. Create an app that uses the ArcGIS Runtime SDK. For example you could follow the instructions to [Develop your first map app with Java](https://developers.arcgis.com/android/latest/guide/develop-your-first-map-app.htm) or [Develop your first map app with Kotlin](https://developers.arcgis.com/android/latest/guide/develop-your-first-map-app-with-kotlin.htm).
+1. Install the ArcGIS Runtime SDK for Android by following the instructions to [Install the SDK](https://developers.arcgis.com/android/install-and-set-up/).
+2. Create an app that uses the ArcGIS Runtime SDK. For example you could follow the instructions to [Display a map](https://developers.arcgis.com/android/maps-2d/tutorials/display-a-map/).
 
 ## Use the toolkit library
 

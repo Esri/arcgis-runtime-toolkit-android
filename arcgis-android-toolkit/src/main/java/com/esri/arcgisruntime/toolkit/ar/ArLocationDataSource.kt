@@ -86,7 +86,7 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
     private val selectedLocationProviders = ArrayList<String>()
 
     // The internal android location listener implementation
-    private var internalLocationListener: InternalLocationListener? = null
+    private val internalLocationListener = InternalLocationListener()
 
     // The internal listener to update the heading for compass mode
     private var internalHeadingListener: InternalHeadingListener? = null
@@ -250,7 +250,6 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      */
     override fun onStop() {
         locationManager?.removeUpdates(internalLocationListener)
-        internalLocationListener = null
 
         // Stop update heading if it is started
         stopUpdateHeading()
@@ -302,10 +301,6 @@ class ArLocationDataSource(private val context: Context) : LocationDataSource() 
      */
     @SuppressLint("MissingPermission")
     private fun startLocationProviders() {
-        if (internalLocationListener == null) {
-            internalLocationListener = InternalLocationListener()
-        }
-
         for (provider in selectedLocationProviders) {
             locationManager?.requestLocationUpdates(
                 provider,
