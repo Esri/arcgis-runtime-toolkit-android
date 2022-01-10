@@ -399,8 +399,8 @@ class ArcGISArViewActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.groupId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.groupId) {
             R.id.arcgisArViewMenuActionGroup -> {
                 handleMenuAction(item.itemId)
                 return true
