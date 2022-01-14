@@ -46,14 +46,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility 11
-        targetCompatibility 11
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
     buildFeatures {
         dataBinding = true
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
