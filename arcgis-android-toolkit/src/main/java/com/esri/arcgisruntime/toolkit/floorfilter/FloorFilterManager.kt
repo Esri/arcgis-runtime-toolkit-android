@@ -290,13 +290,9 @@ internal class FloorFilterManager {
      */
     private fun zoomToExtent(geoView: GeoView?, envelope: Envelope?, bufferFactor: Double = 1.25) {
         if (geoView != null && envelope != null && !envelope.isEmpty) {
-            try {
-                val envelopeWithBuffer = Envelope(envelope.center, envelope.width * bufferFactor,envelope.height * bufferFactor)
-                if (!envelopeWithBuffer.isEmpty) {
-                    geoView.setViewpointAsync(Viewpoint(envelopeWithBuffer), 0.5f)
-                }
-            } catch (e: Exception) {
-                // do nothing
+            val envelopeWithBuffer = Envelope(envelope.center, envelope.width * bufferFactor, envelope.height * bufferFactor)
+            if (!envelopeWithBuffer.isEmpty) {
+                geoView.setViewpointAsync(Viewpoint(envelopeWithBuffer), 0.5f)
             }
         }
     }
