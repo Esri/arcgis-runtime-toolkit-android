@@ -17,6 +17,7 @@
 package com.esri.arcgisruntime.toolkit.floorfilter
 
 import com.esri.arcgisruntime.geometry.Envelope
+import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.GeoModel
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.mapping.floor.FloorFacility
@@ -226,14 +227,18 @@ internal class FloorFilterManager {
             override fun run() {
                 floorManager?.removeDoneLoadingListener(this)
 
-                // Do this to make sure the UI gets set correctly if the selected level id was set
-                // before the floor manager loaded.
-                val temp = _selectedLevelId
-                _selectedLevelId = null
-                selectedLevelId = temp
-                filterMap()
+                if (floorManager?.loadStatus == LoadStatus.FAILED_TO_LOAD) {
+                    setupDone.invoke()
+                } else {
+                    // Do this to make sure the UI gets set correctly if the selected level id was set
+                    // before the floor manager loaded.
+                    val temp = _selectedLevelId
+                    _selectedLevelId = null
+                    selectedLevelId = temp
+                    filterMap()
 
-                setupDone.invoke()
+                    setupDone.invoke()
+                }
             }
         }
         floorManager?.addDoneLoadingListener(doneLoadingListener)
