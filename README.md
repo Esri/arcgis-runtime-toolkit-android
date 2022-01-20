@@ -42,6 +42,7 @@ See the [setup instructions](Documentation/setup.md) for a more detailed guide.
 * **[Compass](Documentation/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 * **[Scalebar](Documentation/Scalebar)** - Displays the representation of an accurate linear measurement on a map
 * **[PopupView](Documentation/Popup)** - Displays a Popup's attribute list
+* **[FloorFilterView](Documentation/FloorFilterView)** - Displays a control to filter floor aware maps by site, facility, and level
 
 ## Requirements
 
