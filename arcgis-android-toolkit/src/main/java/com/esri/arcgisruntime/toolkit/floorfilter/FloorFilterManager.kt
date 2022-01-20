@@ -16,6 +16,7 @@
 
 package com.esri.arcgisruntime.toolkit.floorfilter
 
+import com.esri.arcgisruntime.ArcGISRuntimeException
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.GeoModel
@@ -213,36 +214,64 @@ internal class FloorFilterManager {
      *
      * @since 100.13.0
      */
-    fun setupFloorManager(geoView: GeoView, map: GeoModel, setupDone: (() -> Unit)) {
+    fun setupFloorManager(geoView: GeoView, map: GeoModel, setupDone: ((LoadStatus, ArcGISRuntimeException?) -> Unit)) {
         this.geoView = geoView
 
-        floorManager = map.floorManager
+        loadMap(map) {
+            if (map.loadStatus == LoadStatus.LOADED) {
+                floorManager = map.floorManager
 
-        if (floorManager == null) {
-            setupDone.invoke()
+                if (floorManager == null) {
+                    // The map is not configured to be floor aware.
+                    setupDone.invoke(LoadStatus.LOADED, null)
+                } else {
+                    val doneLoadingListener: Runnable = object: Runnable {
+                        override fun run() {
+                            floorManager?.removeDoneLoadingListener(this)
+
+                            if (floorManager?.loadStatus == LoadStatus.FAILED_TO_LOAD) {
+                                setupDone.invoke(LoadStatus.FAILED_TO_LOAD, floorManager?.loadError)
+                            } else {
+                                // Do this to make sure the UI gets set correctly if the selected level id was set
+                                // before the floor manager loaded.
+                                val temp = _selectedLevelId
+                                _selectedLevelId = null
+                                selectedLevelId = temp
+                                filterMap()
+
+                                setupDone.invoke(LoadStatus.LOADED, null)
+                            }
+                        }
+                    }
+                    floorManager?.addDoneLoadingListener(doneLoadingListener)
+                    floorManager?.loadAsync()
+                }
+            } else {
+                // The map load failed.
+                setupDone.invoke(LoadStatus.FAILED_TO_LOAD, map.loadError)
+            }
+        }
+    }
+
+    /**
+     * Loads the [GeoModel] of the [GeoView] attached to the [FloorFilterView]
+     *
+     * @since 100.13.0
+     */
+    private fun loadMap(map: GeoModel, doneLoading: (() -> Unit)) {
+        if (map.loadStatus == LoadStatus.LOADED) {
+            doneLoading.invoke()
             return
         }
 
         val doneLoadingListener: Runnable = object: Runnable {
             override fun run() {
-                floorManager?.removeDoneLoadingListener(this)
-
-                if (floorManager?.loadStatus == LoadStatus.FAILED_TO_LOAD) {
-                    setupDone.invoke()
-                } else {
-                    // Do this to make sure the UI gets set correctly if the selected level id was set
-                    // before the floor manager loaded.
-                    val temp = _selectedLevelId
-                    _selectedLevelId = null
-                    selectedLevelId = temp
-                    filterMap()
-
-                    setupDone.invoke()
-                }
+                map.removeDoneLoadingListener(this)
+                doneLoading.invoke()
             }
         }
-        floorManager?.addDoneLoadingListener(doneLoadingListener)
-        floorManager?.loadAsync()
+        map.addDoneLoadingListener(doneLoadingListener)
+        map.loadAsync()
     }
 
     /**
