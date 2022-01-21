@@ -54,15 +54,7 @@ class FloorFilterTestActivity : AppCompatActivity() {
 
         mapView = binding.mapView
         mapView.map = map
-
-        mapView.map.addDoneLoadingListener {
-            if (mapView.map.loadStatus == LoadStatus.LOADED) {
-                setupFloorFilterView()
-            } else {
-                val e = mapView.map?.loadError
-                Toast.makeText(this, "The map didn't load.\n${e?.cause?.message}", Toast.LENGTH_LONG).show()
-            }
-        }
+        setupFloorFilterView()
     }
 
     override fun onPause() {
@@ -81,18 +73,21 @@ class FloorFilterTestActivity : AppCompatActivity() {
     }
 
     private fun setupFloorFilterView() {
-        floorFilterView.bindTo(mapView)
+        floorFilterView.bindTo(mapView) { loadStatus, loadError ->
+            if (loadStatus == LoadStatus.LOADED) {
+                floorFilterView.selectedLevel = floorFilterView.floorManager?.levels?.find {
+                    it?.levelId == "ESRI.RED.MAIN.L.L1"
+                }
+            } else {
+                floorFilterView.selectedLevel = null
+                Toast.makeText(this, "Loading failed.\n${loadError?.cause?.message}", Toast.LENGTH_LONG).show()
+            }
+        }
 
         // You can alternatively initialize floorFilterView programmatically rather than in xml and
         // add it to GeoView using addToGeoView().
         // floorFilterView = FloorFilterView(this)
         // floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
-
-        floorFilterView.floorManager?.addDoneLoadingListener {
-            floorFilterView.selectedLevel = floorFilterView.floorManager?.levels?.find {
-                it?.levelId == "ESRI.RED.MAIN.L.L1"
-            }
-        }
     }
 
 }

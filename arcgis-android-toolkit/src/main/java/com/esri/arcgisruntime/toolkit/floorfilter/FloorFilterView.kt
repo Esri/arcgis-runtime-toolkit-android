@@ -35,6 +35,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.esri.arcgisruntime.ArcGISRuntimeException
+import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.mapping.GeoModel
 import com.esri.arcgisruntime.mapping.floor.FloorFacility
 import com.esri.arcgisruntime.mapping.floor.FloorLevel
@@ -55,7 +57,7 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
  * _Workflow 1:_
  *
  * The simplest workflow is for the app to instantiate a FloorFilterView using an instance of
- * [Context] and call [addToGeoView] after the map is `Loaded` to display it within the GeoView.
+ * [Context] and call [addToGeoView] to display it within the GeoView.
  * Optionally, setter methods may be called to override some of the default settings. The app has
  * limited control over the position of the [FloorFilterView] ([ListPosition.BOTTOM_START],
  * [ListPosition.BOTTOM_END], [ListPosition.TOP_START], [ListPosition.TOP_END]).
@@ -64,21 +66,17 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
  * ```
  * val floorFilterView = FloorFilterView(mapView.context)
  * floorFilterView.maxDisplayLevels = 3 // optionally override default settings
- * mapView.map.addDoneLoadingListener {
- *   if (mapView.map.loadStatus == LoadStatus.LOADED) {
- *     floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
- *   }
- * }
+ * floorFilterView.addToGeoView(mapView, FloorFilterView.ListPosition.TOP_END)
  * ```
  *
  * _Workflow 2:_
  *
  * Alternatively, the app could define a [FloorFilterView] anywhere it likes in its view hierarchy,
  * because [FloorFilterView] extends the Android [LinearLayout] class. The system will instantiate
- * the [FloorFilterView]. The app then calls [bindTo] after the map is `Loaded` to make it come to
- * life as a [FloorFilterView] for the given [GeoView]. This workflow gives the app complete control
- * over where the [FloorFilterView] is displayed - it could be positioned on top of any part of the
- * [GeoView], or placed somewhere outside the bounds of the [GeoView].
+ * the [FloorFilterView]. The app then calls [bindTo] to make it come to life as a [FloorFilterView]
+ * for the given [GeoView]. This workflow gives the app complete control over where the
+ * [FloorFilterView] is displayed - it could be positioned on top of any part of the [GeoView], or
+ * placed somewhere outside the bounds of the [GeoView].
  *
  * Here's example XML code to define a [FloorFilterView]:
  * ```
@@ -103,11 +101,7 @@ import com.esri.arcgisruntime.toolkit.extension.pixelsToSp
  * Here's example Kotlin code to bind the [FloorFilterView] to the [GeoView]:
  * ```
  * val floorFilterView = findViewById(R.id.floorFilterView)
- * mapView.map.addDoneLoadingListener {
- *   if (mapView.map.loadStatus == LoadStatus.LOADED) {
- *     floorFilterView.bindTo(mapView)
- *   }
- * }
+ * floorFilterView.bindTo(mapView)
  * ```
  *
  * _Mutually Exclusive Workflows:_
@@ -609,15 +603,16 @@ class FloorFilterView: LinearLayout {
     }
 
     /**
-     * Adds this [FloorFilterView] to the provided [geoView]. This method should be called after
-     * the [GeoModel] associated with the [GeoView] has successfully Loaded.
+     * Adds this [FloorFilterView] to the provided [geoView].
      *
      * @throws IllegalStateException if this FloorFilterView is already added to or bound to
      * a [GeoView]
      * @throws IllegalStateException if there is no [GeoModel] in the [GeoView]
      * @since 100.13.0
      */
-    fun addToGeoView(geoView: GeoView, position: ListPosition = ListPosition.BOTTOM_START) {
+    fun addToGeoView(geoView: GeoView, position: ListPosition = ListPosition.BOTTOM_START,
+                     doneLoading: ((LoadStatus, ArcGISRuntimeException?) -> Unit)? = null)
+    {
         val map = getGeoModel(geoView) ?: throw IllegalStateException("There is no GeoModel in the GeoView")
 
         this.floorFilterManager.geoView?.let {
@@ -666,7 +661,7 @@ class FloorFilterView: LinearLayout {
         }
         constraintSet.applyTo(holder)
 
-        setupFloorFilterManager(geoView, map)
+        setupFloorFilterManager(geoView, map, doneLoading)
     }
 
     /**
@@ -688,14 +683,12 @@ class FloorFilterView: LinearLayout {
 
     /**
      * Binds this [FloorFilterView] to the provided [geoView], or unbinds it when passing in null.
-     * This method should be called after the [GeoModel] associated with the [GeoView] has
-     * successfully Loaded.
      *
      * @throws IllegalStateException if this FloorFilterView is currently added to a [GeoView]
      * @throws IllegalStateException if there is no [GeoModel] in the [GeoView]
      * @since 100.13.0
      */
-    fun bindTo(geoView: GeoView?) {
+    fun bindTo(geoView: GeoView?, doneLoading: ((LoadStatus, ArcGISRuntimeException?) -> Unit)? = null) {
         if (drawInGeoView) {
             throw IllegalStateException("FloorFilterView is currently added to a GeoView")
         }
@@ -705,7 +698,7 @@ class FloorFilterView: LinearLayout {
             }
         } else {
             val map = getGeoModel(geoView) ?: throw IllegalStateException("There is no GeoModel in the GeoView")
-            setupFloorFilterManager(geoView, map)
+            setupFloorFilterManager(geoView, map, doneLoading)
         }
     }
 
@@ -749,9 +742,12 @@ class FloorFilterView: LinearLayout {
      *
      * @since 100.13.0
      */
-    private fun setupFloorFilterManager(geoView: GeoView, map: GeoModel) {
-        floorFilterManager.setupFloorManager(geoView, map) {
+    private fun setupFloorFilterManager(geoView: GeoView, map: GeoModel,
+                                        doneLoading: ((LoadStatus, ArcGISRuntimeException?) -> Unit)?)
+    {
+        floorFilterManager.setupFloorManager(geoView, map) { loadStatus, loadError ->
             updateSiteFacilityButtonEnabled()
+            doneLoading?.invoke(loadStatus, loadError)
         }
     }
 
