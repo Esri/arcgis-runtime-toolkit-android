@@ -42,5 +42,5 @@ ext {
     kotlin_version = "1.6.10"
     kotlin_reflect = "1.6.10"
     kotlin_coroutines = "1.4.1"
-    arcgis = "100.14.0-3486"
+    arcgis = "100.14.0"
 }
