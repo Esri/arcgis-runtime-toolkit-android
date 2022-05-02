@@ -15,6 +15,8 @@
   -->
 
 <resources>
+    <attr name="textColor" format="color" />
+    <attr name="textSize" format="dimension" />
     <declare-styleable name="ArcGISArView">
         <attr name="renderVideoFeed" format="boolean" />
     </declare-styleable>
@@ -38,9 +40,9 @@
         <attr name="alternateFillColor" format="color" />
         <attr name="lineColor" format="color" />
         <attr name="shadowColor" format="color" />
-        <attr name="textColor" format="color" />
+        <attr name="textColor" />
         <attr name="textShadowColor" format="color" />
-        <attr name="textSize" format="dimension" />
+        <attr name="textSize" />
         <attr name="barHeight" format="dimension" />
         <attr name="unitSystem" format="enum">
             <enum name="imperial" value="0" />
@@ -50,5 +52,25 @@
     <declare-styleable name="JoystickSeekBar">
         <attr name="jsb_min" format="float" />
         <attr name="jsb_max" format="float" />
+    </declare-styleable>
+    <declare-styleable name="FloorFilterView">
+        <attr name="buttonHeight" format="dimension" />
+        <attr name="buttonWidth" format="dimension" />
+        <attr name="maxDisplayLevels" format="integer" />
+        <attr name="textSize" />
+        <attr name="textColor" />
+        <attr name="selectedTextColor" format="color" />
+        <attr name="buttonBackgroundColor" format="color" />
+        <attr name="selectedButtonBackgroundColor" format="color" />
+        <attr name="closeButtonBackgroundColor" format="color" />
+        <attr name="searchBackgroundColor" format="color" />
+        <attr name="hideCloseButton" format="boolean" />
+        <attr name="hideSiteFacilityButton" format="boolean" />
+        <attr name="hideSiteSearch" format="boolean" />
+        <attr name="hideFacilitySearch" format="boolean" />
+        <attr name="closeButtonPosition" format="enum">
+            <enum name="top" value="0" />
+            <enum name="bottom" value="1" />
+        </attr>
     </declare-styleable>
 </resources>

@@ -23,7 +23,7 @@ You can use the Toolkit in your projects by:
 
     ```
     dependencies {
-    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.13.0'
+    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.14.0'
     }
     ```
 
@@ -42,6 +42,7 @@ See the [setup instructions](Documentation/setup.md) for a more detailed guide.
 * **[Compass](Documentation/Compass)** -  Shows the current orientation of a map or scene by displaying a compass icon that points towards North
 * **[Scalebar](Documentation/Scalebar)** - Displays the representation of an accurate linear measurement on a map
 * **[PopupView](Documentation/Popup)** - Displays a Popup's attribute list
+* **[FloorFilterView](Documentation/FloorFilterView)** - Displays a control to filter floor aware maps by site, facility, and level
 
 ## Requirements
 
@@ -62,6 +63,7 @@ The following table shows which versions of the SDK are compatible with the tool
 | 100.11.0 | 100.11.0 |
 | 100.12.0 | 100.12.0 |
 | 100.13.0 | 100.13.0 |
+| 100.14.0 | 100.14.0 |
 
 ## Resources
 

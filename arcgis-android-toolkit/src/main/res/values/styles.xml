@@ -23,4 +23,22 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/calibration_label</item>
     </style>
+
+    <style name="FloorFilterButtonSize">
+        <!-- These sizes are not being used. They are configurable using buttonWidth
+        and buttonHeight attributes. The default values are defined in floorfilter/Constants.kt.
+        We leave this here because UI components require a height and width to be set. -->
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_width">48dp</item>
+    </style>
+
+    <style name="FloorFilterButton" parent="FloorFilterButtonSize">
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
 </resources>
