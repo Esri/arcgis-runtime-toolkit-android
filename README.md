@@ -23,7 +23,7 @@ You can use the Toolkit in your projects by:
 
     ```
     dependencies {
-    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.14.0'
+    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.15.0'
     }
     ```
 
@@ -64,6 +64,7 @@ The following table shows which versions of the SDK are compatible with the tool
 | 100.12.0 | 100.12.0 |
 | 100.13.0 | 100.13.0 |
 | 100.14.0 | 100.14.0 |
+| 100.15.0 | 100.15.0 |
 
 ## Resources
 
