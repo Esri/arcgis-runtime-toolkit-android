@@ -23,7 +23,7 @@ You can use the Toolkit in your projects by:
 
     ```
     dependencies {
-    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.14.0'
+    	implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.15.0'
     }
     ```
 
@@ -64,6 +64,7 @@ The following table shows which versions of the SDK are compatible with the tool
 | 100.12.0 | 100.12.0 |
 | 100.13.0 | 100.13.0 |
 | 100.14.0 | 100.14.0 |
+| 100.15.0 | 100.15.0 |
 
 ## Resources
 
@@ -82,7 +83,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ## Licensing
 
-Copyright 2019-2020 Esri
+Copyright 2019-2022 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
